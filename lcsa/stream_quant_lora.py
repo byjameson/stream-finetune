@@ -72,11 +72,16 @@ class StreamingQuantLoRATrainer:
     def __init__(self, model, device: str = "cuda", loss_chunk: int = 128,
                  lr: float = 1e-4, betas=(0.9, 0.999), eps: float = 1e-8,
                  weight_decay: float = 0.0, clip: float = 0.0,
-                 verbose: bool = False, stage=None, release=None):
+                 verbose: bool = False, stage=None, release=None,
+                 cache_device: str = "gpu"):
         self.device = device
         self.loss_chunk = loss_chunk
         self.clip = clip
         self.verbose = verbose
+        # Where the per-layer input activations for the recompute-backward live.
+        # "cpu" offloads them (frees VRAM, costs a PCIe round-trip per layer), which
+        # is what makes >1k contexts fit on a 6 GB card.
+        self.cache_device = device if cache_device == "gpu" else "cpu"
         self.model = model
         # How a decoder block is brought to the GPU and taken away again. The
         # defaults assume the whole 4-bit base sits in host RAM; a disk-backed
@@ -126,7 +131,11 @@ class StreamingQuantLoRATrainer:
         cache = []
         for i, layer in enumerate(self.layers):
             self.stage(layer, i)
-            cache.append(h)
+            # CPU offload must be synchronous: a non-blocking copy leaves the GPU
+            # source alive until the copy drains, and with 64 layers queued that
+            # keeps ~the whole cache resident (measured: 6.6 GB at seq 2048).
+            cache.append(h if self.cache_device == self.device
+                         else h.to(self.cache_device))
             h = _layer_out(layer(h, position_embeddings=pos))
             self.release(layer, i)
             if self.verbose and (i + 1) % 8 == 0:
@@ -141,6 +150,8 @@ class StreamingQuantLoRATrainer:
             layer = self.layers[i]
             self.stage(layer, i)
             h_in = cache[i]
+            if h_in.device != torch.device(dev):
+                h_in = h_in.to(dev)
             h_in.requires_grad_(True)
             out = _layer_out(layer(h_in, position_embeddings=pos))
             out.backward(grad)

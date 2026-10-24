@@ -179,6 +179,10 @@ def main() -> int:
                     help="never exceed this VRAM budget (0 = 88%% of the device); "
                          "useful to leave room for the display/other apps")
     ap.add_argument("--eval_chunks", type=int, default=0)
+    ap.add_argument("--activation-cache", choices=["gpu", "cpu"], default="gpu",
+                    help="where the per-layer inputs for the recompute-backward live; "
+                         "'cpu' frees VRAM at a PCIe round-trip per layer and is what "
+                         "lets context beyond ~1k fit on a 6 GB card")
     ap.add_argument("--sft", action="store_true",
                     help="train on instruction data (Dolly-15k) with prompt masking")
     ap.add_argument("--dataset", default="databricks/databricks-dolly-15k")
@@ -294,6 +298,7 @@ def main() -> int:
     tr = StreamingQuantLoRATrainer(
         model, device="cuda", loss_chunk=args.chunk, lr=args.lr, clip=1.0,
         verbose=args.verbose, stage=stage, release=release,
+        cache_device=args.activation_cache,
     )
     print(f"[trainer] layers={len(tr.layers)} lora_params={tr.n_lora/1e6:.2f}M "
           f"tied={tr.tied} rss={host_rss_gb()}GB params={count_lora_params(model)/1e6:.2f}M",

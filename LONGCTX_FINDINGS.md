@@ -25,19 +25,27 @@ sequences are exactly `seq` tokens. That is the table below.
 |---:|---:|---:|---:|---:|
 | 128 | 10.70 | **12.0** | 3.18 GB | 19.4 GB |
 | 512 | 17.95 | **28.5** | 3.82 GB | 19.2 GB |
-| 1024 | 27.91 | **36.7** | 4.61 GB | 19.0 GB |
-| 2048 | spilling with the bf16 head (see below) | — | ≥ 5.9 GB | — |
+| **1024** | **27.91** | **36.7** | **4.61 GB** | 19.0 GB |
+| 2048 | 64.53 | 31.7 | **6.60 GB** (spills) | 19.0 GB |
+| 4096 | not attempted after 2048 (same quadratic workspace) | — | — | — |
 
 - The 19.2 GB weight stream is constant per step, so longer sequences *do* amortise it:
-  throughput rises **12.0 → 28.5 → 36.7 tok/s (3.1×)**.
-- But the step time is **not** constant (10.7 → 17.9 → 27.9 s): attention compute and
-  the recompute activation cache grow with `seq`, and they take over from the I/O. At
-  1k the gain is **3×, not the 8–10×** the first (invalid) numbers suggested.
-- Peak VRAM grows with `seq` (3.18 → 3.82 → 4.61 GB) because the activation cache is
-  on the GPU. At 2048 the bf16 lm_head (1.56 GB) pushes the run over the card and it
-  spills. `--head nf4` would free ~1.2 GB, but that path is **broken in the current
-  bitsandbytes** (`FP4 quant_state not initialized` → `assert module.weight.shape[1] == 1`);
-  confirming whether it moves the ceiling is an open item, not a result.
+  throughput rises **12.0 → 28.5 → 36.7 tok/s (3.1×)** up to 1k.
+- The step time is **not** constant (10.7 → 17.9 → 27.9 s): attention compute and its
+  quadratic workspace grow with `seq` and take over from the I/O. At 1k the gain is
+  **3×, not the 8–10×** the first (invalid) numbers suggested.
+- **2k is counterproductive on this card**: the quadratic attention workspace (the
+  softmax matrix and its saved copy for backward, ~1.3 GB at 2k) plus the bf16 head
+  push the run to 6.60 GB — above the card — so the step spills and throughput
+  *falls* to 31.7 tok/s. **The sweet spot is 1024 tokens/step.**
+- I also added a `--activation-cache cpu` mode (offload the per-layer recompute inputs
+  to host RAM, synchronous copies). At seq 512 it saves 0.57 GB of VRAM (3.82 → 3.26)
+  with the same step time and the same losses (fp-noise differences), but it does **not**
+  move the 2k ceiling: at 2k the dominant consumer is the attention workspace, not the
+  activation cache. It is still useful for tight-VRAM 512–1k runs.
+- `--head nf4` (would free 1.2 GB) is **broken in the current bitsandbytes**
+  (`FP4 quant_state not initialized` → `assert module.weight.shape[1] == 1`).
+  Confirming whether it moves the 2k ceiling is an open item, not a result.
 
 ## The SFT path (what it does and does not show)
 
@@ -50,13 +58,18 @@ effects need a long-context corpus (E4, not started).
 ## What this means
 
 - Honest headline: **32B nf4 streamed from disk trains at 1024 tokens/step in 27.9 s
-  (36.7 tok/s, 4.61 GB peak) on a 6 GB laptop GPU** — 3.1× the seq-128 throughput, not
-  an order of magnitude.
-- The ceiling is set by the activation cache plus the head, i.e. by `seq`; 1k fits with
-  a 4.6 GB peak, 2k does not with a bf16 head. `--head nf4` and a smaller resident
-  window are the two knobs to push it.
-- The 14B is cheap by comparison (RAM-resident weights): a 4k step is ~4.4 s
-  (≈930 tok/s) but again on short Dolly samples, so it is not a long-context number.
+  (36.7 tok/s, 4.61 GB peak) on a 6 GB laptop GPU** — **3.1×** the seq-128 throughput
+  (12.0 tok/s) and **8× the context**, with the best throughput/VRAM point at 1k.
+- The ceiling is set by the quadratic attention workspace, not by the weight stream:
+  2k spills (6.60 GB) and is *slower* than 1k (31.7 vs 36.7 tok/s). Pushing further
+  needs a memory-efficient attention kernel on this backend, a 4-bit head (currently
+  broken in bitsandbytes), or a smaller resident window — not more tuning of the
+  streaming path.
+- The 14B, whose weights fit in RAM, runs 4k steps in ~4.4 s on short Dolly samples;
+  that is a training-health number, not a long-context throughput measurement.
+- The SFT runs prove the training path is healthy at any `--seq` cap (loss −0.91 for
+  32B, −1.43 for 14B); they do **not** measure long-context throughput, because Dolly
+  rows are short.
 
 ## Reproduce
 
