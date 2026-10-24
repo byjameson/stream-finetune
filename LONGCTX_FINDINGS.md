@@ -5,6 +5,13 @@ Engine: `lcsa/stream_quant_lora.py` + `experiments/exp54_disk_qlora.py` — an N
 GPU, recompute in the backward. Measured on one RTX 3050 Laptop 6 GB, Windows 11,
 **AC power**.
 
+## Result in one line
+
+**32B fine-tunes at 1k context on a 6 GB laptop GPU: 36.7 tok/s (3.1× the seq-128
+rate) at 4.61 GB peak; 14B runs 2k/4k steps at ~5–6 GB.** The ceiling is memory, not
+throughput. And the obvious follow-up — *does training at 2k actually help?* — is **no
+at this token budget** (E4 below): the lever is data volume, not window length.
+
 ## Correction (same day, before publishing the claim)
 
 An earlier version of this document reported **"32B fine-tuning at 1k / 4k / 8k context:
@@ -57,6 +64,26 @@ sequences are exactly `seq` tokens. That is the table below.
 **not** that long-context training works — the samples are short. Long-context *quality*
 effects need a long-context corpus (E4, not started).
 
+## E4 — does training at 2k context help? (matched token budget)
+
+Two LoRA runs on WikiText-2 with the **same number of tokens** (122,880) and the same
+held-out evaluation (4 × 2048-token chunks, teacher-forced CE):
+
+| run | seq | steps | tokens | eval CE @2k | Δ | step s | peak |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| A | 512 | 240 | 122,880 | 1.4879 → **1.2833** | **−0.205** | 8.47 | 5.48 GB |
+| B | 2048 | 60 | 122,880 | 1.4879 → **1.3033** | −0.185 | 30.4 | 5.99 GB |
+
+**At an equal token budget the 512-context run is slightly better on 2k text** (−0.205
+vs −0.185, a 1.6% difference). Per optimizer step the 2k run is ~3.6× more effective
+(0.0031 vs 0.00085 CE/step) simply because each step sees 4× the tokens — so the lever
+here is **data volume, not window length**.
+
+Caveats: 122,880 tokens is ≈5% of one WikiText-2 epoch, one seed, LoRA r=8 on attention
+only. A longer run could flip the sign; at this budget it does not. The 2k run also
+needed the CPU activation cache and a 2-block window (peak 5.99 GB, i.e. right at the
+card's limit).
+
 ## What this means
 
 - Honest headline: **32B nf4 streamed from disk trains at 1024 tokens/step in 27.9 s
@@ -68,9 +95,14 @@ effects need a long-context corpus (E4, not started).
   4-bit variant is currently broken in bitsandbytes.
 - The 14B, whose weights fit in RAM, runs 4k steps in ~4.4 s on short Dolly samples;
   that is a training-health number, not a long-context throughput measurement.
-- The SFT runs prove the training path is healthy at any `--seq` cap (loss −0.91 for
+- **The SFT runs prove the training path is healthy at any `--seq` cap** (loss −0.91 for
   32B, −1.43 for 14B); they do **not** measure long-context throughput, because Dolly
   rows are short.
+- **E4 (the quality question) is answered and the answer is "not at this budget":** with
+  122,880 tokens, training at 512 gives 2k-context CE 1.2833 and training at 2048 gives
+  1.3033 — the shorter window is slightly *better* on long text. Per optimizer step the
+  2k run is ~3.6× more effective (4× tokens per step), so what matters is how much data
+  the run sees, not how long each sequence is.
 
 ## Reproduce
 
