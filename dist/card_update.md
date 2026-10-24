@@ -113,7 +113,9 @@ the same 6 GB card — a 32B nf4 base streamed from disk trains at **1024 tokens
 36.7 tok/s, 4.61 GB peak** (3.1× the seq-128 throughput, 8× the context). 2k does not
 fit: 7.93 GB with the recompute cache on the GPU, 6.60 GB with it offloaded to host RAM
 (exactly the 1.33 GB cache) — the remaining ~0.6 GB is the bf16 `lm_head`, and attention
-is not the cause (a 40-head bf16 SDPA at 2048 allocates 42 MB).
+is not the cause (a 40-head bf16 SDPA at 2048 allocates 42 MB). At a matched token
+budget, training at 2k is even slightly *worse* on 2k text than training at 512
+(1.3033 vs 1.2833 CE), so the lever is data volume, not window length.
 See [`LONGCTX_FINDINGS.md`](https://github.com/byjameson/lcga-local/blob/main/LONGCTX_FINDINGS.md).
 
 Full tables, ablations, controls, limits and reproduction commands:
