@@ -8,7 +8,7 @@
 <meta property="og:title" content="Running a 4B model in 6 GB and training 3B parameters on a laptop">
 <meta property="og:description" content="What worked, what didn’t, and what the numbers actually mean in LCGA Local.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://github.com/byjameson/lcga-local">
+<meta property="og:url" content="https://github.com/byjameson/stream-finetune">
 <style>
 :root{color-scheme:light dark;--ink:#191919;--muted:#666;--bg:#fff;--accent:#0b6e4f;--rule:#e5e5e5}
 @media (prefers-color-scheme:dark){:root{--ink:#eee;--muted:#aaa;--bg:#121212;--accent:#5fd3a8;--rule:#333}}
@@ -35,7 +35,7 @@ footer{font:14px/1.6 system-ui,sans-serif;color:var(--muted);margin-top:3em;bord
 <p class="subtitle">What worked, what didn’t, and what the numbers actually mean.</p>
 <p class="byline">By Gökhan Çava · Independent developer · <a href="https://github.com/byjameson">github.com/byjameson</a></p>
 
-<p>I published <a href="https://github.com/byjameson/lcga-local">LCGA Local</a>, a source-only research package for local AI on small GPUs. This is the short technical story behind the release, including the parts that did not work.</p>
+<p>I published <a href="https://github.com/byjameson/stream-finetune">LCGA Local</a>, a source-only research package for local AI on small GPUs. This is the short technical story behind the release, including the parts that did not work.</p>
 
 <h2>The constraint: 6 GB of VRAM</h2>
 <p>The test machine is an RTX 3050 Laptop GPU with 6 GB of VRAM. That is enough for a small model, but not enough to load a 4B model in bf16 alongside a normal KV cache and a desktop session. The release contains two different answers to that constraint.</p>
@@ -93,9 +93,9 @@ footer{font:14px/1.6 system-ui,sans-serif;color:var(--muted);margin-top:3em;bord
 
 <h2>Links</h2>
 <ul class="links">
-<li>Repository: <a href="https://github.com/byjameson/lcga-local">github.com/byjameson/lcga-local</a></li>
-<li>Release: <a href="https://github.com/byjameson/lcga-local/releases/tag/v0.1.0">github.com/byjameson/lcga-local/releases/tag/v0.1.0</a></li>
-<li>Press kit: <a href="https://github.com/byjameson/lcga-local/blob/main/PRESS.md">github.com/byjameson/lcga-local/blob/main/PRESS.md</a></li>
+<li>Repository: <a href="https://github.com/byjameson/stream-finetune">github.com/byjameson/stream-finetune</a></li>
+<li>Release: <a href="https://github.com/byjameson/stream-finetune/releases/tag/v0.1.0">github.com/byjameson/stream-finetune/releases/tag/v0.1.0</a></li>
+<li>Press kit: <a href="https://github.com/byjameson/stream-finetune/blob/main/PRESS.md">github.com/byjameson/stream-finetune/blob/main/PRESS.md</a></li>
 </ul>
 <p>If you run this on a smaller GPU, or if you find a mistake in the evaluation, open an issue. Negative results and corrections are welcome.</p>
 </article>

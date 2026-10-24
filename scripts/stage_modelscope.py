@@ -20,7 +20,7 @@ DONATE = """
 This is the ModelScope mirror of the Hugging Face repository
 [{hf}](https://huggingface.co/{hf}). Full reports, raw evidence and the
 reproduction commands live in the GitHub repository:
-<https://github.com/byjameson/lcga-local>
+<https://github.com/byjameson/stream-finetune>
 
 ## Support the work / Destek
 
