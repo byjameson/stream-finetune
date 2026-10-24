@@ -1,5 +1,12 @@
 # Pivot plan — long-context training on 6 GB
 
+> **OUTCOME (25 Oct 2026): see [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).** The claim
+> below — "throughput rises almost linearly with seq" — holds only up to 1k:
+> **12.0 → 28.5 → 36.7 tok/s at 128 → 512 → 1024 (3.1×)**, then the memory wall hits (2k
+> spills at 6.6–7.9 GB). And at a matched token budget, training at 2k is *slightly
+> worse* on 2k text than training at 512 (E4: 1.3033 vs 1.2833 CE). The plan text below
+> is kept as written, for the record.
+
 The LCGA line is closing as a *research* result (see `LCGA_FINDINGS.md`): learned
 block selection helps more as context grows, but it is a compute win, not a memory
 win, and it does not beat dense enough to matter in production.
