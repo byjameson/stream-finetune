@@ -3,7 +3,7 @@
 This is a practical guide built from the measurements in
 [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md). It is deliberately narrow: one machine
 (RTX 3050 Laptop, 6 GB, 34 GB RAM, NVMe, Windows 11), one engine
-(`lcsa/stream_quant_lora.py` + `experiments/exp54_disk_qlora.py`), one honest set of
+(`streamft/stream_quant_lora.py` + `streamft/cli.py`), one honest set of
 numbers. If your card has 8–24 GB, most of the tuning below is unnecessary.
 
 ## The short version
@@ -101,12 +101,10 @@ block, so the disk (and its page cache) is the real storage requirement.
 
 ```bash
 python scripts/longctx_sweep.py --models 32B --seqs 128,512,1024 --steps 8 --blocks 1
-python scripts/probe_dense.py --model models/Qwen2.5-3B --Ts 1024 --depths 0.1,0.5,0.9
 ```
 
-Both scripts print the table rows used above; `results/longctx_*.json` keeps the raw
-payloads. The full protocol, including the rows we discarded, is in
-[`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
+The sweep prints the table rows used above. The full protocol, including the rows we
+discarded, is in [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
 
 ## Honest limits
 

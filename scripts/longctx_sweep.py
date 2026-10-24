@@ -19,13 +19,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS = {
     "32B": "models/Qwen2.5-32B-Instruct-bnb-4bit",
     # the 14B source is a plain fp16 model; quantize once with
-    #   exp54 --model models/Qwen2.5-14B-Instruct --prepare --save-quant checkpoints/qwen14b_nf4
+    #   python -m streamft.cli --model models/Qwen2.5-14B-Instruct --prepare --save-quant checkpoints/qwen14b_nf4
     "14B": "checkpoints/qwen14b_nf4",
 }
 
 
 def run_point(model_dir, seq, steps, blocks, hard, cache="gpu"):
-    cmd = [sys.executable, os.path.join(ROOT, "experiments", "exp54_disk_qlora.py"),
+    cmd = [sys.executable, os.path.join(ROOT, "streamft", "cli.py"),
            "--model-dir", model_dir, "--steps", str(steps), "--seq", str(seq),
            "--eval_chunks", "0", "--shared-dtype", "as-stored",
            "--activation-cache", cache]

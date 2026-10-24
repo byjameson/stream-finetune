@@ -1,6 +1,6 @@
 # Long-context training on 6 GB — findings
 
-Engine: `lcsa/stream_quant_lora.py` + `experiments/exp54_disk_qlora.py` — an NF4
+Engine: `streamft/stream_quant_lora.py` + `streamft/cli.py` — an NF4
 (4-bit) base streamed from disk, a small number of transformer blocks resident on the
 GPU, recompute in the backward. Measured on one RTX 3050 Laptop 6 GB, Windows 11,
 **AC power**.
@@ -111,7 +111,7 @@ card's limit).
 python scripts/longctx_sweep.py --models 32B --seqs 128,512,1024 --steps 8 --blocks 1
 
 # the SFT path (short samples; training health only)
-python experiments/exp54_disk_qlora.py \
+python -m streamft.cli \
   --model-dir models/Qwen2.5-32B-Instruct-bnb-4bit --sft --train_size 128 \
   --steps 50 --seq 1024 --shared-dtype as-stored
 ```

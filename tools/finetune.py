@@ -1,6 +1,6 @@
 """One-command fine-tuning on a small GPU: presets for the streaming QLoRA engine.
 
-The engine (`experiments/exp54_disk_qlora.py`) has a dozen flags whose *combination*
+The engine (`streamft/cli.py`) has a dozen flags whose *combination*
 decides whether a run fits in 6 GB or spills — and the wrong combination looks like a
 slow run, not an error. This wrapper encodes the presets we measured:
 
@@ -60,7 +60,7 @@ def main() -> int:
     ap.add_argument("--print-only", action="store_true")
     args = ap.parse_args()
 
-    cmd = [sys.executable, str(ROOT / "experiments" / "exp54_disk_qlora.py"),
+    cmd = [sys.executable, "-m", "streamft.cli",
            "--model-dir", args.model, "--seq", str(args.seq),
            "--steps", str(args.steps), "--eval_chunks", str(args.eval_chunks),
            "--shared-dtype", "as-stored"]
