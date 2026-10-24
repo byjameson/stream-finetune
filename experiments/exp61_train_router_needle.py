@@ -202,6 +202,9 @@ def main() -> int:
                     help="mixed objective: every (K+1)-th step is a needle step and the "
                          "other K steps are plain-LM steps (full-KL v1 objective on "
                          "WikiText). 0 = needle only (default)")
+    ap.add_argument("--q_pool", default="mean", choices=("mean", "last"),
+                    help="router query pooling over a block's 64 positions; 'last' uses "
+                         "the only position that can attend to the whole block")
     ap.add_argument("--init_ckpt", default="")
     args = ap.parse_args()
 
@@ -215,7 +218,7 @@ def main() -> int:
                            n_concepts=args.n_concepts, graph_rank=args.graph_rank,
                            dynamic=False, content_rank=args.content_rank, rel_bias=True,
                            capture_dense=True, use_coarse=bool(args.coarse),
-                           null_init=-1e9)
+                           null_init=-1e9, q_pool=args.q_pool)
     if args.init_ckpt:
         ck = torch.load(os.path.join(CKPT_DIR, args.init_ckpt), map_location="cpu",
                         weights_only=False)

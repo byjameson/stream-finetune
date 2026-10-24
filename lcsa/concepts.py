@@ -19,7 +19,7 @@ import torch.nn.functional as F
 class ConceptGraphRouter(nn.Module):
     def __init__(self, d_model: int, n_concepts: int = 64, graph_rank: int = 16,
                  content_rank: int = 0, tau: float = 1.0, dynamic: bool = False,
-                 rel_bias: bool = True):
+                 rel_bias: bool = True, q_pool: str = "mean"):
         super().__init__()
         self.d_model = d_model
         self.K = n_concepts
@@ -27,6 +27,7 @@ class ConceptGraphRouter(nn.Module):
         self.content_rank = content_rank
         self.dynamic = dynamic
         self.rel_bias = rel_bias
+        self.q_pool = q_pool
 
         # concept projections (query side / key side)
         self.q_proj = nn.Linear(d_model, n_concepts, bias=False)
@@ -100,12 +101,20 @@ class ConceptGraphRouter(nn.Module):
 
         Concept distributions are aggregated per block; scores flow through the
         concept graph. Optional dynamic modulation + content shortcut.
+
+        Query pooling (`self.q_pool`): "mean" averages all 64 positions of the block;
+        "last" uses only the last position, which is the one position in a causal
+        attention block that can attend to the whole block (and therefore the one that
+        actually decides the next token).
         """
         B, T, K = q_logits.shape
         NB = T // block
         pq = F.softmax(q_logits, dim=-1)  # (B,T,K)
         pk = F.softmax(k_logits, dim=-1)
-        pq_b = pq.view(B, NB, block, K).mean(2)  # (B,NB,K)
+        if getattr(self, "q_pool", "mean") == "last":
+            pq_b = pq.view(B, NB, block, K)[:, :, -1, :]        # (B,NB,K)
+        else:
+            pq_b = pq.view(B, NB, block, K).mean(2)              # (B,NB,K)
         pk_b = pk.view(B, NB, block, K).mean(2)
         if self.dynamic:
             gate = 1.0 + torch.tanh(self.dyn_proj(h))  # (B,T,K)
@@ -121,9 +130,14 @@ class ConceptGraphRouter(nn.Module):
             rel_log1p = self._nb_buffers(NB, scores.device)["rel_log1p"]
             scores = scores - F.softplus(self.rel_alpha) * rel_log1p
         if self.content_rank > 0 and h is not None:
-            h_b = h.view(B, NB, block, -1).mean(2)  # (B,NB,d)
-            cq = self.content_q(h_b)
-            ck = self.content_k(h_b)
+            hb = h.view(B, NB, block, -1)               # (B,NB,block,d)
+            h_b_k = hb.mean(2)                           # (B,NB,d) keys: block content
+            # Query side: "mean" averages all 64 positions of the block; "last" uses the
+            # final position, the only one in a causal block that can attend to the whole
+            # block and therefore the one that decides the next token.
+            h_b_q = hb[:, :, -1, :] if self.q_pool == "last" else h_b_k
+            cq = self.content_q(h_b_q)
+            ck = self.content_k(h_b_k)
             scores = scores + cq @ ck.transpose(1, 2)
         return scores
 

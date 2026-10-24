@@ -105,7 +105,7 @@ def main() -> int:
                            dynamic=margs.get("dynamic", False),
                            content_rank=margs.get("content_rank", 0),
                            rel_bias=not margs.get("no_rel_bias", False),
-                           capture_dense=False, use_coarse=False, null_init=-1e9,
+                           capture_dense=False, use_coarse=False, null_init=-1e9, q_pool=margs.get("q_pool", "mean"),
                            recall_gain=args.v2)
     if args.v2:
         apply_lora(model, r_attn=margs.get("lora_attn", 16), r_mlp=margs.get("lora_mlp", 0))

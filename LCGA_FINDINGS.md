@@ -378,23 +378,24 @@ keeps 5/5 cells at 1.00 and PPL 25.648, and reaches **1.00** on the held-out phr
 and two facts at 2k depth 0.1 (three facts 0.70) — it is the better general-purpose
 configuration, mix7 the cleaner single-task one.
 
-**Query selectivity does not come from the target — it is the query representation.**
-Two forced-choice runs, both with three facts at 1k (two free slots, so the router *must*
-choose) and both with LM mixing:
+**Query pooling does not fix it either — three axes, same answer.** The router in the
+configuration we train (`graph_rank=0`, `content_rank=64`) takes its scores from the
+*bilinear content path*, so the concept-query pooling is bypassed entirely; the only
+query pooling that matters is `h_b` in that path. Making it use the **last token** of the
+block (the one position in a causal block that can attend to the whole block) changes
+behaviour but not selectivity:
 
-| run | target | training p(fact) / top-1 | hits at eval (ask secret / ask backup) | single-fact 1k |
-|---|---|---:|---|---:|
-| `mix7_nf3` | teacher content argmax (no labels) | 0.02 / 0.04 | question-independent | 0.00 |
-| `mix7_nf3_lab` | the queried fact block (labels) | 0.079 / 0.095 | secret 0.58–0.71, backup 0.83–0.96 **for both questions** | 0.00 |
+| run (3 facts, 2 free slots, labels, 900 steps) | three-fact cell @2k d0.1 | single-fact 8k d0.1 | swap hits (secret / backup) |
+|---|---:|---:|---|
+| mean-pooled query | 0.00 | **1.00** | secret 0.58–0.71, backup 0.83–0.96 **for both questions** |
+| last-token query | **0.90** | 0.00 | secret 0.46–0.58, backup 0.88–0.96 **for both questions** |
 
-With labels, a binding budget and 900 steps, the selection is still fact-like rather
-than question-driven, and the single-fact 1k cell collapses to 0.00 (8k stays 1.00
-because 30 free slots hold everything). Since neither the target (teacher vs label) nor
-the budget changes the behaviour, the remaining suspect is the **query representation**:
-the router scores a query block by the *mean* hidden state of its 64 positions, and at
-1k the question occupies only ~20 of them, so the "which fact is asked" signal is
-diluted before the router ever sees it. Pooling the last token (or an attention-pooled
-query) is the concrete next experiment.
+So the three axes we can control — **objective** (teacher argmax vs labels), **budget**
+(loose vs binding) and **query pooling** (mean vs last) — all leave the router selecting
+fact-like blocks rather than the queried one. The remaining suspects are upstream of the
+router: whether the 0.5B hidden states at the router's input layers encode "which fact is
+being asked" strongly enough, and whether a single bilinear block score can express it.
+That is a modelling question at this scale, not a tuning knob.
 
 Cells where dense itself is not exact (T=2048 depths 0.5/0.9, 6 prompts) are noisy and
 should not be over-read.
@@ -575,10 +576,10 @@ compute and bandwidth only.
   uninformative at 4k (dense itself fails there) — the length curve is not monotone
   and we did not find out why 2k is worse than 1k and 8k (§5.5).
 - The router selects fact-like content, **not the block that answers the question**:
-  with two facts at 2k both are selected regardless of the query, and making the budget
-  bind (three facts at 1k, two free slots) does not change it — with teacher targets
-  *or* with labels (§5.5). The likely cause is the mean-pooled query representation,
-  not the objective. A held-out phrasing scores exact 0.00.
+  with two facts both are selected regardless of the query; making the budget bind
+  (three facts), using labels instead of teacher targets, and switching the content
+  path's query pooling to the last token all leave it non-selective (§5.5). The cause is
+  upstream of the router's objective. A held-out phrasing scores exact 0.00.
 - At 1k the budget leaves only two free slots (m = 4, sink + self mandatory), so
   content selection trades against the recent window: the label-free router scores
   0.39 exact on the in-window case where the static window scores 1.00. At 8k both

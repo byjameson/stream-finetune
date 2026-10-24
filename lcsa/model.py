@@ -130,7 +130,7 @@ class LCAGAttention(nn.Module):
                  content_rank: int = 0, gumbel_sigma: float = 0.0,
                  capture_dense: bool = True, use_coarse: bool = True,
                  null_init: float = -3.0, gate_init: float = 0.85, rel_bias: bool = True,
-                 recall_gain: bool = False):
+                 recall_gain: bool = False, q_pool: str = "mean"):
         super().__init__()
         self.orig = orig
         cfg = orig.config
@@ -146,7 +146,7 @@ class LCAGAttention(nn.Module):
         d = cfg.hidden_size
         self.router = ConceptGraphRouter(d, n_concepts, graph_rank,
                                          content_rank=content_rank, dynamic=dynamic,
-                                         rel_bias=rel_bias)
+                                         rel_bias=rel_bias, q_pool=q_pool)
         self.gate = nn.Parameter(torch.full((self.H,), float(gate_init)))
         self.null_logit = nn.Parameter(torch.full((self.H,), float(null_init)))
         self.coarse_null = nn.Parameter(torch.full((self.H,), float(null_init)))
