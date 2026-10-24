@@ -3,8 +3,8 @@ import importlib, json, sys, platform
 print("python", sys.version)
 print("platform", platform.platform())
 
-pkgs = ['torch', 'transformers', 'datasets', 'accelerate', 'numpy', 'matplotlib',
-        'tqdm', 'safetensors', 'sentencepiece', 'triton', 'einops', 'huggingface_hub']
+pkgs = ['torch', 'transformers', 'datasets', 'accelerate', 'numpy', 'safetensors',
+        'bitsandbytes', 'psutil', 'tokenizers', 'huggingface_hub']
 out = {}
 for p in pkgs:
     try:
