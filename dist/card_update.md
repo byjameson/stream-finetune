@@ -89,9 +89,10 @@ PPL **25.648**, and raises the held-out-phrasing and two-fact cells at 2k depth 
   with two facts both are selected regardless of the query; making the budget bind
   (three facts), using labels, and switching to last-token query pooling all leave it
   non-selective. The cause is upstream of the router's objective.
-- **Scale is not demonstrated**: the same recipe on 1.5B is inconclusive at 1k (its
-  dense model does not retrieve, so the teacher is noise) and scores 0.00 at 2k/8k when
-  trained at 2k.
+- **Scale is partly demonstrated** (new): the label-free recipe replicates on
+  **Qwen2.5-3B** — dense-level exact match at 1k with a **quarter of the training
+  tokens** the 0.5B needed. The 1.5B host is unusable (its dense attention does not find
+  the needle at 1k at all). The full ablation grid remains 0.5B-only.
 - No KV-memory saving — compute/bandwidth only, so the context that fits on a 6 GB
   card does not grow.
 - One base model (0.5B), one task family (4-digit needle); all needle numbers are
