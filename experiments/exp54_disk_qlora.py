@@ -179,6 +179,9 @@ def main() -> int:
                     help="never exceed this VRAM budget (0 = 88%% of the device); "
                          "useful to leave room for the display/other apps")
     ap.add_argument("--eval_chunks", type=int, default=0)
+    ap.add_argument("--eval_seq", type=int, default=0,
+                    help="evaluation sequence length (default = --seq); set it to a "
+                         "common value to compare runs trained at different lengths")
     ap.add_argument("--activation-cache", choices=["gpu", "cpu"], default="gpu",
                     help="where the per-layer inputs for the recompute-backward live; "
                          "'cpu' frees VRAM at a PCIe round-trip per layer and is what "
@@ -192,6 +195,8 @@ def main() -> int:
     ap.add_argument("--tag", default="disk_qlora")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
+    if args.eval_seq <= 0:
+        args.eval_seq = args.seq
 
     if args.prepare:
         return prepare(args.model, args.save_quant)
@@ -349,11 +354,12 @@ def main() -> int:
         batches = [sampler.batch(1) for _ in range(args.steps)]
 
         if args.eval_chunks > 0:
-            ev = chunks_from_tokens(load_tokens(str(ROOT / args.eval_data)), args.seq,
+            ev = chunks_from_tokens(load_tokens(str(ROOT / args.eval_data)), args.eval_seq,
                                     args.eval_chunks)
             ce0 = sum(stream_eval_ce(tr, ev[i].unsqueeze(0), args.chunk)
                       for i in range(len(ev))) / len(ev)
-            print(f"[eval] before CE={ce0:.4f}", flush=True)
+            print(f"[eval] before CE={ce0:.4f} on {args.eval_chunks} chunks of "
+                  f"{args.eval_seq}", flush=True)
 
         for i, (xs, ys) in enumerate(batches):
             loss, dt, peak = tr.step(xs, ys)
