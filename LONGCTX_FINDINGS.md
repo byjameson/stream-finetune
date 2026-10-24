@@ -31,21 +31,23 @@ sequences are exactly `seq` tokens. That is the table below.
 
 - The 19.2 GB weight stream is constant per step, so longer sequences *do* amortise it:
   throughput rises **12.0 → 28.5 → 36.7 tok/s (3.1×)** up to 1k.
-- The step time is **not** constant (10.7 → 17.9 → 27.9 s): attention compute and its
-  quadratic workspace grow with `seq` and take over from the I/O. At 1k the gain is
-  **3×, not the 8–10×** the first (invalid) numbers suggested.
-- **2k is counterproductive on this card**: the quadratic attention workspace (the
-  softmax matrix and its saved copy for backward, ~1.3 GB at 2k) plus the bf16 head
-  push the run to 6.60 GB — above the card — so the step spills and throughput
-  *falls* to 31.7 tok/s. **The sweet spot is 1024 tokens/step.**
-- I also added a `--activation-cache cpu` mode (offload the per-layer recompute inputs
-  to host RAM, synchronous copies). At seq 512 it saves 0.57 GB of VRAM (3.82 → 3.26)
-  with the same step time and the same losses (fp-noise differences), but it does **not**
-  move the 2k ceiling: at 2k the dominant consumer is the attention workspace, not the
-  activation cache. It is still useful for tight-VRAM 512–1k runs.
-- `--head nf4` (would free 1.2 GB) is **broken in the current bitsandbytes**
-  (`FP4 quant_state not initialized` → `assert module.weight.shape[1] == 1`).
-  Confirming whether it moves the 2k ceiling is an open item, not a result.
+- The step time is **not** constant (10.7 → 17.9 → 27.9 s): per-token compute grows and
+  takes over from the I/O. At 1k the gain is **3×, not the 8–10×** the first (invalid)
+  numbers suggested.
+- **2k is counterproductive on this card**: peak VRAM reaches **7.93 GB** with the GPU
+  cache (forward 5.75 GB, backward 7.93 GB), the step spills and throughput *falls* to
+  31.7 tok/s. **The sweet spot is 1024 tokens/step.**
+- **`--activation-cache cpu` works and is worth exactly the cache size**: at 2k it
+  saves **1.33 GB** (7.93 → 6.60 GB; the cache is 64 × 2048 × 5120 × 2 B = 1.34 GB) at
+  the same step time (64.5 s) and with equal losses (fp-noise only). At 512 it saves
+  0.57 GB (3.82 → 3.26). It is still ~0.6 GB short of fitting 2k on a 6 GB card.
+- **What is left to close 2k** is the bf16 `lm_head` (1.56 GB): `--head nf4` would free
+  ~1.2 GB but is **broken in the current bitsandbytes** (`FP4 quant_state not
+  initialized` → `assert module.weight.shape[1] == 1`). That is the next concrete fix,
+  not a tuning knob.
+- Attention is *not* the problem: the backend is SDPA and a 40-head bf16 SDPA at 2048
+  allocates **42 MB** (measured). The earlier note blaming a "quadratic attention
+  workspace" was wrong and is corrected here.
 
 ## The SFT path (what it does and does not show)
 
@@ -60,11 +62,10 @@ effects need a long-context corpus (E4, not started).
 - Honest headline: **32B nf4 streamed from disk trains at 1024 tokens/step in 27.9 s
   (36.7 tok/s, 4.61 GB peak) on a 6 GB laptop GPU** — **3.1×** the seq-128 throughput
   (12.0 tok/s) and **8× the context**, with the best throughput/VRAM point at 1k.
-- The ceiling is set by the quadratic attention workspace, not by the weight stream:
-  2k spills (6.60 GB) and is *slower* than 1k (31.7 vs 36.7 tok/s). Pushing further
-  needs a memory-efficient attention kernel on this backend, a 4-bit head (currently
-  broken in bitsandbytes), or a smaller resident window — not more tuning of the
-  streaming path.
+- The ceiling is empirical: 2k spills and is *slower* than 1k (31.7 vs 36.7 tok/s).
+  Offloading the recompute cache to CPU recovers exactly the cache size (1.33 GB at 2k)
+  but is still ~0.6 GB short; the bf16 `lm_head` (1.56 GB) is what is left, and its
+  4-bit variant is currently broken in bitsandbytes.
 - The 14B, whose weights fit in RAM, runs 4k steps in ~4.4 s on short Dolly samples;
   that is a training-health number, not a long-context throughput measurement.
 - The SFT runs prove the training path is healthy at any `--seq` cap (loss −0.91 for
