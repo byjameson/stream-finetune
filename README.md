@@ -24,6 +24,14 @@ what was tried, including the bugs).
 
 **Long-context training (25 Oct 2026, corrected):** 32B nf4 streamed from disk trains at **1024 tokens/step in 27.9 s (36.7 tok/s, 4.61 GB peak)** on the 6 GB card — **3.1×** the seq-128 throughput (12.0 tok/s) and **8× the context**. 512 tokens/step gives 28.5 tok/s / 3.82 GB. **2k spills** (7.93 GB with the GPU cache; 6.60 GB with `--activation-cache cpu`, which recovers exactly the 1.33 GB cache — still ~0.6 GB short; the bf16 `lm_head` is what is left and its 4-bit variant is currently broken in bitsandbytes). An earlier note in this repo claimed 8.6× / 100 tok/s: those numbers came from the SFT path, which feeds one short Dolly row per step (median 134 tokens) and only *truncates* at `--seq`; the correction and the valid LM-path curve are in [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
 
+**One-command fine-tuning:** [`tools/finetune.py`](tools/finetune.py) wraps the streaming engine with the VRAM presets we measured (32B → 2 resident blocks at ≤2k, 1 at >2k; 14B → 6 blocks; `as-stored` shared tensors; hard cap 5.2–5.3 GB), because the *combination* of flags — not any single one — decides whether a run fits:
+
+```powershell
+python tools/finetune.py --model models/Qwen2.5-32B-Instruct-bnb-4bit --mode lm --seq 1024 --steps 50
+python tools/finetune.py --model checkpoints/qwen14b_nf4 --data dolly --seq 512 --steps 240 --save checkpoints/my_adapter
+python tools/finetune.py ... --print-only     # show the exact engine command
+```
+
 ## Product: LCGA Local — one-command local chat
 
 The product surface is not an API. It is a local chat assistant:
