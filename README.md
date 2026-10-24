@@ -29,6 +29,9 @@ and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
 ```powershell
 pip install -r requirements.txt
 
+# 0) token shards for the LM path (SFT on Dolly needs none of this)
+python scripts/prep_data.py --model models/Qwen2.5-0.5B
+
 # 1) turn a local bf16 model into a pre-quantized NF4 checkpoint (once)
 python -m streamft.cli --prepare --model models/Qwen2.5-32B-Instruct `
     --save-quant checkpoints/qwen32b_nf4
@@ -40,6 +43,9 @@ python tools/finetune.py --model checkpoints/qwen14b_nf4 --data dolly --seq 512 
 
 # show the exact engine command without running it
 python tools/finetune.py ... --print-only
+
+# CPU smoke tests (5 cases, no GPU, no downloads)
+pip install -r requirements-dev.txt; python -m pytest tests -q
 ```
 
 `tools/finetune.py` encodes the VRAM presets we measured, because the *combination* of
