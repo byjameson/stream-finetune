@@ -18,18 +18,22 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS = {
     "32B": "models/Qwen2.5-32B-Instruct-bnb-4bit",
-    "14B": "models/Qwen2.5-14B-Instruct",
-    "7B": "models/Qwen2.5-7B-Instruct-bnb-4bit",
+    # the 14B source is a plain fp16 model; quantize once with
+    #   exp54 --model models/Qwen2.5-14B-Instruct --prepare --save-quant checkpoints/qwen14b_nf4
+    "14B": "checkpoints/qwen14b_nf4",
 }
 
 
-def run_point(model_dir, seq, steps):
+def run_point(model_dir, seq, steps, blocks, hard):
     cmd = [sys.executable, os.path.join(ROOT, "experiments", "exp54_disk_qlora.py"),
            "--model-dir", model_dir, "--steps", str(steps), "--seq", str(seq),
            "--eval_chunks", "0", "--shared-dtype", "as-stored"]
+    if blocks:
+        cmd += ["--blocks-on-gpu", str(blocks), "--adapt-every", str(steps),
+                "--vram-hard-gb", str(hard), "--vram-soft-gb", str(hard - 0.3)]
     t0 = time.time()
     out = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True,
-                         encoding="utf-8", errors="replace", timeout=3600)
+                         encoding="utf-8", errors="replace", timeout=5400)
     txt = out.stdout + out.stderr
     payload = None
     for line in txt.splitlines():
@@ -52,6 +56,10 @@ def main() -> int:
     ap.add_argument("--models", default="32B,14B")
     ap.add_argument("--seqs", default="512,1024,2048,3072")
     ap.add_argument("--steps", type=int, default=3)
+    ap.add_argument("--blocks", type=int, default=0,
+                    help="force the resident block window (0 = autotune); long seq needs "
+                         "fewer blocks, the autotune otherwise spills")
+    ap.add_argument("--hard-gb", type=float, default=5.3)
     ap.add_argument("--out", default="results/longctx_sweep.json")
     args = ap.parse_args()
 
@@ -59,8 +67,8 @@ def main() -> int:
     for m in [x.strip() for x in args.models.split(",") if x.strip()]:
         model_dir = MODELS[m]
         for seq in [int(x) for x in args.seqs.split(",")]:
-            print(f"[run] {m} seq={seq} steps={args.steps}", flush=True)
-            r = run_point(model_dir, seq, args.steps)
+            print(f"[run] {m} seq={seq} steps={args.steps} blocks={args.blocks}", flush=True)
+            r = run_point(model_dir, seq, args.steps, args.blocks, args.hard_gb)
             r.update({"model": m, "seq": seq})
             rows.append(r)
             if "error" in r:
