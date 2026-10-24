@@ -108,8 +108,10 @@ rel_bias=True, capture_dense=False, use_coarse=False, null_init=-1e9)` and copy 
 
 **Also in the same repository (a different line of work):** long-context training on
 the same 6 GB card — a 32B nf4 base streamed from disk trains at **1024 tokens/step,
-36.7 tok/s, 4.61 GB peak** (3.1× the seq-128 throughput, 8× the context); 2k spills
-(6.60 GB) because the attention workspace, not the weight stream, is the ceiling.
+36.7 tok/s, 4.61 GB peak** (3.1× the seq-128 throughput, 8× the context). 2k does not
+fit: 7.93 GB with the recompute cache on the GPU, 6.60 GB with it offloaded to host RAM
+(exactly the 1.33 GB cache) — the remaining ~0.6 GB is the bf16 `lm_head`, and attention
+is not the cause (a 40-head bf16 SDPA at 2048 allocates 42 MB).
 See [`LONGCTX_FINDINGS.md`](https://github.com/byjameson/lcga-local/blob/main/LONGCTX_FINDINGS.md).
 
 Full tables, ablations, controls, limits and reproduction commands:
