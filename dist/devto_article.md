@@ -31,7 +31,7 @@ A 14B fits in RAM, so it is much cheaper: 2k/4k steps at ~4–5 s. Dolly-15k SFT
 steps drops the eval loss from **1.8755 to 0.9661** (32B) and **2.3747 to 0.9407** (14B).
 
 The full recipe and one-command wrapper:
-[github.com/byjameson/lcga-local](https://github.com/byjameson/lcga-local) —
+[github.com/byjameson/stream-finetune](https://github.com/byjameson/stream-finetune) —
 `tools/finetune.py`, `LONGCTX_FINDINGS.md`, `GUIDE_6GB_32B.md`.
 
 ## The three measurements that nearly fooled me
@@ -104,4 +104,4 @@ evaluation actually loaded the thing you think it loaded, and that your baseline
 same budget.** Both mistakes look like results.
 
 Everything — code, raw JSON, the invalid runs, the corrections — is in
-[byjameson/lcga-local](https://github.com/byjameson/lcga-local).
+[byjameson/stream-finetune](https://github.com/byjameson/stream-finetune).

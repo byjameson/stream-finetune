@@ -117,10 +117,10 @@ fit: 7.93 GB with the recompute cache on the GPU, 6.60 GB with it offloaded to h
 is not the cause (a 40-head bf16 SDPA at 2048 allocates 42 MB). At a matched token
 budget, training at 2k is even slightly *worse* on 2k text than training at 512
 (1.3033 vs 1.2833 CE), so the lever is data volume, not window length.
-See [`LONGCTX_FINDINGS.md`](https://github.com/byjameson/lcga-local/blob/main/LONGCTX_FINDINGS.md)
+See [`LONGCTX_FINDINGS.md`](https://github.com/byjameson/stream-finetune/blob/main/LONGCTX_FINDINGS.md)
 and the practical write-up with the traps and one-command presets:
-[`GUIDE_6GB_32B.md`](https://github.com/byjameson/lcga-local/blob/main/GUIDE_6GB_32B.md).
+[`GUIDE_6GB_32B.md`](https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md).
 
 Full tables, ablations, controls, limits and reproduction commands:
-[`LCGA_FINDINGS.md`](https://github.com/byjameson/lcga-local/blob/main/LCGA_FINDINGS.md).
+[`LCGA_FINDINGS.md`](https://github.com/byjameson/stream-finetune/blob/main/LCGA_FINDINGS.md).
 The licence, weights and donation section above are unchanged.
