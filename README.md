@@ -16,9 +16,9 @@ learn, and a label-free recipe reaches dense exact match at a 25% block budget. 
 negative result, controls, ablations, the one positive regime and **the three measurement
 errors we made and fixed** are in [`LCGA_FINDINGS.md`](LCGA_FINDINGS.md).
 
-The repository name is historical; the two share the `lcsa/` package. Every number below
-comes from `results/results.jsonl`, and negative results / scope limits are stated
-explicitly.
+Both lines share the `lcsa/` package. Every number below comes from
+`results/results.jsonl`, and negative results / scope limits are stated explicitly.
+(Formerly `byjameson/lcga-local`; GitHub redirects the old URLs.)
 
 **Detailed reports (Turkish):** [`RAPOR.md`](RAPOR.md) — main report (phases A/B/C) ·
 [`P1_RAPOR.md`](P1_RAPOR.md) — block-streaming training · `P2_RAPOR.md` — byte-level
