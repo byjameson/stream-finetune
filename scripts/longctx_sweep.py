@@ -24,10 +24,11 @@ MODELS = {
 }
 
 
-def run_point(model_dir, seq, steps, blocks, hard):
+def run_point(model_dir, seq, steps, blocks, hard, cache="gpu"):
     cmd = [sys.executable, os.path.join(ROOT, "experiments", "exp54_disk_qlora.py"),
            "--model-dir", model_dir, "--steps", str(steps), "--seq", str(seq),
-           "--eval_chunks", "0", "--shared-dtype", "as-stored"]
+           "--eval_chunks", "0", "--shared-dtype", "as-stored",
+           "--activation-cache", cache]
     if blocks:
         cmd += ["--blocks-on-gpu", str(blocks), "--adapt-every", str(steps),
                 "--vram-hard-gb", str(hard), "--vram-soft-gb", str(hard - 0.3)]
@@ -60,6 +61,8 @@ def main() -> int:
                     help="force the resident block window (0 = autotune); long seq needs "
                          "fewer blocks, the autotune otherwise spills")
     ap.add_argument("--hard-gb", type=float, default=5.3)
+    ap.add_argument("--cache", choices=["gpu", "cpu"], default="gpu",
+                    help="activation-cache device (cpu frees VRAM for long seq)")
     ap.add_argument("--out", default="results/longctx_sweep.json")
     args = ap.parse_args()
 
@@ -68,7 +71,7 @@ def main() -> int:
         model_dir = MODELS[m]
         for seq in [int(x) for x in args.seqs.split(",")]:
             print(f"[run] {m} seq={seq} steps={args.steps} blocks={args.blocks}", flush=True)
-            r = run_point(model_dir, seq, args.steps, args.blocks, args.hard_gb)
+            r = run_point(model_dir, seq, args.steps, args.blocks, args.hard_gb, args.cache)
             r.update({"model": m, "seq": seq})
             rows.append(r)
             if "error" in r:
