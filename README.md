@@ -1,10 +1,24 @@
-# LCGA — learnable block-sparse attention on a frozen Qwen2.5-0.5B
+# Two things live in this repository
 
-An honest single-GPU research package about replacing dense O(N²) attention with a
-**learned block-sparse attention path** (a lightweight "latent concept graph" router +
-exact attention over the selected blocks), trained end-to-end on an
-**RTX 3050 Laptop 6 GB** (Windows 11, WDDM). Every number comes from
-`results/results.jsonl`; negative results and scope limits are stated explicitly.
+**1. A low-VRAM training engine — the practical part.** It fine-tunes models that do not
+fit by streaming NF4 weights from disk/RAM one transformer block at a time. Measured on
+one **RTX 3050 Laptop 6 GB** (Windows 11, WDDM): a **32B** model fine-tunes at
+**1024 tokens/step, 36.7 tok/s, 4.61 GB peak** (3.1× the 128-token rate), and 50 steps of
+Dolly SFT move eval loss **1.8755 → 0.9661**. Start here:
+[`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md) · [`tools/finetune.py`](tools/finetune.py) ·
+[`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
+
+**2. LCGA — a research archive, and mostly a negative result.** The original question was
+whether a *learned* block-sparse attention router beats a static one. Answer: on plain
+language modelling it degenerates to `sink + the recent window` and ties a
+budget-matched window (learned is 0.005–0.133 PPL *worse*); on retrieval data it does
+learn, and a label-free recipe reaches dense exact match at a 25% block budget. The full
+negative result, controls, ablations, the one positive regime and **the three measurement
+errors we made and fixed** are in [`LCGA_FINDINGS.md`](LCGA_FINDINGS.md).
+
+The repository name is historical; the two share the `lcsa/` package. Every number below
+comes from `results/results.jsonl`, and negative results / scope limits are stated
+explicitly.
 
 **Detailed reports (Turkish):** [`RAPOR.md`](RAPOR.md) — main report (phases A/B/C) ·
 [`P1_RAPOR.md`](P1_RAPOR.md) — block-streaming training · `P2_RAPOR.md` — byte-level
@@ -14,7 +28,11 @@ prototype · [`BASARILAR.md`](BASARILAR.md) — milestone results digest ·
 [`PROGRESS.md`](PROGRESS.md) — chronological dev journal (full history of
 what was tried, including the bugs).
 
-**Launch article (English):** [DEV Community](https://dev.to/mycute_97b39c4e34027570f9/running-a-4b-model-in-6-gb-and-training-3b-parameters-on-a-laptop-4al) · [Markdown](ARTICLE.md) · [HTML](article.html)
+**Articles (English, DEV Community):** [Running a 4B model in 6 GB and training 3B
+parameters on a laptop](https://dev.to/mycute_97b39c4e34027570f9/running-a-4b-model-in-6-gb-and-training-3b-parameters-on-a-laptop-4al) ·
+[Fine-tuning a 32B model on a 6 GB laptop GPU — and the three measurements that nearly
+fooled me](https://dev.to/mycute_97b39c4e34027570f9/fine-tuning-a-32b-model-on-a-6-gb-laptop-gpu-and-the-three-measurements-that-nearly-fooled-me-2ojm)
+· [Markdown](ARTICLE.md)
 
 **Research checkpoints (Hugging Face):** [LCGA v3 0.5B](https://huggingface.co/byjameson/lcga-v3-0.5b) · [LCGA P3 17M](https://huggingface.co/byjameson/lcga-p3-17m) — model cards there link back to the full reports and raw evidence in this repository.
 
