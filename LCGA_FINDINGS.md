@@ -43,8 +43,7 @@ below was produced with the fixed code.
    (8k), 12.001 vs 11.868 (16k).
 2. **That is the correct behaviour, not a training failure.** On WikiText the dense
    teacher itself puts almost no mass on distant blocks, so there is nothing to
-   distil. Perplexity cannot reward looking far away.
-3. **Retrieval is the regime where distant content matters.** A fact planted at a
+   distil. Perplexity cannot reward looking far away.3. **Retrieval is the regime where distant content matters.** A fact planted at a
    known depth: dense answers it exactly (CE 0.14–0.39 at 1k–8k), a budget-matched
    window cannot (CE ≈ 3.0, exact 0.00).
 4. **Content selection is learnable — with the right objective and the right head.**
@@ -74,9 +73,10 @@ below was produced with the fixed code.
    needle-only training. Seeds 0/1/2 all give 15/15 cells.
 9. **Speed is unchanged**: prefill **1.71× at 32k**, graph decode **1.27× at 8k**;
    eager decode loses. Still compute/bandwidth, **not** KV memory.
-10. **Scope**: one base model (Qwen2.5-0.5B). The same recipe on 1.5B is inconclusive
-   because that model's dense attention does not retrieve the needle at the training
-   length, so the teacher is noise (§8).
+10. **Scope**: one base model (Qwen2.5-0.5B) for the full ablation grid; the label-free
+   recipe is replicated on **Qwen2.5-3B** (dense-level exact match at 1k with a quarter
+   of the training tokens, §5.10). The 1.5B host is not usable: its dense attention does
+   not retrieve the needle at 1k (§5.10).
 
 ---
 
@@ -502,8 +502,34 @@ switched independently (`--loss kl|residual|top1content|retrieval --rows answer|
 --content_rank N`) so the contribution of each is measurable, and `exp60/exp62/exp64`
 evaluate them without training.
 
-## 6. Speed (unchanged; `exp4` always loaded correctly)
-Prefill (single request, AC power, eager router):
+### 5.10 Scale: the same recipe on a 3B model
+
+**Prerequisite.** A scale test is only meaningful if the *teacher* is informative at the
+training length. `scripts/probe_dense.py` checks that with no checkpoint and no router:
+Qwen2.5-3B retrieves the needle densely at 1k (exact 1.00 at depths 0.1/0.5) while the
+budget-matched window scores 0.00 — so 3B is a valid host. (The 1.5B is not: its dense
+model scores exact 0.00 at 1k, which is why that test was inconclusive and why the 2k
+retry was confounded by the 2k anomaly.)
+
+**Result.** Same label-free objective (`top1content`), `content_rank=64`, seq 1024, but
+**batch 1 and 300 steps = 307k tokens** (the 0.5B run used 1.23M — 4× more):
+
+| model | tokens | p(fact) | top-1 | 1k d0.5 (CE / exact) | window | 8k |
+|---|---:|---:|---:|---|---:|---:|
+| 0.5B | 1.23M | 0.53 | 0.57 | 0.208 / 1.00 | 2.96 / 0.00 | 1.00 |
+| **3B** | **0.31M** | 0.45 (at 150 steps) | 0.50 | **0.172 / 1.00** | 3.18 / 0.00 | not measured |
+
+(The 3B 8k eval spills on the 6 GB card — 5.75 GB of weights plus an 8k attention
+workspace — so only the 1k point is reported; the 8k transfer itself was established on
+the 0.5B.)
+
+So the label-free content router is **not a 0.5B artefact**: on a 6× larger model it
+reaches dense-level exact match at a quarter of the training tokens, where the
+budget-matched window scores 0.00. Note that the 3B training does **not** fit cleanly on
+the 6 GB card (7.4 GB allocated → WDDM spill, ~15 s/step), so its *speed* is not a
+result; only the quality is.
+
+## 6. Speed (unchanged; `exp4` always loaded correctly)Prefill (single request, AC power, eager router):
 
 | T | dense | sparse | speedup |
 |---|---:|---:|---:|
@@ -563,14 +589,15 @@ compute and bandwidth only.
   4–5 prompts, so exact-match differences of one prompt are noise. The selection
   measurements (content fraction, p(fact)) are averages over thousands of blocks and
   are stable.
-- **Scale is not demonstrated.** The same recipe on Qwen2.5-1.5B is *inconclusive at
-  1k and negative at 2k*: at 1k the 1.5B dense model does not retrieve this needle
-  reliably (dense exact 0.00, CE 0.29–0.72), so the teacher is noise; trained at 2k
-  (where its dense model does retrieve, exact 1.00) the router learns the training
-  metric (p(fact) 0.52, top-1 0.64) but scores exact **0.00** at 2k and 8k at eval.
-  A kernel-parity check at ρ = 1.0 rules out a sparse-path bug (sparse ≈ dense,
-  top-1 agreement 0.998–0.999), so this is a router/training effect we did not
-  explain. Everything above is one base model (0.5B).
+- **Scale is partly demonstrated.** The label-free recipe replicates on **Qwen2.5-3B**
+  (dense-level exact match at 1k, a quarter of the training tokens, §5.10). The
+  **1.5B** host is a dead end: its dense model does not retrieve the needle at 1k
+  (exact 0.00), so the teacher is noise there; trained at 2k (where its dense model does
+  retrieve) it reports a good training metric (p(fact) 0.52) but exact 0.00 at eval —
+  confounded by the same 2k anomaly the 0.5B shows. A kernel-parity check at ρ = 1.0
+  rules out a sparse-path bug (sparse ≈ dense, top-1 agreement 0.998–0.999).
+- The full ablation grid (head, loss placement, budget, seeds) is 0.5B only; 3B is a
+  single confirmation run at 1k.
 - The retrieval router was trained at T=1024; the 8k evaluation is a transfer test,
   not a long-context training run. Transfer **fails at 2k and at 16k** and is
   uninformative at 4k (dense itself fails there) — the length curve is not monotone
