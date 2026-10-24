@@ -86,9 +86,9 @@ PPL **25.648**, and raises the held-out-phrasing and two-fact cells at 2k depth 
   paraphrase training (`mix7_nf2`) reaches 1.00 on the held-out phrasing and two facts
   at 2k depth 0.1 (three facts 0.70), and keeps 5/5 cells + PPL 25.65.
 - The router selects **fact-like content, not the block that answers the question**:
-  with two facts both are selected regardless of the query, and making the budget bind
-  (three facts, two free slots) does not change it — with teacher targets *or* labels.
-  The mean-pooled query representation is the likely cause.
+  with two facts both are selected regardless of the query; making the budget bind
+  (three facts), using labels, and switching to last-token query pooling all leave it
+  non-selective. The cause is upstream of the router's objective.
 - **Scale is not demonstrated**: the same recipe on 1.5B is inconclusive at 1k (its
   dense model does not retrieve, so the teacher is noise) and scores 0.00 at 2k/8k when
   trained at 2k.

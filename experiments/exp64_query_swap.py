@@ -126,7 +126,7 @@ def main() -> int:
                 dynamic=margs.get("dynamic", False),
                 content_rank=margs.get("content_rank", 0),
                 rel_bias=not margs.get("no_rel_bias", False),
-                capture_dense=False, use_coarse=False, null_init=-1e9)
+                capture_dense=False, use_coarse=False, null_init=-1e9, q_pool=margs.get("q_pool", "mean"))
     load_ckpt(model, args.ckpt)
     for p in model.parameters():
         p.requires_grad_(False)
