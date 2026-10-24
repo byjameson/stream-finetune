@@ -5,39 +5,18 @@ __pycache__/
 venv/
 .env
 
-# Large local assets/binaries (weights, datasets, llama.cpp build; not source release)
+# Large local assets/binaries (weights, datasets; not part of the source release)
 models/
 checkpoints/
-data/*.pt
+data/
 cache/
-tools/llama.cpp/
 
-# Runtime logs / throwaway files
-results/archive/
-results/*.err
-results/*.err.log
-results/*.out.log
-results/chat3b_file*.log
-results/*.part
-results/*.safetensors*
-results/*.pt
-results/*.npz
-results/*.bin
-results/*.pid
-results/_*
-results/fix_*.py
-results/progress_*.md
-results/*.bak*
-results/results_*.jsonl
-gpu_samples.csv
-*.out
+# The engine writes its evidence log here at run time
+results/*
+!results/README.md
 
 # Editors / OS
 .vscode/
 .idea/
 Thumbs.db
 Desktop.ini
-
-# ModelScope staging (the READMEs are mirrored on ModelScope; weights are not versioned)
-dist/modelscope/
-

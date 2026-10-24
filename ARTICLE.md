@@ -1,105 +1,109 @@
-# Running a 4B model in 6 GB and training 3B parameters on a laptop
+---
+title: Fine-tuning a 32B model on a 6 GB laptop GPU — and the three measurements that nearly fooled me
+published: false
+tags: llm, machinelearning, gpu, opensource
+---
 
-**What worked, what didn’t, and what the numbers actually mean.**
+# Fine-tuning a 32B model on a 6 GB laptop GPU
 
-I’m Gökhan Çava, an independent developer. I published
-[LCGA Local](https://github.com/byjameson/stream-finetune), a source-only research
-package for local AI on small GPUs. This is the short technical story behind
-the release, including the parts that did not work.
+I have one GPU: an RTX 3050 Laptop with **6 GB of VRAM**, 34 GB of RAM and an NVMe SSD.
+It runs Windows. For the last months I've been building a small engine that trains models
+that don't fit, and this post is the honest result for the 32B case — including the
+places where I fooled myself and had to publish the correction.
 
-## The constraint: 6 GB of VRAM
+## What works
 
-The test machine is an RTX 3050 Laptop GPU with 6 GB of VRAM. That is enough
-for a small model, but not enough to load a 4B model in bf16 alongside a
-normal KV cache and a desktop session. The release contains two different
-answers to that constraint.
+**A 32B model (NF4) fine-tunes at 1024 tokens/step on this card.**
 
-## Serving: Qwen3-4B at a 4.5 GB peak
+| seq | step time | tokens/s | peak VRAM |
+|---:|---:|---:|---:|
+| 128 | 10.70 s | 12.0 | 3.18 GB |
+| 512 | 17.95 s | 28.5 | 3.82 GB |
+| **1024** | **27.91 s** | **36.7** | **4.61 GB** |
+| 2048 | 64.53 s | 31.7 | 6.60–7.93 GB (spills) |
 
-The serving path uses Qwen3-4B-Instruct-2507 in int8 with layer streaming and
-one bf16 layer slot. It is deliberately boring engineering: keep the resident
-working set below the limit, move weights in as needed, and avoid allocating
-the whole model at once.
+Why is that interesting? The 32B weights are 19.2 GB. They never fully live in VRAM: they
+are mmap'd from disk and streamed **block by block**, one transformer block resident at a
+time, with recompute in the backward. The I/O is paid **once per step**, not per token —
+so longer sequences amortise it. At 8× the context (128 → 1024) throughput goes up 3.1×.
 
-Measured on the 6 GB RTX 3050 Laptop:
+A 14B fits in RAM, so it is much cheaper: 2k/4k steps at ~4–5 s. Dolly-15k SFT for 50
+steps drops the eval loss from **1.8755 to 0.9661** (32B) and **2.3747 to 0.9407** (14B).
 
-- **4,513 MB peak VRAM**
-- **~3.4 tok/s decode**
-- **18.8 s first run, 2.4 s warm start**
-- One-command entry point: `python llm.py` (`sohbet.cmd` on Windows)
+The full recipe and one-command wrapper:
+[github.com/byjameson/stream-finetune](https://github.com/byjameson/stream-finetune) —
+`tools/finetune.py`, `LONGCTX_FINDINGS.md`, `GUIDE_6GB_32B.md`.
 
-This is not fast by datacenter standards. It is useful for local chat,
-experimentation, and checking whether a 4B model fits at all.
+## The three measurements that nearly fooled me
 
-## RAG: citations without a giant vector database
+This section is the real point of the post. Every one of these produced a *plausible*
+number that was wrong, and all three were caught only because I went back and checked.
 
-The RAG layer is CPU-only BM25 over a 326-document Wikipedia-derived corpus
-(4.57 MiB). It returns a passage and a citation, and it declines when the
-corpus does not support an answer.
+### 1. I measured a model I never loaded
 
-On the internal exp48 evaluation (50 covered prompts plus 20 controls):
+I published a result saying "the learned block router selects **0.0%** content blocks and
+is *identical* to a static window". Then I noticed the evaluation script loaded the
+checkpoint **before** patching the model with the router modules — so nothing was loaded
+and I had been benchmarking a **randomly initialised router** for days.
 
-- **Retrieval: 50/50**
-- **Single-source answers: 50/50**
-- **Keyword overlap: 49/50**
-- **Citations: 50/50**
-- **Controls answered: 0/20**
+Fixed, the same model selects 1.7–7.0% content blocks and is 0.005–0.13 PPL *worse* than
+the window. The headline survived in spirit ("learning buys nothing here") but the
+reported mechanism was fabricated by a bug. I kept the invalid runs in
+`results/invalid/` with a note, and rewrote the report.
 
-The one keyword miss is not a factual failure: the answer used the correct
-Turkish synonym `Büyük Okyanus` instead of the literal `Pasifik`. The baseline
-keyword score was 42/50.
+### 2. "8.6× faster" was measuring a truncation cap
 
-The important limit: this is a small, hand-built evaluation, not a public
-benchmark. The manual review was performed in the session by the agent and
-the developer, not by an independent human reviewer. The repository says so
-in `results/exp48_manual_review.md`.
+I reported "32B at 4k context: 382 tok/s, 8k: 616 tok/s". Wrong. The SFT path feeds **one
+dataset row per step**, and `--seq` there is only a truncation cap. Dolly-15k rows are
+**43–1964 tokens, median 134**. So every "seq 1k–8k" step processed ~134 tokens, and I was
+dividing the *cap* by the step time.
 
-## Training: all 3.09B parameters on the same 6 GB GPU
+The real numbers, from the LM path where sequences are exactly `seq` long: 12.0 → 28.5 →
+36.7 tok/s at 128 → 512 → 1024, then the memory wall. **3.1×, not 8.6×.** The symptom was
+visible in hindsight: step time and VRAM were almost flat across `seq`.
 
-The M5 experiment asks a different question: can the same laptop update the
-full parameter set of a 3B model, not a LoRA adapter?
+### 3. The baseline was not budget-matched
 
-Using block streaming and Adafactor, M5 updates all **3.09B parameters** on
-the 6 GB RTX 3050 Laptop:
+For a while my block-sparse attention looked 5 PPL better than "local" attention. It was —
+because "local" was allowed 2 blocks and the learned router 4–16. Against a **budget-matched
+window** the learned router adds nothing. This is a widespread way to overstate sparse
+attention, and I had walked straight into it.
 
-- **150-step demo**
-- **Cross-entropy: 2.5034 → 2.3242**
-- **7.67 s/step**
-- **4.93 GB peak VRAM**
+## The other trap: the autotune
 
-This is a demo, not a convergence study. A 150-step run is enough to show
-that the memory path works; it is not enough to claim a useful fine-tune.
-The full report is in `M5_RAPOR.md`.
+The engine grows its resident block window until it hits a VRAM target measured on the
+*previous* step. At seq 2048 it grew to 11 blocks, the next step spilled into Windows
+shared memory, and **a single step did not finish in one hour**. Forcing
+`--blocks-on-gpu 1..2 --vram-hard-gb 5.3` turns the same point into 3.9 GB and 193 tok/s.
+Long context wants *fewer* resident blocks, not more.
 
-## What did not work: the sparse-attention result
+## What did not work (and why it's in the repo anyway)
 
-The repository also contains the LCGA block-sparse attention experiments.
-The current quality result is negative: in the measured setup, dense
-attention reached **12.46 PPL** and the sparse variant reached **16.56 PPL**.
-The release includes that result rather than hiding it. The serving and
-training work is independently useful; the sparse-attention idea still needs
-more work.
+- **Long-context training did not improve long-context quality at this budget.** With
+  122,880 tokens, training at seq 512 gave a 2k-context CE of 1.2833; training at seq
+  2048 gave 1.3033. The lever is data volume, not window length — at least at this scale.
+- **2k context does not fit.** It is ~0.6 GB away, and the missing piece is the bf16
+  `lm_head` (1.56 GB). Its 4-bit variant is broken in the bitsandbytes version here.
+- **A learned block router trained on plain language modelling degenerates into
+  "sink + the recent window".** That is not a bug: on WikiText the dense teacher itself
+  puts almost no mass on distant blocks, so there is nothing to learn.
+- **On retrieval data it does learn** — distilling the dense teacher's *content argmax* at
+  the answer positions, with no retrieval labels, gives exact-match parity with dense at a
+  25% block budget (and 6.25% at 8k) where a static window scores zero. It replicates on
+  0.5B and 3B. But it is a specialist: plain-LM perplexity degrades, and a mixed schedule
+  (1 retrieval step per 7 LM steps) costs +0.6 PPL to keep both.
 
-## What is in the release
+## The takeaway
 
-- Local chat and serving code
-- CPU RAG and a 326-document corpus
-- M1–M5 and P1 training experiments and reports
-- CUDA-graph and research artifacts
-- 79 CPU/parity/cache/RAG tests
-- Press kit and honest limits
+A 6 GB laptop GPU can fine-tune a 32B model at 1k context, at ~37 tokens/s, in 4.6 GB of
+VRAM — if you stream the weights and keep the resident window small. It cannot do 2k yet,
+and longer context is not a quality lever by itself.
 
-## What is not in the release
+And the meta-lesson, which took more time than the engineering: **check that your
+evaluation actually loaded the thing you think it loaded, and that your baseline has the
+same budget.** Both mistakes look like results.
 
-Model weights, checkpoints, caches, and `tools/llama.cpp` are excluded.
-Qwen3-4B must be downloaded separately. The code is MIT-licensed; the RAG
-corpus is CC BY-SA 4.0 with attribution in `data/rag/README.md`.
-
-## Links
-
-- Repository: https://github.com/byjameson/stream-finetune
-- Release: https://github.com/byjameson/stream-finetune/releases/tag/v0.1.0
-- Press kit: https://github.com/byjameson/stream-finetune/blob/main/PRESS.md
-
-If you run this on a smaller GPU, or if you find a mistake in the evaluation,
-open an issue. Negative results and corrections are welcome.
+Everything — the engine, the guide, the corrections to the long-context numbers — is in
+[byjameson/stream-finetune](https://github.com/byjameson/stream-finetune). The research
+line behind the router claims (all experiments, every raw JSON, the invalid runs) is in
+the archive, [byjameson/lcga-local](https://github.com/byjameson/lcga-local).
