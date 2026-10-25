@@ -124,6 +124,15 @@ streamft train --model-dir checkpoints/qwen7b_nf4 --sft --steps 1000 \
   measured entry in `streamft fit`.
 - `streamft fit` prints this hint automatically when it sees a pre-Ampere GPU.
 
+### Tokenizer cost and the diffusion question
+
+`seq` is in tokens, and tokenizers are not language-neutral. With the Qwen2.5 tokenizer,
+the same passage costs **1.13 tokens/word in English, 1.74 in German and 2.39 in Turkish**
+? a Turkish run at `seq 512` sees about half the text an English run does. Measured with
+`scripts/tokenizer_cost.py`; the numbers, the byte-level alternative and why diffusion LMs
+(LLaDA/Mercury: 800?1,500 tok/s at batch 1, but the same memory footprint) do not change
+this project's bottleneck are in [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md).
+
 ### Measured on
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,
