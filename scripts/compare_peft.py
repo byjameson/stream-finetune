@@ -91,8 +91,12 @@ def main() -> int:
         model.train()
         return total / max(n, 1)
 
-    ce0 = evaluate()
-    print(f"[eval] before loss={ce0:.4f}", flush=True)
+    if args.eval_size > 0:
+        ce0 = evaluate()
+        print(f"[eval] before loss={ce0:.4f}", flush=True)
+    else:
+        ce0 = None
+        print("[eval] skipped (--eval_size 0)", flush=True)
 
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],
                             lr=args.lr)
@@ -118,7 +122,7 @@ def main() -> int:
             print(f"[step] {i+1}/{args.steps} loss={losses[-1]:.4f} {dt:.2f}s "
                   f"peak={peaks[-1]:.2f}GB", flush=True)
 
-    ce1 = evaluate()
+    ce1 = evaluate() if args.eval_size > 0 else None
     row = {
         "engine": "peft-transformers",
         "tag": args.tag,
@@ -132,9 +136,9 @@ def main() -> int:
         "step_s_med": sorted(times)[len(times) // 2] if times else None,
         "peak_gb": peaks,
         "peak_gb_max": max(peaks) if peaks else None,
-        "ce_before": round(ce0, 5),
-        "ce_after": round(ce1, 5),
-        "ce_delta": round(ce1 - ce0, 6),
+        "ce_before": round(ce0, 5) if ce0 is not None else None,
+        "ce_after": round(ce1, 5) if ce1 is not None else None,
+        "ce_delta": round(ce1 - ce0, 6) if (ce0 is not None and ce1 is not None) else None,
         "losses": losses,
         "wall_s": round(time.time() - t0, 1),
         "ts": now(),
