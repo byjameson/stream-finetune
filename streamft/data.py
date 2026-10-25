@@ -79,3 +79,22 @@ class TrainSampler:
         xs = torch.stack([self.tokens[s: s + self.seq_len].long() for s in starts])
         ys = torch.stack([self.tokens[s + 1: s + self.seq_len + 1].long() for s in starts])
         return xs, ys
+
+
+def main(argv=None) -> int:
+    """`streamft data` -- build the token shards that --data/--eval_data expect."""
+    import argparse
+
+    from transformers import AutoTokenizer
+
+    ap = argparse.ArgumentParser(prog="streamft data")
+    ap.add_argument("--model", default="models/Qwen2.5-0.5B",
+                    help="tokenizer source (local dir or HF id)")
+    ap.add_argument("--out", default="data")
+    ap.add_argument("--force", action="store_true", help="rebuild existing shards")
+    args = ap.parse_args(argv)
+    tok = AutoTokenizer.from_pretrained(args.model)
+    out = build_all(tok, args.out, force=args.force)
+    for name, path in out.items():
+        print(f"{name:20s} {path}")
+    return 0

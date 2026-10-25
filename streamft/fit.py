@@ -109,7 +109,9 @@ def main(argv: list[str] | None = None) -> int:
           f"+ reserve {RESERVE_GB} GB (embedding stays on CPU)")
     print(f"  -> whole model needs ~{out['needed_whole_gb']} GB on {args.gpu:g} GB")
     if fits_whole:
-        print("  verdict: fits whole at this seq (no streaming needed; >1k can still spill)")
+        print("  verdict: budget says the whole model fits at this seq")
+        print("  caution: activations and allocator headroom are not fully modelled;")
+        print("           treat this as a budget check, not a guarantee. >1k can still spill.")
     else:
         print("  verdict: needs streaming (one or more blocks on the GPU at a time)")
     if measured:

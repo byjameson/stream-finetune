@@ -3,6 +3,7 @@
   streamft fit      will this model fit? (memory arithmetic + measured speed when known)
   streamft prepare  turn a bf16 model into a pre-quantized NF4 checkpoint
   streamft train    the streaming trainer (all exp54 flags)
+  streamft data     build the token shards (LM path only; SFT needs none)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -14,6 +15,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft fit --model <dir|hf-id> [--gpu 6] [--seq 512]
   streamft prepare --model <dir> --save-quant checkpoints/<name>
   streamft train --model-dir checkpoints/<name> --sft --steps 30 [--seq 1024]
+  streamft data --model <dir|hf-id> --out data
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -32,6 +34,11 @@ def main() -> int:
         from streamft.fit import main as fit_main
 
         return fit_main(rest)
+
+    if cmd == "data":
+        from streamft.data import main as data_main
+
+        return data_main(rest)
 
     if cmd == "doctor":
         from streamft.doctor import main as doctor_main

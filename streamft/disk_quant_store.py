@@ -43,8 +43,24 @@ class DiskQuantStore:
 
     def __init__(self, model_dir, device: str = "cuda"):
         self.dir = Path(model_dir)
-        index = json.loads((self.dir / "model.safetensors.index.json").read_text())
-        self.weight_map: dict[str, str] = dict(index["weight_map"])
+        idx_path = self.dir / "model.safetensors.index.json"
+        if idx_path.exists():
+            index = json.loads(idx_path.read_text())
+            self.weight_map: dict[str, str] = dict(index["weight_map"])
+        else:
+            # Single-file checkpoint (what `save_pretrained` writes for models whose
+            # quantized weights fit in one shard, e.g. 0.5B/1.5B NF4). The index is
+            # optional; every key lives in that one file.
+            files = sorted(self.dir.glob("*.safetensors"))
+            if len(files) != 1:
+                raise FileNotFoundError(
+                    f"{self.dir}: expected model.safetensors.index.json or exactly one "
+                    f"*.safetensors file, found {len(files)}"
+                )
+            from safetensors import safe_open
+
+            with safe_open(str(files[0]), framework="pt", device="cpu") as f:
+                self.weight_map = {k: files[0].name for k in f.keys()}
         self.device = device
         self._handles: dict[str, object] = {}
 
