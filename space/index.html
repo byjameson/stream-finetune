@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Will it fit? — fine-tuning on a small GPU</title>
+<meta name="description" content="Can you fine-tune that model on your GPU? NF4 weight bytes, head, reserve — plus measured speed only where it was actually measured.">
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa; --accent:#6ee7b7; --warn:#fbbf24; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 34px; margin: 0 0 6px; letter-spacing: -0.5px; }
+  p.lead { color: var(--muted); margin: 0 0 28px; }
+  .panel { background: var(--panel); border:1px solid #232733; border-radius: 12px; padding: 20px; }
+  label { display:block; font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+  input[type=text] { width:100%; padding: 10px 12px; border-radius: 8px; border:1px solid #2c3140;
+                     background:#0d1015; color:var(--fg); font: inherit; }
+  .row { display:flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; }
+  .row > div { flex: 1 1 200px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  button { margin-top: 18px; width: 100%; padding: 12px; border:0; border-radius: 8px;
+           background: var(--accent); color:#06281d; font-weight: 700; font-size: 15px; cursor: pointer; }
+  button:hover { filter: brightness(1.06); }
+  #out { margin-top: 22px; }
+  .verdict { font-size: 20px; font-weight: 700; margin: 18px 0 10px; }
+  .ok { color: var(--accent); } .no { color: var(--warn); }
+  ul { padding-left: 18px; margin: 8px 0; }
+  li { margin: 3px 0; }
+  code, pre { font-family: Consolas, ui-monospace, monospace; font-size: 13px; }
+  pre { background:#0d1015; border:1px solid #232733; padding:12px; border-radius:8px; overflow:auto; }
+  .muted { color: var(--muted); font-size: 13px; }
+  footer { margin-top: 34px; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  .err { color: #fca5a5; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Will it fit?</h1>
+  <p class="lead">Fine-tune a model that does not fit: stream NF4 weights from disk, one
+  transformer block on the GPU at a time. This page computes whether the whole model fits,
+  and shows <b>measured</b> speed only for configurations that were actually run.</p>
+
+  <div class="panel">
+    <label for="model">Hugging Face model id</label>
+    <input id="model" type="text" value="Qwen/Qwen2.5-14B-Instruct" spellcheck="false">
+    <div class="row">
+      <div>
+        <label for="gpu">GPU VRAM: <span id="gpuVal">6</span> GB</label>
+        <input id="gpu" type="range" min="4" max="80" step="1" value="6">
+      </div>
+      <div>
+        <label for="seq">Sequence length: <span id="seqVal">512</span> tokens</label>
+        <input id="seq" type="range" min="128" max="4096" step="128" value="512">
+      </div>
+    </div>
+    <button id="go">Check</button>
+    <noscript><p class="muted">This calculator needs JavaScript; the same math runs in
+      <code>streamft fit</code>.</p></noscript>
+  </div>
+
+  <div id="out"></div>
+
+  <footer>
+    Memory is arithmetic from <code>config.json</code>: NF4 weight bytes, the bf16 LM head,
+    the embedding pinned to CPU, and a 0.9 GB reserve. Activations grow with sequence
+    length, so a borderline model can still spill above 1k tokens.
+    <br><br>
+    Measured rows: RTX 3050 Laptop 6 GB, NF4 base, LoRA r=8, Dolly-15k, warm median.
+    Trainer, gradient check and the matched PEFT comparison:
+    <a href="https://github.com/byjameson/stream-finetune">byjameson/stream-finetune</a>.
+  </footer>
+</main>
+
+<script>
+const MEASURED = [
+  { b: 3,  seq: 512,  blocks: 36, peak: 3.85, step: 0.938,  mode: "all resident" },
+  { b: 7,  seq: 512,  blocks: 28, peak: 5.51, step: 1.696,  mode: "all resident" },
+  { b: 14, seq: 512,  blocks: 6,  peak: 3.86, step: 6.726,  mode: "streaming" },
+  { b: 32, seq: 1024, blocks: 2,  peak: 3.90, step: 12.541, mode: "streaming" },
+];
+const RESERVE_GB = 0.9;
+const cache = {};
+
+const gpu = document.getElementById("gpu");
+const seq = document.getElementById("seq");
+const gpuVal = document.getElementById("gpuVal");
+const seqVal = document.getElementById("seqVal");
+gpu.oninput = () => gpuVal.textContent = gpu.value;
+seq.oninput = () => seqVal.textContent = seq.value;
+
+async function config(model) {
+  if (cache[model]) return cache[model];
+  const url = `https://huggingface.co/${model}/resolve/main/config.json`;
+  const r = await fetch(url, { cache: "force-cache" });
+  if (!r.ok) throw new Error(`HTTP ${r.status} for config.json`);
+  const cfg = await r.json();
+  cache[model] = cfg;
+  return cfg;
+}
+
+function mathFor(cfg) {
+  const h = cfg.hidden_size || cfg.n_embd;
+  const layers = cfg.num_hidden_layers || cfg.n_layer;
+  const inter = cfg.intermediate_size || 4 * h;
+  const vocab = cfg.vocab_size || 0;
+  const heads = cfg.num_attention_heads || 1;
+  const kv = cfg.num_key_value_heads || heads;
+  if (!h || !layers) throw new Error("config.json has no hidden_size / num_hidden_layers");
+  const attn = h * h + 2 * h * (h * kv / heads) + h * h;
+  const mlp = 3 * h * inter;
+  const params = layers * (attn + mlp) + vocab * h;
+  const tied = !!cfg.tie_word_embeddings;
+  return {
+    params, layers,
+    nf4: params * 0.5 / 1e9 * 1.07,
+    head: tied ? 0 : vocab * h * 2 / 1e9,
+    tied,
+  };
+}
+
+function measuredFor(sizeB, seqLen) {
+  const hit = MEASURED.find(m => Math.abs(m.b - sizeB) <= Math.max(1, Math.round(m.b * 0.1)) && m.seq === seqLen);
+  return hit || null;
+}
+
+function render(model, m, gpuGB, seqLen) {
+  const need = m.nf4 + m.head + RESERVE_GB;
+  const fits = need <= gpuGB;
+  const sizeB = Math.round(m.params / 1e9);
+  const meas = measuredFor(sizeB, seqLen);
+  const lines = [];
+  lines.push(`<div class="verdict ${fits ? "ok" : "no"}">${fits ? "Fits whole" : "Needs streaming"}</div>`);
+  lines.push(`<ul>
+    <li><b>${(m.params / 1e9).toFixed(2)}B</b> params, ${m.layers} layers</li>
+    <li>NF4 blocks ~<b>${m.nf4.toFixed(1)} GB</b> + bf16 head ~${m.head.toFixed(1)} GB + reserve ${RESERVE_GB} GB</li>
+    <li>whole model needs <b>~${need.toFixed(1)} GB</b> on <b>${gpuGB} GB</b> at seq ${seqLen}</li>
+  </ul>`);
+  if (meas) {
+    lines.push(`<p>Measured on an RTX 3050 Laptop 6 GB: <b>${meas.blocks} block(s),
+      ${meas.peak} GB peak, ${meas.step} s/step</b> at seq ${meas.seq} (${meas.mode}).</p>`);
+  } else {
+    lines.push(`<p class="muted">Speed and block count are <b>not</b> predicted for this
+      size/seq — that would be a guess. Start with <code>--blocks-on-gpu 1</code> and let
+      the trainer's autotune measure the real MB/block on your card.</p>`);
+  }
+  lines.push(`<pre>pip install streamft
+streamft fit --model ${model} --gpu ${gpuGB} --seq ${seqLen}</pre>`);
+  return lines.join("");
+}
+
+document.getElementById("go").onclick = async () => {
+  const out = document.getElementById("out");
+  const model = document.getElementById("model").value.trim();
+  out.innerHTML = `<p class="muted">Reading config.json…</p>`;
+  try {
+    const cfg = await config(model);
+    const m = mathFor(cfg);
+    out.innerHTML = render(model, m, Number(gpu.value), Number(seq.value));
+  } catch (e) {
+    out.innerHTML = `<p class="err">Could not read <code>config.json</code> for
+      <b>${model}</b>: ${e.message}.</p>
+      <p class="muted">Use a public, non-gated model id. If your browser blocked the
+      request (CORS), the same math runs locally: <code>streamft fit</code>.</p>`;
+  }
+};
+</script>
+</body>
+</html>
