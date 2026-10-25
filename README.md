@@ -82,6 +82,25 @@ disk (NF4 safetensors)
 The training tag in the evidence log is still `exp54_disk_qlora`, so rows written by
 this engine and by the original experiment are directly comparable.
 
+## Verification
+
+`python scripts/verify_gradients.py --model-dir checkpoints/qwen3b_bnb4bit --seq 128`
+
+- **One resident block vs all 36 resident** (identical adapter weights, Qwen2.5-3B NF4,
+  seq 128): the loss is identical to 10 decimals and the adapter gradients are
+  **bit-identical** — 288 tensors, max relative error `0.0`, global relative error `0.0`.
+  This is the streaming/recompute claim: dropping blocks and recomputing them in the
+  backward changes nothing.
+- **Manual block backward vs PyTorch autograd** through the same forward: global relative
+  error **1.33%** (cosine `0.9998`). The same 1.33% appears with *all* blocks resident,
+  so it is bf16 dequantisation precision, not the streaming path.
+- Finite differences cannot check this on a 4-bit base: the LoRA delta is added to a bf16
+  tensor, so a one-entry perturbation is below one bf16 ULP (measured for the same entry:
+  `eps=2e-3` → `-0.12`, `eps=2e-2` → `+0.02`). The chunked-loss gradient itself is
+  checked exactly in `tests/test_streamft_smoke.py`.
+
+Raw output: `results/gradcheck.json` (git-ignored; the numbers above are copied from it).
+
 ## What this does not do
 
 - **2k context does not fit** on 6 GB. It is ~0.6 GB short: with `--activation-cache cpu`
