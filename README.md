@@ -49,9 +49,17 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512 -
 # LM path (optional): build token shards, then train without --sft
 streamft data --model Qwen/Qwen2.5-0.5B --out data
 streamft train --model-dir checkpoints/qwen0.5b_nf4 --steps 20 --seq 256 --tag lm
+
+# no GPU at all, or no dataset: both are covered
+streamft cpu --model Qwen/Qwen2.5-0.5B --steps 50 --seq 128
+streamft synth --model Qwen/Qwen2.5-1.5B-Instruct --n 200 --out data/synth.jsonl
+
+# inference budget (weights + KV cache), not just training
+streamft fit --model Qwen/Qwen2.5-7B-Instruct --gpu 6 --seq 2048 --mode inference
 ```
 
 Every run appends one JSON row to `results/results.jsonl` next to where you launched it.
+Six worked recipes: [`COOKBOOK.md`](COOKBOOK.md).
 The same commands are in [`QUICKSTART.md`](QUICKSTART.md), which is what a pip user should
 read — this README also documents the experiments behind the numbers.
 

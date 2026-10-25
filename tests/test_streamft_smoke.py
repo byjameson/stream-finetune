@@ -248,3 +248,26 @@ def test_masked_eval_raises_when_every_row_is_skipped(monkeypatch):
     monkeypatch.setattr(cli, "_encode_chat", lambda *a, **k: None)
     with pytest.raises(RuntimeError, match="every row was skipped"):
         cli._masked_eval(FakeTrainer(), [{"instruction": "x", "response": "y"}], object(), 8)
+
+
+# ------------------------------------------------ synth / planner helpers
+
+def test_parse_pair_rejects_template_junk():
+    from streamft.easy import parse_pair
+
+    good = parse_pair('{"instruction": "Give me a tip", "response": "Sharpen your knives."}')
+    assert good and good["instruction"] == "Give me a tip"
+    assert parse_pair('{"instruction": "<instruction>", "response": "<response>"}') is None
+    assert parse_pair('{"instruction": "x", "response": "short"}') is None
+    assert parse_pair("not json") is None
+    assert parse_pair('{"instruction": "a" * 300, "response": "b" * 20}') is None
+
+
+def test_kv_cache_matches_hand_calculation():
+    from streamft.fit import kv_cache_gb
+
+    cfg = {"hidden_size": 2048, "num_hidden_layers": 24, "num_attention_heads": 16,
+           "num_key_value_heads": 2}
+    # 2 * 24 layers * 2 kv heads * 128 head_dim * 1024 seq * 2 bytes
+    expect = 2 * 24 * 2 * 128 * 1024 * 2 / 1e9
+    assert abs(kv_cache_gb(cfg, 1024) - expect) < 1e-12
