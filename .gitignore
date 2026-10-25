@@ -26,3 +26,8 @@ Desktop.ini
 build/
 dist/
 
+
+# Merged / converted models (large, rebuildable)
+merged/
+*.gguf
+

@@ -7,6 +7,7 @@
   streamft cpu      SFT a small model on the CPU (no GPU; model must fit RAM)
   streamft synth    generate training pairs locally with a small model
   streamft eval     run a small local prompt set (repetition/refusal/keywords)
+  streamft merge    fold a saved adapter into the base model (for serving / GGUF)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -22,6 +23,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft cpu --model <small-model> --steps 20
   streamft synth --model <small-model> --n 50 --out data/synth.jsonl
   streamft eval --model <model> [--prompts mine.jsonl]
+  streamft merge --model <base> --adapter <dir> --out merged/<name>
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -44,6 +46,10 @@ def main() -> int:
     if cmd == "cpu":
         from streamft.easy import cpu_main
         return cpu_main(rest)
+
+    if cmd == "merge":
+        from streamft.merge import main as merge_main
+        return merge_main(rest)
 
     if cmd == "eval":
         from streamft.evals import main as eval_main
