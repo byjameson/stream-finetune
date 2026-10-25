@@ -31,7 +31,7 @@ and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
 ## Quick start
 
 ```powershell
-pip install -e .            # or: pip install streamft (once it is on PyPI)
+pip install streamft
 
 # 0) will it fit? memory arithmetic + the measured reference, no weights downloaded
 streamft fit --model Qwen/Qwen2.5-14B-Instruct --gpu 6 --seq 512
