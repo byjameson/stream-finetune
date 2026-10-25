@@ -1,0 +1,59 @@
+"""Console entry point: `streamft <command>`.
+
+  streamft fit      will this model fit? (memory arithmetic + measured speed when known)
+  streamft prepare  turn a bf16 model into a pre-quantized NF4 checkpoint
+  streamft train    the streaming trainer (all exp54 flags)
+  streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
+"""
+from __future__ import annotations
+
+import sys
+
+USAGE = """streamft - fine-tune models that do not fit
+
+  streamft fit --model <dir|hf-id> [--gpu 6] [--seq 512]
+  streamft prepare --model <dir> --save-quant checkpoints/<name>
+  streamft train --model-dir checkpoints/<name> --sft --steps 30 [--seq 1024]
+  streamft doctor
+
+Docs: https://github.com/byjameson/stream-finetune
+"""
+
+
+def main() -> int:
+    argv = sys.argv[1:]
+    if not argv or argv[0] in ("-h", "--help", "help"):
+        print(USAGE)
+        return 0
+
+    cmd, rest = argv[0], argv[1:]
+
+    if cmd == "fit":
+        from streamft.fit import main as fit_main
+
+        return fit_main(rest)
+
+    if cmd == "doctor":
+        from streamft.doctor import main as doctor_main
+
+        return doctor_main(rest)
+
+    if cmd == "prepare":
+        from streamft import cli
+
+        sys.argv = ["streamft", "--prepare"] + rest
+        return cli.main()
+
+    if cmd == "train":
+        from streamft import cli
+
+        sys.argv = ["streamft"] + rest
+        return cli.main()
+
+    print(f"unknown command: {cmd}\n")
+    print(USAGE)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

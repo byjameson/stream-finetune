@@ -27,9 +27,14 @@ and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
 ## Quick start
 
 ```powershell
-pip install -r requirements.txt
+pip install -e .            # or: pip install streamft (once it is on PyPI)
 
-# 0) token shards for the LM path (SFT on Dolly needs none of this)
+# 0) will it fit? memory arithmetic + the measured reference, no weights downloaded
+streamft fit --model Qwen/Qwen2.5-14B-Instruct --gpu 6 --seq 512
+streamft doctor            # torch / CUDA / bitsandbytes / free VRAM
+
+# 1) token shards for the LM path (SFT on Dolly needs none of this)
+streamft prepare --model models/Qwen2.5-0.5B --save-quant checkpoints/qwen0.5b_nf4
 python scripts/prep_data.py --model models/Qwen2.5-0.5B
 
 # 1) turn a local bf16 model into a pre-quantized NF4 checkpoint (once)
