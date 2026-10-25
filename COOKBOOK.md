@@ -82,8 +82,9 @@ streamft synth --model Qwen/Qwen2.5-1.5B-Instruct --n 200 \
 ```
 
 It asks a local model for one JSON pair at a time, rejects template junk
-(`<instruction>`), drops duplicates and length outliers, and reports the keep rate
-(3/4 on a smoke run; expect lower with a smaller model). Then train on it:
+(`<instruction>`), drops duplicates and length outliers, and reports the keep rate.
+Measured with Qwen2.5-1.5B-Instruct, seq 160: **30 attempts ? 13 kept (43%)**, ~5 s per
+attempt on a 6 GB card. Then train on it:
 
 ```bash
 streamft train --model-dir checkpoints/q7 --sft --data data/synth.jsonl ...

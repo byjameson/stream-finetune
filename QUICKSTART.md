@@ -80,7 +80,7 @@ streamft train ... --save checkpoints/my_adapter
 ## No GPU? (or no dataset)
 
 ```bash
-# 0.5B on the CPU, no CUDA at all: ~2.4 s/step on a Ryzen laptop
+# 0.5B on the CPU, no CUDA at all: ~1.7-2.4 s/step on a Ryzen laptop
 streamft cpu --model Qwen/Qwen2.5-0.5B --steps 50 --seq 128 --save checkpoints/cpu_adapter
 
 # generate a small instruction set locally, then train on it
