@@ -126,3 +126,31 @@ Everything — the engine, the guide, the corrections to the long-context number
 [byjameson/stream-finetune](https://github.com/byjameson/stream-finetune). The research
 line behind the router claims (all experiments, every raw JSON, the invalid runs) is in
 the archive, [byjameson/lcga-local](https://github.com/byjameson/lcga-local).
+
+## Independent checks (added after publication)
+
+Two readers asked the right question: are these numbers checked by anything other than
+the script that produced them? I ran three checks and published the code for each.
+
+**Gradients.** With Qwen2.5-3B NF4 I compared the streaming path (1 block resident,
+recomputed in the backward) against the same model with all 36 blocks resident, with
+identical adapter weights: the loss is identical to 10 decimals and the adapter
+gradients are **bit-identical** (288 tensors, max relative error 0.0). Against PyTorch
+autograd through the same forward the global relative error is **1.33%** ? and it is
+*the same 1.33% with all blocks resident*, so it is bf16 dequantisation precision, not
+the streaming path. Finite differences cannot check a 4-bit base (the LoRA delta is
+added to a bf16 tensor, below one ULP); that is documented too.
+
+**32B training.** 30 SFT steps on Dolly-15k, seq 1024, 2 blocks resident: **64/64 layers
+received a gradient**, the adapter fingerprint changed, held-out eval **1.8755 ?
+0.9959**, peak **3.90 GB**, 12.5 s/step. The CLI now records layer coverage and the
+adapter hash in every run.
+
+**Against PEFT.** Matched runs (same rows, masking, metric). 3B fits: PEFT is faster
+(0.58 vs 0.94 s/step) at 4.90 vs 3.85 GB. 14B does not fit: PEFT spills to shared memory
+(16.48 GB reserved on a 6.4 GB card) at 18.6 s/step, while the streaming engine stays at
+3.86 GB and 6.7 s/step. So the engine is *not* faster when the model fits; it is the one
+that stays on the card when the model doesn't.
+
+Code: `scripts/verify_gradients.py` and `scripts/compare_peft.py` in
+[byjameson/stream-finetune](https://github.com/byjameson/stream-finetune).
