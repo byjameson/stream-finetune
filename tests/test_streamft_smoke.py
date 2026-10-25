@@ -162,3 +162,18 @@ def test_masked_chunked_handles_fully_masked_chunks():
     mask = tgt != -100
     ref = F.cross_entropy(logits[mask], tgt[mask], reduction="mean")
     assert math.isclose(float(mean.detach()), float(ref.detach()), rel_tol=1e-6)
+
+
+# ------------------------------------------------ checkpoint file layouts
+
+def test_disk_store_supports_single_safetensors_file(tmp_path):
+    """save_pretrained writes one file for small NF4 models; the index is optional."""
+    from safetensors.torch import save_file
+
+    from streamft.disk_quant_store import DiskQuantStore
+
+    save_file({"a": torch.zeros(4, dtype=torch.uint8),
+               "b.c": torch.ones(3)}, str(tmp_path / "model.safetensors"))
+    store = DiskQuantStore(str(tmp_path))
+    assert store.has("a") and store.has("b.c")
+    assert store.get("b.c").tolist() == [1.0, 1.0, 1.0]

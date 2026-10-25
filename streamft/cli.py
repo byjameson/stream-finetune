@@ -76,12 +76,22 @@ def adapter_sha(model) -> str:
     return h.hexdigest()[:16]
 
 
+def user_path(value) -> Path:
+    """Resolve a CLI argument against the current directory (absolute paths unchanged).
+
+    The package root (`ROOT`) is where *this file* lives; for a pip-installed wheel that
+    is site-packages, which must never be used to resolve user paths.
+    """
+    q = Path(value).expanduser()
+    return q if q.is_absolute() else Path.cwd() / q
+
+
 def prepare(model: str, save_quant: str) -> int:
     """Quantize a local bf16 model into a bnb-4bit checkpoint (uint8 + qstate)."""
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-    src = str(ROOT / model)
-    dst = ROOT / save_quant
+    src = str(user_path(model))
+    dst = user_path(save_quant)
     print(f"[prepare] {model} -> {save_quant}", flush=True)
     bnb = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -212,7 +222,7 @@ def main() -> int:
     if args.prepare:
         return prepare(args.model, args.save_quant)
 
-    model_dir = str(ROOT / args.model_dir)
+    model_dir = str(user_path(args.model_dir))
     print(f"[exp54] model_dir={Path(model_dir).name} steps={args.steps} seq={args.seq} "
           f"lora_r={args.lora_r} targets={args.targets} head={args.head}", flush=True)
 
@@ -361,12 +371,12 @@ def main() -> int:
         print(f"[eval] after loss={ce1:.4f} (delta {ce1-ce0:+.4f})", flush=True)
         wall = time.time() - t_all
     else:
-        tokens = load_tokens(str(ROOT / args.data))
+        tokens = load_tokens(str(user_path(args.data)))
         sampler = TrainSampler(tokens, args.seq, generator=torch.Generator().manual_seed(1234))
         batches = [sampler.batch(1) for _ in range(args.steps)]
 
         if args.eval_chunks > 0:
-            ev = chunks_from_tokens(load_tokens(str(ROOT / args.eval_data)), args.eval_seq,
+            ev = chunks_from_tokens(load_tokens(str(user_path(args.eval_data))), args.eval_seq,
                                     args.eval_chunks)
             ce0 = sum(stream_eval_ce(tr, ev[i].unsqueeze(0), args.chunk)
                       for i in range(len(ev))) / len(ev)
@@ -392,7 +402,7 @@ def main() -> int:
 
     saved = None
     if args.save:
-        save_path = ROOT / args.save
+        save_path = user_path(args.save)
         save_path.mkdir(parents=True, exist_ok=True)
         torch.save(lora_state_dict(model), str(save_path / "adapter.pt"))
         (save_path / "adapter_config.json").write_text(json.dumps({
@@ -437,11 +447,16 @@ def main() -> int:
         "ce_after": round(ce1, 5) if ce1 is not None else None,
         "ce_delta": round(ce1 - ce0, 6) if (ce0 is not None and ce1 is not None) else None,
         "saved": saved,
+        "license": "Apache-2.0",
+        "gpu": torch.cuda.get_device_name(0),
+        "torch": torch.__version__,
+        "cuda": torch.version.cuda,
         "ts": now(),
     }
     print(json.dumps(row, ensure_ascii=True), flush=True)
-    append_jsonl(str(ROOT / "results" / "results.jsonl"), row)
-    with open(ROOT / "results" / "exp54_disk_qlora.log", "a", encoding="utf-8") as f:
+    results_dir = user_path("results")
+    append_jsonl(str(results_dir / "results.jsonl"), row)
+    with open(results_dir / "exp54_disk_qlora.log", "a", encoding="utf-8") as f:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")
     return 0
 

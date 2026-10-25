@@ -141,6 +141,10 @@ def main() -> int:
         "ce_delta": round(ce1 - ce0, 6) if (ce0 is not None and ce1 is not None) else None,
         "losses": losses,
         "wall_s": round(time.time() - t0, 1),
+        "license": "Apache-2.0",
+        "gpu": torch.cuda.get_device_name(0),
+        "torch": torch.__version__,
+        "cuda": torch.version.cuda,
         "ts": now(),
     }
     print(json.dumps(row, ensure_ascii=True), flush=True)

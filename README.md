@@ -25,7 +25,8 @@ The 32B weights are **19.2 GB**. They never fully live in VRAM. At 1024 tokens/s
 throughput is **3.1×** the 128-token rate, because the per-step I/O is amortised over
 more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9661**.
 
-**Start with [`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md)** — the practical write-up: presets,
+**Installed from PyPI? Start with [`QUICKSTART.md`](QUICKSTART.md)** — it uses only the
+published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md) — the practical write-up: presets,
 the six traps, and which numbers are real. The measurement protocol, the discarded rows
 and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
 [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).

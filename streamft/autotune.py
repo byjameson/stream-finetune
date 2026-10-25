@@ -89,8 +89,20 @@ def checkpoint_stats(model_dir) -> dict:
     from safetensors import safe_open
 
     root = Path(model_dir)
-    index = json.loads((root / "model.safetensors.index.json").read_text())
-    weight_map: dict[str, str] = dict(index["weight_map"])
+    idx_path = root / "model.safetensors.index.json"
+    if idx_path.exists():
+        index = json.loads(idx_path.read_text())
+        weight_map: dict[str, str] = dict(index["weight_map"])
+    else:
+        # single-file checkpoint (small NF4 models): every key lives in one file
+        files = sorted(root.glob("*.safetensors"))
+        if len(files) != 1:
+            raise FileNotFoundError(
+                f"{root}: expected model.safetensors.index.json or exactly one "
+                f"*.safetensors file, found {len(files)}"
+            )
+        with safe_open(str(files[0]), framework="pt", device="cpu") as f:
+            weight_map = {k: files[0].name for k in f.keys()}
 
     handles: dict[str, object] = {}
     per_layer: dict[int, int] = {}

@@ -40,8 +40,7 @@
 <main>
   <h1>Will it fit?</h1>
   <p class="lead">Fine-tune a model that does not fit: stream NF4 weights from disk, one
-  transformer block on the GPU at a time. This page computes whether the whole model fits,
-  and shows <b>measured</b> speed only for configurations that were actually run.</p>
+  transformer block on the GPU at a time. This page computes a memory budget from <code>config.json</code>, and shows <b>measured</b> speed only for configurations that were actually run. Treat "fits" as a budget check, not a guarantee.</p>
 
   <div class="panel">
     <label for="model">Hugging Face model id</label>
@@ -65,8 +64,9 @@
 
   <footer>
     Memory is arithmetic from <code>config.json</code>: NF4 weight bytes, the bf16 LM head,
-    the embedding pinned to CPU, and a 0.9 GB reserve. Activations grow with sequence
-    length, so a borderline model can still spill above 1k tokens.
+    the embedding pinned to CPU, and a 0.9 GB reserve. Activations and temporary GPU
+    allocations are <b>not</b> fully modelled, so treat "fits" as a budget check, not a
+    guarantee; a borderline model can still spill above 1k tokens.
     <br><br>
     Measured rows: RTX 3050 Laptop 6 GB, NF4 base, LoRA r=8, Dolly-15k, warm median.
     Trainer, gradient check and the matched PEFT comparison:
