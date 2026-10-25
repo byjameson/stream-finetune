@@ -146,11 +146,12 @@ received a gradient**, the adapter fingerprint changed, held-out eval **1.8755 ?
 0.9959**, peak **3.90 GB**, 12.5 s/step. The CLI now records layer coverage and the
 adapter hash in every run.
 
-**Against PEFT.** Matched runs (same rows, masking, metric). 3B fits: PEFT is faster
-(0.58 vs 0.94 s/step) at 4.90 vs 3.85 GB. 14B does not fit: PEFT spills to shared memory
-(16.48 GB reserved on a 6.4 GB card) at 18.6 s/step, while the streaming engine stays at
-3.86 GB and 6.7 s/step. So the engine is *not* faster when the model fits; it is the one
-that stays on the card when the model doesn't.
+**Against PEFT.** Matched runs (same rows, masking, metric, LoRA, lr). At 3B everything
+fits and PEFT is faster: 0.58 vs 0.94 s/step, at 4.90 vs 3.85 GB. At 7B it no longer
+fits: PEFT spills to shared memory (10.05 GB reserved on a 6.4 GB card) and takes
+**8.96 s/step**, while the streaming engine takes **1.70 s at 5.51 GB**. At 14B the gap
+widens: 18.56 s at 16.48 GB versus **6.73 s at 3.86 GB**. So the engine is *not* faster
+when the model fits; it is the one that stays on the card when the model doesn't.
 
 Code: `scripts/verify_gradients.py` and `scripts/compare_peft.py` in
 [byjameson/stream-finetune](https://github.com/byjameson/stream-finetune).
