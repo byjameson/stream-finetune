@@ -8,6 +8,7 @@
   streamft synth    generate training pairs locally with a small model
   streamft eval     run a small local prompt set (repetition/refusal/keywords)
   streamft merge    fold a saved adapter into the base model (for serving / GGUF)
+  streamft serve    host a merged model on the LAN (chat page + /v1/chat/completions)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -24,6 +25,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft synth --model <small-model> --n 50 --out data/synth.jsonl
   streamft eval --model <model> [--prompts mine.jsonl]
   streamft merge --model <base> --adapter <dir> --out merged/<name>
+  streamft serve --model merged/<name> --port 8000
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -46,6 +48,10 @@ def main() -> int:
     if cmd == "cpu":
         from streamft.easy import cpu_main
         return cpu_main(rest)
+
+    if cmd == "serve":
+        from streamft.serve import main as serve_main
+        return serve_main(rest)
 
     if cmd == "merge":
         from streamft.merge import main as merge_main

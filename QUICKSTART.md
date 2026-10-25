@@ -105,3 +105,14 @@ python scripts/serve_static.py --port 8765
 0.5B Q4_K_M (379 MB) loads in ~38 s and generates at **6.0 tok/s** with 12 threads,
 1.3 tok/s with a plain `http.server`. The COOP/COEP headers in `serve_static.py` are what
 enable multi-threaded WASM.
+
+
+## 8. Share it on the LAN (one machine serves, others connect)
+
+```bash
+streamft serve --model merged/q05_cpu --port 8000
+# on another device in the same network: http://<ip-of-this-machine>:8000
+```
+
+There is a chat page and `POST /v1/chat/completions` (OpenAI-compatible subset). One machine
+does the work; the others are clients. Not a peer-to-peer network.
