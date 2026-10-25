@@ -115,6 +115,9 @@ class StreamingQuantLoRATrainer:
                                      weight_decay=weight_decay)
         self._acc = {id(p): torch.zeros_like(p, device="cpu", dtype=torch.float32)
                      for p in self.trainables}
+        # layer indices that received a non-zero adapter gradient (verification:
+        # a silently skipped block would never appear here)
+        self.grad_layers = set()
 
     # ------------------------------------------------------------------ forward
     @torch.no_grad()
@@ -160,6 +163,8 @@ class StreamingQuantLoRATrainer:
             h_in.requires_grad_(False)
             for p in layer.parameters():
                 if p.requires_grad and p.grad is not None:
+                    if float(p.grad.abs().sum()) > 0:
+                        self.grad_layers.add(i)
                     self._acc[id(p)].add_(p.grad.detach().float().cpu())
                     p.grad = None
             self.release(layer, i)
