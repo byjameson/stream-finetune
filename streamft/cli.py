@@ -18,6 +18,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -63,6 +64,16 @@ except Exception:
 
     def host_private_gb():
         return None
+
+
+def adapter_sha(model) -> str:
+    """Stable fingerprint of the trainable (adapter) tensors."""
+    h = hashlib.sha256()
+    for n, p in sorted(model.named_parameters()):
+        if p.requires_grad:
+            h.update(n.encode())
+            h.update(p.detach().float().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()[:16]
 
 
 def prepare(model: str, save_quant: str) -> int:
@@ -305,6 +316,7 @@ def main() -> int:
         verbose=args.verbose, stage=stage, release=release,
         cache_device=args.activation_cache,
     )
+    sha_before = adapter_sha(model)
     print(f"[trainer] layers={len(tr.layers)} lora_params={tr.n_lora/1e6:.2f}M "
           f"tied={tr.tied} rss={host_rss_gb()}GB params={count_lora_params(model)/1e6:.2f}M",
           flush=True)
@@ -408,6 +420,10 @@ def main() -> int:
         "blocks_on_gpu_initial": start_blocks,
         "blocks_history": adapt_hist,
         "trainable_params": tr.n_lora,
+        "grad_layers": len(tr.grad_layers),
+        "n_layers": len(tr.layers),
+        "adapter_sha_before": sha_before,
+        "adapter_sha_after": adapter_sha(model),
         "steps": len(losses),
         "seq": args.seq,
         "lr": args.lr,

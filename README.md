@@ -101,6 +101,32 @@ this engine and by the original experiment are directly comparable.
 
 Raw output: `results/gradcheck.json` (git-ignored; the numbers above are copied from it).
 
+## Compared with PEFT (matched run, 3B)
+
+Same model (`checkpoints/qwen3b_bnb4bit`, NF4), same LoRA (r=8, α=16, q/k/v/o), same
+AdamW lr 1e-4, batch 1, same Dolly rows and prompt masking, same token-weighted masked
+eval on 8 held-out rows. PEFT uses `prepare_model_for_kbit_training` with gradient
+checkpointing (the standard QLoRA setup).
+
+| | streamft (36 blocks resident) | PEFT / transformers |
+|---|---:|---:|
+| step time, median of 30 @ seq 512 | 0.938 s | **0.579 s** |
+| peak VRAM | **3.85 GB** | 4.90 GB |
+| eval before | 1.42087 | 1.42087 |
+| eval after | **1.30154** (−0.1193) | 1.32722 (−0.0936) |
+
+Both sides start from the same eval (1.42087), which is the check that the data, masking
+and metric are identical. On a model that **fits**, PEFT is 1.6× faster and uses 1.05 GB
+more VRAM; over 30 steps and one seed the quality difference is not meaningful. The
+engine's reason to exist is the 14B/32B column, not this one.
+
+**Why not a full 14B/32B comparison here:** on Windows, `device_map={"":0}` does not
+raise OOM — it silently spills into shared system memory (measured: the 32B NF4
+"loads" with **19.45 GB reserved** on a 6.4 GB card, the 14B with 10.0 GB). A training
+step in that state is the failure mode this engine was built to avoid, so the comparison
+would measure the spill, not the engine. Reproduce the load check with
+`scripts/compare_peft.py --model ... --steps 1` at your own risk.
+
 ## What this does not do
 
 - **2k context does not fit** on 6 GB. It is ~0.6 GB short: with `--activation-cache cpu`
