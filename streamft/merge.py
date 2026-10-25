@@ -16,7 +16,7 @@ from pathlib import Path
 
 import torch
 
-from .lora import apply_lora, merge_lora, set_lora_state_dict
+from .lora import LoRALinear, apply_lora, merge_lora, set_lora_state_dict
 
 
 def main(argv=None) -> int:
@@ -59,6 +59,17 @@ def main(argv=None) -> int:
         raise SystemExit(f"adapter tensors left unmerged: {not_merged[:3]}")
     for p in model.parameters():
         p.requires_grad_(False)
+
+    # Unwrap: after merge the LoRA factors are zero, but `save_pretrained` would still
+    # write them, and GGUF converters refuse unknown tensors (`...k_proj.A`).
+    stripped = 0
+    for name, mod in list(model.named_modules()):
+        if isinstance(mod, LoRALinear):
+            parent_name, _, attr = name.rpartition(".")
+            parent = model.get_submodule(parent_name) if parent_name else model
+            setattr(parent, attr, mod.base)
+            stripped += 1
+    print(f"[merge] removed {stripped} LoRA wrappers", flush=True)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
