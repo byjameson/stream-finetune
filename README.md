@@ -95,6 +95,22 @@ disk (NF4 safetensors)
 The training tag in the evidence log is still `exp54_disk_qlora`, so rows written by
 this engine and by the original experiment are directly comparable.
 
+## Older GPUs (GTX 10/16-series, 4–8 GB)
+
+Pre-Ampere cards (GTX 1060/1660, Pascal/Turing) have **no bf16 units**. Use fp16:
+
+```bash
+streamft train --model-dir checkpoints/qwen7b_nf4 --sft --steps 1000 \
+  --seq 512 --blocks-on-gpu 1 --compute-dtype fp16 --vram-hard-gb 5.3
+```
+
+- On the reference Ampere card fp16 is slightly faster than bf16 at 7B (1.79 vs 1.91 s/step,
+  same 5.36 GB peak); on Pascal it is the only option.
+- On a **4 GB** card use `--blocks-on-gpu 1`, `--seq 512` and `--vram-hard-gb 3.4`.
+  Those rows are not measured yet — if you run one, post the JSON row and it can become a
+  measured entry in `streamft fit`.
+- `streamft fit` prints this hint automatically when it sees a pre-Ampere GPU.
+
 ## Verification
 
 `python scripts/verify_gradients.py --model-dir checkpoints/qwen3b_bnb4bit --seq 128`
