@@ -83,7 +83,8 @@ class DiskQuantStore:
 
 def build_skeleton(model_dir, lora_r: int = 8, lora_alpha: int = 16,
                    targets: str = "attn", head: str = "bf16",
-                   low_precision_shared: bool = False, with_lora: bool = True):
+                   low_precision_shared: bool = False, with_lora: bool = True,
+                   compute_dtype=None):
     """Instantiate the model on the `meta` device with bnb Linear4bit + LoRA.
 
     No weight memory is allocated here; only the (tiny) LoRA adapters are real.
@@ -104,10 +105,13 @@ def build_skeleton(model_dir, lora_r: int = 8, lora_alpha: int = 16,
     with torch.device("meta"):
         model = AutoModelForCausalLM.from_config(cfg)
 
+    # Older cards (GTX 10-series, Pascal/Turing) have no bf16 units at all; fp16 is the
+    # only half-precision option there. Everything else defaults to bf16.
+    compute_dtype = compute_dtype or torch.bfloat16
     qcfg = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_compute_dtype=compute_dtype,
         bnb_4bit_use_double_quant=True,
         bnb_4bit_quant_storage=torch.uint8,
     )

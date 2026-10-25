@@ -219,6 +219,9 @@ def main() -> int:
     ap.add_argument("--lora_alpha", type=int, default=16)
     ap.add_argument("--targets", choices=["attn", "all"], default="attn")
     ap.add_argument("--head", choices=["bf16", "nf4"], default="bf16")
+    ap.add_argument("--compute-dtype", choices=["bf16", "fp16", "fp32"], default="bf16",
+                    help="matmul precision for the 4-bit base; use fp16 on pre-Ampere GPUs "
+                         "(GTX 10/16-series), which have no bf16 units")
     ap.add_argument("--shared-dtype", choices=["fp32", "as-stored"], default="fp32",
                     help="fp32 matches prepare_model_for_kbit_training; 'as-stored' "
                          "keeps embed/head in the checkpoint dtype (big models)")
@@ -261,10 +264,18 @@ def main() -> int:
           f"lora_r={args.lora_r} targets={args.targets} head={args.head}", flush=True)
 
     t0 = time.time()
+    compute_dtype = {"bf16": torch.bfloat16, "fp16": torch.float16,
+                     "fp32": torch.float32}[args.compute_dtype]
+    if args.compute_dtype == "bf16" and torch.cuda.is_available():
+        major, _ = torch.cuda.get_device_capability(0)
+        if major < 8:
+            print(f"[warn] this GPU (compute capability {major}.x) has no bf16 units; "
+                  f"use --compute-dtype fp16", flush=True)
     model, cfg = build_skeleton(
         model_dir, lora_r=args.lora_r, lora_alpha=args.lora_alpha,
         targets=args.targets, head=args.head,
         low_precision_shared=(args.shared_dtype == "as-stored"),
+        compute_dtype=compute_dtype,
     )
     store = DiskQuantStore(model_dir, device="cuda")
 
@@ -465,6 +476,7 @@ def main() -> int:
         "lora_alpha": args.lora_alpha,
         "targets": args.targets,
         "head": args.head,
+        "compute_dtype": args.compute_dtype,
         "shared_dtype": args.shared_dtype,
         "blocks_mode": args.blocks_on_gpu,
         "blocks_on_gpu": cache.capacity,

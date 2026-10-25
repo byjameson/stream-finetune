@@ -20,6 +20,8 @@ import argparse
 import json
 from pathlib import Path
 
+import torch
+
 # Measured end-to-end on an RTX 3050 Laptop, 6 GB, Windows 11, AC power, NF4 base,
 # LoRA r=8 on q/k/v/o, batch 1, Dolly-15k. step_s = median warm step.
 MEASURED = [
@@ -149,6 +151,14 @@ def main(argv: list[str] | None = None) -> int:
         print("  speed/blocks: not measured for this size at this seq — start with")
         print("                 --blocks-on-gpu 1 and let autotune grow it (it measures")
         print("                 the real MB/block on your card instead of guessing)")
+    try:
+        if torch.cuda.is_available():
+            major, _minor = torch.cuda.get_device_capability(0)
+            if major < 8:
+                print("  note: this GPU has no bf16 units (pre-Ampere) -> train with "
+                      "--compute-dtype fp16")
+    except Exception:
+        pass
     print("  next: streamft prepare --model <dir> --save-quant checkpoints/<name>")
     print("        streamft train --model-dir checkpoints/<name> --sft --steps 30")
     return 0
