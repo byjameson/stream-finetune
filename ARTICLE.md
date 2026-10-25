@@ -27,6 +27,10 @@ are mmap'd from disk and streamed **block by block**, one transformer block resi
 time, with recompute in the backward. The I/O is paid **once per step**, not per token —
 so longer sequences amortise it. At 8× the context (128 → 1024) throughput goes up 3.1×.
 
+All throughput numbers here are **warm medians on AC power**. Cold start (the first step
+after boot, with the page cache empty) is a different measurement: it is dominated by
+reading 19.2 GB of weights from disk and must not be compared with warm runs.
+
 A 14B fits in RAM, so it is much cheaper: 2k/4k steps at ~4–5 s. Dolly-15k SFT for 50
 steps drops the eval loss from **1.8755 to 0.9661** (32B) and **2.3747 to 0.9407** (14B).
 
@@ -74,8 +78,23 @@ attention, and I had walked straight into it.
 The engine grows its resident block window until it hits a VRAM target measured on the
 *previous* step. At seq 2048 it grew to 11 blocks, the next step spilled into Windows
 shared memory, and **a single step did not finish in one hour**. Forcing
-`--blocks-on-gpu 1..2 --vram-hard-gb 5.3` turns the same point into 3.9 GB and 193 tok/s.
-Long context wants *fewer* resident blocks, not more.
+`--blocks-on-gpu 1..2 --vram-hard-gb 5.3` bounds it, but on the LM path 2k still needs
+**6.60 GB** with `--activation-cache cpu` (7.93 GB with the cache on the GPU) and takes
+**64.5 s/step (31.7 tok/s)** — slower than 1k and still ~0.6 GB over the card. Long
+context wants *fewer* resident blocks, not more.
+
+An earlier version of this paragraph said the forced window gave "3.9 GB and 193 tok/s".
+That number came from the **SFT path**, where one short Dolly row (median 134 tokens) is
+fed per step: 134 tokens ÷ ~0.7 s. It was never a 2k measurement, and putting it next to
+the LM-path table is exactly the kind of comparison that flatters a run. The side-by-side:
+
+| path | seq | tokens/step | step time | tok/s | peak VRAM |
+|---|---:|---:|---:|---:|---:|
+| LM | 1024 | 1024 | 27.91 s | 36.7 | 4.61 GB |
+| LM | 2048 | 2048 | 64.53 s | 31.7 | 6.60 GB (CPU cache) / 7.93 GB |
+| SFT | 2048 cap | ~134 (one Dolly row) | ~0.7 s | ~190 | ~3.9 GB |
+
+Only the two LM rows are comparable to each other.
 
 ## What did not work (and why it's in the repo anyway)
 
