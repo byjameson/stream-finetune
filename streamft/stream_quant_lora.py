@@ -168,9 +168,14 @@ class StreamingQuantLoRATrainer:
                       f"reserved={torch.cuda.memory_reserved()/1e9:.2f}GB", flush=True)
 
     # --------------------------------------------------------------------- step
-    def step(self, xs, ys, ignore_index=None):
+    def backward(self, xs, ys, ignore_index=None):
+        """Forward + backward on one batch, without touching the optimizer.
+
+        Returns (loss, grads, peak_gb) where grads maps id(param) -> cloned tensor.
+        This is the exact path step() uses, exposed so the gradients can be checked
+        against finite differences or another implementation.
+        """
         torch.cuda.synchronize()
-        t0 = time.time()
         torch.cuda.reset_peak_memory_stats()
         with torch.no_grad():
             h_blocks, cache, pos = self._forward_cached(xs)
@@ -184,16 +189,23 @@ class StreamingQuantLoRATrainer:
                 self.lm_head, z, ys, self.loss_chunk, ignore_index=ignore_index
             )
         z_g.backward(z.grad)
-        grad = h_b.grad
-        self._backward_blocks(cache, pos, grad)
+        self._backward_blocks(cache, pos, h_b.grad)
+        grads = {id(p): self._acc[id(p)].clone() for p in self.trainables}
         for p in self.trainables:
-            p.grad = self._acc[id(p)].to(p.dtype)
+            self._acc[id(p)].zero_()
+        torch.cuda.synchronize()
+        return float(loss), grads, torch.cuda.max_memory_reserved() / 1e9
+
+    def step(self, xs, ys, ignore_index=None):
+        torch.cuda.synchronize()
+        t0 = time.time()
+        loss, grads, peak = self.backward(xs, ys, ignore_index)
+        for p in self.trainables:
+            p.grad = grads[id(p)].to(p.dtype)
         if self.clip > 0:
             torch.nn.utils.clip_grad_norm_(self.trainables, self.clip)
         self.opt.step()
         for p in self.trainables:
             p.grad = None
-            self._acc[id(p)].zero_()
         torch.cuda.synchronize()
-        peak = torch.cuda.max_memory_reserved() / 1e9
-        return float(loss), time.time() - t0, peak
+        return loss, time.time() - t0, peak
