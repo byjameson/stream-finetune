@@ -250,6 +250,7 @@ URLs. The engine lived at `experiments/exp54_disk_qlora.py` + `lcsa/` until the 
 - [Running a 4B model in 6 GB and training 3B parameters on a laptop](https://dev.to/mycute_97b39c4e34027570f9/running-a-4b-model-in-6-gb-and-training-3b-parameters-on-a-laptop-4al)
 - [The same 32B post on Medium](https://medium.com/@myredditacc9393/fine-tuning-a-32b-model-on-a-6-gb-laptop-gpu-e749df447229)
 - [Will it fit? A free planner for fine-tuning models that do not fit](https://dev.to/mycute_97b39c4e34027570f9/will-it-fit-a-free-planner-for-fine-tuning-models-that-do-not-fit-on-your-gpu-o50)
+- [Will it fit? on Medium](https://medium.com/@myredditacc9393/will-it-fit-a-free-check-before-you-download-19-gb-of-weights-9097e1fcf93f)
 
 ## License
 
