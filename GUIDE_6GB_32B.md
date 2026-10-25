@@ -74,7 +74,7 @@ cache grow too. At 2k the run goes over the card and throughput *falls*.
 
 ## What to expect from the training itself
 
-- Dolly-15k SFT, 50 steps, 128 train / 8 eval: **eval loss 1.8755 → 0.9661 (−0.91)**
+- Dolly-15k SFT, 50 steps, 128 train / 8 eval: **eval loss 1.8755 → 0.9659 (−0.91)**
   for 32B and **2.3747 → 0.9407 (−1.43)** for 14B. The adapter is ~16.8M / 12.6M LoRA
   parameters (r=8, attention only).
 - **Longer context did not improve quality at this budget.** With 122,880 tokens,
