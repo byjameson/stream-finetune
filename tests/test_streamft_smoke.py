@@ -177,3 +177,35 @@ def test_disk_store_supports_single_safetensors_file(tmp_path):
     store = DiskQuantStore(str(tmp_path))
     assert store.has("a") and store.has("b.c")
     assert store.get("b.c").tolist() == [1.0, 1.0, 1.0]
+
+
+# ------------------------------------------------ SFT masking failures are loud
+
+class _StubTokenizer:
+    """apply_chat_template returns FULL for both messages, PROMPT for the prefix call."""
+
+    def __init__(self, full, prompt):
+        self.full, self.prompt = full, prompt
+
+    def apply_chat_template(self, messages, tokenize=False, add_generation_prompt=False):
+        return "FULL" if len(messages) == 2 else "PROMPT"
+
+    def __call__(self, text, add_special_tokens=False):
+        from types import SimpleNamespace
+
+        ids = self.full if text == "FULL" else self.prompt
+        return SimpleNamespace(input_ids=list(ids))
+
+
+def test_encode_chat_drops_rows_whose_prompt_is_not_a_prefix():
+    from streamft.cli import _encode_chat
+
+    row = {"instruction": "q", "response": "a"}
+    # prompt is not a prefix of the templated row -> the example must be dropped
+    assert _encode_chat(_StubTokenizer([1, 2, 3, 4], [9, 9]), row, 32) is None
+    # prompt longer than the row -> dropped
+    assert _encode_chat(_StubTokenizer([1, 2], [1, 2, 3]), row, 32) is None
+    # valid prefix -> every prompt token masked, the rest kept
+    ids, labels = _encode_chat(_StubTokenizer([1, 2, 3, 4], [1, 2]), row, 32)
+    assert ids.tolist() == [[1, 2, 3, 4]]
+    assert labels.tolist() == [[-100, -100, 3, 4]]

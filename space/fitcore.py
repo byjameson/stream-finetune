@@ -15,12 +15,22 @@ import json
 import math
 from pathlib import Path
 
-MEASURED = {
-    (3, 512): {"blocks": 36, "peak_gb": 3.85, "step_s": 0.938, "mode": "all resident"},
-    (7, 512): {"blocks": 28, "peak_gb": 5.51, "step_s": 1.696, "mode": "all resident"},
-    (14, 512): {"blocks": 6, "peak_gb": 3.86, "step_s": 6.726, "mode": "streaming"},
-    (32, 1024): {"blocks": 2, "peak_gb": 3.90, "step_s": 12.541, "mode": "streaming"},
-}
+MEASURED = [
+    # Matched on (num_hidden_layers, hidden_size), not on a rounded parameter count: a
+    # different 7B with a different architecture must not inherit this measurement.
+    {"arch": (36, 2048), "label": "Qwen2.5-3B", "seq": 512, "blocks": 36,
+     "peak_gb": 3.85, "step_s": 0.94, "mode": "all resident",
+     "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
+    {"arch": (28, 3584), "label": "Qwen2.5-7B", "seq": 512, "blocks": 28,
+     "peak_gb": 5.51, "step_s": 1.55, "mode": "all resident",
+     "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
+    {"arch": (48, 5120), "label": "Qwen2.5-14B", "seq": 512, "blocks": 6,
+     "peak_gb": 3.86, "step_s": 5.86, "mode": "streaming",
+     "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
+    {"arch": (64, 5120), "label": "Qwen2.5-32B", "seq": 1024, "blocks": 2,
+     "peak_gb": 3.90, "step_s": 12.48, "mode": "streaming",
+     "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
+]
 
 RESERVE_GB = 0.9
 
@@ -61,10 +71,11 @@ def evaluate(model: str, gpu: float, seq: int) -> dict:
     fits = need <= gpu
     size_b = round(m["params"] / 1e9)
 
+    arch = (m["layers"], m["hidden"])
     measured = None
-    for (b, s), row in MEASURED.items():
-        if abs(size_b - b) <= max(1, round(b * 0.1)) and s == seq:
-            measured = dict(row, ref_size_b=b, ref_seq=s)
+    for row in MEASURED:
+        if row["arch"] == arch and row["seq"] == seq:
+            measured = dict(row)
             break
 
     return {
@@ -78,6 +89,7 @@ def evaluate(model: str, gpu: float, seq: int) -> dict:
         "seq": seq,
         "fits_whole": fits,
         "measured": measured,
+        "hidden": int(m["hidden"]),
     }
 
 
@@ -98,9 +110,10 @@ def render(r: dict) -> str:
     if r["measured"]:
         m = r["measured"]
         lines += [
-            f"Measured on an RTX 3050 Laptop 6 GB (NF4, LoRA r=8, Dolly): "
-            f"**{m['blocks']} block(s), {m['peak_gb']} GB peak, {m['step_s']} s/step** "
-            f"at seq {m['ref_seq']}.",
+            f"Measured reference: **{m['label']}** on an RTX 3050 Laptop 6 GB "
+            f"(layers {r['layers']}, hidden {r['hidden']}) — {m['blocks']} block(s), "
+            f"{m['peak_gb']} GB peak, {m['step_s']} s/step at seq {m['seq']}. "
+            f"{m['tokens']}.",
         ]
     else:
         lines += [
