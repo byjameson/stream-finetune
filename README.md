@@ -131,6 +131,12 @@ streamft's 7B peak (5.51 GB) is *higher* than its 14B peak (3.86 GB) because the
 kept all 28 blocks resident while the 14B run kept 6 — the window is a choice, and the
 14B number is the one to copy for a 6 GB card.
 
+**32B: PEFT does not reach the first step.** The 19.2 GB of weights load only by spilling
+into shared memory (19.45 GB reserved on a 6 GiB card), and `prepare_model_for_kbit_training`
+then dies allocating the fp32 norm copy: *CUDA out of memory. Tried to allocate 2.90 GiB;
+18.00 GiB is already allocated.* The streaming engine runs the same checkpoint at
+**12.5 s/step and 3.90 GB** (64/64 layers, held-out 1.8755 to 0.9959).
+
 The 3B row is the honest answer to "is this faster?": **no** — on a model that fits, PEFT
 is 1.6× faster and uses 1.05 GB more. The 14B row is the design point: PEFT does not
 OOM on Windows, it **spills into shared system memory** (16.48 GB reserved on a 6.4 GB

@@ -150,7 +150,10 @@ adapter hash in every run.
 fits and PEFT is faster: 0.58 vs 0.94 s/step, at 4.90 vs 3.85 GB. At 7B it no longer
 fits: PEFT spills to shared memory (10.05 GB reserved on a 6.4 GB card) and takes
 **8.96 s/step**, while the streaming engine takes **1.70 s at 5.51 GB**. At 14B the gap
-widens: 18.56 s at 16.48 GB versus **6.73 s at 3.86 GB**. So the engine is *not* faster
+widens: 18.56 s at 16.48 GB versus **6.73 s at 3.86 GB**. At 32B, PEFT does not reach
+the first step: `prepare_model_for_kbit_training` dies with a CUDA OOM (tried to allocate
+2.90 GiB with 18.00 GiB already allocated on a 6 GiB card), while the streaming engine
+runs at **12.5 s/step and 3.90 GB**. So the engine is *not* faster
 when the model fits; it is the one that stays on the card when the model doesn't.
 
 Code: `scripts/verify_gradients.py` and `scripts/compare_peft.py` in
