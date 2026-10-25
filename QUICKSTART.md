@@ -75,3 +75,19 @@ streamft train ... --save checkpoints/my_adapter
   numbers are warm medians.
 - **`fit` says "fits" but training spills** — the calculator does not model activations;
   reduce the sequence length or the resident blocks.
+
+
+## No GPU? (or no dataset)
+
+```bash
+# 0.5B on the CPU, no CUDA at all: ~2.4 s/step on a Ryzen laptop
+streamft cpu --model Qwen/Qwen2.5-0.5B --steps 50 --seq 128 --save checkpoints/cpu_adapter
+
+# generate a small instruction set locally, then train on it
+streamft synth --model Qwen/Qwen2.5-1.5B-Instruct --n 200 --out data/synth.jsonl
+streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --dataset data/synth.jsonl \
+  --train_size 150 --eval_size 20 --steps 200 --seq 512
+```
+
+`fit --mode inference` answers the same "will it fit?" question for serving
+(weights + KV cache) instead of training.
