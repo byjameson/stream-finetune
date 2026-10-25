@@ -147,6 +147,20 @@ Measured on the reference laptop, 0.5B Q4_K_M (379 MB): **1.3 tok/s** with the p
 what let wllama use 12 threads instead of one. Details and limits in
 [`wasm/README.md`](wasm/README.md).
 
+### Share one machine on the LAN
+
+One PC with the model can serve everyone on the same network:
+
+```bash
+streamft serve --model merged/q05_cpu --port 8000
+# others open http://<that-machine-ip>:8000
+```
+
+It ships a small chat page and an OpenAI-compatible `POST /v1/chat/completions`, so existing
+tools can point at it. This is **one machine computing, the rest as clients** ? not
+peer-to-peer sharding and not volunteer compute. Tested end to end: `/health` and a
+16-token completion (1.9 s on the reference GPU).
+
 ### Measured on
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,

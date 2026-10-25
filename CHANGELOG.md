@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 ? one machine hosts, others connect
+- `streamft serve`: HTTP server with a chat page and `POST /v1/chat/completions`
+  (OpenAI-compatible subset). Point it at a merged model, or pass `--adapter` to serve an
+  unmerged adapter. Tested: `/health`, the page, and a 16-token completion.
+- This is the practical "shared install": one PC computes, the LAN are clients. Not
+  peer-to-peer sharding.
+
 ## 0.4.1 ? merge an adapter, run it in the browser
 - `streamft merge`: fold a saved LoRA adapter into the base on CPU, verify the factors are
   zero, strip the LoRA wrappers (GGUF converters reject `...A`/`...B` tensors), save a plain
