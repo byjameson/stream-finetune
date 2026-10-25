@@ -116,14 +116,20 @@ masking, same token-weighted masked eval on 8 held-out rows. PEFT uses
 | eval before | 1.42087 | 1.42087 |
 | eval after | **1.30154** (−0.1193) | 1.32722 (−0.0936) |
 
-**14B (does not fit on 6 GB):**
+**7B and 14B (do not fit comfortably):**
 
-| | streamft (6 blocks resident) | PEFT / transformers |
-|---|---:|---:|
-| step time, median of 3 @ seq 512 | **6.73 s** | 18.56 s (16.1 / 25.0 / 18.6) |
-| peak VRAM | **3.86 GB** | 16.48 GB reserved |
-| eval before | 2.37475 | 2.37477 |
-| eval after 10 vs 3 steps | 1.5312 | — (3 steps only) |
+| model | step time, median @ seq 512 | peak VRAM | eval (start → after) |
+|---|---:|---:|---:|
+| 7B, streamft (28 blocks) | **1.70 s** | **5.51 GB** | 2.1928 → 1.1094 |
+| 7B, PEFT | 8.96 s | 10.05 GB | 2.1914 → 1.1491 |
+| 14B, streamft (6 blocks) | **6.73 s** | **3.86 GB** | 2.3748 → 1.5312 (10 steps) |
+| 14B, PEFT | 18.56 s | 16.48 GB | 2.3748 (3 steps only) |
+
+At 7B the crossover has already happened: PEFT's 4.4 GB of weights plus activations no
+longer fit, so it spills (10.05 GB reserved) and pays 5.3× the step time. Note that
+streamft's 7B peak (5.51 GB) is *higher* than its 14B peak (3.86 GB) because the 7B run
+kept all 28 blocks resident while the 14B run kept 6 — the window is a choice, and the
+14B number is the one to copy for a 6 GB card.
 
 The 3B row is the honest answer to "is this faster?": **no** — on a model that fits, PEFT
 is 1.6× faster and uses 1.05 GB more. The 14B row is the design point: PEFT does not
