@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1 ? merge an adapter, run it in the browser
+- `streamft merge`: fold a saved LoRA adapter into the base on CPU, verify the factors are
+  zero, strip the LoRA wrappers (GGUF converters reject `...A`/`...B` tensors), save a plain
+  HF checkpoint. 0.5B ? 946 MB fp16.
+- `wasm/index.html`: pick a GGUF (or `?model=<url>`) and run it in the tab with wllama.
+  Tested: 0.5B `Q4_K_M` (379 MB) loads in 38 s and generates at **1.3 tok/s** with plain
+  `http.server`, **6.0 tok/s** behind `scripts/serve_static.py` (COOP/COEP, 12 threads).
+- `scripts/serve_static.py`: COOP/COEP + Range, so `SharedArrayBuffer` and multi-thread WASM
+  are available.
+- `scripts/export_gguf.ps1`: convert + quantise in one command (dry-run tested; produced the
+  379 MB file above).
+- `.gitignore`: the llama.cpp clone and binaries used for export are not tracked.
+
 ## 0.4.0 ? install, evaluate, and let people send measurements
 - `install.ps1` / `install.sh`: check Python, install/update the package, look for an NVIDIA
   GPU, warn about pre-Ampere bf16 and run `doctor`.
