@@ -143,7 +143,7 @@ added to a bf16 tensor, below one ULP); that is documented too.
 
 **32B training.** 30 SFT steps on Dolly-15k, seq 1024, 2 blocks resident: **64/64 layers
 received a gradient**, the adapter fingerprint changed, held-out eval **1.8755 ?
-0.9959**, peak **3.90 GB**, 12.5 s/step. The CLI now records layer coverage and the
+1.0008**, peak **3.90 GB**, 12.5 s/step. The CLI now records layer coverage and the
 adapter hash in every run.
 
 **Against PEFT.** Matched runs (same rows, masking, metric, LoRA, lr). At 3B everything
