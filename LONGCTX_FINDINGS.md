@@ -26,6 +26,15 @@ visible in hindsight: step time and VRAM were almost flat across seq (10–13 s,
 The long-context measurement must use the **LM path** (`TrainSampler` at `seq`), whose
 sequences are exactly `seq` tokens. That is the table below.
 
+**Second sighting of the same error (25 Oct, after a reader question on the DEV post).**
+The article carried the claim in a different shape: *"forcing the window turns seq 2048
+into 3.9 GB and 193 tok/s"*. That is the SFT path again — 134 tokens ÷ ~0.7 s ≈ 190 tok/s
+— not a 2048-token measurement. The 2k LM point is 64.53 s/step, 31.7 tok/s and
+**6.60 GB** with `--activation-cache cpu` (7.93 GB with the cache on the GPU). Mixing the
+two paths in one paragraph is exactly how a run gets flattered, so the article now has a
+side-by-side table (LM 1024 / LM 2048 / SFT 2048-cap) and says that only the LM rows are
+comparable.
+
 ## 32B, LM path (8 steps, forced window = 1 block, AC)
 
 | seq | step s (median) | tok/s | peak VRAM | host RSS |
