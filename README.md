@@ -57,7 +57,8 @@ read — this README also documents the experiments behind the numbers.
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
-`scripts/verify_gradients.py` the gradient check, `scripts/prep_data.py` the token shards
+`scripts/verify_gradients.py` the gradient check, `scripts/e2e_wheel.py` the clean-venv
+install test (build ? fresh venv ? prepare ? train ? save adapter), `scripts/prep_data.py` the token shards
 (the installed equivalent is `streamft data`), and `pytest tests -q` the CPU suite.
 
 `tools/finetune.py` encodes the VRAM presets we measured, because the *combination* of

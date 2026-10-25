@@ -133,6 +133,17 @@ def _format_messages(row: dict) -> list[dict]:
     ]
 
 
+def sft_schedule(rows, encode):
+    """Split rows into trainable ones and a count of dropped ones.
+
+    The caller loops `for i in range(steps)` over the returned rows, so `--steps N`
+    always means N optimizer updates regardless of how many rows the prompt mask
+    rejects. Kept separate from the training loop so it can be tested without a GPU.
+    """
+    valid = [r for r in rows if encode(r) is not None]
+    return valid, len(rows) - len(valid)
+
+
 def _encode_chat(tokenizer, row: dict, seq: int):
     """Chat-template encode with the prompt tokens masked out of the loss."""
     messages = _format_messages(row)
@@ -376,8 +387,8 @@ def main() -> int:
         print(f"[eval] before loss={ce0:.4f}", flush=True)
         # Filter once so `--steps N` means N optimizer updates, not "N attempts minus
         # whatever the mask rejected". A silently short run is a lie about the budget.
-        valid_rows = [r for r in train_rows if _encode_chat(tok, r, args.seq) is not None]
-        skipped_train = len(train_rows) - len(valid_rows)
+        valid_rows, skipped_train = sft_schedule(
+            train_rows, lambda r: _encode_chat(tok, r, args.seq))
         if not valid_rows:
             raise SystemExit("[sft] no training row has a valid prompt mask; refusing to run")
         if skipped_train:
