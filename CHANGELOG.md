@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 ? install, evaluate, and let people send measurements
+- `install.ps1` / `install.sh`: check Python, install/update the package, look for an NVIDIA
+  GPU, warn about pre-Ampere bf16 and run `doctor`.
+- `streamft eval`: 20 local prompts (10 EN / 10 TR), no API and no judge model. Reports
+  refusal rate, repeated 4-gram rate, keyword adherence, tokens/s and latency.
+- `QUICKSTART.tr.md`: the whole quickstart in Turkish.
+- `.github/ISSUE_TEMPLATE/measured-row.md`: a form for posting a 4 GB / Pascal / other
+  hardware row so it can become a measured entry in `streamft fit`.
+
 ## 0.3.0 — no GPU, no dataset, no excuse
 - `streamft cpu`: dense LoRA SFT on the CPU (0.5B, seq 128, **1.73 s/step** over 50 steps,
   eval 2.934 → 2.835). The model must fit in RAM; no 4-bit, no streaming.
