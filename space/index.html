@@ -47,6 +47,13 @@
     <input id="model" type="text" value="Qwen/Qwen2.5-14B-Instruct" spellcheck="false">
     <div class="row">
       <div>
+        <label for="mode">Mode</label>
+        <select id="mode" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #2c3140;background:#0d1015;color:var(--fg);font:inherit">
+          <option value="train">training</option>
+          <option value="inference">inference</option>
+        </select>
+      </div>
+      <div>
         <label for="gpu">GPU VRAM: <span id="gpuVal">6</span> GB</label>
         <input id="gpu" type="range" min="4" max="80" step="1" value="6">
       </div>
@@ -133,13 +140,37 @@ function mathFor(cfg) {
   };
 }
 
+function kvCacheGb(cfg, seqLen) {
+  const h = cfg.hidden_size || cfg.n_embd;
+  const layers = cfg.num_hidden_layers || cfg.n_layer;
+  const heads = cfg.num_attention_heads || 1;
+  const kvHeads = cfg.num_key_value_heads || heads;
+  const headDim = Math.floor(h / Math.max(heads, 1));
+  return 2 * layers * kvHeads * headDim * seqLen * 2 / 1e9;
+}
+
 function measuredFor(fp, seqLen) {
   const hit = MEASURED.find(x => x.seq === seqLen && x.arch.length === fp.length &&
                                  x.arch.every((v, i) => v === fp[i]));
   return hit || null;
 }
 
-function render(model, m, gpuGB, seqLen) {
+function render(model, m, gpuGB, seqLen, cfg, mode) {
+  if (mode === "inference") {
+    const kv = kvCacheGb(cfg, seqLen);
+    const need = m.nf4 + m.head + kv + 0.5;
+    const fits = need <= gpuGB;
+    return `<div class="verdict ${fits ? "ok" : "no"}">${fits ? "Fits for inference" : "Too big for inference"}</div>
+      <ul>
+        <li>weights ~<b>${(m.nf4 + m.head).toFixed(1)} GB</b> at 4-bit</li>
+        <li>KV cache ~<b>${kv.toFixed(2)} GB</b> at seq ${seqLen}, batch 1</li>
+        <li>total <b>~${need.toFixed(1)} GB</b> on <b>${gpuGB} GB</b></li>
+      </ul>
+      <p class="muted">The KV cache is
+      <code>2 x layers x kv_heads x head_dim x seq x batch x 2 B</code>. Long contexts are
+      limited by the cache, not the weights. Speed is not estimated.</p>
+      <pre>streamft fit --model ${model} --gpu ${gpuGB} --seq ${seqLen} --mode inference</pre>`;
+  }
   const need = m.nf4 + m.head + RESERVE_GB;
   const fits = need <= gpuGB;
   const meas = measuredFor(m.fp, seqLen);
@@ -173,7 +204,8 @@ document.getElementById("go").onclick = async () => {
     const cfg = await config(model);
     const m = mathFor(cfg);
   m.fp = fingerprint(cfg);
-    out.innerHTML = render(model, m, Number(gpu.value), Number(seq.value));
+    out.innerHTML = render(model, m, Number(gpu.value), Number(seq.value), cfg,
+                                  document.getElementById("mode").value);
   } catch (e) {
     out.innerHTML = `<p class="err">Could not read <code>config.json</code> for
       <b>${model}</b>: ${e.message}.</p>
