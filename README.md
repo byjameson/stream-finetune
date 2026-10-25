@@ -114,30 +114,33 @@ Raw output: `results/gradcheck.json` (git-ignored; the numbers above are copied 
 
 ## Compared with PEFT (matched runs)
 
-Same data, same LoRA (r=8, α=16, q/k/v/o), same AdamW lr 1e-4, batch 1, same prompt
+Same data, same LoRA (r=8, alpha=16, q/k/v/o), same AdamW lr 1e-4, batch 1, same prompt
 masking, same token-weighted masked eval on 8 held-out rows. PEFT uses
 `prepare_model_for_kbit_training` with gradient checkpointing (the standard QLoRA setup).
+Step times move by up to ~30% between runs on this laptop; quality is the stable number.
 
 **3B (fits entirely):**
 
 | | streamft (36 blocks resident) | PEFT / transformers |
 |---|---:|---:|
-| step time, median of 30 @ seq 512 | 0.938 s | **0.579 s** |
+| step time, median of 30 @ seq 512 | 0.94–1.24 s | **0.58–0.88 s** |
 | peak VRAM | **3.85 GB** | 4.90 GB |
 | eval before | 1.42087 | 1.42087 |
-| eval after | **1.30154** (−0.1193) | 1.32722 (−0.0936) |
+| eval after | **1.30720** (−0.1137) | 1.33002 (−0.0909) |
 
-**7B and 14B (do not fit comfortably):**
+**7B / 14B / 32B (do not fit comfortably), after the masked-gradient fix:**
 
-| model | step time, median @ seq 512 | peak VRAM | eval (start → after) |
+| model | step time, median @ seq 512 | peak VRAM | eval (start → after, 30 steps) |
 |---|---:|---:|---:|
-| 7B, streamft (28 blocks) | **1.70 s** | **5.51 GB** | 2.1928 → 1.1094 |
+| 7B, streamft (28 blocks) | **1.55 s** | **5.51 GB** | 2.1928 → **1.1055** |
 | 7B, PEFT | 8.96 s | 10.05 GB | 2.1914 → 1.1491 |
-| 14B, streamft (6 blocks) | **6.73 s** | **3.86 GB** | 2.3748 → 1.5312 (10 steps) |
-| 14B, PEFT | 18.56 s | 16.48 GB | 2.3748 (3 steps only) |
+| 14B, streamft (6 blocks) | **5.86 s** | **3.86 GB** | 2.3748 → **0.9742** |
+| 14B, PEFT | 18.56 s | 16.48 GB | 3 steps only |
+| 32B, streamft (2 blocks, seq 1024) | **12.48 s** | **3.90 GB** | 1.8755 → **1.0008** |
+| 32B, PEFT | fails before step 1 | — | — |
 
 At 7B the crossover has already happened: PEFT's 4.4 GB of weights plus activations no
-longer fit, so it spills (10.05 GB reserved) and pays 5.3× the step time. Note that
+longer fit, so it spills (10.05 GB reserved) and pays ~5.8× the step time. Note that
 streamft's 7B peak (5.51 GB) is *higher* than its 14B peak (3.86 GB) because the 7B run
 kept all 28 blocks resident while the 14B run kept 6 — the window is a choice, and the
 14B number is the one to copy for a 6 GB card.
@@ -146,17 +149,34 @@ kept all 28 blocks resident while the 14B run kept 6 — the window is a choice,
 into shared memory (19.45 GB reserved on a 6 GiB card), and `prepare_model_for_kbit_training`
 then dies allocating the fp32 norm copy: *CUDA out of memory. Tried to allocate 2.90 GiB;
 18.00 GiB is already allocated.* The streaming engine runs the same checkpoint at
-**12.5 s/step and 3.90 GB** (64/64 layers, held-out 1.8755 to 0.9959).
+**12.5 s/step and 3.90 GB** (64/64 layers).
 
 The 3B row is the honest answer to "is this faster?": **no** — on a model that fits, PEFT
-is 1.6× faster and uses 1.05 GB more. The 14B row is the design point: PEFT does not
-OOM on Windows, it **spills into shared system memory** (16.48 GB reserved on a 6.4 GB
-card) and pays 2.8× the step time; streamft stays at 3.86 GB. Over 30 steps and one seed
-the 3B quality difference is not meaningful.
+is faster and uses 1.05 GB more. The 14B/32B rows are the design point: PEFT does not
+OOM on Windows, it **spills into shared system memory** and pays 2.8–5.8× the step time.
+
+### Correction: masked gradient (25 Oct, after an external review)
+
+`chunked_lm_loss_and_backward_masked` divided every chunk by **that chunk's** valid-token
+count. The reported loss was still the correct mean, so the curves looked right, but the
+accumulated gradient over-weighted chunks with few unmasked tokens — i.e. the prompt-heavy
+start of an SFT row. Measured on a toy model with an uneven mask: **112–427% relative
+gradient error** at seq 512/1024 with 60% of the row masked (chunk 128), while balanced
+masks were unaffected.
+
+The fix divides every chunk by the **global** valid count (computed once, no-grad), so the
+gradient is exactly d(mean CE over valid tokens)/dh. Two tests pin it:
+`test_masked_chunked_gradient_matches_full_with_uneven_masks` and
+`test_masked_chunked_handles_fully_masked_chunks`.
+
+All SFT runs above were re-run with the fix. Quality held: 3B −0.114 (was −0.119),
+7B −1.087 (was −1.083), 32B −0.875 (was −0.880); 14B is now 30 steps (−1.40) instead of
+10. The numbers in the tables are the post-fix ones.
 
 Reproduce: `python scripts/compare_peft.py --model checkpoints/qwen3b_bnb4bit --steps 30`
-and `... --model checkpoints/qwen14b_nf4 --steps 3`.
+and `... --model checkpoints/qwen14b_nf4 --steps 30`.
 
+## What this does not do
 ## What this does not do
 
 - **2k context does not fit** on 6 GB. It is ~0.6 GB short: with `--activation-cache cpu`
