@@ -388,14 +388,23 @@ def main() -> int:
         tok = AutoTokenizer.from_pretrained(model_dir)
         if tok.pad_token is None:
             tok.pad_token = tok.eos_token
-        ds = load_dataset(args.dataset, split="train").shuffle(seed=1234)
+        if str(args.dataset).lower().endswith(".jsonl"):
+            # local {"instruction","response"} file, e.g. from `streamft synth`
+            ds = load_dataset("json", data_files=args.dataset, split="train").shuffle(seed=1234)
+        else:
+            ds = load_dataset(args.dataset, split="train").shuffle(seed=1234)
         train_rows = [ds[i] for i in range(min(args.train_size, len(ds)))]
         eval_rows = [ds[len(train_rows) + i]
                      for i in range(min(args.eval_size, len(ds) - len(train_rows)))]
         print(f"[sft] {Path(args.dataset).name} train={len(train_rows)} "
               f"eval={len(eval_rows)}", flush=True)
-        ce0 = _masked_eval(tr, eval_rows, tok, args.seq)
-        print(f"[eval] before loss={ce0:.4f}", flush=True)
+        if eval_rows:
+            ce0 = _masked_eval(tr, eval_rows, tok, args.seq)
+            print(f"[eval] before loss={ce0:.4f}", flush=True)
+        else:
+            ce0 = None
+            print(f"[sft] no held-out rows (dataset has {len(train_rows)} rows); skipping eval",
+                  flush=True)
         # Filter once so `--steps N` means N optimizer updates, not "N attempts minus
         # whatever the mask rejected". A silently short run is a lie about the budget.
         valid_rows, skipped_train = sft_schedule(
@@ -419,8 +428,11 @@ def main() -> int:
             if (i + 1) % 10 == 0:
                 print(f"[step] {i+1}/{args.steps} loss={loss:.4f} {dt:.2f}s "
                       f"peak={peak:.2f}GB rss={host_rss_gb()}GB", flush=True)
-        ce1 = _masked_eval(tr, eval_rows, tok, args.seq)
-        print(f"[eval] after loss={ce1:.4f} (delta {ce1-ce0:+.4f})", flush=True)
+        if eval_rows:
+            ce1 = _masked_eval(tr, eval_rows, tok, args.seq)
+            print(f"[eval] after loss={ce1:.4f} (delta {ce1-ce0:+.4f})", flush=True)
+        else:
+            ce1 = None
         wall = time.time() - t_all
     else:
         tokens = load_tokens(str(user_path(args.data)))

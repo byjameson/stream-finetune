@@ -53,6 +53,16 @@ def load_config(model: str) -> dict:
     return json.loads(Path(hf_hub_download(model, "config.json")).read_text(encoding="utf-8"))
 
 
+def kv_cache_gb(cfg: dict, seq: int, batch: int = 1, bytes_per: int = 2) -> float:
+    """KV cache at inference: 2 tensors x layers x kv_heads x head_dim x seq x batch."""
+    h = int(cfg.get("hidden_size") or cfg.get("n_embd"))
+    layers = int(cfg.get("num_hidden_layers") or cfg.get("n_layer"))
+    heads = int(cfg.get("num_attention_heads") or 1)
+    kv_heads = int(cfg.get("num_key_value_heads") or heads)
+    head_dim = h // max(heads, 1)
+    return 2.0 * layers * kv_heads * head_dim * seq * batch * bytes_per / 1e9
+
+
 def model_fingerprint(cfg: dict) -> tuple:
     """Everything that changes the measurement: two 7B models are not interchangeable."""
     return (
@@ -95,6 +105,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", required=True, help="local dir or HF id")
     ap.add_argument("--gpu", type=float, default=6.0, help="VRAM in GB (default 6)")
     ap.add_argument("--seq", type=int, default=512)
+    ap.add_argument("--mode", choices=["train", "inference"], default="train")
+    ap.add_argument("--batch", type=int, default=1)
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
 
@@ -126,6 +138,27 @@ def main(argv: list[str] | None = None) -> int:
         "measured_on_rtx3050_6gb": measured,
         "measured_elsewhere": measured is None,
     }
+    if args.mode == "inference":
+        kv_gb = kv_cache_gb(cfg, args.seq, args.batch)
+        total = m["nf4_gb"] + m["head_gb"] + kv_gb + 0.5
+        out_inf = {
+            "model": args.model, "mode": "inference", "seq": args.seq, "batch": args.batch,
+            "weights_gb": round(m["nf4_gb"] + m["head_gb"], 1),
+            "kv_cache_gb": round(kv_gb, 2),
+            "needed_gb": round(total, 1),
+            "fits_whole": total <= args.gpu,
+            "speed": "not measured for this model",
+        }
+        if args.json:
+            print(json.dumps(out_inf, indent=1))
+            return 0
+        print(f"{args.model} (inference)")
+        print(f"  weights ~{out_inf['weights_gb']} GB + KV cache ~{out_inf['kv_cache_gb']} GB "
+              f"at seq {args.seq}, batch {args.batch} -> ~{out_inf['needed_gb']} GB")
+        print(f"  verdict: {'fits' if out_inf['fits_whole'] else 'does NOT fit'} on {args.gpu:g} GB")
+        print("  speed: not measured for this model (the planner does not guess tok/s)")
+        return 0
+
     if args.json:
         print(json.dumps(out, indent=1))
         return 0
