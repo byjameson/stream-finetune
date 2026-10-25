@@ -86,11 +86,23 @@ def user_path(value) -> Path:
     return q if q.is_absolute() else Path.cwd() / q
 
 
+def resolve_model(value: str) -> str:
+    """A local directory if one exists at that path, otherwise an HF model id.
+
+    `user_path` must not be used for models: `Qwen/Qwen2.5-0.5B` is an id, not
+    `./Qwen/Qwen2.5-0.5B`. Absolute paths and existing directories win; everything else
+    is passed through to transformers/huggingface_hub unchanged.
+    """
+    p = Path(value).expanduser()
+    local = p if p.is_absolute() else Path.cwd() / p
+    return str(local) if local.exists() else value
+
+
 def prepare(model: str, save_quant: str) -> int:
     """Quantize a local bf16 model into a bnb-4bit checkpoint (uint8 + qstate)."""
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-    src = str(user_path(model))
+    src = resolve_model(model)
     dst = user_path(save_quant)
     print(f"[prepare] {model} -> {save_quant}", flush=True)
     bnb = BitsAndBytesConfig(
@@ -131,11 +143,13 @@ def _encode_chat(tokenizer, row: dict, seq: int):
                                                 add_generation_prompt=True)
     prompt = tokenizer(prompt_text, add_special_tokens=False).input_ids
     full = full[:seq]
-    labels = list(full)
-    if 0 < len(prompt) < len(full) and full[:len(prompt)] == prompt[:len(full)]:
-        k = min(len(prompt), len(full))
-        labels = [-100] * k + labels[k:]
-    if len(labels) < 2:
+    # The prompt must be an exact prefix of the templated row. If it is not, the mask
+    # would silently cover nothing and the model would be trained on its own prompt, so
+    # the example is dropped instead (and counted by the caller).
+    if len(prompt) >= len(full) or full[: len(prompt)] != prompt:
+        return None
+    labels = [-100] * len(prompt) + list(full[len(prompt):])
+    if len(labels) < 2 or all(v == -100 for v in labels):
         return None
     return (torch.tensor([full], dtype=torch.long),
             torch.tensor([labels], dtype=torch.long))
@@ -145,10 +159,11 @@ def _encode_chat(tokenizer, row: dict, seq: int):
 def _masked_eval(trainer, rows, tokenizer, seq: int) -> float:
     """Masked SFT loss through the streaming (disk-backed) forward."""
     trainer.model.eval()
-    total, n = 0.0, 0
+    total, n, skipped = 0.0, 0, 0
     for row in rows:
         enc = _encode_chat(tokenizer, row, seq)
         if enc is None:
+            skipped += 1
             continue
         ids, labels = enc
         ys = torch.full_like(ids, -100)
@@ -166,6 +181,9 @@ def _masked_eval(trainer, rows, tokenizer, seq: int) -> float:
             tgt[valid].to(logits.device), reduction="sum"))
         n += v
     trainer.model.train()
+    if skipped:
+        print(f"[eval] skipped {skipped}/{len(rows)} rows: prompt is not an exact prefix "
+              f"of the templated row (would train on the prompt)", flush=True)
     return total / max(n, 1)
 
 
@@ -222,7 +240,7 @@ def main() -> int:
     if args.prepare:
         return prepare(args.model, args.save_quant)
 
-    model_dir = str(user_path(args.model_dir))
+    model_dir = resolve_model(args.model_dir)
     print(f"[exp54] model_dir={Path(model_dir).name} steps={args.steps} seq={args.seq} "
           f"lora_r={args.lora_r} targets={args.targets} head={args.head}", flush=True)
 
@@ -351,9 +369,11 @@ def main() -> int:
               f"eval={len(eval_rows)}", flush=True)
         ce0 = _masked_eval(tr, eval_rows, tok, args.seq)
         print(f"[eval] before loss={ce0:.4f}", flush=True)
+        skipped_train = 0
         for i in range(args.steps):
             enc = _encode_chat(tok, train_rows[i % len(train_rows)], args.seq)
             if enc is None:
+                skipped_train += 1
                 continue
             ids, labels = enc
             ys = torch.full_like(ids, -100)
@@ -435,6 +455,7 @@ def main() -> int:
         "adapter_sha_before": sha_before,
         "adapter_sha_after": adapter_sha(model),
         "steps": len(losses),
+        "sft_skipped": skipped_train if args.sft else 0,
         "seq": args.seq,
         "lr": args.lr,
         "losses": losses,
