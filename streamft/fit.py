@@ -25,16 +25,16 @@ from pathlib import Path
 MEASURED = [
     # Matched on (num_hidden_layers, hidden_size), not on a rounded parameter count: a
     # different 7B with a different architecture must not inherit this measurement.
-    {"arch": (36, 2048), "label": "Qwen2.5-3B", "seq": 512, "blocks": 36,
+    {"arch": ("qwen2", 36, 2048, 11008, 16, 2, 151936), "label": "Qwen2.5-3B", "seq": 512, "blocks": 36,
      "peak_gb": 3.85, "step_s": 0.94, "mode": "all resident",
      "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
-    {"arch": (28, 3584), "label": "Qwen2.5-7B", "seq": 512, "blocks": 28,
+    {"arch": ("qwen2", 28, 3584, 18944, 28, 4, 152064), "label": "Qwen2.5-7B", "seq": 512, "blocks": 28,
      "peak_gb": 5.51, "step_s": 1.55, "mode": "all resident",
      "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
-    {"arch": (48, 5120), "label": "Qwen2.5-14B", "seq": 512, "blocks": 6,
+    {"arch": ("qwen2", 48, 5120, 13824, 40, 8, 152064), "label": "Qwen2.5-14B", "seq": 512, "blocks": 6,
      "peak_gb": 3.86, "step_s": 5.86, "mode": "streaming",
      "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
-    {"arch": (64, 5120), "label": "Qwen2.5-32B", "seq": 1024, "blocks": 2,
+    {"arch": ("qwen2", 64, 5120, 27648, 40, 8, 152064), "label": "Qwen2.5-32B", "seq": 1024, "blocks": 2,
      "peak_gb": 3.90, "step_s": 12.48, "mode": "streaming",
      "tokens": "SFT: one Dolly row per step, median ~134 tokens"},
 ]
@@ -49,6 +49,19 @@ def load_config(model: str) -> dict:
     from huggingface_hub import hf_hub_download
 
     return json.loads(Path(hf_hub_download(model, "config.json")).read_text(encoding="utf-8"))
+
+
+def model_fingerprint(cfg: dict) -> tuple:
+    """Everything that changes the measurement: two 7B models are not interchangeable."""
+    return (
+        str(cfg.get("model_type", "")),
+        int(cfg.get("num_hidden_layers") or cfg.get("n_layer") or 0),
+        int(cfg.get("hidden_size") or cfg.get("n_embd") or 0),
+        int(cfg.get("intermediate_size") or 0),
+        int(cfg.get("num_attention_heads") or 0),
+        int(cfg.get("num_key_value_heads") or cfg.get("num_attention_heads") or 0),
+        int(cfg.get("vocab_size") or 0),
+    )
 
 
 def model_math(cfg: dict) -> dict:
@@ -83,12 +96,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
 
-    m = model_math(load_config(args.model))
+    cfg = load_config(args.model)
+    m = model_math(cfg)
     need = m["nf4_gb"] + m["head_gb"] + RESERVE_GB
     fits_whole = need <= args.gpu
     size_b = round(m["params"] / 1e9)
 
-    arch = (m["layers"], m["hidden"])
+    arch = model_fingerprint(cfg)
     measured = None
     for row in MEASURED:
         if row["arch"] == arch and row["seq"] == args.seq:
@@ -126,7 +140,8 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print("  verdict: needs streaming (one or more blocks on the GPU at a time)")
     if measured:
-        print(f"  measured reference: {measured['label']} (layers {arch[0]}, hidden {arch[1]}) "
+        print(f"  measured reference: {measured['label']} "
+              f"(model_type {arch[0]}, layers {arch[1]}, hidden {arch[2]}) "
               f"on RTX 3050 6 GB -> {measured['blocks']} block(s), "
               f"{measured['peak_gb']} GB peak, {measured['step_s']} s/step at seq {measured['seq']}")
         print(f"  note: {measured['tokens']} (seq is a cap on this path)")
