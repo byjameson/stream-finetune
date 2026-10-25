@@ -8,6 +8,7 @@ They pin the things that broke silently during development:
 
 import math
 
+import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -209,3 +210,41 @@ def test_encode_chat_drops_rows_whose_prompt_is_not_a_prefix():
     ids, labels = _encode_chat(_StubTokenizer([1, 2, 3, 4], [1, 2]), row, 32)
     assert ids.tolist() == [[1, 2, 3, 4]]
     assert labels.tolist() == [[-100, -100, 3, 4]]
+
+
+# ------------------------------------------------ SFT step budget & empty eval
+
+def test_sft_schedule_keeps_the_step_budget_with_mixed_rows():
+    from streamft.cli import sft_schedule
+
+    rows = list(range(10))
+
+    def encode(r):
+        return None if r % 3 == 0 else [r]      # 4 of 10 are rejected
+
+    valid, dropped = sft_schedule(rows, encode)
+    assert dropped == 4 and len(valid) == 6
+
+    steps = 25
+    schedule = [valid[i % len(valid)] for i in range(steps)]
+    assert len(schedule) == steps               # N updates even though 4 rows were dropped
+    assert all(v % 3 != 0 for v in schedule)
+
+
+def test_masked_eval_raises_when_every_row_is_skipped(monkeypatch):
+    import types
+
+    from streamft import cli
+
+    class FakeTrainer:
+        def __init__(self):
+            self.model = types.SimpleNamespace(eval=lambda: None, train=lambda: None)
+            self.norm = nn.Identity()
+            self.lm_head = nn.Linear(4, 7, bias=False)
+
+        def _forward_cached(self, ids):
+            return torch.zeros(1, ids.shape[1], 4), None, None
+
+    monkeypatch.setattr(cli, "_encode_chat", lambda *a, **k: None)
+    with pytest.raises(RuntimeError, match="every row was skipped"):
+        cli._masked_eval(FakeTrainer(), [{"instruction": "x", "response": "y"}], object(), 8)
