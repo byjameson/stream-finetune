@@ -31,3 +31,8 @@ dist/
 merged/
 *.gguf
 
+
+# llama.cpp clone + binaries used only for GGUF export (not source)
+tools/llama.cpp/
+tools/llama.cpp-bin/
+
