@@ -271,3 +271,11 @@ def test_kv_cache_matches_hand_calculation():
     # 2 * 24 layers * 2 kv heads * 128 head_dim * 1024 seq * 2 bytes
     expect = 2 * 24 * 2 * 128 * 1024 * 2 / 1e9
     assert abs(kv_cache_gb(cfg, 1024) - expect) < 1e-12
+
+
+def test_repetition_rate_counts_duplicate_ngrams():
+    from streamft.evals import repetition_rate
+
+    assert repetition_rate("a b c d e f g h") == 0.0
+    assert repetition_rate("a b c d a b c d") == 0.2       # 1 duplicate of 5 grams
+    assert repetition_rate("") == 0.0

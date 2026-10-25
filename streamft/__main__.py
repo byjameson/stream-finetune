@@ -6,6 +6,7 @@
   streamft data     build the token shards (LM path only; SFT needs none)
   streamft cpu      SFT a small model on the CPU (no GPU; model must fit RAM)
   streamft synth    generate training pairs locally with a small model
+  streamft eval     run a small local prompt set (repetition/refusal/keywords)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -20,6 +21,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft data --model <dir|hf-id> --out data
   streamft cpu --model <small-model> --steps 20
   streamft synth --model <small-model> --n 50 --out data/synth.jsonl
+  streamft eval --model <model> [--prompts mine.jsonl]
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -42,6 +44,10 @@ def main() -> int:
     if cmd == "cpu":
         from streamft.easy import cpu_main
         return cpu_main(rest)
+
+    if cmd == "eval":
+        from streamft.evals import main as eval_main
+        return eval_main(rest)
 
     if cmd == "synth":
         from streamft.easy import synth_main

@@ -25,7 +25,9 @@ The 32B weights are **19.2 GB**. They never fully live in VRAM. At 1024 tokens/s
 throughput is **3.1×** the 128-token rate, because the per-step I/O is amortised over
 more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9659**.
 
-**Installed from PyPI? Start with [`QUICKSTART.md`](QUICKSTART.md)** — it uses only the
+**Installed from PyPI? Start with [`QUICKSTART.md`](QUICKSTART.md) (T?rk?e:
+[`QUICKSTART.tr.md`](QUICKSTART.tr.md)) ? or run `install.ps1` / `install.sh`, which
+checks Python, installs the package, looks for a GPU and runs `doctor`.** — it uses only the
 published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md) — the practical write-up: presets,
 the six traps, and which numbers are real. The measurement protocol, the discarded rows
 and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
@@ -56,6 +58,9 @@ streamft synth --model Qwen/Qwen2.5-1.5B-Instruct --n 200 --out data/synth.jsonl
 
 # inference budget (weights + KV cache), not just training
 streamft fit --model Qwen/Qwen2.5-7B-Instruct --gpu 6 --seq 2048 --mode inference
+
+# does it actually work? 20 local prompts, no API and no judge model
+streamft eval --model Qwen/Qwen2.5-1.5B-Instruct
 ```
 
 Every run appends one JSON row to `results/results.jsonl` next to where you launched it.
