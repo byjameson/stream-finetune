@@ -1,0 +1,2 @@
+[console_scripts]
+streamft = streamft.__main__:main
