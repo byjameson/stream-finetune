@@ -133,6 +133,20 @@ the same passage costs **1.13 tokens/word in English, 1.74 in German and 2.39 in
 (LLaDA/Mercury: 800?1,500 tok/s at batch 1, but the same memory footprint) do not change
 this project's bottleneck are in [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md).
 
+### Run it in a browser (no server)
+
+```bash
+streamft merge --model Qwen/Qwen2.5-0.5B --adapter checkpoints/cpu_cookbook --out merged/q05
+powershell -ExecutionPolicy Bypass -File scripts/export_gguf.ps1   # -> q05-q4_k_m.gguf
+python scripts/serve_static.py --port 8765
+# open http://127.0.0.1:8765/wasm/index.html?model=../q05-q4_k_m.gguf
+```
+
+Measured on the reference laptop, 0.5B Q4_K_M (379 MB): **1.3 tok/s** with the plain
+`http.server`, **6.0 tok/s** behind `scripts/serve_static.py` ? the COOP/COEP headers are
+what let wllama use 12 threads instead of one. Details and limits in
+[`wasm/README.md`](wasm/README.md).
+
 ### Measured on
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,

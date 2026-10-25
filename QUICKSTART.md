@@ -91,3 +91,17 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --dataset data/synth.j
 
 `fit --mode inference` answers the same "will it fit?" question for serving
 (weights + KV cache) instead of training.
+
+
+## 7. Run it in a browser (no server, no install)
+
+```bash
+streamft merge --model Qwen/Qwen2.5-0.5B --adapter checkpoints/cpu_adapter --out merged/q05
+powershell -ExecutionPolicy Bypass -File scripts/export_gguf.ps1
+python scripts/serve_static.py --port 8765
+# open http://127.0.0.1:8765/wasm/index.html?model=../q05-q4_k_m.gguf
+```
+
+0.5B Q4_K_M (379 MB) loads in ~38 s and generates at **6.0 tok/s** with 12 threads,
+1.3 tok/s with a plain `http.server`. The COOP/COEP headers in `serve_static.py` are what
+enable multi-threaded WASM.
