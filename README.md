@@ -31,34 +31,34 @@ the six traps, and which numbers are real. The measurement protocol, the discard
 and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
 [`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
 
-## Quick start
+## Quick start (installed package, nothing else needed)
 
-```powershell
+```bash
 pip install streamft
+streamft doctor                    # torch / CUDA / bitsandbytes / free VRAM
 
-# 0) will it fit? memory arithmetic + the measured reference, no weights downloaded
+# will it fit? memory arithmetic from config.json + the measured reference
 streamft fit --model Qwen/Qwen2.5-14B-Instruct --gpu 6 --seq 512
-streamft doctor            # torch / CUDA / bitsandbytes / free VRAM
 
-# 1) token shards for the LM path (SFT on Dolly needs none of this)
-streamft prepare --model models/Qwen2.5-0.5B --save-quant checkpoints/qwen0.5b_nf4
-python scripts/prep_data.py --model models/Qwen2.5-0.5B
+# one NF4 checkpoint per model (HF id or local directory)
+streamft prepare --model Qwen/Qwen2.5-0.5B --save-quant checkpoints/qwen0.5b_nf4
 
-# 1) turn a local bf16 model into a pre-quantized NF4 checkpoint (once)
-python -m streamft.cli --prepare --model models/Qwen2.5-32B-Instruct `
-    --save-quant checkpoints/qwen32b_nf4
+# SFT on Dolly-15k — no data prep
+streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512 --tag first
 
-# 2) fine-tune it, streaming from disk
-python tools/finetune.py --model checkpoints/qwen32b_nf4 --mode lm --seq 1024 --steps 50
-python tools/finetune.py --model checkpoints/qwen14b_nf4 --data dolly --seq 512 --steps 240 `
-    --save checkpoints/my_adapter
-
-# show the exact engine command without running it
-python tools/finetune.py ... --print-only
-
-# CPU smoke tests (5 cases, no GPU, no downloads)
-pip install -r requirements-dev.txt; python -m pytest tests -q
+# LM path (optional): build token shards, then train without --sft
+streamft data --model Qwen/Qwen2.5-0.5B --out data
+streamft train --model-dir checkpoints/qwen0.5b_nf4 --steps 20 --seq 256 --tag lm
 ```
+
+Every run appends one JSON row to `results/results.jsonl` next to where you launched it.
+The same commands are in [`QUICKSTART.md`](QUICKSTART.md), which is what a pip user should
+read — this README also documents the experiments behind the numbers.
+
+**From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
+that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
+`scripts/verify_gradients.py` the gradient check, `scripts/prep_data.py` the token shards
+(the installed equivalent is `streamft data`), and `pytest tests -q` the CPU suite.
 
 `tools/finetune.py` encodes the VRAM presets we measured, because the *combination* of
 flags decides whether a run fits — not any single flag:

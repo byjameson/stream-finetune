@@ -184,7 +184,12 @@ def _masked_eval(trainer, rows, tokenizer, seq: int) -> float:
     if skipped:
         print(f"[eval] skipped {skipped}/{len(rows)} rows: prompt is not an exact prefix "
               f"of the templated row (would train on the prompt)", flush=True)
-    return total / max(n, 1)
+    if n == 0:
+        raise RuntimeError(
+            "_masked_eval: every row was skipped (no valid prompt mask), so there is no "
+            "loss to report. Returning 0.0 here would look like a perfect model."
+        )
+    return total / n
 
 
 def main() -> int:
@@ -369,12 +374,17 @@ def main() -> int:
               f"eval={len(eval_rows)}", flush=True)
         ce0 = _masked_eval(tr, eval_rows, tok, args.seq)
         print(f"[eval] before loss={ce0:.4f}", flush=True)
-        skipped_train = 0
+        # Filter once so `--steps N` means N optimizer updates, not "N attempts minus
+        # whatever the mask rejected". A silently short run is a lie about the budget.
+        valid_rows = [r for r in train_rows if _encode_chat(tok, r, args.seq) is not None]
+        skipped_train = len(train_rows) - len(valid_rows)
+        if not valid_rows:
+            raise SystemExit("[sft] no training row has a valid prompt mask; refusing to run")
+        if skipped_train:
+            print(f"[sft] {skipped_train}/{len(train_rows)} rows dropped: the prompt is not "
+                  f"an exact prefix of the templated row", flush=True)
         for i in range(args.steps):
-            enc = _encode_chat(tok, train_rows[i % len(train_rows)], args.seq)
-            if enc is None:
-                skipped_train += 1
-                continue
+            enc = _encode_chat(tok, valid_rows[i % len(valid_rows)], args.seq)
             ids, labels = enc
             ys = torch.full_like(ids, -100)
             ys[:, :-1] = labels[:, 1:]
