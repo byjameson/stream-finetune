@@ -112,3 +112,53 @@ def test_chunked_ce_gradient_matches_full_mean():
 
 def test_cli_is_importable():
     assert callable(cli.main)
+
+
+# ------------------------------------------- masked (SFT) chunked loss
+
+def test_masked_chunked_gradient_matches_full_with_uneven_masks():
+    """The 25.10 fix: chunks with different valid counts must not be re-weighted.
+
+    With chunk=3 and a prompt mask over the first 4 positions, chunk 0 has zero valid
+    targets, chunk 1 has two, later chunks have three. The old implementation divided
+    each chunk by its own count, which inflated the sparse chunks' gradient.
+    """
+    from streamft.stream_quant_lora import chunked_lm_loss_and_backward_masked
+
+    torch.manual_seed(0)
+    d, T, V = 12, 10, 7
+    head = nn.Linear(d, V, bias=False)
+    ys = torch.randint(0, V, (1, T))
+    ys[0, :4] = -100     # prompt
+    ys[0, 7] = -100      # a masked middle position
+
+    h1 = torch.randn(1, T, d, requires_grad=True)
+    full = F.cross_entropy(head(h1).reshape(-1, V), ys.reshape(-1),
+                           ignore_index=-100, reduction="mean")
+    full.backward()
+
+    h2 = torch.randn(1, T, d, requires_grad=True)
+    with torch.no_grad():
+        h2.copy_(h1.detach())
+    _, mean = chunked_lm_loss_and_backward_masked(head, h2, ys, chunk=3)
+
+    assert math.isclose(float(mean.detach()), float(full.detach()), rel_tol=1e-6)
+    assert torch.allclose(h1.grad, h2.grad, atol=1e-6)
+
+
+def test_masked_chunked_handles_fully_masked_chunks():
+    """A chunk with no valid targets must contribute nothing at all."""
+    from streamft.stream_quant_lora import chunked_lm_loss_and_backward_masked
+
+    torch.manual_seed(0)
+    d, T, V = 8, 6, 5
+    head = nn.Linear(d, V, bias=False)
+    ys = torch.randint(0, V, (1, T))
+    ys[0, :3] = -100
+    h = torch.randn(1, T, d, requires_grad=True)
+    _, mean = chunked_lm_loss_and_backward_masked(head, h, ys, chunk=2)
+    logits = head(h).reshape(-1, V)
+    tgt = ys.reshape(-1)
+    mask = tgt != -100
+    ref = F.cross_entropy(logits[mask], tgt[mask], reduction="mean")
+    assert math.isclose(float(mean.detach()), float(ref.detach()), rel_tol=1e-6)

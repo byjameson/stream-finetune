@@ -22,27 +22,39 @@ from .stream_train import _layer_out, chunked_lm_loss_and_backward
 
 
 def chunked_lm_loss_and_backward_masked(head, h, ys, chunk=128, ignore_index=-100):
-    """Chunked CE with an ignore_index (for SFT prompt masking)."""
+    """Chunked CE with an ignore_index (for SFT prompt masking).
+
+    Every chunk contributes `loss_sum / valid_total` where valid_total is the number of
+    unmasked targets in the **whole sequence**, so the accumulated gradient is exactly
+    d(mean CE over valid tokens)/dh.
+
+    FIX (25.10.2026, reported by an external reviewer): the first version divided each
+    chunk by that chunk's own valid count. Losses were unaffected (the returned value
+    summed to the right mean) but the gradient over-weighted chunks with few valid
+    tokens, i.e. the prompt-heavy start of an SFT row. tests/test_streamft_smoke.py
+    pins the corrected behaviour with an uneven mask.
+    """
     B, T, _ = h.shape
+    tgt_all = ys.to(h.device)
+    valid_total = int((tgt_all != ignore_index).sum())
+    if valid_total == 0:
+        zero = torch.zeros((), device=h.device)
+        return zero, zero
     total = torch.zeros((), device=h.device, dtype=torch.float32)
-    valid_total = 0
     for a in range(0, T, chunk):
         b = min(a + chunk, T)
-        logits = head(h[:, a:b])
-        tgt = ys[:, a:b].reshape(-1).to(h.device)
-        valid = int((tgt != ignore_index).sum())
-        if valid == 0:
+        tgt = tgt_all[:, a:b].reshape(-1)
+        if int((tgt != ignore_index).sum()) == 0:
             continue
+        logits = head(h[:, a:b])
         loss_sum = torch.nn.functional.cross_entropy(
             logits.reshape(-1, logits.shape[-1]).float(), tgt,
             reduction="sum", ignore_index=ignore_index,
         )
-        (loss_sum / valid).backward()
+        (loss_sum / valid_total).backward()
         with torch.no_grad():
             total = total + loss_sum.detach()
-        valid_total += valid
-    denom = max(valid_total, 1)
-    return total / denom, total / denom
+    return total / valid_total, total / valid_total
 
 
 def base_model_of(model):
