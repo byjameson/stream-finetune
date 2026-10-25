@@ -23,7 +23,7 @@ Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windo
 
 The 32B weights are **19.2 GB**. They never fully live in VRAM. At 1024 tokens/step the
 throughput is **3.1×** the 128-token rate, because the per-step I/O is amortised over
-more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9661**.
+more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9659**.
 
 **Installed from PyPI? Start with [`QUICKSTART.md`](QUICKSTART.md)** — it uses only the
 published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md) — the practical write-up: presets,

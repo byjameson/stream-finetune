@@ -32,7 +32,7 @@ after boot, with the page cache empty) is a different measurement: it is dominat
 reading 19.2 GB of weights from disk and must not be compared with warm runs.
 
 A 14B fits in RAM, so it is much cheaper: 2k/4k steps at ~4–5 s. Dolly-15k SFT for 50
-steps drops the eval loss from **1.8755 to 0.9661** (32B) and **2.3747 to 0.9407** (14B).
+steps drops the eval loss from **1.8755 to 0.9659** (32B) and **2.3747 to 0.9452** (14B, seq 512).
 
 The full recipe and one-command wrapper:
 [github.com/byjameson/stream-finetune](https://github.com/byjameson/stream-finetune) —
