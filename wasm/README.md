@@ -4,9 +4,15 @@
 in the tab with WebAssembly ([wllama](https://github.com/ngxson/wllama), llama.cpp compiled
 to WASM). Nothing is uploaded; the file never leaves the machine.
 
-**Status: written, not yet tested.** The page needs a GGUF file to be meaningful, and making
-one costs several minutes of CPU on this machine (it was on battery when the page was
-added). The export path below is tested up to the merged HF checkpoint.
+**Status: tested.** Qwen2.5-0.5B + the CPU adapter, merged to fp16, converted and
+quantised to `Q4_K_M` (379 MB), then run in Chrome on the same laptop:
+
+| Serving | Load | Generation |
+|---|---:|---:|
+| `python -m http.server` (no COOP/COEP, single thread) | 38 s | **1.3 tok/s** |
+| `scripts/serve_static.py` (COOP/COEP, multi-thread, 12 threads) | 38 s | **6.0 tok/s** |
+
+The page auto-loads with `?model=<url>`, so the check is repeatable.
 
 ## 1. Merge your adapter into the base (works on CPU, tested)
 
@@ -32,8 +38,16 @@ llama-quantize q05-f16.gguf q05-q4_k_m.gguf Q4_K_M
 
 ## 3. Open the page
 
-Open `wasm/index.html` in Chrome/Edge (double-click is enough; no web server required),
-pick the `.gguf`, press **Load model**, then **Generate**.
+Serve the folder so the page can use threads (SharedArrayBuffer requires COOP/COEP):
+
+```bash
+python scripts/serve_static.py --port 8765
+# then open:
+# http://127.0.0.1:8765/wasm/index.html?model=../q05-q4_k_m.gguf
+```
+
+Picking the file by hand also works (double-click `index.html`), but the page will be
+single-threaded and roughly 4-5x slower.
 
 Expected first-run behaviour: wllama is fetched from a CDN once (internet needed for the
 page itself), the model loads into memory, and generation runs on the CPU. A 0.5B Q4 model
