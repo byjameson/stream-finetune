@@ -176,7 +176,32 @@ All SFT runs above were re-run with the fix. Quality held: 3B −0.114 (was −0
 Reproduce: `python scripts/compare_peft.py --model checkpoints/qwen3b_bnb4bit --steps 30`
 and `... --model checkpoints/qwen14b_nf4 --steps 30`.
 
-## What this does not do
+### Reproducibility probe
+
+Run this and compare the row; it is deterministic (seed 1234) apart from GPU-kernel
+non-determinism:
+
+```bash
+streamft train --model-dir checkpoints/qwen3b_bnb4bit --steps 3 --seq 128 \
+  --eval_chunks 1 --tag repro
+```
+
+Reference on the only machine tested so far (RTX 3050 Laptop 6 GB, torch 2.13.0+cu126,
+bitsandbytes 0.50.2, Windows 11):
+
+```text
+losses        3.347981  3.647039  3.049560
+ce_before     2.44565
+ce_after      2.44568
+peak_gb_max   3.068
+adapter_sha_after  422424c59ef004c5
+```
+
+Different hardware will differ in the last digits (kernels, bf16 rounding). What must
+match is the shape: the same three losses to ~1e-3, `grad_layers == n_layers`, and a
+changed adapter hash. If it does not, that is a bug report worth posting with the
+`streamft doctor` output.
+
 ## What this does not do
 
 - **2k context does not fit** on 6 GB. It is ~0.6 GB short: with `--activation-cache cpu`
