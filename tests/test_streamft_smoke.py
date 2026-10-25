@@ -279,3 +279,22 @@ def test_repetition_rate_counts_duplicate_ngrams():
     assert repetition_rate("a b c d e f g h") == 0.0
     assert repetition_rate("a b c d a b c d") == 0.2       # 1 duplicate of 5 grams
     assert repetition_rate("") == 0.0
+
+
+def test_measured_row_validation_rejects_incomplete_runs():
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "measured_row.py"
+    spec = importlib.util.spec_from_file_location("measured_row", path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["measured_row"] = mod
+    spec.loader.exec_module(mod)
+
+    good = {"steps": 30, "grad_layers": 28, "n_layers": 28,
+            "peak_gb_max": 5.5, "step_s_med": 1.5}
+    assert mod.validate(good) == []
+    assert mod.validate({**good, "steps": 0})
+    assert mod.validate({**good, "grad_layers": 27})
+    assert mod.validate({**good, "peak_gb_max": None})

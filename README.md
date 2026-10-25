@@ -124,6 +124,22 @@ streamft train --model-dir checkpoints/qwen7b_nf4 --sft --steps 1000 \
   measured entry in `streamft fit`.
 - `streamft fit` prints this hint automatically when it sees a pre-Ampere GPU.
 
+### Measured on
+
+Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,
+AC power, NF4 base, LoRA r=8, batch 1, Dolly-15k SFT. The four rows (3B/7B/14B/32B) are
+listed in [`docs/MEASURED.md`](docs/MEASURED.md), together with the rules for adding one
+from a different card:
+
+```bash
+python scripts/measured_row.py --row "<json line>" --config checkpoints/<model>
+```
+
+It validates the run (finished steps, `grad_layers == n_layers`, peak VRAM recorded),
+derives the architecture fingerprint and prints the snippets for `fit.py`, `fitcore.py`
+and the Space. Anything not in that table prints **"not measured"** in `streamft fit` ?
+that is the point.
+
 ## Verification
 
 `python scripts/verify_gradients.py --model-dir checkpoints/qwen3b_bnb4bit --seq 128`
