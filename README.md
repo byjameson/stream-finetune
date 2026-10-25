@@ -5,6 +5,10 @@ weights are mmap'd from disk, one transformer block is materialised on the GPU a
 time, and the backward recomputes through it. The base stays frozen; a LoRA adapter is
 trained.
 
+**Try it without installing anything:** [Will it fit?](https://huggingface.co/spaces/byjameson/will-it-fit)
+— type a model id and a VRAM size; it says whether the whole model fits and shows the
+measured speed where a measurement exists (and says so where it doesn't).
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 
