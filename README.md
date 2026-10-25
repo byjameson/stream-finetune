@@ -1,5 +1,7 @@
 # stream-finetune — fine-tune a 32B model on a 6 GB laptop GPU
 
+[![PyPI](https://img.shields.io/pypi/v/streamft)](https://pypi.org/project/streamft/) [![try it](https://img.shields.io/badge/try-will%20it%20fit%3F-6ee7b7)](https://huggingface.co/spaces/byjameson/will-it-fit)
+
 A small training engine that fine-tunes models that **do not fit in VRAM**. The NF4
 weights are mmap'd from disk, one transformer block is materialised on the GPU at a
 time, and the backward recomputes through it. The base stays frozen; a LoRA adapter is
