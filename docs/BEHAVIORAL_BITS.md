@@ -135,7 +135,7 @@ the behaviour is structured, so a small model can represent it.
    bit/param with no measurable loss; structured date generation to 0.0036; subtle
    sentiment does not compress to 0.1 bit/param with a 66M student.
 4. **Negative results are part of the result.** The 0.1-bit VQ model is worse than a
-   bigram; the SST-2 student is 10-21 points short. Reporting only the AG News win would
+   bigram; the SST-2 student is 10-22 points short. Reporting only the AG News win would
    be misleading.
 
 ## 7. A practical recipe
