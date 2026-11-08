@@ -48,8 +48,10 @@ type), not a bigger fit on C.
 0. **Representation and sharing first.** Before distilling, ask whether the behaviour is
    algorithmic, and what is shared. A 93-byte date parser is 100% exact; a 1.35M seq2seq is
    99.8%. A 341-byte prompt on a shared base matches a 340 KB student on AG News. The
-   ladder is: **program -> prompt -> linear -> tiny transformer -> 4-bit model**. State the
-   accounting boundary (marginal vs base-counted); 0.1 bit is meaningless without it.
+   ladder is: **program -> prompt -> coreset -> linear -> tiny transformer -> 4-bit model**.
+   The coreset rung stores data, not weights: 135 KB trains a 70.5% student, 270 KB reaches
+   78.0%. State the accounting boundary (marginal vs base-counted); 0.1 bit is meaningless
+   without it.
 - 10 tasks with a clear label: AG News, SST-2, TREC, MNLI, DBPedia, spam, topic,
   sentiment, NLI, intent.
 - For each: 2,000 teacher labels, 400 held-out rows, a fixed teacher (3B-Instruct, 4-bit)

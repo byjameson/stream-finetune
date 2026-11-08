@@ -1,0 +1,58 @@
+[
+ {
+  "n": 20,
+  "artifact_bytes": 5423,
+  "accuracy": 0.35,
+  "agree_teacher": 0.405,
+  "bits_per_teacher_param": 2.892e-05,
+  "train_seconds": 0.02
+ },
+ {
+  "n": 48,
+  "artifact_bytes": 12988,
+  "accuracy": 0.3925,
+  "agree_teacher": 0.465,
+  "bits_per_teacher_param": 6.927e-05,
+  "train_seconds": 0.01
+ },
+ {
+  "n": 100,
+  "artifact_bytes": 26212,
+  "accuracy": 0.45,
+  "agree_teacher": 0.5075,
+  "bits_per_teacher_param": 0.0001398,
+  "train_seconds": 0.04
+ },
+ {
+  "n": 200,
+  "artifact_bytes": 53106,
+  "accuracy": 0.555,
+  "agree_teacher": 0.62,
+  "bits_per_teacher_param": 0.00028323,
+  "train_seconds": 0.11
+ },
+ {
+  "n": 500,
+  "artifact_bytes": 134797,
+  "accuracy": 0.705,
+  "agree_teacher": 0.7025,
+  "bits_per_teacher_param": 0.00071892,
+  "train_seconds": 0.16
+ },
+ {
+  "n": 1000,
+  "artifact_bytes": 270330,
+  "accuracy": 0.78,
+  "agree_teacher": 0.755,
+  "bits_per_teacher_param": 0.00144176,
+  "train_seconds": 0.25
+ },
+ {
+  "n": 2000,
+  "artifact_bytes": 542707,
+  "accuracy": 0.8175,
+  "agree_teacher": 0.795,
+  "bits_per_teacher_param": 0.00289444,
+  "train_seconds": 0.28
+ }
+]

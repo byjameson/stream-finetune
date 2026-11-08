@@ -67,9 +67,14 @@ kod; sinir ağı 7.000× gereksiz.
 %74,25). Marjinal 1,82e-6 bit/param; tabanı sayarsan 16 bit/param. **0,1 bit bir muhasebe
 sorusu.**
 
-Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → doğrusal öğrenci
-(340 KB) → küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin
-daha iyi sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
+**Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
+(1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
+depolama ve hesaplama birbirinin yerine geçer.
+
+Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → **coreset (135 KB +
+eğitim prosedürü)** → doğrusal öğrenci (340 KB) → küçük transformer (2,2 MB) → 4-bit model
+(30 MB). Alt basamaklar aynı nesnenin daha iyi sıkıştırılması değil, farklı nesneler.
+Devrim, basamağı seçmek.
 
 ## Açık uçlu generasyon: en zor rejim
 
