@@ -260,6 +260,28 @@ for tasks the base already knows; the adapter adds capability.
 The lower rungs are not "better compression" of the same object; they are different
 objects. The revolution is choosing the rung, not squeezing the weights.
 
+### What to use
+
+| if | use | measured |
+|---|---|---|
+| deterministic task | **program** | 93 B, 100% (date) |
+| base already deployed and capable | **prompt** | 294-341 B, 73.75-93.75% |
+| base deployed, task outside zero-shot | **adapter** | 14.8 MB fp16, 0.038 bit/param |
+| no base, small data | **coreset** | 135 KB, 70.5% |
+| no base, keyword task | **linear** | 340 KB, 74.25% |
+| no base, semantic task | **tiny transformer** | 2.2 MB, 76.75% |
+| general capability | **4-bit model** | 30 MB+ |
+
+`research/ladder.py` prints this table and picks the cheapest rung for a target accuracy
+and a shared/not-shared base:
+
+```bash
+python research/ladder.py --task sst2 --target 0.90 --base-shared no
+# no measured standalone rung reaches 0.90; use the shared-base prompt or accept lower
+python research/ladder.py --task sst2 --target 0.90 --base-shared yes
+# prompt (294 B), accuracy 93.75%
+```
+
 ### The other end: open-ended generation
 
 Dolly `closed_qa` (context + question -> answer), 1,000 train / 300 test rows. Teacher:

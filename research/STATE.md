@@ -87,6 +87,10 @@ architectures, the idea of task-specific compression.
   interchangeable.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
   fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
+- **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
+  shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
+  4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a
+  shared/not-shared base.
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
 **C is a lower bound, not a predictor.** With five tasks, chance-normalized skill looked

@@ -83,6 +83,15 @@ taban, 0,038 bit/param)** → coreset (135 KB + eğitim prosedürü) → doğrus
 → küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin daha iyi
 sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
 
+**Ne kullanmalı:**
+- deterministik → **program** (93 B)
+- taban zaten kurulu ve yapabiliyor → **prompt** (294–341 B)
+- taban kurulu, görev dışında → **adapter** (14,8 MB, 0,038)
+- taban yok, az veri → **coreset** (135 KB)
+- taban yok, anahtar kelime → **doğrusal** (340 KB)
+- taban yok, semantik → **küçük transformer** (2,2 MB)
+- genel yetenek → **4-bit model** (30 MB+)
+
 ## Açık uçlu generasyon: en zor rejim
 
 Dolly `closed_qa`, 1.000 eğitim / 300 test, öğretmen 1,5B (F1 0,4126). T5-small 60,5M:

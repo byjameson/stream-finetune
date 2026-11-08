@@ -84,3 +84,6 @@ If the predictor works, `research/autodistill.py` can use it to skip the ladder:
 task and a byte budget, it picks the student class (linear, tiny transformer, seq2seq) and
 reports the expected floor before training. That is a useful tool, not a new distillation
 algorithm.
+
+The rung chooser (`research/ladder.py`) already does the measured version: given a task, a
+target accuracy and whether the base is shared, it returns the cheapest measured artifact.
