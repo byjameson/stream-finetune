@@ -64,12 +64,14 @@ Dolly `closed_qa`, 1.000 eğitim / 300 test, öğretmen 1,5B (F1 0,4126). T5-sma
 
 | öğrenci | boyut | F1 (referans) | bit/param |
 |---|---:|---:|---:|
-| bf16 | 121 MB | 0,344 | 0,645 |
-| 4-bit | 30,3 MB | 0,273 | 0,161 |
+| bf16 | 121 MB | 0,380 | 0,645 |
+| 4-bit | 30,3 MB | 0,256 | 0,161 |
+| 3-bit | 22,7 MB | **0,0001** | 0,121 |
 | 2-bit | 15,1 MB | **0,000** | 0,081 |
 
-0,1 bit bütçesi burada yetmiyor; 2-bit'te model tamamen çöküyor. Yapılandırılmış
-generasyon (tarih) 0,0036'da çalışırken, açık uçlu generasyon 0,081'de ölü.
+İkinci 4-bit koşu 0,273 verdi; 3-bit ve 2-bit tamamen ölü. Generasyon eşiği 3 bit:
+0,1 bit bütçesi burada çok uzak. Yapılandırılmış generasyon (tarih) 0,0036'da çalışırken,
+açık uçlu generasyon 0,121'de bile ölü.
 
 ## Kontrollü karşılaştırma (asıl bulgu)
 

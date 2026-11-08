@@ -19,9 +19,9 @@ paper. Test sets and seeds are fixed before the run.
   0.179 bit/param it loses 10.5 points.
 - **Structured generation sits on the easy side.** A 1.35M char-level seq2seq matches the
   same 1.5B teacher on date -> ISO at **99.8% exact match, 0.0036 bit/param** (4-bit).
-- **Open-ended generation is the hardest.** T5-small at 0.161 bit/param keeps 66% of the
-  teacher's F1; at 0.081 bit/param it outputs nothing. The 0.1-bit budget is not enough
-  here even for a 60M student.
+- **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
+  ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
+  ~4 bits, not 0.1.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
   AG News, -1.3 on DBPedia, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs
   33.3% chance; teacher 84.7%).
@@ -175,13 +175,14 @@ T5-small (60.5M), fine-tuned on the teacher's answers.
 
 | student | size | F1 vs reference | F1 vs teacher | bits / teacher-param |
 |---|---:|---:|---:|---:|
-| T5-small, bf16 | 121 MB | 0.344 | 0.418 | 0.645 |
-| T5-small, 4-bit | 30.3 MB | 0.273 | 0.284 | 0.161 |
+| T5-small, bf16 | 121 MB | 0.380 | 0.428 | 0.645 |
+| T5-small, 4-bit | 30.3 MB | 0.256 | 0.250 | 0.161 |
+| T5-small, 3-bit | 22.7 MB | **0.0001** | **0.0002** | 0.121 |
 | T5-small, 2-bit | 15.1 MB | **0.000** | **0.000** | 0.081 |
 
-At 0.161 bit/param the student keeps 66% of the teacher's F1; at 0.081 bit/param it
-outputs nothing usable. Open-ended generation is the hardest regime in the table: the
-0.1-bit budget is not enough even for a 60M student.
+A second run gave 4-bit F1 0.273 (seed variance); the 3-bit and 2-bit collapse is total in
+both. Open-ended generation is the hardest regime: it survives 4 bits (0.161 bit/param) and
+is dead at 3 bits (0.121). The 0.1-bit budget is not close.
 
 ## 6. What the numbers say
 
