@@ -25,10 +25,10 @@ paper. Test sets and seeds are fixed before the run.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
   AG News, -1.3 on DBPedia, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs
   33.3% chance; teacher 84.7%).
-- **A cheap diagnostic works in normalized skill.** `C` (a 45 KB TF-IDF student's
-  chance-normalized accuracy) predicts the 4.4M student's normalized skill:
-  **S = 1.04 C - 0.01, R² = 0.965** (5 tasks). The raw accuracy gap was misleading because
-  chance levels differ.
+- **A cheap diagnostic, but only a lower bound.** A 45 KB TF-IDF student's `C` tracks the
+  4.4M student's normalized skill loosely (**S = 0.91 C + 0.11, R² = 0.86**, 6 tasks), but
+  QQP (C 0.21, S 0.53) breaks it: the transformer captures paraphrase that TF-IDF misses.
+  C is a floor, not a predictor.
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -214,16 +214,17 @@ Normalize by chance:
 | DBPedia | 7.1% | 0.99 | 0.99 |
 | SST-2 | 50% | 0.49 | 0.49 |
 | QNLI | 50% | 0.21 | 0.31 |
+| QQP | 50% | 0.21 | 0.53 |
 | MNLI | 33.3% | 0.18 | 0.07 |
 
-Fit: **S = 1.04 C - 0.01, R² = 0.965**. A 45 KB TF-IDF student predicts how much of the
-teacher's normalized skill a 4.4M transformer retains, almost 1:1. The residuals are ±0.1
-(QNLI +0.10, MNLI -0.11): where the linear model is weak, the transformer can be better;
-where the linear model is strong, the gap closes.
+Fit: **S = 0.91 C + 0.11, R² = 0.859** (6 tasks). With five tasks S ≈ C looked strong
+(R² = 0.965). **QQP breaks it:** C is 0.21 but S is 0.53. The transformer captures
+paraphrase structure that TF-IDF cannot. C is a **lower bound** on what a better student
+can do, not a predictor. The residuals are the interesting part (QQP +0.32, MNLI -0.11).
 
-This is a first predictive relationship, not a law: five classification tasks, no
-generation, and the linear model is a lower bound on what a better student can do. The
-next step is 10 tasks and a multi-feature model (`research/NEXT.md`).
+This is a useful diagnostic, not a law: six classification tasks, no generation, and the
+linear model is a floor. The next step is 10 tasks and a multi-feature model
+(`research/NEXT.md`).
 
 ![Raw gap — misleading](figures/diagnostic.png)
 

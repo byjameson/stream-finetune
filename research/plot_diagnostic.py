@@ -90,9 +90,14 @@ ax.plot(xs, xs, ":", color="#9ca3af", lw=1, label="S = C")
 ax.text(0.03, 0.82, f"R² = {r2:.3f} (n={len(rows)})", transform=ax.transAxes, fontsize=10)
 ax.set_xlim(0, 1.05)
 ax.set_ylim(0, 1.12)
+q = next((r for r in rows if r["task"] == "qqp"), None)
+if q:
+    ax.annotate("QQP: transformer beats TF-IDF", (q["C"], q["S"]),
+                textcoords="offset points", xytext=(18, 18), fontsize=8, color="#b91c1c",
+                arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=0.8))
 ax.set_xlabel("linear compressibility C (cheap TF-IDF student)")
 ax.set_ylabel("normalized skill S of the 4.4M BERT-tiny student")
-ax.set_title("Chance-normalized skill: the cheap diagnostic works")
+ax.set_title("C is a lower bound, not a predictor")
 ax.grid(alpha=0.25)
 ax.legend(fontsize=8, loc="lower right")
 fig.tight_layout()

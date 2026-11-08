@@ -9,6 +9,7 @@ We now have a measured spectrum, not a law:
 | DBPedia-14 | 2.19 MB BERT-tiny 4-bit | 0.0117 | -1.3 points |
 | SST-2 (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -22.5 points |
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -21.5 points |
+| QQP (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -7.8 raw, S 0.53 |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
 | MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
@@ -29,11 +30,12 @@ The next question is whether the floor can be predicted **before** training a st
 4. **The gap at a fixed tiny student.** This is what we are trying to predict, so it is
    a diagnostic, not a pre-hoc predictor.
 
-The five-point check: in **chance-normalized skill**
-`S = (student - chance) / (teacher - chance)`, C predicts S almost 1:1:
-**S = 1.04 C - 0.01, R² = 0.965**. The raw gap looked like a failure only because chance
-levels differ. This is the first working diagnostic; the next test is 10 tasks, including
-generation, and a check of the residuals (QNLI +0.10, MNLI -0.11).
+The six-point check: in **chance-normalized skill**
+`S = (student - chance) / (teacher - chance)`, S tracks C loosely
+(**S = 0.91 C + 0.11, R² = 0.859**), but **QQP breaks the near-identity** (C 0.21, S 0.53).
+The linear student is a lower bound; a transformer can capture compositional structure it
+misses. The next test is 10 tasks with a multi-feature model (class count, chance, C,
+student type), not a bigger fit on C.
 
 ## Experiment
 

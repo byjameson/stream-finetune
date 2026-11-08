@@ -90,9 +90,10 @@ ama şans %50). Şansla normalize et: `C = (doğrusal − şans) / (öğretmen �
 `S = (öğrenci − şans) / (öğretmen − şans)`.
 
 AG News (C 0,98 → S 1,03), DBPedia (0,99 → 0,99), SST-2 (0,49 → 0,49), QNLI (0,21 → 0,31),
-MNLI (0,18 → 0,07). Fit: **S = 1,04 C − 0,01, R² = 0,965**. 45 KB'lık TF-IDF öğrenci,
-4,4M transformer'ın öğretmenin ne kadarını tutacağını öngörüyor. Bu ilk öngörü ilişkisi;
-yasa değil (5 sınıflandırma görevi, generasyon yok). Sıradaki adım 10 görev ve bir fit.
+QQP (0,21 → 0,53), MNLI (0,18 → 0,07). Fit: **S = 0,91 C + 0,11, R² = 0,859** (6 görev).
+Beş görevde S ≈ C güçlü görünüyordu (R² = 0,965); **QQP bozdu**: C 0,21 ama S 0,53.
+Transformer, TF-IDF'in göremediği paraphrase yapısını yakalıyor. **C bir alt sınır,
+öngörücü değil.** Sıradaki adım 10 görev ve çok özellikli model.
 
 ## Dürüst konum
 
