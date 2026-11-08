@@ -63,6 +63,14 @@ TF-IDF en iyi %71,8 (-22,5). DistilBERT 66M: 4-bit %83,8 (-10,5), 2-bit %73,5 (-
 **Temsil, sıkıştırmadan önemli:** deterministik bir string eşlemesi için doğru öğrenci
 kod; sinir ağı 7.000× gereksiz.
 
+**341 baytlık prompt:** paylaşılan 1,5B taban + 4 örnek = AG News %73,75 (340 KB öğrenci
+%74,25). Marjinal 1,82e-6 bit/param; tabanı sayarsan 16 bit/param. **0,1 bit bir muhasebe
+sorusu.**
+
+Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → doğrusal öğrenci
+(340 KB) → küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin
+daha iyi sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
+
 ## Açık uçlu generasyon: en zor rejim
 
 Dolly `closed_qa`, 1.000 eğitim / 300 test, öğretmen 1,5B (F1 0,4126). T5-small 60,5M:

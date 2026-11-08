@@ -21,6 +21,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_teacher.py` | 1.5B labels 6k date strings -> ISO; 500 test | ~20 min |
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `date_program.py` | 93-byte date parser; 100% exact, code-only bits | ~5 s |
+| `agnews_prompt.py` | 341-byte prompt on the shared 1.5B base; 73.75% | ~25 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
 | `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
@@ -65,6 +66,10 @@ written to `research/results/` (JSON) and `results/` (PNG).
 **AG News (4-way, 1.5B teacher 75.25%):** 340 KB TF-IDF student = 74.25%,
 McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 MB,
 76.75% (0.0117 bit/param); 3-bit = 1.64 MB, 77.25%; 2-bit = 1.10 MB, 65.5%.
+
+**AG News, 341-byte prompt:** a shared 1.5B base + four examples = 73.75% (the 340 KB
+student gets 74.25%); marginal 1.82e-6 bit/param, but 16 bit/param if the base is counted.
+The 0.1-bit question is an accounting question.
 
 **DBPedia-14 (14-way, 3B teacher 92.6%):** the same 4.39M BERT-tiny at 4-bit = 91.33%
 (-1.3, 0.0117 bit/param); linear C 0.99. Class count alone is not the wall.

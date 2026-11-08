@@ -142,6 +142,16 @@ parser is **100% exact** on the 500 rows; code only is **4.96e-7 bit/param** (0.
 count the shared 752 KB library). The 1.35M seq2seq is 7,200× larger at lower accuracy.
 For a deterministic string mapping, code is the right representation.
 
+The same accounting trick works for language. A **341-byte prompt** on a shared 1.5B base
+reaches **73.75%** on AG News — the 340 KB student gets 74.25%. Marginal bits/param
+1.82e-6; count the base and it is **16 bit/param**. The 0.1-bit question is an accounting
+question.
+
+The ladder: **program** (93 B + shared runtime) -> **prompt** (341 B + shared base) ->
+**linear student** (340 KB) -> **tiny transformer** (2.2 MB) -> **4-bit model** (30 MB).
+The lower rungs are different objects, not better compression of the same object. The
+revolution is choosing the rung.
+
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
 on the teacher's answers gets token F1 0.380 against the human reference at bf16
 (0.645 bit/param); the teacher is 0.4126. At 4-bit (0.161 bit/param) the student drops to
