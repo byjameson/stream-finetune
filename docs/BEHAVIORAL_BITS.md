@@ -124,6 +124,12 @@ The controlled comparison is the point: the same 4.39M student at the same 0.011
 bit/param matches the AG News teacher (76.75% vs 75.25%) and loses 22.5 points on SST-2
 (71.75% vs 94.25%). Same architecture, same bytes, different behaviour.
 
+**A failed attempt (MNLI).** The same 1.5B teacher labelled only 3.3% of MNLI training
+rows as contradiction (59.4% test accuracy), so the BERT-tiny student learned the skew and
+scored 33% on the balanced test. That measures the teacher, not the task; MNLI stays out
+of the table until a stronger teacher labels it. Teacher quality is a confounder in every
+row above.
+
 ![Compressibility spectrum](figures/compressibility_spectrum.png)
 
 ## 5. Structured generation

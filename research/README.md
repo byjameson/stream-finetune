@@ -22,6 +22,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
+| `distill_mnli.py` | attempted MNLI run; teacher collapsed, see "not included" | ~15 min |
 
 Run from the repository root, for example:
 
@@ -61,6 +62,13 @@ architecture and byte budget that matched the AG News teacher.
 
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
+
+## Attempted, not included
+
+**MNLI (3-way NLI).** The 1.5B teacher labelled only 3.3% of the training rows as
+contradiction (59.4% accuracy on a balanced test), so the BERT-tiny student learned the
+skew and scored 33% — chance. This is a teacher failure, not a compressibility
+measurement. A 3B/7B teacher is needed before MNLI joins the spectrum.
 
 ## Caveats
 
