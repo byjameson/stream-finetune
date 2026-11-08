@@ -43,5 +43,14 @@
   "linear_features": 50000,
   "linear_agree": 0.9031,
   "C": 0.994
+ },
+ {
+  "task": "qqp",
+  "classes": 2,
+  "teacher": 0.665,
+  "linear_acc": 0.535,
+  "linear_features": 50000,
+  "linear_agree": 0.785,
+  "C": 0.212
  }
 ]
