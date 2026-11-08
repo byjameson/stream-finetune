@@ -85,11 +85,14 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 
 Aynı mimari, aynı byte, 48 puanlık aralık. **Bit tabanı davranışın özelliği.**
 
-Ucuz teşhis: `C = (doğrusal doğruluk − şans) / (öğretmen − şans)`. AG News 0,98,
-DBPedia 0,99, SST-2 0,49, QNLI 0,21, MNLI 0,18. Yüksek C kümesi 1,5 puan içinde;
-**QNLI/MNLI çifti tek çizgiyi bozuyor** (C'leri neredeyse aynı, farkları -21,5 vs -47,9).
-5 nokta, R² = 0,80 — bu bir yasa değil, betimleme. Çok özellikli model gerek; sıradaki
-adım 10 görev ve bir fit.
+Ucuz teşhis: ham doğruluk farkı karşılaştırılamaz (MNLI -47,9 ama şans %33; QNLI -21,5
+ama şans %50). Şansla normalize et: `C = (doğrusal − şans) / (öğretmen − şans)`,
+`S = (öğrenci − şans) / (öğretmen − şans)`.
+
+AG News (C 0,98 → S 1,03), DBPedia (0,99 → 0,99), SST-2 (0,49 → 0,49), QNLI (0,21 → 0,31),
+MNLI (0,18 → 0,07). Fit: **S = 1,04 C − 0,01, R² = 0,965**. 45 KB'lık TF-IDF öğrenci,
+4,4M transformer'ın öğretmenin ne kadarını tutacağını öngörüyor. Bu ilk öngörü ilişkisi;
+yasa değil (5 sınıflandırma görevi, generasyon yok). Sıradaki adım 10 görev ve bir fit.
 
 ## Dürüst konum
 

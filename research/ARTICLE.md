@@ -162,11 +162,15 @@ What I think is useful:
 4. **The negative results.** The 0.1-bit model is worse than a bigram; the SST-2 student is
    10–22 points short. Reporting only the AG News win would be misleading.
 
-A cheap diagnostic: `C = (linear_acc - chance) / (teacher_acc - chance)` on the same
-labels. C is 0.98 (AG News), 0.99 (DBPedia), 0.49 (SST-2), 0.21 (QNLI) and 0.18 (MNLI).
-The high-C cluster is within 1.5 points; **QNLI and MNLI have almost the same C but gaps of
--21.5 and -47.9.** Five points give R² = 0.80 — a description, not a law. A single metric is
-not enough; the next step is a multi-feature model.
+A cheap diagnostic: raw accuracy gaps are not comparable — MNLI's -47.9 is on a 33% chance,
+QNLI's -21.5 on 50%. Normalize both student and teacher by chance:
+`C = (linear - chance)/(teacher - chance)`, `S = (student - chance)/(teacher - chance)`.
+
+The five points are AG News (C 0.98, S 1.03), DBPedia (0.99, 0.99), SST-2 (0.49, 0.49),
+QNLI (0.21, 0.31), MNLI (0.18, 0.07). Fit: **S = 1.04 C - 0.01, R² = 0.965**. A 45 KB
+TF-IDF student predicts how much of the teacher's normalized skill a 4.4M transformer
+retains. That is a first predictive relationship, not a law: five classification tasks, no
+generation, and the linear model is a lower bound on what a better student can do.
 
 ## 7. Two walls
 

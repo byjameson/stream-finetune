@@ -25,6 +25,10 @@ paper. Test sets and seeds are fixed before the run.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
   AG News, -1.3 on DBPedia, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs
   33.3% chance; teacher 84.7%).
+- **A cheap diagnostic works in normalized skill.** `C` (a 45 KB TF-IDF student's
+  chance-normalized accuracy) predicts the 4.4M student's normalized skill:
+  **S = 1.04 C - 0.01, R² = 0.965** (5 tasks). The raw accuracy gap was misleading because
+  chance levels differ.
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -194,25 +198,36 @@ outputs nothing usable. Open-ended generation is the hardest regime in the table
    bigram; the SST-2 student is 10-22 points short. Reporting only the AG News win would
    be misleading.
 
-### A cheap diagnostic — and where it fails
+### A cheap diagnostic
 
-`C = (linear_acc - chance) / (teacher_acc - chance)` on the same teacher labels, using the
-best TF-IDF student from the sweep:
+The raw accuracy gap is not comparable across tasks: MNLI's -47.9 is on a 33% chance,
+QNLI's -21.5 on 50%, DBPedia's -1.3 on 7%. The raw-gap fit (R² = 0.80) is therefore a
+scaling artefact; it looks like QNLI and MNLI contradict each other.
 
-| task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
-|---|---:|---:|---:|---:|
-| AG News | 75.25% | 74.25% (5k) | 0.98 | +1.5 |
-| DBPedia | 92.60% | 92.09% (50k) | 0.99 | -1.3 |
-| SST-2 | 94.25% | 71.75% (1k) | 0.49 | -22.5 |
-| QNLI | 81.25% | 56.50% (5k) | 0.21 | -21.5 |
-| MNLI | 84.71% | 42.61% (2k) | 0.18 | -47.9 |
+Normalize by chance:
 
-The high-C cluster (AG News, DBPedia) is within 1.5 points. The low-C pair still breaks a
-single line: **QNLI and MNLI have almost the same C (0.21 vs 0.18) but gaps of -21.5 and
--47.9.** Five points give R² = 0.80; that is a description, not a law. QNLI is binary
-(chance 50%) and the 4.4M student clears chance by 10 points; MNLI is 3-way and the student
-is at chance. The student's inductive bias and the label structure matter. The next step is
-a multi-feature model, not a bigger fit on one number (`research/NEXT.md`).
+`S = (student - chance) / (teacher - chance)`
+
+| task | chance | C | S |
+|---|---:|---:|---:|
+| AG News | 25% | 0.98 | 1.03 |
+| DBPedia | 7.1% | 0.99 | 0.99 |
+| SST-2 | 50% | 0.49 | 0.49 |
+| QNLI | 50% | 0.21 | 0.31 |
+| MNLI | 33.3% | 0.18 | 0.07 |
+
+Fit: **S = 1.04 C - 0.01, R² = 0.965**. A 45 KB TF-IDF student predicts how much of the
+teacher's normalized skill a 4.4M transformer retains, almost 1:1. The residuals are ±0.1
+(QNLI +0.10, MNLI -0.11): where the linear model is weak, the transformer can be better;
+where the linear model is strong, the gap closes.
+
+This is a first predictive relationship, not a law: five classification tasks, no
+generation, and the linear model is a lower bound on what a better student can do. The
+next step is 10 tasks and a multi-feature model (`research/NEXT.md`).
+
+![Raw gap — misleading](figures/diagnostic.png)
+
+![Normalized skill — the one that works](figures/diagnostic_normalized.png)
 
 ## 7. A practical recipe
 
