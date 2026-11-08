@@ -22,6 +22,9 @@ paper. Test sets and seeds are fixed before the run.
   A **93-byte program** does better: **100% exact, 4.96e-7 bit/param** code only.
 - **Representation beats compression.** The date program is 7,200× smaller than the neural
   student at higher accuracy. The floor is a property of the representation, not the teacher.
+- **0.1 bit is an accounting question.** A 341-byte prompt on a shared 1.5B base matches a
+  340 KB student on AG News; count the base and it is 16 bit/param. A 93-byte program is
+  100% exact on dates. What is shared, and what is counted, decides the number.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -185,6 +188,31 @@ The library is shared; if you count it, the artifact is 0.0040 bit/param — sti
 0.1, and slightly larger than the seq2seq. The point is not that code is always better.
 It is that **the representation should match the task.** For a deterministic string
 mapping, code is the right representation, and a neural student is 7,000× overkill.
+
+### The 341-byte prompt
+
+A shared 1.5B base plus a **341-byte prompt** (four examples) reaches **73.75%** on the
+same AG News test. The 340 KB student gets 74.25%; the teacher 75.25%. The prompt agrees
+with the teacher 91.25% of the time. Marginal bits/param = **1.82e-6**; but the base is
+3 GB. Count the base and the total is **16 bit/param**.
+
+This is not a contradiction. It is the accounting boundary. If the base is already deployed
+and shared across many behaviours, the marginal artifact per behaviour is the prompt. If
+every deployment carries the base, it is 16 bit/param. The 0.1-bit question is meaningless
+without saying what is shared and what is counted.
+
+### The sharing ladder
+
+| artifact | per-behaviour bytes | shared | example |
+|---|---:|---|---|
+| program | 93 B | Python + `dateutil` | date -> ISO, 100% |
+| prompt | 341 B | 1.5B base | AG News, 73.75% |
+| linear student | 340 KB | none | AG News, 74.25% |
+| tiny transformer | 2.2 MB | none | AG News, 76.75% |
+| 4-bit model | 30 MB | none | open-ended generation |
+
+The lower rungs are not "better compression" of the same object; they are different
+objects. The revolution is choosing the rung, not squeezing the weights.
 
 ### The other end: open-ended generation
 
