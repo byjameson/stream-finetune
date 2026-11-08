@@ -17,6 +17,7 @@ TASKS = {
     "mnli": ("mnli_labels.json", 3, lambda r: r["premise"] + " " + r["hypothesis"]),
     "qnli": ("qnli_labels.json", 2, lambda r: r["question"] + " " + r["sentence"]),
     "dbpedia": ("dbpedia_labels.json", 14, lambda r: r["text"]),
+    "qqp": ("qqp_labels.json", 2, lambda r: r["question1"] + " " + r["question2"]),
 }
 FEATURES = [1000, 2000, 5000, 10000, 20000, 50000]
 rows = []
