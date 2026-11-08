@@ -24,6 +24,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
 | `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
+| `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
 
 Run from the repository root, for example:
 
@@ -64,6 +65,9 @@ architecture and byte budget that matched the AG News teacher.
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
 
+**QNLI (2-way, 3B teacher 81.25%):** the same 4.39M BERT-tiny at 4-bit = 59.75%
+(-21.5, 0.0117 bit/param); linear C 0.21.
+
 **MNLI (3-way, 3B teacher 84.7%):** the same 4.39M BERT-tiny at 4-bit = 36.8%
 (chance 33.3%, -47.9 points). Capacity failure, not a bit-rate result.
 
@@ -75,9 +79,11 @@ architecture and byte budget that matched the AG News teacher.
 |---|---:|---:|---:|---:|
 | AG News | 75.25% | 74.25% | 0.98 | +1.5 |
 | SST-2 | 94.25% | 71.75% | 0.49 | -22.5 |
+| QNLI | 81.25% | 56.50% | 0.21 | -21.5 |
 | MNLI | 84.71% | 42.61% | 0.18 | -47.9 |
 
-The order matches. Three points are a hypothesis, not a law; see `NEXT.md`.
+Three points matched; the fourth broke the single-metric story (QNLI and MNLI have almost
+the same C, gaps of -21.5 vs -47.9). A multi-feature model is needed; see `NEXT.md`.
 
 ## MNLI: a capacity failure, not a bit-rate result
 

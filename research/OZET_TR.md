@@ -66,13 +66,15 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 |---|---:|---:|---:|
 | AG News (4 sınıf) | %76,75 | %75,25 | **+1,5** |
 | SST-2 (2 sınıf) | %71,75 | %94,25 | **-22,5** |
+| QNLI (2 sınıf) | %59,8 | %81,3 | **-21,5** |
 | MNLI (3 sınıf) | %36,8 | %84,7 | **-47,9** |
 
 Aynı mimari, aynı byte, 48 puanlık aralık. **Bit tabanı davranışın özelliği.**
 
 Ucuz teşhis: `C = (doğrusal doğruluk − şans) / (öğretmen − şans)`. AG News 0,98,
-SST-2 0,49, MNLI 0,18 — fark sırası +1,5 / -22,5 / -47,9 ile aynı. Üç nokta bir yasa
-değil, hipotez; sıradaki adım 10 görev ve bir fit.
+SST-2 0,49, QNLI 0,21, MNLI 0,18. Üç nokta uydu; **dördüncü bozdu**: QNLI ile MNLI'nin
+C'si neredeyse aynı, ama farkları -21,5 ile -47,9. Tek metrik yetmiyor; çok özellikli
+bir modele geçmek gerek. Sıradaki adım 10 görev ve bir fit.
 
 ## Dürüst konum
 

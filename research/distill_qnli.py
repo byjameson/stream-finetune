@@ -17,15 +17,12 @@ TEACHER = "models/Qwen2.5-3B-Instruct"
 STUDENT = "prajjwal1/bert-tiny"
 LABELS = ["entailment", "not_entailment"]
 SYS = (
-    "Does the sentence answer the question? Answer entailment or not_entailment.\n\n"
-    "Examples:\nQuestion: Who wrote Hamlet?\nSentence: Hamlet was written by Shakespeare.\n"
-    "Label: entailment\n"
-    "Question: Who wrote Hamlet?\nSentence: The play is set in Denmark.\n"
-    "Label: not_entailment\n"
-    "Question: What is the capital of France?\nSentence: Paris is the capital of France.\n"
-    "Label: entailment\n"
-    "Question: What is the capital of France?\nSentence: France is in Europe.\n"
-    "Label: not_entailment"
+    "Answer yes if the sentence contains the answer to the question. Otherwise answer no. "
+    "Reply with yes or no only.\n\n"
+    "Examples:\nQuestion: Who wrote Hamlet?\nSentence: Hamlet was written by Shakespeare.\nAnswer: yes\n"
+    "Question: Who wrote Hamlet?\nSentence: The play is set in Denmark.\nAnswer: no\n"
+    "Question: What is the capital of France?\nSentence: Paris is the capital of France.\nAnswer: yes\n"
+    "Question: What is the capital of France?\nSentence: France is in Europe.\nAnswer: no"
 )
 
 
@@ -55,11 +52,10 @@ def label_texts(model, tok, rows, batch=4, max_new=4):
         gen = model.generate(**enc, max_new_tokens=max_new, do_sample=False, pad_token_id=tok.pad_token_id)
         for j, r in enumerate(chunk):
             txt = tok.decode(gen[j][enc["input_ids"].shape[1]:], skip_special_tokens=True).strip().lower()
-            low = txt.replace(" ", "_")
-            if "not_entailment" in low:
-                hit = "not_entailment"
-            elif "entailment" in low:
+            if txt.startswith("yes"):
                 hit = "entailment"
+            elif txt.startswith("no"):
+                hit = "not_entailment"
             else:
                 hit = "unknown"
             out.append({"question": r["question"], "sentence": r["sentence"],

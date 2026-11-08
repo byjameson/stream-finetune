@@ -41,6 +41,11 @@ fig, ax = plt.subplots(figsize=(8.4, 5.2), dpi=150)
 ax.scatter(x, y, s=90, color="#2563eb", zorder=4)
 for r in rows:
     ax.annotate(r["task"], (r["C"], r["gap"]), textcoords="offset points", xytext=(8, 6), fontsize=9)
+q = next((r for r in rows if r["task"] == "qnli"), None)
+if q:
+    ax.annotate("QNLI breaks the line", (q["C"], q["gap"]), textcoords="offset points",
+                xytext=(28, -22), fontsize=8, color="#b91c1c",
+                arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=0.8))
 if len(rows) >= 2:
     m, b = np.polyfit(x, y, 1)
     xs = np.linspace(min(0.05, x.min()), max(1.0, x.max()), 100)
@@ -56,7 +61,7 @@ ax.axhspan(-3, 0, color="#dcfce7", alpha=0.5, zorder=0)
 ax.set_xlim(0, 1.05)
 ax.set_xlabel("linear compressibility C = (linear_acc - chance) / (teacher_acc - chance)")
 ax.set_ylabel("BERT-tiny 4.4M gap vs teacher at 0.0117 bit/param (points)")
-ax.set_title("A cheap diagnostic: does a linear student see the task?")
+ax.set_title("A cheap diagnostic — and where it fails")
 ax.grid(alpha=0.25)
 ax.legend(fontsize=8, loc="lower right")
 fig.tight_layout()

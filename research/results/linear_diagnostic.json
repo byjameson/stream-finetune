@@ -25,5 +25,14 @@
   "linear_features": 2000,
   "linear_agree": 0.416,
   "C": 0.18
+ },
+ {
+  "task": "qnli",
+  "classes": 2,
+  "teacher": 0.8125,
+  "linear_acc": 0.565,
+  "linear_features": 5000,
+  "linear_agree": 0.5825,
+  "C": 0.208
  }
 ]
