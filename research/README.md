@@ -24,6 +24,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `agnews_prompt.py` | 341-byte prompt on the shared 1.5B base; 73.75% | ~25 s |
 | `sst2_prompt.py` | 294-byte prompt on SST-2; 93.75% | ~30 s |
 | `adapter_bits.py` | Qwen3B LoRA size/bits: 0.077 fp32 / 0.038 fp16 | ~5 s |
+| `adapter_svd.py` | rank sweep on the adapter; rank 8 loses 35.8% | ~2 min |
+| `adapter_quant.py` | 8/4/3/2-bit adapter quantization; error vs size | ~5 s |
 | `ladder.py` | cheapest rung for a target accuracy, shared or not | ~1 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
@@ -82,6 +84,10 @@ better: the base already knows sentiment, the prompt only points at it.
 **Qwen2.5-3B LoRA (0.077 bit/base-param):** 7.37M params, 29.6 MB fp32 = 0.0766; 14.8 MB
 fp16 = 0.0382, with the 3.09B base shared. A real 60-step SFT artifact below 0.1. The
 prompt adds no capability; the adapter does.
+
+**Adapter compression:** SVD to rank 8 loses **35.8%** of the update, so rank reduction is
+not viable. Quantization is: 8-bit 7.4 MB = **0.019 bit/param** (0.53% error), 4-bit
+3.7 MB = 0.0095 (8.96%), 2-bit 1.8 MB = 0.0048 (45%).
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is

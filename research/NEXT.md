@@ -51,7 +51,8 @@ type), not a bigger fit on C.
    SST-2, 294 bytes beat it by 22 points. The
    ladder is: **program -> prompt -> adapter -> coreset -> linear -> tiny transformer ->
    4-bit model**. The adapter rung is a real sub-0.1-bit artifact: 7.37M LoRA params =
-   0.077 bit/base-param fp32, 0.038 fp16. The coreset rung stores data, not weights: 135 KB
+   0.077 bit/base-param fp32, 0.038 fp16, 0.019 at 8-bit. Do not SVD it (rank 8 loses
+   35.8%); quantize it. The coreset rung stores data, not weights: 135 KB
    trains a 70.5% student, 270 KB reaches 78.0%. State the accounting boundary (marginal vs
    base-counted); 0.1 bit is meaningless without it.
 - 10 tasks with a clear label: AG News, SST-2, TREC, MNLI, DBPedia, spam, topic,
