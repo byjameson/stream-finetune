@@ -108,6 +108,8 @@ test rows. Teacher: 94.25%.
 | student | size | accuracy | drop vs teacher | bits / teacher-param |
 |---|---:|---:|---:|---:|
 | TF-IDF + LR, best (1k features) | 44.9 KB | 71.8% | -22.5 | 0.00025 |
+| BERT-tiny 4.4M, bf16 | 8.77 MB | 72.8% | -21.5 | 0.0468 |
+| BERT-tiny 4.4M, 4-bit | 2.19 MB | 71.8% | -22.5 | 0.0117 |
 | DistilBERT 66M, bf16 | 134 MB | 83.3% | -11.0 | 0.714 |
 | DistilBERT 66M, 4-bit | 33.5 MB | 83.8% | -10.5 | 0.179 |
 | DistilBERT 66M, 3-bit | 25.1 MB | 82.5% | -11.8 | 0.134 |
@@ -117,6 +119,10 @@ A bag-of-words student is stuck ~22 points below the teacher regardless of size:
 needs negation and composition, which TF-IDF cannot represent. A 66M transformer helps,
 but even at 0.179 bit/param it is 10.5 points short; at 0.089 bit/param it is 20.8 points
 short. **The 0.1-bit target is not enough here — the parameter count is the wall.**
+
+The controlled comparison is the point: the same 4.39M student at the same 0.0117
+bit/param matches the AG News teacher (76.75% vs 75.25%) and loses 22.5 points on SST-2
+(71.75% vs 94.25%). Same architecture, same bytes, different behaviour.
 
 ![Compressibility spectrum](figures/compressibility_spectrum.png)
 

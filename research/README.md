@@ -55,7 +55,9 @@ McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 
 76.75% (0.0117 bit/param); 3-bit = 1.64 MB, 77.25%; 2-bit = 1.10 MB, 65.5%.
 
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
-0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points).
+0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points). The same
+4.39M BERT-tiny at 4-bit = 2.19 MB, 71.75% (-22.5, 0.0117 bit/param) — the same
+architecture and byte budget that matched the AG News teacher.
 
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
