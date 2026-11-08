@@ -76,9 +76,9 @@ adapter yetenek ekler, prompt eklemez.
 
 Adapter tam rank: **SVD rank 8, güncellemenin %35,8'ini kaybediyor**; rank indirme işe
 yaramıyor. Quantization: **8-bit 7,4 MB = 0,019 bit/param** (%0,53 hata); 4-bit 3,7 MB =
-0,0095 (%8,96). 12 Dolly satırı, masked loss: taban 2,2462, orijinal 2,2195, 8-bit 2,2199,
-**4-bit 2,2226** — 4-bit adapter SFT kazancını koruyor. Güvenli pratik eser 8-bit; agresif
-ama bu evalda çalışan 4-bit.
+0,0095 (%8,96). **110 Dolly satırı**, masked loss: taban 2,3197, orijinal 2,3084, 8-bit 2,3075,
+**4-bit 2,3097** (+0,0013; kazancın %11'i). 4-bit adapter SFT davranışını koruyor.
+Güvenli pratik eser 8-bit; agresif ama bu evalda çalışan 4-bit.
 
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
