@@ -1,0 +1,19 @@
+{
+ "seed": 1,
+ "base_acc": 0.5425,
+ "params": 4386178,
+ "rows": [
+  {
+   "bits": 16,
+   "acc": 0.5425,
+   "size_mb": 8.77,
+   "bits_per_teacher_param": 0.04679
+  },
+  {
+   "bits": 4,
+   "acc": 0.575,
+   "size_mb": 2.19,
+   "bits_per_teacher_param": 0.0117
+  }
+ ]
+}
