@@ -167,9 +167,9 @@ QNLI's -21.5 on 50%. Normalize both student and teacher by chance:
 `C = (linear - chance)/(teacher - chance)`, `S = (student - chance)/(teacher - chance)`.
 
 The six points are AG News (C 0.98, S 1.03), DBPedia (0.99, 0.99), SST-2 (0.49, 0.49),
-QNLI (0.21, 0.31), QQP (0.21, 0.53), MNLI (0.18, 0.07). Fit: **S = 0.91 C + 0.11,
-R² = 0.859**. With five tasks S ≈ C looked strong (R² = 0.965); **QQP breaks it** — C 0.21
-but S 0.53. The transformer captures paraphrase structure that TF-IDF cannot. C is a lower
+QNLI (0.21, 0.31), QQP (0.21, 0.49), MNLI (0.18, 0.07). Fit: **S = 0.92 C + 0.09,
+R² = 0.885**. With five tasks S ≈ C looked strong (R² = 0.965); **QQP breaks it** — C 0.21
+but S 0.49. The transformer captures paraphrase structure that TF-IDF cannot. C is a lower
 bound on what a better student can do, not a predictor.
 
 ## 7. Two walls

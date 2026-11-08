@@ -65,9 +65,9 @@ McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 
 **DBPedia-14 (14-way, 3B teacher 92.6%):** the same 4.39M BERT-tiny at 4-bit = 91.33%
 (-1.3, 0.0117 bit/param); linear C 0.99. Class count alone is not the wall.
 
-**QQP (2-way, 3B teacher 66.5%):** the same BERT-tiny at 4-bit = 58.75% (raw gap -7.75;
-S 0.53); linear C 0.21. The transformer beats the linear model — C is a lower bound, not a
-predictor.
+**QQP (2-way, 3B teacher 66.5%):** the same BERT-tiny at 4-bit = 58.08% (3-seed mean;
+range 57.5-58.75; S 0.49); linear C 0.21. The transformer beats the linear model — C is a
+lower bound, not a predictor.
 
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
 0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points). The same
@@ -99,12 +99,13 @@ gap is misleading because chance levels differ; normalize the student too:
 | DBPedia | 7.1% | 0.99 | 0.99 |
 | SST-2 | 50% | 0.49 | 0.49 |
 | QNLI | 50% | 0.21 | 0.31 |
-| QQP | 50% | 0.21 | 0.53 |
+| QQP | 50% | 0.21 | 0.49 |
 | MNLI | 33.3% | 0.18 | 0.07 |
 
-Fit: **S = 0.91 C + 0.11, R² = 0.859** (n=6). With five tasks S ≈ C looked strong
-(R² = 0.965); QQP breaks it (C 0.21, S 0.53). The transformer captures paraphrase that
-TF-IDF cannot. C is a lower bound, not a predictor; `NEXT.md` has the 10-task test.
+Fit: **S = 0.92 C + 0.09, R² = 0.885** (n=6). With five tasks S ≈ C looked strong
+(R² = 0.965); QQP breaks it (C 0.21, S 0.49, 3-seed mean). The transformer captures
+paraphrase that TF-IDF cannot. C is a lower bound, not a predictor; `NEXT.md` has the
+10-task test.
 
 ## MNLI: a capacity failure, not a bit-rate result
 

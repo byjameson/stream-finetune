@@ -1,20 +1,22 @@
 {
+ "note": "4-bit accuracy is the mean of three seeds (0.5875, 0.5750, 0.5800); the teacher labels are fixed. C/linear_acc use the 50k diagnostic sweep.",
  "teacher_acc": 0.665,
  "params": 4386178,
+ "seed_accs_4bit": [0.5875, 0.575, 0.58],
  "rows": [
   {
    "bits": 16,
-   "acc": 0.575,
+   "acc": 0.5692,
    "size_mb": 8.77,
    "bits_per_teacher_param": 0.04679
   },
   {
    "bits": 4,
-   "acc": 0.5875,
+   "acc": 0.5808,
    "size_mb": 2.19,
    "bits_per_teacher_param": 0.0117
   }
  ],
- "linear_acc": 0.525,
- "C": 0.152
+ "linear_acc": 0.535,
+ "C": 0.212
 }

@@ -9,7 +9,7 @@ We now have a measured spectrum, not a law:
 | DBPedia-14 | 2.19 MB BERT-tiny 4-bit | 0.0117 | -1.3 points |
 | SST-2 (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -22.5 points |
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -21.5 points |
-| QQP (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -7.8 raw, S 0.53 |
+| QQP (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -8.4 raw, S 0.49 |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
 | MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
@@ -32,10 +32,10 @@ The next question is whether the floor can be predicted **before** training a st
 
 The six-point check: in **chance-normalized skill**
 `S = (student - chance) / (teacher - chance)`, S tracks C loosely
-(**S = 0.91 C + 0.11, R² = 0.859**), but **QQP breaks the near-identity** (C 0.21, S 0.53).
-The linear student is a lower bound; a transformer can capture compositional structure it
-misses. The next test is 10 tasks with a multi-feature model (class count, chance, C,
-student type), not a bigger fit on C.
+(**S = 0.92 C + 0.09, R² = 0.885**), but **QQP breaks the near-identity** (C 0.21, S 0.49,
+3-seed mean). The linear student is a lower bound; a transformer can capture compositional
+structure it misses. The next test is 10 tasks with a multi-feature model (class count,
+chance, C, student type), not a bigger fit on C.
 
 ## Experiment
 
