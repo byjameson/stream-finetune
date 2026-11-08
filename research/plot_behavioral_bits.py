@@ -107,14 +107,19 @@ def plot_spectrum():
                color="#2563eb", zorder=6, label="AG News, BERT-tiny 4.4M")
     ax.scatter([sst4["bits_per_teacher_param"]], [sst4["acc"] * 100 - 94.25], marker="^", s=95,
                color="#ea580c", zorder=6, label="SST-2, BERT-tiny 4.4M")
+    mnli = load("mnli_bert_tiny.json")
+    mn4 = next(r for r in mnli["rows"] if r["bits"] == 4)
+    ax.scatter([mn4["bits_per_teacher_param"]],
+               [mn4["acc"] * 100 - mnli["teacher_acc"] * 100], marker="^", s=95,
+               color="#059669", zorder=6, label="MNLI, BERT-tiny 4.4M")
     ax.axvline(0.1, color="#111827", ls=":", lw=1.2)
     ax.axhline(0, color="#6b7280", lw=1)
     ax.axhspan(-3, 0, color="#dcfce7", alpha=0.5, zorder=0)
-    ax.set_xscale("log"); ax.set_xlim(0.000025, 0.4); ax.set_ylim(-40, 3)
+    ax.set_xscale("log"); ax.set_xlim(0.000025, 0.4); ax.set_ylim(-52, 3)
     ax.set_xlabel("bits per teacher parameter (total student bytes, log)")
     ax.set_ylabel("accuracy drop vs teacher (percentage points)")
     ax.set_title("Same bit budget, different task: the floor is a property of the behaviour")
-    ax.grid(alpha=0.25, which="both"); ax.legend(fontsize=7.5, loc="lower center")
+    ax.grid(alpha=0.25, which="both"); ax.legend(fontsize=7.5, loc="lower right")
     fig.tight_layout(); fig.savefig(OUT / "compressibility_spectrum.png", bbox_inches="tight"); plt.close(fig)
 
 

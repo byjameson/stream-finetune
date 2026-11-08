@@ -22,7 +22,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
-| `distill_mnli.py` | attempted MNLI run; teacher collapsed, see "not included" | ~15 min |
+| `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
 
 Run from the repository root, for example:
 
@@ -63,12 +63,15 @@ architecture and byte budget that matched the AG News teacher.
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
 
-## Attempted, not included
+**MNLI (3-way, 3B teacher 84.7%):** the same 4.39M BERT-tiny at 4-bit = 36.8%
+(chance 33.3%, -47.9 points). Capacity failure, not a bit-rate result.
 
-**MNLI (3-way NLI).** The 1.5B teacher labelled only 3.3% of the training rows as
-contradiction (59.4% accuracy on a balanced test), so the BERT-tiny student learned the
-skew and scored 33% — chance. This is a teacher failure, not a compressibility
-measurement. A 3B/7B teacher is needed before MNLI joins the spectrum.
+## MNLI: a capacity failure, not a bit-rate result
+
+The 1.5B teacher collapsed on MNLI (3.3% contradiction, 59.4%). With a 3B-Instruct 4-bit
+teacher (84.7% on 400 balanced rows), the same 4.39M BERT-tiny reaches 36.8% at 4-bit
+(chance 33.3%). Same student and 0.0117 bit/param as the AG News success; the task needs
+more capacity. This is the third point of the controlled comparison (+1.5 / -22.5 / -47.9).
 
 ## Caveats
 

@@ -103,6 +103,11 @@ The controlled comparison is the point: the same 4.4M BERT-tiny at the same 0.01
 bit/param scores 76.75% on AG News (teacher 75.25%) and 71.75% on SST-2 (teacher 94.25%).
 Same architecture, same bytes, 22.5 points apart.
 
+**The capacity wall, in one more task.** On MNLI (3-way NLI), a 3B-Instruct teacher
+reaches 84.7%; the same 4.4M BERT-tiny reaches 36.8% at 4-bit (chance 33.3%). At the same 0.0117
+bit/param, the three tasks are +1.5, -22.5 and -47.9 points from their teachers. The
+student is not losing bits; it is running out of parameters.
+
 A bag-of-words student is stuck ~22 points below the teacher regardless of size: sentiment
 needs negation and composition, which TF-IDF cannot represent. A 66M transformer helps,
 but even at 0.179 bit/param it is 10.5 points short; at 0.089 bit/param it is 20.8 points

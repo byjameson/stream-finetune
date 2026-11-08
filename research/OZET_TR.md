@@ -66,8 +66,9 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 |---|---:|---:|---:|
 | AG News (4 sınıf) | %76,75 | %75,25 | **+1,5** |
 | SST-2 (2 sınıf) | %71,75 | %94,25 | **-22,5** |
+| MNLI (3 sınıf) | %36,8 | %84,7 | **-47,9** |
 
-Aynı mimari, aynı byte, 24 puan fark. **Bit tabanı davranışın özelliği.**
+Aynı mimari, aynı byte, 48 puanlık aralık. **Bit tabanı davranışın özelliği.**
 
 ## Dürüst konum
 
@@ -85,8 +86,9 @@ Aynı mimari, aynı byte, 24 puan fark. **Bit tabanı davranışın özelliği.*
 - `research/results/` — ölçüm JSON'ları
 - `docs/figures/` — üç figür
 
-## Denenip eklenmeyen
+## MNLI: kapasite duvarı
 
-MNLI: 1.5B öğretmen contradiction'ı neredeyse hiç seçmedi (%3,3; %59,4 doğruluk), öğrenci
-de yanlılığı öğrenip dengeli testte %33 aldı. Bu bir öğretmen hatası, sıkıştırma sonucu
-değil. 3B-Instruct (4-bit) ile yeniden deneniyor.
+3B-Instruct (4-bit) öğretmen %84,7; aynı BERT-tiny 4,4M öğrenci %36,8 (şans %33,3).
+Aynı öğrenci ve 0,0117 bit/param: AG News +1,5, SST-2 -22,5, MNLI -47,9. Bu bir bit
+oranı değil, **kapasite duvarı**: 4,4M öğrenci 3 sınıflı NLI'yi temsil edemiyor.
+(1.5B öğretmen önce contradiction'ı %3,3 seçip çökmüştü; 3B ile düzeldi.)

@@ -11,19 +11,23 @@ import torch
 from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import (AutoModelForCausalLM, AutoTokenizer, BertConfig,
-                          BertForSequenceClassification, BertTokenizer)
+                          BertForSequenceClassification, BertTokenizer, BitsAndBytesConfig)
 
-TEACHER = "models/Qwen2.5-1.5B-Instruct"
+TEACHER = "models/Qwen2.5-3B-Instruct"
 STUDENT = "prajjwal1/bert-tiny"
 LABELS = ["entailment", "neutral", "contradiction"]
 SYS = (
-    "Classify the relationship between the premise and the hypothesis as entailment, "
-    "neutral, or contradiction. Reply with the label only.\n\n"
-    "Examples:\nPremise: A dog is running in the park.\nHypothesis: An animal is moving.\n"
-    "Label: entailment\n"
+    "Classify the relationship between the premise and the hypothesis.\n"
+    "- entailment: if the premise is true, the hypothesis must be true.\n"
+    "- contradiction: if the premise is true, the hypothesis must be false.\n"
+    "- neutral: neither.\n"
+    "Check contradiction carefully; do not default to neutral. Reply with one label only.\n\n"
+    "Examples:\nPremise: A dog is running in the park.\nHypothesis: An animal is moving.\nLabel: entailment\n"
+    "Premise: The concert was sold out.\nHypothesis: No tickets were left.\nLabel: entailment\n"
     "Premise: A dog is running in the park.\nHypothesis: A cat is sleeping.\nLabel: neutral\n"
-    "Premise: A dog is running in the park.\nHypothesis: No animal is outside.\n"
-    "Label: contradiction"
+    "Premise: The concert was sold out.\nHypothesis: The band played for two hours.\nLabel: neutral\n"
+    "Premise: A dog is running in the park.\nHypothesis: No animal is outside.\nLabel: contradiction\n"
+    "Premise: The concert was sold out.\nHypothesis: There were empty seats everywhere.\nLabel: contradiction"
 )
 
 
@@ -114,7 +118,10 @@ def main():
     tok = AutoTokenizer.from_pretrained(TEACHER)
     tok.pad_token = tok.eos_token
     tok.padding_side = "left"
-    teacher = AutoModelForCausalLM.from_pretrained(TEACHER, dtype=torch.bfloat16).cuda().eval()
+    bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
+                             bnb_4bit_compute_dtype=torch.bfloat16)
+    teacher = AutoModelForCausalLM.from_pretrained(TEACHER, quantization_config=bnb,
+                                                   device_map="cuda").eval()
     t0 = time.time()
     tr_lab = label_texts(teacher, tok, tr_rows)
     te_lab = label_texts(teacher, tok, te_rows)
