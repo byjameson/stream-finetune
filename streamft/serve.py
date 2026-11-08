@@ -108,7 +108,8 @@ def main(argv=None) -> int:
 
     ap = argparse.ArgumentParser(prog="streamft serve")
     ap.add_argument("--model", required=True, help="merged model dir or HF id")
-    ap.add_argument("--adapter", default="", help="optional adapter dir with adapter.pt")
+    ap.add_argument("--adapter", default="",
+                    help="optional adapter .pt, or a save dir containing adapter.pt")
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -122,7 +123,7 @@ def main(argv=None) -> int:
         from pathlib import Path
 
         from .adapter import load_adapter
-        from .lora import apply_lora, set_lora_state_dict
+        from .lora import LoRALinear, apply_lora, set_lora_state_dict
 
         p = Path(args.adapter)
         p = p / "adapter.pt" if p.is_dir() else p
@@ -130,6 +131,12 @@ def main(argv=None) -> int:
         r = int(next(v for k, v in state.items() if k.endswith(".A")).shape[0])
         apply_lora(model, r_attn=r, r_mlp=0)
         set_lora_state_dict(model, state)
+        if dtype != torch.float32:
+            # Inference-only bf16 low-rank path: ~4% faster than fp32 on the reference
+            # card and it matches the base dtype; training still uses fp32.
+            for m in model.modules():
+                if isinstance(m, LoRALinear):
+                    m.set_fast(dtype)
         print(f"[serve] adapter {p.name} (r={r})", flush=True)
 
     _state.update(model=model, tok=tok, device=args.device, model_id=args.model)

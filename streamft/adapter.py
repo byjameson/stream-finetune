@@ -112,13 +112,22 @@ def tensor_error(a: torch.Tensor, b: torch.Tensor) -> float:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="streamft adapter")
-    ap.add_argument("--adapter", required=True, help="plain adapter .pt (A/B tensors)")
+    ap.add_argument("--adapter", required=True,
+                    help="adapter .pt, or a save dir containing adapter.pt")
     ap.add_argument("--bits", type=int, choices=[8, 4, 2], default=4)
     ap.add_argument("--group", type=int, default=64)
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
-    state, meta = load_adapter(args.adapter)
     src = Path(args.adapter)
+    if src.is_dir():
+        src = src / "adapter.pt"
+    state, meta = load_adapter(src)
+    if not state:
+        raise SystemExit(f"no tensors in adapter: {src}")
+    lora_keys = {k for k in state if k.endswith(".A") or k.endswith(".B")}
+    if not lora_keys:
+        raise SystemExit(f"no LoRA A/B tensors in {src}; nothing to pack")
+    skipped = sorted(set(state) - lora_keys)
     out = Path(args.out)
     obj = save_quantized(state, out, args.bits, args.group, meta)
     back = dequantize_adapter(obj)
@@ -131,6 +140,7 @@ def main(argv=None) -> int:
         "compression": round(src.stat().st_size / max(out.stat().st_size, 1), 2),
         "max_relative_error": round(max(errs) if errs else 0.0, 4),
         "tensors": len(back),
+        "skipped_tensors": skipped,
     }, indent=1))
     return 0
 

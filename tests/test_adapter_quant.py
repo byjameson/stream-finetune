@@ -52,6 +52,30 @@ def test_lora_linear_shapes():
     assert m(torch.randn(3, 8)).shape == (3, 4)
 
 
+def test_cli_accepts_save_dir(tmp_path):
+    from streamft.adapter import main
+
+    save_dir = tmp_path / "run"
+    save_dir.mkdir()
+    torch.save(_state(), save_dir / "adapter.pt")
+    out = tmp_path / "adapter_q8.pt"
+    assert main(["--adapter", str(save_dir), "--bits", "8", "--out", str(out)]) == 0
+    assert out.exists()
+    back, _ = load_adapter(out)
+    assert set(back) == set(_state())
+
+
+def test_cli_rejects_non_lora_state(tmp_path):
+    import pytest
+
+    from streamft.adapter import main
+
+    path = tmp_path / "plain.pt"
+    torch.save({"weight": torch.zeros(4, 4)}, path)
+    with pytest.raises(SystemExit, match="no LoRA"):
+        main(["--adapter", str(path), "--bits", "8", "--out", str(tmp_path / "q.pt")])
+
+
 def test_lora_fast_path():
     m = LoRALinear(nn.Linear(8, 4).to(torch.bfloat16), r=2)
     m.set_fast(torch.bfloat16)
