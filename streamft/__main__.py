@@ -8,6 +8,7 @@
   streamft synth    generate training pairs locally with a small model
   streamft eval     run a small local prompt set (repetition/refusal/keywords)
   streamft merge    fold a saved adapter into the base model (for serving / GGUF)
+  streamft adapter  pack a saved adapter to 8/4-bit (shared-base deployment)
   streamft serve    host a merged model on the LAN (chat page + /v1/chat/completions)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
@@ -25,6 +26,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft synth --model <small-model> --n 50 --out data/synth.jsonl
   streamft eval --model <model> [--prompts mine.jsonl]
   streamft merge --model <base> --adapter <dir> --out merged/<name>
+  streamft adapter --adapter <pt> --bits 4 --out <pt>
   streamft serve --model merged/<name> --port 8000
   streamft doctor
 
@@ -56,6 +58,10 @@ def main() -> int:
     if cmd == "merge":
         from streamft.merge import main as merge_main
         return merge_main(rest)
+
+    if cmd == "adapter":
+        from streamft.adapter import main as adapter_main
+        return adapter_main(rest)
 
     if cmd == "eval":
         from streamft.evals import main as eval_main

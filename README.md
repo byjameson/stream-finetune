@@ -161,6 +161,31 @@ tools can point at it. This is **one machine computing, the rest as clients** ? 
 peer-to-peer sharding and not volunteer compute. Tested end to end: `/health` and a
 16-token completion (1.9 s on the reference GPU).
 
+### Share one base, ship 5 MB adapters
+
+A LoRA adapter is the per-behaviour artifact. Pack it to 4 bits and serve it on top of a
+shared base:
+
+```bash
+streamft adapter --adapter checkpoints/my_adapter.pt --bits 4 --out checkpoints/my_adapter_q4.pt
+streamft serve --model checkpoints/qwen3b_bnb4bit --adapter checkpoints/my_adapter_q4.pt
+```
+
+Measured on the reference machine (Qwen2.5-3B, 60-step Dolly LoRA):
+
+| storage | size | bits / base-param |
+|---|---:|---:|
+| fp32 | 29.6 MB | 0.0766 |
+| fp16 | 14.8 MB | 0.0382 |
+| 8-bit | 8.56 MB | 0.0222 |
+| **4-bit** | **4.88 MB** | **0.0126** |
+
+110 held-out Dolly rows, masked SFT loss: base 2.3197, original 2.3084, 8-bit 2.3075,
+4-bit 2.3097 (+0.0013). The adapter loads in 0.14 s. The LoRA path is ~32% slower than the
+base on this card (8.19 vs 11.97 tok/s); merge it into a bf16 base for zero per-token
+overhead, or accept the LoRA path when storage/switching matters more than throughput.
+Rank reduction is not viable: SVD to rank 8 loses 35.8% of the update.
+
 ### Measured on
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,

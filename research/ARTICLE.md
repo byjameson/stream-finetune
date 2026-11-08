@@ -156,8 +156,8 @@ The practical sub-0.1-bit artifact is an **adapter**. The project's Qwen2.5-3B L
 = **0.038**, with the 3.09B base shared. It adds capability; the prompt does not.
 
 The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduction fails.
-Quantization works: **8-bit 7.4 MB = 0.019 bit/base-param** (0.53% weight error); 4-bit
-3.7 MB = **0.0095** (9% error). A masked SFT loss on **110 held-out Dolly rows**: base 2.3197,
+Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight error); 4-bit
+4.88 MB = **0.0126** (9% error). A masked SFT loss on **110 held-out Dolly rows**: base 2.3197,
 original 2.3084, 8-bit 2.3075, **4-bit 2.3097 (+0.0013)**. The 4-bit adapter costs 11% of
 the adapter's 0.0113 gain and preserves the behaviour on this eval.
 

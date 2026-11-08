@@ -32,8 +32,8 @@ paper. Test sets and seeds are fixed before the run.
 - **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
   It adds capability; the prompt does not.
-- **The adapter compresses by quantization, not rank.** 8-bit = **0.019 bit/param** (loss
-  2.3075 vs 2.3084 original); 4-bit = **0.0095** (2.3097, +0.0013; base 2.3197; 110 Dolly
+- **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (loss
+  2.3075 vs 2.3084 original); 4-bit = **0.0126** (2.3097, +0.0013; base 2.3197; 110 Dolly
   rows). SVD to rank 8 loses 36%, so rank reduction fails.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
@@ -255,15 +255,16 @@ Rank reduction is not viable. Quantization is:
 |---|---:|---:|---:|---:|
 | fp32 | 29.6 MB | 0.077 | 0 | 2.3084 |
 | fp16 | 14.8 MB | 0.038 | ~0 | — |
-| **8-bit** | **7.4 MB** | **0.019** | **0.53%** | 2.3075 |
-| **4-bit** | **3.7 MB** | **0.0095** | 8.96% | **2.3097** |
-| 2-bit | 1.8 MB | 0.0048 | 45% | not tested |
+| **8-bit** | **8.56 MB** | **0.0222** | **0.53%** | 2.3075 |
+| **4-bit** | **4.88 MB** | **0.0126** | 9.08% | **2.3097** |
+| 2-bit | 2.76 MB | 0.0072 | 45% | not tested |
 
 Behaviour eval: **110 held-out Dolly rows**, masked SFT loss; base 2.3197, adapter gain
 0.0113. The 8-bit adapter is 2.3075 (within noise); the 4-bit adapter is 2.3097,
-**+0.0013** — 11% of the gain. So a **4-bit adapter at 0.0095 bit per base parameter**
-preserves the behaviour on this eval; 8-bit (0.019) is the safer choice if the task is
-more sensitive.
+**+0.0013** — 11% of the gain. So a **4-bit adapter at 0.0126 bit per base parameter**
+preserves the behaviour on this eval; 8-bit (0.0222) is the safer choice if the task is
+more sensitive. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
+scales (0.92 MB), and the table uses the real file sizes.
 
 ### The sharing ladder
 
@@ -272,8 +273,8 @@ more sensitive.
 | program | 93 B | Python + `dateutil` | date -> ISO, 100% |
 | prompt | 341 B | 1.5B base | AG News, 73.75% |
 | adapter (fp16) | 14.8 MB | 3.09B base | 0.038 bit/base-param |
-| adapter (8-bit) | 7.4 MB | 3.09B base | 0.019 |
-| adapter (4-bit) | 3.7 MB | 3.09B base | 0.0095 |
+| adapter (8-bit) | 8.56 MB | 3.09B base | 0.0222 |
+| adapter (4-bit) | 4.88 MB | 3.09B base | 0.0126 |
 | coreset | 135 KB | training procedure | AG News, 70.5% |
 | linear student | 340 KB | none | AG News, 74.25% |
 | tiny transformer | 2.2 MB | none | AG News, 76.75% |

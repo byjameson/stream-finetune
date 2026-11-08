@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 — shared base, 5 MB adapters
+- `streamft adapter`: pack a saved LoRA to 8/4-bit with per-group scales; `load_adapter`
+  reads both plain and quantized files, and `serve --adapter` works with both.
+- Measured (Qwen2.5-3B, 60-step Dolly LoRA): 4-bit **4.88 MB = 0.0126 bit/base-param**;
+  8-bit 8.56 MB = 0.0222. 110 held-out Dolly rows: base 2.3197, original 2.3084,
+  8-bit 2.3075, 4-bit 2.3097 (+0.0013).
+- Rank reduction fails: SVD rank 8 loses 35.8% of the update; quantize, don't SVD.
+- LoRA layers use `in_features`/`out_features`, so they work with bitsandbytes 4-bit
+  packed weights.
+- 18 tests.
+
 ## 0.5.0 ? one machine hosts, others connect
 - `streamft serve`: HTTP server with a chat page and `POST /v1/chat/completions`
   (OpenAI-compatible subset). Point it at a merged model, or pass `--adapter` to serve an
