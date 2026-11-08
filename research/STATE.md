@@ -90,11 +90,12 @@ architectures, the idea of task-specific compression.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
   fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
 - **Adapter compression is quantization, not rank:** rank 8 SVD loses 35.8%; 8-bit =
-  **0.0222 bit/param** (loss 2.3075), 4-bit = 0.0126 (loss 2.3097 vs 2.3084 original; base
-  2.3197; 110 Dolly rows → behaviour preserved, 11% of the gain lost).
-- **Inference cost:** the LoRA path is 8.19 tok/s vs 11.97 for the base (~32% slower on the
-  reference card); the 4.88 MB adapter loads in 0.14 s. It is a storage/switching win, not
-  a per-token speed win; merge into a bf16 base for zero overhead.
+  **0.0222 bit/param** (870 rows: no measurable loss, p = 0.81), 4-bit = 0.0126 (+0.0018,
+  p = 0.001, 5% of the 0.0349 gain; base 2.3752, original 2.3403).
+- **Inference cost:** the LoRA path is 8.75 tok/s vs 11.79 for the base (~26% slower on the
+  reference card); a bf16 LoRA path reaches 9.13 (~22% slower). The 4.88 MB adapter loads
+  in 0.115 s. It is a storage/switching win, not a per-token speed win; merge into a bf16
+  base for zero overhead.
 - **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
   shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
   4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a

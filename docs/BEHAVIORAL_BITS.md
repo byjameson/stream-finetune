@@ -32,9 +32,9 @@ paper. Test sets and seeds are fixed before the run.
 - **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
   It adds capability; the prompt does not.
-- **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (loss
-  2.3075 vs 2.3084 original); 4-bit = **0.0126** (2.3097, +0.0013; base 2.3197; 110 Dolly
-  rows). SVD to rank 8 loses 36%, so rank reduction fails.
+- **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (870
+  rows: no measurable loss, p = 0.81); 4-bit = **0.0126** (+0.0018, p = 0.001, 5% of the
+  gain). SVD to rank 8 loses 36%, so rank reduction fails.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -253,22 +253,23 @@ Rank reduction is not viable. Quantization is:
 
 | storage | size | bits/base-param | weight error | SFT loss |
 |---|---:|---:|---:|---:|
-| fp32 | 29.6 MB | 0.077 | 0 | 2.3084 |
+| fp32 | 29.6 MB | 0.077 | 0 | 2.3403 |
 | fp16 | 14.8 MB | 0.038 | ~0 | — |
-| **8-bit** | **8.56 MB** | **0.0222** | **0.53%** | 2.3075 |
-| **4-bit** | **4.88 MB** | **0.0126** | 9.08% | **2.3097** |
+| **8-bit** | **8.56 MB** | **0.0222** | **0.53%** | **2.3401** |
+| **4-bit** | **4.88 MB** | **0.0126** | 9.08% | 2.3420 |
 | 2-bit | 2.76 MB | 0.0072 | 45% | not tested |
 
-Behaviour eval: **110 held-out Dolly rows**, masked SFT loss; base 2.3197, adapter gain
-0.0113. The 8-bit adapter is 2.3075 (within noise); the 4-bit adapter is 2.3097,
-**+0.0013** — 11% of the gain. So a **4-bit adapter at 0.0126 bit per base parameter**
-preserves the behaviour on this eval; 8-bit (0.0222) is the safer choice if the task is
-more sensitive.
+Behaviour eval: **870 held-out Dolly rows**, masked SFT loss; base 2.3752, adapter gain
+0.0349. Paired differences vs the original adapter: the **8-bit delta is -0.00012**
+(95% CI ±0.00096, p = 0.805) — no measurable loss; the **4-bit delta is +0.00178**
+(95% CI ±0.00107, p = 0.0012) — significant, but only 5.1% of the gain. The safe sub-0.1
+artifact is the **8-bit adapter at 0.0222**; the 4-bit at 0.0126 is aggressive, with a
+small but real cost.
 
-Inference on the reference card: base **11.97 tok/s**, LoRA path **8.19 tok/s** (~32%
-slower); the 4.88 MB adapter loads in 0.14 s. It is a **storage/switching win, not a
-per-token speed win.** Merge into a bf16 base for zero overhead; merging into a packed
-4-bit base is not supported here. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
+Inference on the reference card: base **11.79 tok/s**, LoRA path **8.75 tok/s** (~26%
+slower), bf16 LoRA path **9.13 tok/s** (~22% slower); the 4.88 MB adapter loads in
+0.115 s. It is a **storage/switching win, not a per-token speed win.** Merge into a bf16
+base for zero overhead; merging into a packed 4-bit base is not supported here. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
 scales (0.92 MB), and the table uses the real file sizes.
 
 ### The sharing ladder

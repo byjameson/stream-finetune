@@ -4,8 +4,8 @@
 - `streamft adapter`: pack a saved LoRA to 8/4-bit with per-group scales; `load_adapter`
   reads both plain and quantized files, and `serve --adapter` works with both.
 - Measured (Qwen2.5-3B, 60-step Dolly LoRA): 4-bit **4.88 MB = 0.0126 bit/base-param**;
-  8-bit 8.56 MB = 0.0222. 110 held-out Dolly rows: base 2.3197, original 2.3084,
-  8-bit 2.3075, 4-bit 2.3097 (+0.0013).
+  8-bit 8.56 MB = 0.0222. 870 held-out Dolly rows: base 2.3752, original 2.3403,
+  8-bit 2.3401 (p = 0.81), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain).
 - Rank reduction fails: SVD rank 8 loses 35.8% of the update; quantize, don't SVD.
 - LoRA layers use `in_features`/`out_features`, so they work with bitsandbytes 4-bit
   packed weights.

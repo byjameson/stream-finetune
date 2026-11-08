@@ -27,17 +27,18 @@ Qwen2.5-3B, 60-step Dolly LoRA (q/k/v/o, r=16, 7.37M parameters):
 | 8-bit | 8.56 MB | 0.0222 | 0.53% |
 | **4-bit** | **4.88 MB** | **0.0126** | 9.08% |
 
-Behaviour: 110 held-out Dolly rows, masked SFT loss.
+Behaviour: 870 held-out Dolly rows, masked SFT loss.
 
-| config | loss |
-|---|---:|
-| base | 2.3197 |
-| original adapter | 2.3084 |
-| 8-bit | 2.3075 |
-| 4-bit | **2.3097** |
+| config | loss | paired test |
+|---|---:|---|
+| base | 2.3752 | — |
+| original adapter | 2.3403 | reference |
+| 8-bit | **2.3401** | p = 0.81, no measurable loss |
+| 4-bit | 2.3420 | +0.0018, p = 0.001, 5% of the gain |
 
-The 4-bit adapter costs 0.0013 of the adapter's 0.0113 gain (11%). It is below 0.1 bit per
-base parameter with the behaviour preserved on this eval.
+The 8-bit adapter is the safe sub-0.1 artifact (0.0222 bit/base-param). The 4-bit adapter
+is 0.0126 but has a small, statistically significant cost; use it when storage matters
+more than 5% of the adapter's gain.
 
 ## What it is good for
 
@@ -49,10 +50,10 @@ base parameter with the behaviour preserved on this eval.
 
 ## What it is not
 
-- **Not a faster per-token path.** On the reference card the LoRA path runs at 8.19 tok/s
-  vs 11.97 for the base (~32% slower) because of the fp32 low-rank matmuls at every
-  projection. Merge into a bf16 base for zero overhead; merging into a packed 4-bit base
-  is not attempted here.
+- **Not a faster per-token path.** On the reference card the LoRA path runs at 8.75 tok/s
+  vs 11.79 for the base (~26% slower); a bf16 LoRA path reaches 9.13 (~22% slower). The
+  cost is the extra low-rank matmuls at every projection. Merge into a bf16 base for zero
+  overhead; merging into a packed 4-bit base is not attempted here.
 - **Not a compression of the base.** Count the base and the total is 4 bit/param (4-bit
   base) or 16 (bf16); 0.0126 is the marginal adapter cost.
 - **Not rank compression.** SVD to rank 8 loses 35.8% of the update; the adapter is

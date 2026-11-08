@@ -16,13 +16,15 @@ both plain (`{"lora": ...}`) and quantized files, and `serve --adapter` works wi
 
 | storage | size | bits / base-param | SFT loss |
 |---|---:|---:|---:|
-| fp32 | 29.6 MB | 0.0766 | 2.3084 |
+| fp32 | 29.6 MB | 0.0766 | 2.3403 |
 | fp16 | 14.8 MB | 0.0382 | — |
-| 8-bit | 8.56 MB | 0.0222 | 2.3075 |
-| **4-bit** | **4.88 MB** | **0.0126** | **2.3097** |
+| **8-bit** | **8.56 MB** | **0.0222** | **2.3401** |
+| 4-bit | 4.88 MB | 0.0126 | 2.3420 |
 
-110 held-out Dolly rows, masked SFT loss; the base is 2.3197. The 4-bit adapter costs
-0.0013 of the adapter's 0.0113 gain.
+**870 held-out Dolly rows**, masked SFT loss; the base is 2.3752. The 8-bit adapter is
+statistically indistinguishable from the original (p = 0.81); the 4-bit adapter costs
++0.0018 (p = 0.001, 5% of the adapter's 0.0349 gain). The safe sub-0.1 artifact is 8-bit;
+4-bit is aggressive.
 
 ## What it is good for
 

@@ -180,10 +180,12 @@ Measured on the reference machine (Qwen2.5-3B, 60-step Dolly LoRA):
 | 8-bit | 8.56 MB | 0.0222 |
 | **4-bit** | **4.88 MB** | **0.0126** |
 
-110 held-out Dolly rows, masked SFT loss: base 2.3197, original 2.3084, 8-bit 2.3075,
-4-bit 2.3097 (+0.0013). The adapter loads in 0.14 s. The LoRA path is ~32% slower than the
-base on this card (8.19 vs 11.97 tok/s); merge it into a bf16 base for zero per-token
-overhead, or accept the LoRA path when storage/switching matters more than throughput.
+870 held-out Dolly rows, masked SFT loss: base 2.3752, original 2.3403, 8-bit 2.3401
+(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain). The
+adapter loads in 0.115 s. The LoRA path is ~26% slower than the base on this card
+(8.75 vs 11.79 tok/s; a bf16 LoRA path reaches 9.13); merge it into a bf16 base for zero
+per-token overhead, or accept the LoRA path when storage/switching matters more than
+throughput.
 Rank reduction is not viable: SVD to rank 8 loses 35.8% of the update.
 
 ### Measured on
