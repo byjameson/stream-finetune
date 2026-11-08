@@ -25,6 +25,9 @@ paper. Test sets and seeds are fixed before the run.
 - **0.1 bit is an accounting question.** A 341-byte prompt on a shared 1.5B base matches a
   340 KB student on AG News; count the base and it is 16 bit/param. A 93-byte program is
   100% exact on dates. What is shared, and what is counted, decides the number.
+- **The artifact can be data.** A 135 KB coreset trains a 70.5% student at load time; a
+  270 KB coreset reaches 78.0%, statistically indistinguishable from the 340 KB model.
+  Storage and compute are interchangeable.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -201,12 +204,32 @@ and shared across many behaviours, the marginal artifact per behaviour is the pr
 every deployment carries the base, it is 16 bit/param. The 0.1-bit question is meaningless
 without saying what is shared and what is counted.
 
+### The coreset rung
+
+The artifact can be data instead of weights. Store a stratified **coreset** of
+teacher-labelled examples; train the student at load time.
+
+| examples | artifact | accuracy | bits/param | train |
+|---:|---:|---:|---:|---:|
+| 100 | 26 KB | 45.0% | 0.00014 | 0.04 s |
+| 200 | 53 KB | 55.5% | 0.00028 | 0.11 s |
+| 500 | 135 KB | 70.5% | 0.00072 | 0.16 s |
+| 1,000 | 270 KB | 78.0% | 0.00144 | 0.25 s |
+| 2,000 | 543 KB | 81.8% | 0.00289 | 0.28 s |
+| full trained model | 340 KB | 74.25% | 0.00186 | — |
+
+A 135 KB coreset is 2.5× smaller than the 340 KB model and 3.75 points behind; a 270 KB
+coreset is statistically indistinguishable on 400 rows and smaller. The artifact is the
+data; the training procedure is shared. **Storage and load-time compute are
+interchangeable.**
+
 ### The sharing ladder
 
 | artifact | per-behaviour bytes | shared | example |
 |---|---:|---|---|
 | program | 93 B | Python + `dateutil` | date -> ISO, 100% |
 | prompt | 341 B | 1.5B base | AG News, 73.75% |
+| coreset | 135 KB | training procedure | AG News, 70.5% |
 | linear student | 340 KB | none | AG News, 74.25% |
 | tiny transformer | 2.2 MB | none | AG News, 76.75% |
 | 4-bit model | 30 MB | none | open-ended generation |

@@ -147,10 +147,15 @@ reaches **73.75%** on AG News — the 340 KB student gets 74.25%. Marginal bits/
 1.82e-6; count the base and it is **16 bit/param**. The 0.1-bit question is an accounting
 question.
 
+The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
+70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
+from the 340 KB model. The training procedure is shared. Storage and compute are
+interchangeable.
+
 The ladder: **program** (93 B + shared runtime) -> **prompt** (341 B + shared base) ->
-**linear student** (340 KB) -> **tiny transformer** (2.2 MB) -> **4-bit model** (30 MB).
-The lower rungs are different objects, not better compression of the same object. The
-revolution is choosing the rung.
+**coreset** (135 KB + training procedure) -> **linear student** (340 KB) -> **tiny
+transformer** (2.2 MB) -> **4-bit model** (30 MB). The lower rungs are different objects,
+not better compression of the same object. The revolution is choosing the rung.
 
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
 on the teacher's answers gets token F1 0.380 against the human reference at bf16

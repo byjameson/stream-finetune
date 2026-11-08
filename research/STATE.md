@@ -31,6 +31,8 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | date -> ISO | 0.67 MB seq2seq 4-bit | **0.0036** | 99.8% exact (teacher 100%) |
 | date -> ISO (program) | 93 B (+752 KB shared dateutil) | **4.96e-7** code only | 100% exact |
 | AG News (prompt) | 341 B + shared 1.5B base | 1.82e-6 marginal / 16 with base | 73.75% |
+| AG News (coreset 500) | 135 KB | 0.00072 | 70.5% |
+| AG News (coreset 1000) | 270 KB | 0.00144 | 78.0% |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
 | Dolly closed_qa (open-ended) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.256 (second run 0.273) |
 | Dolly closed_qa (open-ended) | 22.7 MB T5-small 3-bit | 0.121 | F1 0.0001 (dead) |
@@ -77,6 +79,9 @@ architectures, the idea of task-specific compression.
   base reaches 73.75% on AG News (the 340 KB student gets 74.25%). Marginal 1.82e-6
   bit/param; count the base and it is 16 bit/param. The 0.1-bit question is an accounting
   question.
+- **Data as artifact:** a 135 KB coreset trains a 70.5% student at load time; a 270 KB
+  coreset reaches 78.0%, indistinguishable from the 340 KB model. Storage and compute are
+  interchangeable.
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
 **C is a lower bound, not a predictor.** With five tasks, chance-normalized skill looked
