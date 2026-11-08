@@ -177,6 +177,14 @@ derives the architecture fingerprint and prints the snippets for `fit.py`, `fitc
 and the Space. Anything not in that table prints **"not measured"** in `streamft fit` ?
 that is the point.
 
+### Why 0.1-bit compression is not a universal target
+
+A measured note on quantization vs distillation: post-hoc quantization dies below 3 bits,
+a 379 KB distilled student matches a 1.5B teacher on a narrow keyword task at
+0.0021 bit/teacher-param, and a subtle sentiment task still loses 21 points at
+0.089 bit/teacher-param. Details, caveats and reproduction:
+[`docs/BEHAVIORAL_BITS.md`](docs/BEHAVIORAL_BITS.md).
+
 ## Verification
 
 `python scripts/verify_gradients.py --model-dir checkpoints/qwen3b_bnb4bit --seq 128`

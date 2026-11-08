@@ -1,0 +1,10 @@
+{
+ "params": 1349807,
+ "exact_teacher": 0.998,
+ "exact_iso": 0.998,
+ "teacher_iso": 1.0,
+ "bf16_mb": 2.7,
+ "q4_mb": 0.67,
+ "bits_per_teacher_param_bf16": 0.0144,
+ "bits_per_teacher_param_q4": 0.0036
+}
