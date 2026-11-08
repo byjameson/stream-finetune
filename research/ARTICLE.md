@@ -80,6 +80,10 @@ the true labels reaches 86.0% — the teacher, not the student, is the bottlenec
 **0.00186 bit per teacher parameter is 54× below the 0.1-bit target.** A 340 KB model
 reproduced the relevant behaviour of a 3 GB teacher on this task.
 
+A 4.4M transformer (BERT-tiny) on the same labels does the same job at 4-bit: **76.75%,
+2.19 MB, 0.0117 bit/param**. At 3-bit it is 77.25% (1.64 MB); at 2-bit it collapses to
+65.5%. The AG News result is not a TF-IDF artefact, and the bit cliff is model-dependent.
+
 ![Narrow-task frontier](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/narrow_distill.png)
 
 ## 4. The wall: sentiment
