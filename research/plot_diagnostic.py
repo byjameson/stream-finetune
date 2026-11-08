@@ -13,7 +13,8 @@ OUT.mkdir(exist_ok=True)
 
 TEACHER = {"agnews": 0.7525, "sst2": 0.9425, "mnli": 0.8471}
 FILES = {"agnews": "agnews_bert_tiny.json", "sst2": "sst2_bert_tiny.json",
-         "mnli": "mnli_bert_tiny.json", "qnli": "qnli_bert_tiny.json"}
+         "mnli": "mnli_bert_tiny.json", "qnli": "qnli_bert_tiny.json",
+         "trec": "trec_bert_tiny.json"}
 
 rows = []
 diag = json.loads((R / "linear_diagnostic.json").read_text(encoding="utf-8"))
