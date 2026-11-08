@@ -17,15 +17,14 @@ TEACHER = "models/Qwen2.5-3B-Instruct"
 STUDENT = "prajjwal1/bert-tiny"
 LABELS = ["DESC", "ENTY", "ABBR", "HUM", "LOC", "NUM"]
 SYS = (
-    "Classify the question into one of these codes: DESC (description), ENTY (entity), "
-    "ABBR (abbreviation), HUM (human), LOC (location), NUM (number). "
-    "Reply with the code only.\n\n"
-    "Examples:\nQuestion: What is the capital of France?\nCode: LOC\n"
-    "Question: Who wrote Hamlet?\nCode: HUM\n"
-    "Question: What does NASA stand for?\nCode: ABBR\n"
-    "Question: How many legs does a spider have?\nCode: NUM\n"
-    "Question: What is a carburetor?\nCode: ENTY\n"
-    "Question: How do you make a cake?\nCode: DESC"
+    "Classify the question into exactly one of these types: description, entity, "
+    "abbreviation, human, location, number. Reply with the type only.\n\n"
+    "Examples:\nQuestion: How do you make a cake?\nType: description\n"
+    "Question: What is a carburetor?\nType: entity\n"
+    "Question: What does NASA stand for?\nType: abbreviation\n"
+    "Question: Who wrote Hamlet?\nType: human\n"
+    "Question: What is the capital of France?\nType: location\n"
+    "Question: How many legs does a spider have?\nType: number"
 )
 
 
