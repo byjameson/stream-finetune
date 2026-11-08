@@ -20,7 +20,8 @@ paper. Test sets and seeds are fixed before the run.
 - **Structured generation sits on the easy side.** A 1.35M char-level seq2seq matches the
   same 1.5B teacher on date -> ISO at **99.8% exact match, 0.0036 bit/param** (4-bit).
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
-  AG News, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs 33.3% chance; teacher 84.7%).
+  AG News, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs 33.3% chance;
+  teacher 84.7%).
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -168,7 +169,7 @@ the behaviour is structured, so a small model can represent it.
    bigram; the SST-2 student is 10-22 points short. Reporting only the AG News win would
    be misleading.
 
-### A cheap diagnostic
+### A cheap diagnostic — and where it fails
 
 `C = (linear_acc - chance) / (teacher_acc - chance)` on the same teacher labels, using the
 best TF-IDF student from the sweep:
@@ -177,12 +178,15 @@ best TF-IDF student from the sweep:
 |---|---:|---:|---:|---:|
 | AG News | 75.25% | 74.25% (5k) | 0.98 | +1.5 |
 | SST-2 | 94.25% | 71.75% (1k) | 0.49 | -22.5 |
+| QNLI | 81.25% | 56.50% (5k) | 0.21 | -21.5 |
 | MNLI | 84.71% | 42.61% (2k) | 0.18 | -47.9 |
 
-The order matches. With three tasks this is a hypothesis, not a law; 10 tasks and a fit are
-the next step (`research/NEXT.md`). But it is already a usable warning: if a 45 KB TF-IDF
-student is far below the teacher, a 4.4M student at 0.0117 bit/param is unlikely to close
-the gap.
+Three points suggested a monotonic relation. **The fourth breaks it.** QNLI and MNLI have
+almost the same C (0.21 vs 0.18) but gaps of -21.5 and -47.9. C alone is not a predictor:
+QNLI is binary (chance 50%) and the 4.4M student clears chance by 10 points; MNLI is 3-way
+and the student is at chance. The student's inductive bias and the label structure matter.
+A single-metric "law" is not there; the next step is a multi-feature model, not a bigger
+fit on one number (`research/NEXT.md`).
 
 ## 7. A practical recipe
 

@@ -103,6 +103,10 @@ The controlled comparison is the point: the same 4.4M BERT-tiny at the same 0.01
 bit/param scores 76.75% on AG News (teacher 75.25%) and 71.75% on SST-2 (teacher 94.25%).
 Same architecture, same bytes, 22.5 points apart.
 
+On QNLI (binary question entailment) it gets 59.75% against an 81.25% teacher (-21.5).
+That is the same size as the SST-2 gap, but for a different reason: QNLI is binary, so
+59.75% is only 10 points above chance.
+
 **The capacity wall, in one more task.** On MNLI (3-way NLI), a 3B-Instruct teacher
 reaches 84.7%; the same 4.4M BERT-tiny reaches 36.8% at 4-bit (chance 33.3%). At the same 0.0117
 bit/param, the three tasks are +1.5, -22.5 and -47.9 points from their teachers. The
@@ -147,9 +151,10 @@ What I think is useful:
    10–22 points short. Reporting only the AG News win would be misleading.
 
 A cheap diagnostic: `C = (linear_acc - chance) / (teacher_acc - chance)` on the same
-labels. For the three tasks, C is 0.98 (AG News), 0.49 (SST-2) and 0.18 (MNLI); the gap at
-0.0117 bit/param is +1.5, -22.5 and -47.9 in the same order. With three points that is a
-hypothesis, not a law. The next step is 10 tasks and a fit.
+labels. C is 0.98 (AG News), 0.49 (SST-2), 0.21 (QNLI) and 0.18 (MNLI). Three points
+suggested a monotonic relation; **QNLI breaks it** — almost the same C as MNLI, but a gap
+of -21.5 instead of -47.9. A single metric is not enough. The next step is a multi-feature
+model, not a bigger fit on one number.
 
 ## 7. Two walls
 
