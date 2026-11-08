@@ -19,6 +19,8 @@ paper. Test sets and seeds are fixed before the run.
   0.179 bit/param it loses 10.5 points.
 - **Structured generation sits on the easy side.** A 1.35M char-level seq2seq matches the
   same 1.5B teacher on date -> ISO at **99.8% exact match, 0.0036 bit/param** (4-bit).
+- **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
+  AG News, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs 33.3% chance; teacher 84.7%).
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -124,11 +126,14 @@ The controlled comparison is the point: the same 4.39M student at the same 0.011
 bit/param matches the AG News teacher (76.75% vs 75.25%) and loses 22.5 points on SST-2
 (71.75% vs 94.25%). Same architecture, same bytes, different behaviour.
 
-**A failed attempt (MNLI).** The same 1.5B teacher labelled only 3.3% of MNLI training
-rows as contradiction (59.4% test accuracy), so the BERT-tiny student learned the skew and
-scored 33% on the balanced test. That measures the teacher, not the task; MNLI stays out
-of the table until a stronger teacher labels it. Teacher quality is a confounder in every
-row above.
+**The capacity wall: MNLI.** A 3B-Instruct 4-bit teacher reaches 84.7% on the same
+400-row balanced test. The same 4.39M BERT-tiny — the one that matched AG News at
+0.0117 bit/param — reaches 36.8% at 4-bit (chance 33.3%). This is not a bit-rate result: the
+student cannot represent 3-way NLI at 4.4M parameters. At the same 0.0117 bit/param the
+three tasks are **+1.5, -22.5 and -47.9** points from their teachers.
+
+Teacher quality matters: the 1.5B teacher collapsed on MNLI (3.3% contradiction, 59.4%);
+the 3B teacher was needed before the task could be measured at all.
 
 ![Compressibility spectrum](figures/compressibility_spectrum.png)
 
