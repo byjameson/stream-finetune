@@ -1,0 +1,12 @@
+{
+ "base_acc": 0.8325,
+ "params": 66960000,
+ "teacher_acc": 0.9425,
+ "supervised_tfidf": 0.725,
+ "rows": [
+  {"bits": 16, "acc": 0.8325, "size_mb": 133.91, "bits_per_teacher_param": 0.71419},
+  {"bits": 4, "acc": 0.8375, "size_mb": 33.48, "bits_per_teacher_param": 0.17855},
+  {"bits": 3, "acc": 0.825, "size_mb": 25.11, "bits_per_teacher_param": 0.13391},
+  {"bits": 2, "acc": 0.735, "size_mb": 16.74, "bits_per_teacher_param": 0.08927}
+ ]
+}

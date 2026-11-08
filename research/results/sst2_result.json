@@ -1,0 +1,69 @@
+{
+ "teacher_acc": 0.9425,
+ "rows": [
+  {
+   "features": 100,
+   "kb": 7.3,
+   "acc": 0.5875,
+   "agree": 0.585,
+   "bits_per_teacher_param": 4e-05,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 300,
+   "kb": 19.0,
+   "acc": 0.6375,
+   "agree": 0.64,
+   "bits_per_teacher_param": 0.000104,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 500,
+   "kb": 30.8,
+   "acc": 0.6725,
+   "agree": 0.675,
+   "bits_per_teacher_param": 0.000168,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 1000,
+   "kb": 60.6,
+   "acc": 0.695,
+   "agree": 0.6925,
+   "bits_per_teacher_param": 0.000331,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 2000,
+   "kb": 121.6,
+   "acc": 0.6975,
+   "agree": 0.695,
+   "bits_per_teacher_param": 0.000664,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 5000,
+   "kb": 309.9,
+   "acc": 0.68,
+   "agree": 0.6875,
+   "bits_per_teacher_param": 0.001692,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 10000,
+   "kb": 624.9,
+   "acc": 0.685,
+   "agree": 0.6875,
+   "bits_per_teacher_param": 0.003413,
+   "mcnemar_p": 0.0
+  },
+  {
+   "features": 20000,
+   "kb": 1009.2,
+   "acc": 0.695,
+   "agree": 0.6975,
+   "bits_per_teacher_param": 0.005512,
+   "mcnemar_p": 0.0
+  }
+ ]
+}

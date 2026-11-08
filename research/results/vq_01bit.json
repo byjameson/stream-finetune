@@ -1,0 +1,7 @@
+{
+ "scheme": "9 prototypes / 32 weights",
+ "bpw": 0.1022,
+ "ce": 12.4776,
+ "ppl": 262390.48,
+ "size_mb": 6.31
+}
