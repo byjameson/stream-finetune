@@ -68,7 +68,9 @@ def plot_narrow():
     best = next(r for r in rows if r["features"] == 5000)
     ax.scatter([best["kb"]], [86.0], marker="*", s=180, color="#059669", zorder=5,
                label="same-size student, true labels (86.0%)")
-    ax.annotate("379 KB · 74.25% · 0.0021 bit/teacher-param", (best["kb"], best["acc"] * 100),
+    ax.annotate(f'{best["kb"]:.0f} KB · {best["acc"]*100:.2f}% · '
+                f'{best["bits_per_teacher_param"]:.4f} bit/teacher-param',
+                (best["kb"], best["acc"] * 100),
                 textcoords="offset points", xytext=(-10, -46), fontsize=8, ha="center",
                 color="#1e3a8a", arrowprops=dict(arrowstyle="->", color="#1e3a8a", lw=0.8))
     ax.set_xscale("log"); ax.set_xlim(18, 22000); ax.set_ylim(64, 88)
