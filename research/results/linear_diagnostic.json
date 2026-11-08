@@ -52,5 +52,14 @@
   "linear_features": 50000,
   "linear_agree": 0.785,
   "C": 0.212
+ },
+ {
+  "task": "20ng",
+  "classes": 20,
+  "teacher": 0.295,
+  "linear_acc": 0.1975,
+  "linear_features": 2000,
+  "linear_agree": 0.35,
+  "C": 0.602
  }
 ]

@@ -25,10 +25,10 @@ paper. Test sets and seeds are fixed before the run.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
   AG News, -1.3 on DBPedia, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs
   33.3% chance; teacher 84.7%).
-- **A cheap diagnostic, but only a lower bound.** A 45 KB TF-IDF student's `C` tracks the
-  4.4M student's normalized skill loosely (**S = 0.92 C + 0.09, R² = 0.89**, 6 tasks), but
-  QQP (C 0.21, S 0.49) breaks it: the transformer captures paraphrase that TF-IDF misses.
-  C is a floor, not a predictor.
+- **A cheap diagnostic, but not a law.** A 45 KB TF-IDF student's `C` tracks the 4.4M
+  student's normalized skill loosely (**S = 0.90 C + 0.07, R² = 0.83**, 7 tasks). QQP
+  (C 0.21, S 0.49) breaks it upward; 20 Newsgroups (C 0.60, S 0.42) downward. C is a
+  floor, not a predictor.
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -217,12 +217,14 @@ Normalize by chance:
 | QNLI | 50% | 0.21 | 0.31 |
 | QQP | 50% | 0.21 | 0.49 |
 | MNLI | 33.3% | 0.18 | 0.07 |
+| 20 Newsgroups | 5% | 0.60 | 0.42 |
 
-Fit: **S = 0.92 C + 0.09, R² = 0.885** (6 tasks). With five tasks S ≈ C looked strong
-(R² = 0.965). **QQP breaks it:** C is 0.21 but S is 0.49 (mean of three seeds; 0.45-0.53).
-The transformer captures paraphrase structure that TF-IDF cannot. C is a **lower bound** on
-what a better student can do, not a predictor. The residuals are the interesting part
-(QQP +0.20, MNLI -0.19).
+Fit: **S = 0.90 C + 0.07, R² = 0.827** (7 tasks). With five tasks S ≈ C looked strong
+(R² = 0.965). **QQP breaks it upward:** C is 0.21 but S is 0.49 (mean of three seeds;
+0.45-0.53). The transformer captures paraphrase structure that TF-IDF cannot.
+**20 Newsgroups breaks it downward:** C is 0.60 but S is 0.42 — 100 labels per class is not
+enough for a 20-way task, and the teacher is weak (29.5%). C is a **lower bound** on what a
+better student can do, not a predictor. Residuals: QQP +0.23, MNLI -0.17, 20NG -0.20.
 
 This is a useful diagnostic, not a law: six classification tasks, no generation, and the
 linear model is a floor. The next step is 10 tasks and a multi-feature model
