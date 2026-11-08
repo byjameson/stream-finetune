@@ -28,6 +28,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
 | `distill_trec.py` | TREC-QC; teacher failed (54.4% < 59.5% linear), excluded | ~10 min |
 | `distill_dolly_qa_t5.py` | Dolly closed_qa: 1.5B teacher -> T5-small; 16/4/2-bit | ~25 min |
+| `dolly_t5_bits.py` | same labels, T5-small bit sweep incl. 3-bit | ~10 min |
 | `distill_dbpedia.py` | DBPedia-14 with a 3B 4-bit teacher + BERT-tiny | ~20 min |
 | `distill_qqp.py` | QQP duplicate pairs with a 3B 4-bit teacher + BERT-tiny | ~15 min |
 
@@ -78,8 +79,9 @@ architecture and byte budget that matched the AG News teacher.
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
 
 **Dolly closed_qa (open-ended, 1.5B teacher F1 0.4126):** T5-small 60.5M at bf16
-F1 0.344 (0.645 bit/param); 4-bit 0.273 (0.161); 2-bit 0.000 (0.081). Open-ended
-generation is the hardest regime; the 0.1-bit budget is not enough.
+F1 0.380 (0.645 bit/param); 4-bit 0.256 (0.161); 3-bit **0.0001** (0.121); 2-bit
+**0.000** (0.081). A second 4-bit run gave 0.273. The generation cliff is at 3 bits;
+the 0.1-bit budget is not close.
 
 **QNLI (2-way, 3B teacher 81.25%):** the same 4.39M BERT-tiny at 4-bit = 59.75%
 (-21.5, 0.0117 bit/param); linear C 0.21.

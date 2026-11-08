@@ -138,10 +138,10 @@ language. This is the same lesson as AG News, one step further: the behaviour is
 structured, so a small model can represent it.
 
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
-on the teacher's answers gets token F1 0.344 against the human reference at bf16
+on the teacher's answers gets token F1 0.380 against the human reference at bf16
 (0.645 bit/param); the teacher is 0.4126. At 4-bit (0.161 bit/param) the student drops to
-0.273; at 2-bit (0.081) it outputs nothing. The 0.1-bit budget is not enough for
-open-ended generation.
+0.256; at 3-bit (0.121) it is **0.0001**; at 2-bit (0.081) it is 0. A second 4-bit run gave
+0.273. The generation cliff is at 3 bits — the 0.1-bit budget is not close.
 
 ![Compressibility spectrum](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/compressibility_spectrum.png)
 

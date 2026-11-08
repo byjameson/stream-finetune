@@ -14,7 +14,8 @@ We now have a measured spectrum, not a law:
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
 | MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
 | MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | -48.9 points (chance) |
-| Dolly closed_qa (generation) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.273 vs 0.413 (-34%) |
+| Dolly closed_qa (generation) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.256-0.273 vs 0.413 |
+| Dolly closed_qa (generation) | 22.7 MB T5-small 3-bit | 0.121 | F1 0.0001 (dead) |
 | Dolly closed_qa (generation) | 15.1 MB T5-small 2-bit | 0.081 | F1 0.000 (dead) |
 
 The next question is whether the floor can be predicted **before** training a student.

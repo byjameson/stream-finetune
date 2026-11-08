@@ -27,7 +27,9 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 36.8% vs 84.7% (-47.9, chance) |
 | MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | 35.8% vs 84.7% (-48.9, chance) |
 | date -> ISO | 0.67 MB seq2seq 4-bit | **0.0036** | 99.8% exact (teacher 100%) |
-| Dolly closed_qa (open-ended) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.273 vs teacher 0.413 |
+| Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
+| Dolly closed_qa (open-ended) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.256 (second run 0.273) |
+| Dolly closed_qa (open-ended) | 22.7 MB T5-small 3-bit | 0.121 | F1 0.0001 (dead) |
 | Dolly closed_qa (open-ended) | 15.1 MB T5-small 2-bit | 0.081 | F1 0.000 (dead) |
 
 ## The controlled comparison

@@ -1,0 +1,33 @@
+{
+ "params": 60506624,
+ "rows": [
+  {
+   "bits": 16,
+   "f1_reference": 0.38,
+   "f1_teacher": 0.4281,
+   "size_mb": 121.01,
+   "bits_per_teacher_param": 0.6454
+  },
+  {
+   "bits": 4,
+   "f1_reference": 0.2561,
+   "f1_teacher": 0.2503,
+   "size_mb": 30.25,
+   "bits_per_teacher_param": 0.16135
+  },
+  {
+   "bits": 3,
+   "f1_reference": 0.0001,
+   "f1_teacher": 0.0002,
+   "size_mb": 22.69,
+   "bits_per_teacher_param": 0.12101
+  },
+  {
+   "bits": 2,
+   "f1_reference": 0.0,
+   "f1_teacher": 0.0,
+   "size_mb": 15.13,
+   "bits_per_teacher_param": 0.08068
+  }
+ ]
+}
