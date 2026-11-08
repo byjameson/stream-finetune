@@ -181,9 +181,11 @@ that is the point.
 
 A measured note on quantization vs distillation: post-hoc quantization dies below 3 bits;
 a 340 KB student matches a 1.5B teacher on a narrow keyword task at 0.0019
-bit/teacher-param; the same 4.4M student loses 22.5 points on SST-2 and 47.9 on MNLI;
-open-ended generation dies below 0.16 bit/param. Details, caveats and reproduction:
-[`docs/BEHAVIORAL_BITS.md`](docs/BEHAVIORAL_BITS.md).
+bit/teacher-param; the same 4.4M student is within 1.3 points on DBPedia-14 but loses
+22.5 on SST-2 and 47.9 on MNLI; open-ended generation dies at 3 bits. A cheap 45 KB TF-IDF
+student is a **lower bound** on the 4.4M student's normalized skill (6 tasks, R² = 0.89),
+not a predictor: QQP (C 0.21, S 0.49) breaks the near-identity. Details, caveats and
+reproduction: [`docs/BEHAVIORAL_BITS.md`](docs/BEHAVIORAL_BITS.md).
 
 ## Verification
 
