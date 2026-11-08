@@ -67,6 +67,9 @@ kod; sinir ağı 7.000× gereksiz.
 %74,25). Marjinal 1,82e-6 bit/param; tabanı sayarsan 16 bit/param. **0,1 bit bir muhasebe
 sorusu.**
 
+**SST-2'de 294 baytlık prompt: %93,75** (340 KB öğrenci %71,75, öğretmen %94,25). 1.156×
+küçük ve 22 puan daha iyi; taban duyguyu zaten biliyor, prompt sadece işaret ediyor.
+
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
 depolama ve hesaplama birbirinin yerine geçer.

@@ -1,0 +1,6 @@
+{
+ "acc_true": 0.9375,
+ "agree_teacher": 0.985,
+ "prompt_bytes": 294,
+ "bits_per_teacher_param_marginal": 1.568e-06
+}

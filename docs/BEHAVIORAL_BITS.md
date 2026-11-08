@@ -23,8 +23,9 @@ paper. Test sets and seeds are fixed before the run.
 - **Representation beats compression.** The date program is 7,200× smaller than the neural
   student at higher accuracy. The floor is a property of the representation, not the teacher.
 - **0.1 bit is an accounting question.** A 341-byte prompt on a shared 1.5B base matches a
-  340 KB student on AG News; count the base and it is 16 bit/param. A 93-byte program is
-  100% exact on dates. What is shared, and what is counted, decides the number.
+  340 KB student on AG News; on SST-2, a 294-byte prompt beats it by 22 points. Count the
+  base and it is 16 bit/param. A 93-byte program is 100% exact on dates. What is shared,
+  and what is counted, decides the number.
 - **The artifact can be data.** A 135 KB coreset trains a 70.5% student at load time; a
   270 KB coreset reaches 78.0%, statistically indistinguishable from the 340 KB model.
   Storage and compute are interchangeable.
@@ -203,6 +204,10 @@ This is not a contradiction. It is the accounting boundary. If the base is alrea
 and shared across many behaviours, the marginal artifact per behaviour is the prompt. If
 every deployment carries the base, it is 16 bit/param. The 0.1-bit question is meaningless
 without saying what is shared and what is counted.
+
+The rung is not task-specific. On SST-2, a **294-byte prompt** reaches **93.75%** — the
+340 KB student gets 71.75%, the teacher 94.25%. The prompt is 1,156× smaller and 22 points
+better, because the 1.5B base already knows sentiment and the prompt only points at it.
 
 ### The coreset rung
 

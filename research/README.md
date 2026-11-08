@@ -22,6 +22,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `date_program.py` | 93-byte date parser; 100% exact, code-only bits | ~5 s |
 | `agnews_prompt.py` | 341-byte prompt on the shared 1.5B base; 73.75% | ~25 s |
+| `sst2_prompt.py` | 294-byte prompt on SST-2; 93.75% | ~30 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
@@ -71,6 +72,10 @@ McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 
 **AG News, 341-byte prompt:** a shared 1.5B base + four examples = 73.75% (the 340 KB
 student gets 74.25%); marginal 1.82e-6 bit/param, but 16 bit/param if the base is counted.
 The 0.1-bit question is an accounting question.
+
+**SST-2, 294-byte prompt:** the same shared base + four examples = **93.75%** (the 340 KB
+student gets 71.75%, the teacher 94.25%). The prompt is 1,156× smaller and 22 points
+better: the base already knows sentiment, the prompt only points at it.
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is
