@@ -29,6 +29,9 @@ paper. Test sets and seeds are fixed before the run.
 - **The artifact can be data.** A 135 KB coreset trains a 70.5% student at load time; a
   270 KB coreset reaches 78.0%, statistically indistinguishable from the 340 KB model.
   Storage and compute are interchangeable.
+- **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
+  (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
+  It adds capability; the prompt does not.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -228,12 +231,27 @@ coreset is statistically indistinguishable on 400 rows and smaller. The artifact
 data; the training procedure is shared. **Storage and load-time compute are
 interchangeable.**
 
+### The 0.077-bit adapter
+
+A LoRA adapter is a real, trained behaviour on a shared base. The project's Qwen2.5-3B
+adapter (r=16, q/k/v/o, 7.37M parameters, 60 SFT steps) is:
+
+| storage | size | bits / base-param |
+|---|---:|---:|
+| fp32 (as saved) | 29.6 MB | 0.0766 |
+| fp16 | 14.8 MB | 0.0383 |
+
+Both are below 0.1 bit per base parameter, with the 3.09B base shared. This is not a
+quantized base; it is a small delta on a shared base. The prompt is smaller but only works
+for tasks the base already knows; the adapter adds capability.
+
 ### The sharing ladder
 
 | artifact | per-behaviour bytes | shared | example |
 |---|---:|---|---|
 | program | 93 B | Python + `dateutil` | date -> ISO, 100% |
 | prompt | 341 B | 1.5B base | AG News, 73.75% |
+| adapter (fp16) | 14.8 MB | 3.09B base | 0.038 bit/base-param |
 | coreset | 135 KB | training procedure | AG News, 70.5% |
 | linear student | 340 KB | none | AG News, 74.25% |
 | tiny transformer | 2.2 MB | none | AG News, 76.75% |

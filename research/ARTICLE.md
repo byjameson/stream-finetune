@@ -151,15 +151,20 @@ The prompt rung is not task-specific. On SST-2, a **294-byte prompt** reaches **
 the 340 KB student gets 71.75%, the teacher 94.25%. The base already knows sentiment; the
 prompt only points at it.
 
+The practical sub-0.1-bit artifact is an **adapter**. The project's Qwen2.5-3B LoRA
+(7.37M parameters, 60 SFT steps) is 29.6 MB fp32 = **0.077 bit/base-param**, 14.8 MB fp16
+= **0.038**, with the 3.09B base shared. It adds capability; the prompt does not.
+
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
 from the 340 KB model. The training procedure is shared. Storage and compute are
 interchangeable.
 
 The ladder: **program** (93 B + shared runtime) -> **prompt** (341 B + shared base) ->
-**coreset** (135 KB + training procedure) -> **linear student** (340 KB) -> **tiny
-transformer** (2.2 MB) -> **4-bit model** (30 MB). The lower rungs are different objects,
-not better compression of the same object. The revolution is choosing the rung.
+**adapter** (14.8 MB + shared base, 0.038 bit/param) -> **coreset** (135 KB + training
+procedure) -> **linear student** (340 KB) -> **tiny transformer** (2.2 MB) -> **4-bit
+model** (30 MB). The lower rungs are different objects, not better compression of the same
+object. The revolution is choosing the rung.
 
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
 on the teacher's answers gets token F1 0.380 against the human reference at bf16

@@ -1,0 +1,19 @@
+{
+ "adapter": "checkpoints/p1_qwen3b_lora_r16_t60.pt",
+ "meta": {
+  "model": "models/Qwen2.5-3B",
+  "r": 16,
+  "steps": 60,
+  "lr": 0.0002,
+  "seq": 1024,
+  "tag": "exp8_3b_train60",
+  "mode": "stream",
+  "clip": 1.0,
+  "ts": "2026-10-16 10:15:10"
+ },
+ "lora_params": 7372800,
+ "file_bytes": 29586297,
+ "fp32_bits_per_base_param": 0.0766,
+ "fp16_bytes": 14745600,
+ "fp16_bits_per_base_param": 0.0382
+}

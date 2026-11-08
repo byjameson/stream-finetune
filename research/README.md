@@ -23,6 +23,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_program.py` | 93-byte date parser; 100% exact, code-only bits | ~5 s |
 | `agnews_prompt.py` | 341-byte prompt on the shared 1.5B base; 73.75% | ~25 s |
 | `sst2_prompt.py` | 294-byte prompt on SST-2; 93.75% | ~30 s |
+| `adapter_bits.py` | Qwen3B LoRA size/bits: 0.077 fp32 / 0.038 fp16 | ~5 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
@@ -76,6 +77,10 @@ The 0.1-bit question is an accounting question.
 **SST-2, 294-byte prompt:** the same shared base + four examples = **93.75%** (the 340 KB
 student gets 71.75%, the teacher 94.25%). The prompt is 1,156× smaller and 22 points
 better: the base already knows sentiment, the prompt only points at it.
+
+**Qwen2.5-3B LoRA (0.077 bit/base-param):** 7.37M params, 29.6 MB fp32 = 0.0766; 14.8 MB
+fp16 = 0.0382, with the 3.09B base shared. A real 60-step SFT artifact below 0.1. The
+prompt adds no capability; the adapter does.
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is

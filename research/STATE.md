@@ -32,6 +32,7 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | date -> ISO (program) | 93 B (+752 KB shared dateutil) | **4.96e-7** code only | 100% exact |
 | AG News (prompt) | 341 B + shared 1.5B base | 1.82e-6 marginal / 16 with base | 73.75% |
 | SST-2 (prompt) | 294 B + shared 1.5B base | 1.57e-6 marginal / 16 with base | 93.75% |
+| Qwen2.5-3B LoRA | 29.6 MB fp32 / 14.8 MB fp16 | 0.077 / 0.038 | 60-step SFT |
 | AG News (coreset 500) | 135 KB | 0.00072 | 70.5% |
 | AG News (coreset 1000) | 270 KB | 0.00144 | 78.0% |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
@@ -84,6 +85,8 @@ architectures, the idea of task-specific compression.
 - **Data as artifact:** a 135 KB coreset trains a 70.5% student at load time; a 270 KB
   coreset reaches 78.0%, indistinguishable from the 340 KB model. Storage and compute are
   interchangeable.
+- **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
+  fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
 **C is a lower bound, not a predictor.** With five tasks, chance-normalized skill looked
