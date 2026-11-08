@@ -1,0 +1,56 @@
+# Next: from a measured spectrum to a predictive law
+
+We now have a measured spectrum, not a law:
+
+| task | student | bits / teacher-param | result |
+|---|---|---:|---|
+| AG News (4-way) | 340 KB TF-IDF | 0.00186 | matches teacher (p=0.69) |
+| AG News (4-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | matches teacher (+1.5) |
+| SST-2 (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -22.5 points |
+| date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
+| MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | running (3B teacher) |
+
+The next question is whether the floor can be predicted **before** training a student.
+
+## Candidate predictors
+
+1. **Linear compressibility.** `C = (linear_acc - chance) / (teacher_acc - chance)`.
+   AG News: about 0.91. SST-2: about 0.49. The minimum bits should fall as C rises.
+2. **Teacher conditional entropy.** `H(Y|X)` on the test set, from the teacher's label
+   distribution. Higher entropy should mean a higher floor.
+3. **Input/output length and class count.** Cheap, but probably weak.
+4. **The gap at a fixed tiny student.** This is what we are trying to predict, so it is
+   a diagnostic, not a pre-hoc predictor.
+
+## Experiment
+
+- 10 tasks with a clear label: AG News, SST-2, TREC, MNLI, DBPedia, spam, topic,
+  sentiment, NLI, intent.
+- For each: 2,000 teacher labels, 400 held-out rows, a fixed teacher (3B-Instruct, 4-bit)
+  and a fixed student ladder (TF-IDF 1k/2k/5k, BERT-tiny 4-bit).
+- Metric: the smallest student bytes whose McNemar p against the teacher is > 0.05.
+- Fit `log(bits_min)` against `C`, `H(Y|X)`, class count and length.
+- Report R² and the residuals; do not hide tasks that break the fit.
+
+If the fit is good, the result is a practical predictor: **before training, estimate
+whether 0.1 bit/param is plausible for this task**. If it is bad, the honest conclusion is
+that every task needs its own student search.
+
+## Pitfalls
+
+- **Teacher quality.** The 1.5B teacher collapsed on MNLI (3.3% contradiction); a biased
+  teacher makes the task look incompressible. Use a stronger teacher and check the label
+  distribution.
+- **Test-set size.** 400 rows gives wide confidence intervals; the AG News p=0.69 is not
+  proof of equality, only absence of evidence for a difference.
+- **Contamination.** The teacher may have seen the benchmark; report it.
+- **Total bytes.** Count the tokenizer, the adapter and any retrieval index. A 0.1-bit
+  claim that ignores the decoder is not a compression claim.
+- **Narrow vs general.** A result on a 4-way classifier is not a claim about general chat.
+
+## Product path
+
+If the predictor works, `research/autodistill.py` can use it to skip the ladder: given a
+task and a byte budget, it picks the student class (linear, tiny transformer, seq2seq) and
+reports the expected floor before training. That is a useful tool, not a new distillation
+algorithm.
