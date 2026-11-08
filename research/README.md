@@ -20,6 +20,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_sst2_bert.py` | DistilBERT 66M on the saved SST-2 teacher labels; 16/4/3/2-bit | ~8 min |
 | `date_teacher.py` | 1.5B labels 6k date strings -> ISO; 500 test | ~20 min |
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
+| `date_program.py` | 93-byte date parser; 100% exact, code-only bits | ~5 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
 | `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
@@ -85,7 +86,9 @@ is too few. A capacity/data point, not a clean distillation result.
 architecture and byte budget that matched the AG News teacher.
 
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
-0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
+0.0036 bit/teacher-param at 4-bit (0.0144 at bf16). A **93-byte program** is 100% exact;
+4.96e-7 bit/param code only, 0.0040 with the shared `dateutil` library. The neural
+student is 7,200× larger at lower accuracy.
 
 **Dolly closed_qa (open-ended, 1.5B teacher F1 0.4126):** T5-small 60.5M at bf16
 F1 0.380 (0.645 bit/param); 4-bit 0.256 (0.161); 3-bit **0.0001** (0.121); 2-bit

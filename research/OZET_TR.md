@@ -57,6 +57,11 @@ TF-IDF en iyi %71,8 (-22,5). DistilBERT 66M: 4-bit %83,8 (-10,5), 2-bit %73,5 (-
 
 - bf16 2,70 MB: %99,8 → 0,0144 bit/param
 - 4-bit 0,67 MB: %99,8 → **0,0036 bit/param**
+- **93 baytlık program:** %100 exact → yalnız kod **4,96e-7 bit/param** (paylaşılan
+  752 KB `dateutil` ile 0,0040). 1,35M seq2seq'ten 7.200× küçük ve daha doğru.
+
+**Temsil, sıkıştırmadan önemli:** deterministik bir string eşlemesi için doğru öğrenci
+kod; sinir ağı 7.000× gereksiz.
 
 ## Açık uçlu generasyon: en zor rejim
 
