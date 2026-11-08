@@ -16,7 +16,6 @@ TASKS = {
     "sst2": ("sst2_labels.json", 2, lambda r: r["text"]),
     "mnli": ("mnli_labels.json", 3, lambda r: r["premise"] + " " + r["hypothesis"]),
     "qnli": ("qnli_labels.json", 2, lambda r: r["question"] + " " + r["sentence"]),
-    "trec": ("trec_labels.json", 6, lambda r: r["text"]),
 }
 FEATURES = [1000, 2000, 5000, 10000, 20000, 50000]
 rows = []
