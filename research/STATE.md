@@ -62,10 +62,12 @@ architectures, the idea of task-specific compression.
 - The controlled same-student comparison across tasks (+1.5 / -21.5 / -22.5 / -47.9).
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
-**Not yet:** a predictive law. A single metric `C` (linear compressibility) fits the
-high-C cluster (AG News 0.98, DBPedia 0.99) but **fails at the low end** (QNLI and MNLI
-have almost the same C, gaps -21.5 vs -47.9). Five points give R² = 0.80 — a description,
-not a law. The next attempt must be multi-feature.
+**A first predictive relationship:** the raw gap is misleading because chance levels
+differ. In chance-normalized skill `S = (student - chance) / (teacher - chance)`, a cheap
+45 KB TF-IDF student's `C` predicts `S`: **S = 1.04 C - 0.01, R² = 0.965** (5 tasks).
+The residuals are ±0.1 (QNLI +0.10, MNLI -0.11). This is not a law yet: five
+classification tasks, no generation, and the linear model is a lower bound on what a
+better student can do. The next test is 10 tasks.
 
 ## Failed attempts, kept as negative results
 

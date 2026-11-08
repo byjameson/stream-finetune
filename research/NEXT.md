@@ -21,17 +21,19 @@ The next question is whether the floor can be predicted **before** training a st
 ## Candidate predictors
 
 1. **Linear compressibility.** `C = (linear_acc - chance) / (teacher_acc - chance)`.
-   AG News: about 0.91. SST-2: about 0.49. The minimum bits should fall as C rises.
+   AG News 0.98, DBPedia 0.99, SST-2 0.49, QNLI 0.21, MNLI 0.18. The student's
+   chance-normalized skill should rise with C.
 2. **Teacher conditional entropy.** `H(Y|X)` on the test set, from the teacher's label
    distribution. Higher entropy should mean a higher floor.
 3. **Input/output length and class count.** Cheap, but probably weak.
 4. **The gap at a fixed tiny student.** This is what we are trying to predict, so it is
    a diagnostic, not a pre-hoc predictor.
 
-The five-point check: C fits the high-C cluster (AG News 0.98, DBPedia 0.99) but the
-QNLI/MNLI pair (C 0.21 / 0.18, gaps -21.5 / -47.9) breaks a single line. R² = 0.80 is a
-description, not a law. A multi-feature model (class count, chance level, linear gap,
-teacher entropy) is the next attempt, not a bigger fit on C.
+The five-point check: in **chance-normalized skill**
+`S = (student - chance) / (teacher - chance)`, C predicts S almost 1:1:
+**S = 1.04 C - 0.01, R² = 0.965**. The raw gap looked like a failure only because chance
+levels differ. This is the first working diagnostic; the next test is 10 tasks, including
+generation, and a check of the residuals (QNLI +0.10, MNLI -0.11).
 
 ## Experiment
 

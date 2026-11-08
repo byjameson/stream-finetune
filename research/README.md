@@ -84,19 +84,21 @@ generation is the hardest regime; the 0.1-bit budget is not enough.
 
 ## Cheap diagnostic
 
-`C = (linear_acc - chance) / (teacher_acc - chance)` on the saved teacher labels:
+`C = (linear_acc - chance) / (teacher_acc - chance)` on the saved teacher labels. The raw
+gap is misleading because chance levels differ; normalize the student too:
+`S = (student - chance) / (teacher - chance)`.
 
-| task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
-|---|---:|---:|---:|---:|
-| AG News | 75.25% | 74.25% | 0.98 | +1.5 |
-| DBPedia | 92.60% | 92.09% | 0.99 | -1.3 |
-| SST-2 | 94.25% | 71.75% | 0.49 | -22.5 |
-| QNLI | 81.25% | 56.50% | 0.21 | -21.5 |
-| MNLI | 84.71% | 42.61% | 0.18 | -47.9 |
+| task | chance | C | S |
+|---|---:|---:|---:|
+| AG News | 25% | 0.98 | 1.03 |
+| DBPedia | 7.1% | 0.99 | 0.99 |
+| SST-2 | 50% | 0.49 | 0.49 |
+| QNLI | 50% | 0.21 | 0.31 |
+| MNLI | 33.3% | 0.18 | 0.07 |
 
-The high-C cluster is within 1.5 points; the QNLI/MNLI pair still breaks a single line
-(same C, gaps of -21.5 vs -47.9). Five points, R² = 0.80. A multi-feature model is needed;
-see `NEXT.md`.
+Fit: **S = 1.04 C - 0.01, R² = 0.965** (n=5). A 45 KB TF-IDF student predicts how much of
+the teacher's normalized skill a 4.4M transformer retains. Residuals ±0.1. This is a first
+predictive relationship, not a law; `NEXT.md` has the 10-task test.
 
 ## MNLI: a capacity failure, not a bit-rate result
 

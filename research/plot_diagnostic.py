@@ -1,4 +1,4 @@
-"""Plot the linear-compressibility diagnostic against the BERT-tiny gap."""
+"""Two diagnostic plots: the raw gap (misleading) and chance-normalized skill (predictive)."""
 import json
 from pathlib import Path
 
@@ -11,7 +11,8 @@ R = Path("research/results")
 OUT = Path("docs/figures")
 OUT.mkdir(exist_ok=True)
 
-TEACHER = {"agnews": 0.7525, "sst2": 0.9425, "mnli": 0.8471}
+TEACHER = {"agnews": 0.7525, "sst2": 0.9425, "mnli": 0.8471, "qnli": 0.8125, "dbpedia": 0.926}
+CHANCE = {"agnews": 25.0, "sst2": 50.0, "mnli": 100 / 3, "qnli": 50.0, "dbpedia": 100 / 14}
 FILES = {"agnews": "agnews_bert_tiny.json", "sst2": "sst2_bert_tiny.json",
          "mnli": "mnli_bert_tiny.json", "qnli": "qnli_bert_tiny.json",
          "dbpedia": "dbpedia_bert_tiny.json"}
@@ -33,38 +34,65 @@ for task, fname in FILES.items():
     c = c_map.get(task, d.get("C"))
     if c is None:
         continue
-    rows.append({"task": task, "C": c, "gap": row4["acc"] * 100 - teacher * 100})
+    student = row4["acc"] * 100
+    chance = CHANCE[task]
+    rows.append({"task": task, "C": c, "chance": chance,
+                 "gap": student - teacher * 100,
+                 "S": (student - chance) / (teacher * 100 - chance)})
 
 print(rows)
 x = np.array([r["C"] for r in rows])
-y = np.array([r["gap"] for r in rows])
-fig, ax = plt.subplots(figsize=(8.4, 5.2), dpi=150)
-ax.scatter(x, y, s=90, color="#2563eb", zorder=4)
-for r in rows:
-    ax.annotate(r["task"], (r["C"], r["gap"]), textcoords="offset points", xytext=(8, 6), fontsize=9)
-q = next((r for r in rows if r["task"] == "qnli"), None)
-if q:
-    ax.annotate("QNLI breaks the line", (q["C"], q["gap"]), textcoords="offset points",
-                xytext=(28, -22), fontsize=8, color="#b91c1c",
-                arrowprops=dict(arrowstyle="->", color="#b91c1c", lw=0.8))
-if len(rows) >= 2:
+gap = np.array([r["gap"] for r in rows])
+skill = np.array([r["S"] for r in rows])
+
+
+def fit_line(y):
     m, b = np.polyfit(x, y, 1)
-    xs = np.linspace(min(0.05, x.min()), max(1.0, x.max()), 100)
-    ax.plot(xs, m * xs + b, "--", color="#dc2626", lw=1.2,
-            label=f"fit: gap = {m:.1f} C {b:+.1f}")
     pred = m * x + b
     ss_res = float(((y - pred) ** 2).sum())
     ss_tot = float(((y - y.mean()) ** 2).sum())
-    r2 = 1 - ss_res / ss_tot if ss_tot else 0.0
-    ax.text(0.03, 0.04, f"R² = {r2:.3f}  (n={len(rows)})", transform=ax.transAxes, fontsize=9)
+    return m, b, (1 - ss_res / ss_tot if ss_tot else 0.0)
+
+
+# 1) raw gap — misleading because chance differs
+m, b, r2 = fit_line(gap)
+fig, ax = plt.subplots(figsize=(8.4, 5.2), dpi=150)
+ax.scatter(x, gap, s=90, color="#2563eb", zorder=4)
+for r in rows:
+    ax.annotate(f'{r["task"]} (chance {r["chance"]:.0f}%)', (r["C"], r["gap"]),
+                textcoords="offset points", xytext=(8, 6), fontsize=8)
+xs = np.linspace(0.1, 1.0, 100)
+ax.plot(xs, m * xs + b, "--", color="#dc2626", lw=1.2, label=f"fit: gap = {m:.1f} C {b:+.1f}")
+ax.text(0.03, 0.05, f"R² = {r2:.2f} (n={len(rows)})", transform=ax.transAxes, fontsize=9)
 ax.axhline(0, color="#6b7280", lw=1)
-ax.axhspan(-3, 0, color="#dcfce7", alpha=0.5, zorder=0)
 ax.set_xlim(0, 1.05)
-ax.set_xlabel("linear compressibility C = (linear_acc - chance) / (teacher_acc - chance)")
-ax.set_ylabel("BERT-tiny 4.4M gap vs teacher at 0.0117 bit/param (points)")
-ax.set_title("A cheap diagnostic — and where it fails")
+ax.set_xlabel("linear compressibility C")
+ax.set_ylabel("raw accuracy gap vs teacher (points)")
+ax.set_title("Raw gap vs C — not comparable: the chance level differs")
 ax.grid(alpha=0.25)
 ax.legend(fontsize=8, loc="lower right")
 fig.tight_layout()
 fig.savefig(OUT / "diagnostic.png", bbox_inches="tight")
-print("wrote docs/figures/diagnostic.png")
+plt.close(fig)
+
+# 2) normalized skill — the diagnostic that works
+m, b, r2 = fit_line(skill)
+fig, ax = plt.subplots(figsize=(8.4, 5.2), dpi=150)
+ax.scatter(x, skill, s=90, color="#059669", zorder=4)
+for r in rows:
+    ax.annotate(r["task"], (r["C"], r["S"]), textcoords="offset points", xytext=(8, 6), fontsize=9)
+xs = np.linspace(0.1, 1.0, 100)
+ax.plot(xs, m * xs + b, "--", color="#dc2626", lw=1.2,
+        label=f"fit: S = {m:.2f} C {b:+.2f}")
+ax.plot(xs, xs, ":", color="#9ca3af", lw=1, label="S = C")
+ax.text(0.03, 0.82, f"R² = {r2:.3f} (n={len(rows)})", transform=ax.transAxes, fontsize=10)
+ax.set_xlim(0, 1.05)
+ax.set_ylim(0, 1.12)
+ax.set_xlabel("linear compressibility C (cheap TF-IDF student)")
+ax.set_ylabel("normalized skill S of the 4.4M BERT-tiny student")
+ax.set_title("Chance-normalized skill: the cheap diagnostic works")
+ax.grid(alpha=0.25)
+ax.legend(fontsize=8, loc="lower right")
+fig.tight_layout()
+fig.savefig(OUT / "diagnostic_normalized.png", bbox_inches="tight")
+print(f"normalized fit: S = {m:.3f} C {b:+.3f}, R2 = {r2:.3f}")
