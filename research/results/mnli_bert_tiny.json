@@ -1,0 +1,25 @@
+{
+ "note": "Teacher collapsed: only 3.3% of training rows labelled contradiction, 59.4% balanced-test accuracy. The 33% student is chance on a balanced test; this is not a compressibility result.",
+ "teacher_acc": 0.594,
+ "params": 4386307,
+ "rows": [
+  {
+   "bits": 16,
+   "acc": 0.3333,
+   "size_mb": 8.77,
+   "bits_per_teacher_param": 0.04679
+  },
+  {
+   "bits": 4,
+   "acc": 0.3434,
+   "size_mb": 2.19,
+   "bits_per_teacher_param": 0.0117
+  },
+  {
+   "bits": 2,
+   "acc": 0.3208,
+   "size_mb": 1.1,
+   "bits_per_teacher_param": 0.00585
+  }
+ ]
+}
