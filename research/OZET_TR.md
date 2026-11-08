@@ -95,6 +95,7 @@ bir modele geçmek gerek. Sıradaki adım 10 görev ve bir fit.
 ## MNLI: kapasite duvarı
 
 3B-Instruct (4-bit) öğretmen %84,7; aynı BERT-tiny 4,4M öğrenci %36,8 (şans %33,3).
-Aynı öğrenci ve 0,0117 bit/param: AG News +1,5, SST-2 -22,5, MNLI -47,9. Bu bir bit
-oranı değil, **kapasite duvarı**: 4,4M öğrenci 3 sınıflı NLI'yi temsil edemiyor.
+DistilBERT 66M aynı etiketlerde 4-bit %57,1 (0,179 bit/param, -27,6) ama 2-bit %35,8
+(0,089, -48,9). 0,1 bit bütçesinde ikisi de şans civarı: MNLI daha çok parametre **ve**
+daha çok etiket istiyor. Kontrollü karşılaştırma: +1,5 / -21,5 / -22,5 / -47,9.
 (1.5B öğretmen önce contradiction'ı %3,3 seçip çökmüştü; 3B ile düzeldi.)

@@ -129,9 +129,11 @@ bit/param matches the AG News teacher (76.75% vs 75.25%) and loses 22.5 points o
 
 **The capacity wall: MNLI.** A 3B-Instruct 4-bit teacher reaches 84.7% on the same
 400-row balanced test. The same 4.39M BERT-tiny — the one that matched AG News at
-0.0117 bit/param — reaches 36.8% at 4-bit (chance 33.3%). This is not a bit-rate result: the
-student cannot represent 3-way NLI at 4.4M parameters. At the same 0.0117 bit/param the
-three tasks are **+1.5, -22.5 and -47.9** points from their teachers.
+0.0117 bit/param — reaches 36.8% at 4-bit (chance 33.3%). A 66M DistilBERT on the same
+2,000 labels reaches 57.1% at 4-bit (0.179 bit/param, -27.6) but collapses to 35.8% at
+2-bit (0.089 bit/param, -48.9). At the 0.1-bit budget the larger student is at chance too:
+MNLI needs more parameters **and** more labels, not fewer bits. At 0.0117 bit/param the
+four tasks are **+1.5, -21.5, -22.5 and -47.9** points from their teachers.
 
 Teacher quality matters: the 1.5B teacher collapsed on MNLI (3.3% contradiction, 59.4%);
 the 3B teacher was needed before the task could be measured at all.
