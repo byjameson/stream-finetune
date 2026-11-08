@@ -86,6 +86,13 @@ teacher (84.7% on 400 balanced rows), the same 4.39M BERT-tiny reaches 36.8% at 
 (chance 33.3%). Same student and 0.0117 bit/param as the AG News success; the task needs
 more capacity. This is the third point of the controlled comparison (+1.5 / -22.5 / -47.9).
 
+### Teacher prompting matters
+
+QNLI with an "entailment / not_entailment" prompt produced **70.6% unparseable** outputs
+(24% accuracy, worse than chance). The same teacher with a "yes / no" prompt produced
+**90% accuracy** on the same rows. The task did not change; the label space did. Always
+check the teacher's label distribution and parse rate before training a student.
+
 ## Caveats
 
 - The 0.5B may have seen Wikipedia in pretraining; the bigram only sees 2.5M
