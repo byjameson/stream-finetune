@@ -14,10 +14,11 @@ OUT.mkdir(exist_ok=True)
 TEACHER = {"agnews": 0.7525, "sst2": 0.9425, "mnli": 0.8471, "qnli": 0.8125,
            "dbpedia": 0.926, "qqp": 0.75}
 CHANCE = {"agnews": 25.0, "sst2": 50.0, "mnli": 100 / 3, "qnli": 50.0,
-          "dbpedia": 100 / 14, "qqp": 50.0}
+          "dbpedia": 100 / 14, "qqp": 50.0, "20ng": 100 / 20}
 FILES = {"agnews": "agnews_bert_tiny.json", "sst2": "sst2_bert_tiny.json",
          "mnli": "mnli_bert_tiny.json", "qnli": "qnli_bert_tiny.json",
-         "dbpedia": "dbpedia_bert_tiny.json", "qqp": "qqp_bert_tiny.json"}
+         "dbpedia": "dbpedia_bert_tiny.json", "qqp": "qqp_bert_tiny.json",
+         "20ng": "20ng_bert_tiny.json"}
 
 rows = []
 diag = json.loads((R / "linear_diagnostic.json").read_text(encoding="utf-8"))
