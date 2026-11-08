@@ -74,6 +74,10 @@ küçük ve 22 puan daha iyi; taban duyguyu zaten biliyor, prompt sadece işaret
 29,6 MB fp32 = **0,077 bit/taban-param**; 14,8 MB fp16 = **0,038**. Taban paylaşılır;
 adapter yetenek ekler, prompt eklemez.
 
+Adapter tam rank: **SVD rank 8, güncellemenin %35,8'ini kaybediyor**; rank indirme işe
+yaramıyor. Quantization: **8-bit 7,4 MB = 0,019 bit/param** (%0,53 hata); 4-bit 3,7 MB =
+0,0095 (%8,96). Güvenli pratik eser 8-bit adapter.
+
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
 depolama ve hesaplama birbirinin yerine geçer.

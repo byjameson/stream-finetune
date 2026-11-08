@@ -155,6 +155,10 @@ The practical sub-0.1-bit artifact is an **adapter**. The project's Qwen2.5-3B L
 (7.37M parameters, 60 SFT steps) is 29.6 MB fp32 = **0.077 bit/base-param**, 14.8 MB fp16
 = **0.038**, with the 3.09B base shared. It adds capability; the prompt does not.
 
+The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduction fails.
+Quantization works: **8-bit 7.4 MB = 0.019 bit/base-param** (0.53% weight error); 4-bit
+3.7 MB = 0.0095 (9% error). The safe practical artifact is the 8-bit adapter.
+
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
 from the 340 KB model. The training procedure is shared. Storage and compute are

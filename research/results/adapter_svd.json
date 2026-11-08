@@ -1,0 +1,37 @@
+{
+ "adapter": "checkpoints/p1_qwen3b_lora_r16_t60.pt",
+ "rows": [
+  {
+   "rank": 16,
+   "params": 7372800,
+   "fp32_mb": 29.49,
+   "fp16_mb": 14.75,
+   "fp16_bits_per_base_param": 0.0382,
+   "relative_weight_error": 0.0
+  },
+  {
+   "rank": 8,
+   "params": 3686400,
+   "fp32_mb": 14.75,
+   "fp16_mb": 7.37,
+   "fp16_bits_per_base_param": 0.0191,
+   "relative_weight_error": 0.358
+  },
+  {
+   "rank": 4,
+   "params": 1843200,
+   "fp32_mb": 7.37,
+   "fp16_mb": 3.69,
+   "fp16_bits_per_base_param": 0.0095,
+   "relative_weight_error": 0.5069
+  },
+  {
+   "rank": 2,
+   "params": 921600,
+   "fp32_mb": 3.69,
+   "fp16_mb": 1.84,
+   "fp16_bits_per_base_param": 0.0048,
+   "relative_weight_error": 0.6121
+  }
+ ]
+}

@@ -32,6 +32,8 @@ paper. Test sets and seeds are fixed before the run.
 - **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
   It adds capability; the prompt does not.
+- **The adapter compresses by quantization, not rank.** 8-bit = **0.019 bit/param** (0.53%
+  weight error); 4-bit = 0.0095 (9% error). SVD to rank 8 loses 36%, so rank reduction fails.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -245,6 +247,21 @@ Both are below 0.1 bit per base parameter, with the 3.09B base shared. This is n
 quantized base; it is a small delta on a shared base. The prompt is smaller but only works
 for tasks the base already knows; the adapter adds capability.
 
+The adapter is full-rank: SVD to rank 8 loses **35.8%** of the update, rank 4 loses 50.7%.
+Rank reduction is not viable. Quantization is:
+
+| storage | size | bits/base-param | weight error |
+|---|---:|---:|---:|
+| fp32 | 29.6 MB | 0.077 | 0 |
+| fp16 | 14.8 MB | 0.038 | ~0 |
+| **8-bit** | **7.4 MB** | **0.019** | **0.53%** |
+| 4-bit | 3.7 MB | 0.0095 | 8.96% |
+| 2-bit | 1.8 MB | 0.0048 | 45% |
+
+A safe practical artifact is an **8-bit adapter at 0.019 bit/param** (0.5% weight error);
+4-bit halves it again to 0.0095 with 9% weight error, which needs a behaviour eval before
+it can be recommended.
+
 ### The sharing ladder
 
 | artifact | per-behaviour bytes | shared | example |
@@ -252,6 +269,8 @@ for tasks the base already knows; the adapter adds capability.
 | program | 93 B | Python + `dateutil` | date -> ISO, 100% |
 | prompt | 341 B | 1.5B base | AG News, 73.75% |
 | adapter (fp16) | 14.8 MB | 3.09B base | 0.038 bit/base-param |
+| adapter (8-bit) | 7.4 MB | 3.09B base | 0.019 |
+| adapter (4-bit) | 3.7 MB | 3.09B base | 0.0095 |
 | coreset | 135 KB | training procedure | AG News, 70.5% |
 | linear student | 340 KB | none | AG News, 74.25% |
 | tiny transformer | 2.2 MB | none | AG News, 76.75% |

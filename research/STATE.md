@@ -33,6 +33,8 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | AG News (prompt) | 341 B + shared 1.5B base | 1.82e-6 marginal / 16 with base | 73.75% |
 | SST-2 (prompt) | 294 B + shared 1.5B base | 1.57e-6 marginal / 16 with base | 93.75% |
 | Qwen2.5-3B LoRA | 29.6 MB fp32 / 14.8 MB fp16 | 0.077 / 0.038 | 60-step SFT |
+| adapter 8-bit | 7.4 MB | 0.019 | 0.53% weight error |
+| adapter 4-bit | 3.7 MB | 0.0095 | 8.96% weight error |
 | AG News (coreset 500) | 135 KB | 0.00072 | 70.5% |
 | AG News (coreset 1000) | 270 KB | 0.00144 | 78.0% |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
@@ -87,6 +89,8 @@ architectures, the idea of task-specific compression.
   interchangeable.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
   fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
+- **Adapter compression is quantization, not rank:** rank 8 SVD loses 35.8%; 8-bit =
+  **0.019 bit/param** (0.53% weight error), 4-bit = 0.0095 (9% error).
 - **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
   shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
   4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a
