@@ -1,8 +1,9 @@
 """Behaviour eval of the Qwen3B LoRA at 16/8/4-bit: masked SFT loss on held-out Dolly.
 
 Loads the 4-bit base, applies the custom LoRA, and compares the base, the original
-adapter, and the 8-bit / 4-bit quantized adapters on the same 16 rows.
+adapter, and the 8-bit / 4-bit quantized adapters on the same rows.
 """
+import argparse
 import json
 
 import torch
@@ -72,9 +73,12 @@ def eval_loss(model, tok, rows):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--rows", type=int, default=N)
+    args = ap.parse_args()
     ds = load_dataset("databricks/databricks-dolly-15k", split="train")
     g = torch.Generator().manual_seed(3)
-    idx = torch.randperm(len(ds), generator=g)[:N].tolist()
+    idx = torch.randperm(len(ds), generator=g)[:args.rows].tolist()
     rows = [ds[i] for i in idx]
 
     tok = AutoTokenizer.from_pretrained(BASE)

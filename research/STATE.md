@@ -90,8 +90,8 @@ architectures, the idea of task-specific compression.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
   fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
 - **Adapter compression is quantization, not rank:** rank 8 SVD loses 35.8%; 8-bit =
-  **0.019 bit/param** (0.53% weight error, loss 2.2199), 4-bit = 0.0095 (9% error, loss
-  2.2226 vs 2.2195 original; base 2.2462 → behaviour preserved on the eval).
+  **0.019 bit/param** (loss 2.3075), 4-bit = 0.0095 (loss 2.3097 vs 2.3084 original; base
+  2.3197; 110 Dolly rows → behaviour preserved, 11% of the gain lost).
 - **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
   shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
   4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a
