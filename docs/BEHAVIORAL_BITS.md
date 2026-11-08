@@ -33,7 +33,8 @@ paper. Test sets and seeds are fixed before the run.
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
   It adds capability; the prompt does not.
 - **The adapter compresses by quantization, not rank.** 8-bit = **0.019 bit/param** (0.53%
-  weight error); 4-bit = 0.0095 (9% error). SVD to rank 8 loses 36%, so rank reduction fails.
+  weight error; loss 2.2199 vs 2.2195 original); 4-bit = **0.0095** (loss 2.2226; base
+  2.2462). SVD to rank 8 loses 36%, so rank reduction fails.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -250,17 +251,18 @@ for tasks the base already knows; the adapter adds capability.
 The adapter is full-rank: SVD to rank 8 loses **35.8%** of the update, rank 4 loses 50.7%.
 Rank reduction is not viable. Quantization is:
 
-| storage | size | bits/base-param | weight error |
-|---|---:|---:|---:|
-| fp32 | 29.6 MB | 0.077 | 0 |
-| fp16 | 14.8 MB | 0.038 | ~0 |
-| **8-bit** | **7.4 MB** | **0.019** | **0.53%** |
-| 4-bit | 3.7 MB | 0.0095 | 8.96% |
-| 2-bit | 1.8 MB | 0.0048 | 45% |
+| storage | size | bits/base-param | weight error | SFT loss |
+|---|---:|---:|---:|---:|
+| fp32 | 29.6 MB | 0.077 | 0 | 2.2195 |
+| fp16 | 14.8 MB | 0.038 | ~0 | — |
+| **8-bit** | **7.4 MB** | **0.019** | **0.53%** | 2.2199 |
+| **4-bit** | **3.7 MB** | **0.0095** | 8.96% | **2.2226** |
+| 2-bit | 1.8 MB | 0.0048 | 45% | not tested |
 
-A safe practical artifact is an **8-bit adapter at 0.019 bit/param** (0.5% weight error);
-4-bit halves it again to 0.0095 with 9% weight error, which needs a behaviour eval before
-it can be recommended.
+Behaviour eval: 12 held-out Dolly rows, masked SFT loss; the base is 2.2462. The 4-bit
+adapter keeps the adapter's gain: 2.2226 vs 2.2195 for the original, **+0.0031**, within
+noise. So a **4-bit adapter at 0.0095 bit per base parameter** preserves the behaviour on
+this eval; 8-bit (0.019) is the safer choice if the task is more sensitive.
 
 ### The sharing ladder
 

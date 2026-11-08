@@ -1,0 +1,20 @@
+{
+ "base": 2.2462,
+ "adapters": [
+  {
+   "config": "original fp32",
+   "loss": 2.2195,
+   "rows": 12
+  },
+  {
+   "config": "8-bit",
+   "loss": 2.2199,
+   "rows": 12
+  },
+  {
+   "config": "4-bit",
+   "loss": 2.2226,
+   "rows": 12
+  }
+ ]
+}
