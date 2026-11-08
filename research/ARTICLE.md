@@ -99,6 +99,10 @@ Teacher: 94.25%.
 | DistilBERT 66M, 3-bit | 25.1 MB | 82.5% | -11.8 | 0.134 |
 | DistilBERT 66M, 2-bit | 16.7 MB | 73.5% | -20.8 | 0.089 |
 
+The controlled comparison is the point: the same 4.4M BERT-tiny at the same 0.0117
+bit/param scores 76.75% on AG News (teacher 75.25%) and 71.75% on SST-2 (teacher 94.25%).
+Same architecture, same bytes, 22.5 points apart.
+
 A bag-of-words student is stuck ~22 points below the teacher regardless of size: sentiment
 needs negation and composition, which TF-IDF cannot represent. A 66M transformer helps,
 but even at 0.179 bit/param it is 10.5 points short; at 0.089 bit/param it is 20.8 points

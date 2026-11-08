@@ -99,6 +99,14 @@ def plot_spectrum():
             alpha=0.8, label="SST-2, TF-IDF+LR (teacher 94.25%)")
     ax.plot([x for x, _ in bert_pts], [y for _, y in bert_pts], "D-", color="#ea580c", lw=1.8, ms=7,
             label="SST-2, DistilBERT 66M")
+    ag_bt = load("agnews_bert_tiny.json")
+    sst_bt = load("sst2_bert_tiny.json")
+    ag4 = next(r for r in ag_bt["rows"] if r["bits"] == 4)
+    sst4 = next(r for r in sst_bt["rows"] if r["bits"] == 4)
+    ax.scatter([ag4["bits_per_teacher_param"]], [ag4["acc"] * 100 - 75.25], marker="^", s=95,
+               color="#2563eb", zorder=6, label="AG News, BERT-tiny 4.4M")
+    ax.scatter([sst4["bits_per_teacher_param"]], [sst4["acc"] * 100 - 94.25], marker="^", s=95,
+               color="#ea580c", zorder=6, label="SST-2, BERT-tiny 4.4M")
     ax.axvline(0.1, color="#111827", ls=":", lw=1.2)
     ax.axhline(0, color="#6b7280", lw=1)
     ax.axhspan(-3, 0, color="#dcfce7", alpha=0.5, zorder=0)
@@ -106,7 +114,7 @@ def plot_spectrum():
     ax.set_xlabel("bits per teacher parameter (total student bytes, log)")
     ax.set_ylabel("accuracy drop vs teacher (percentage points)")
     ax.set_title("Same bit budget, different task: the floor is a property of the behaviour")
-    ax.grid(alpha=0.25, which="both"); ax.legend(fontsize=8, loc="lower left")
+    ax.grid(alpha=0.25, which="both"); ax.legend(fontsize=7.5, loc="lower center")
     fig.tight_layout(); fig.savefig(OUT / "compressibility_spectrum.png", bbox_inches="tight"); plt.close(fig)
 
 

@@ -1,0 +1,30 @@
+{
+ "base_acc": 0.7275,
+ "params": 4386178,
+ "rows": [
+  {
+   "bits": 16,
+   "acc": 0.7275,
+   "size_mb": 8.77,
+   "bits_per_teacher_param": 0.04679
+  },
+  {
+   "bits": 4,
+   "acc": 0.7175,
+   "size_mb": 2.19,
+   "bits_per_teacher_param": 0.0117
+  },
+  {
+   "bits": 3,
+   "acc": 0.6175,
+   "size_mb": 1.64,
+   "bits_per_teacher_param": 0.00877
+  },
+  {
+   "bits": 2,
+   "acc": 0.6775,
+   "size_mb": 1.1,
+   "bits_per_teacher_param": 0.00585
+  }
+ ]
+}
