@@ -1,0 +1,20 @@
+{
+ "teacher_acc": 0.4033,
+ "params": 4386694,
+ "rows": [
+  {
+   "bits": 16,
+   "acc": 0.3133,
+   "size_mb": 8.77,
+   "bits_per_teacher_param": 0.04679
+  },
+  {
+   "bits": 4,
+   "acc": 0.3067,
+   "size_mb": 2.19,
+   "bits_per_teacher_param": 0.0117
+  }
+ ],
+ "linear_acc": 0.2967,
+ "C": 0.549
+}

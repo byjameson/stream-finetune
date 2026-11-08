@@ -11,6 +11,7 @@ We now have a measured spectrum, not a law:
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -21.5 points |
 | QQP (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -8.4 raw, S 0.49 |
 | 20 Newsgroups (20-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -14.3 raw, S 0.42, weak teacher |
+| Emotion (6-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -9.7 raw, S 0.59 |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
 | MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
@@ -32,14 +33,14 @@ The next question is whether the floor can be predicted **before** training a st
 4. **The gap at a fixed tiny student.** This is what we are trying to predict, so it is
    a diagnostic, not a pre-hoc predictor.
 
-The seven-point check: in **chance-normalized skill**
+The eight-point check: in **chance-normalized skill**
 `S = (student - chance) / (teacher - chance)`, S tracks C loosely
-(**S = 0.90 C + 0.07, R² = 0.827**). **QQP breaks it upward** (C 0.21, S 0.49, 3-seed
-mean); **20 Newsgroups breaks it downward** (C 0.60, S 0.42, weak teacher, 100 labels per
-class). The linear student is a lower bound; a transformer can capture compositional
-structure it misses, or underfit when data is scarce. The next test is 10 tasks with a
-multi-feature model (class count, chance, C, teacher accuracy, student type), not a bigger
-fit on C.
+(**S = 0.90 C + 0.07, R² = 0.827**). Emotion lands on the line. **QQP breaks it upward**
+(C 0.21, S 0.49, 3-seed mean); **20 Newsgroups breaks it downward** (C 0.60, S 0.42, weak
+teacher, 100 labels per class). The linear student is a lower bound; a transformer can
+capture compositional structure it misses, or underfit when data is scarce. The next test
+is 10 tasks with a multi-feature model (class count, chance, C, teacher accuracy, student
+type), not a bigger fit on C.
 
 ## Experiment
 

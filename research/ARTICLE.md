@@ -166,9 +166,10 @@ A cheap diagnostic: raw accuracy gaps are not comparable — MNLI's -47.9 is on 
 QNLI's -21.5 on 50%. Normalize both student and teacher by chance:
 `C = (linear - chance)/(teacher - chance)`, `S = (student - chance)/(teacher - chance)`.
 
-The seven points are AG News (C 0.98, S 1.03), DBPedia (0.99, 0.99), SST-2 (0.49, 0.49),
-QNLI (0.21, 0.31), QQP (0.21, 0.49), MNLI (0.18, 0.07), 20 Newsgroups (0.60, 0.42). Fit:
-**S = 0.90 C + 0.07, R² = 0.827**. With five tasks S ≈ C looked strong (R² = 0.965).
+The eight points are AG News (C 0.98, S 1.03), DBPedia (0.99, 0.99), SST-2 (0.49, 0.49),
+QNLI (0.21, 0.31), QQP (0.21, 0.49), MNLI (0.18, 0.07), 20 Newsgroups (0.60, 0.42),
+Emotion (0.55, 0.59). Fit: **S = 0.90 C + 0.07, R² = 0.827**. Emotion lands on the line.
+With five tasks S ≈ C looked strong (R² = 0.965).
 **QQP breaks it upward** (C 0.21, S 0.49): the transformer captures paraphrase that TF-IDF
 misses. **20 Newsgroups breaks it downward** (C 0.60, S 0.42): a weak teacher and only 100
 labels per class for 20 classes. C is a lower bound on what a better student can do, not a

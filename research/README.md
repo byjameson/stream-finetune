@@ -76,6 +76,9 @@ lower bound, not a predictor.
 (S 0.42); linear C 0.60. The student underfits and the teacher is weak; 100 labels/class
 is too few. A capacity/data point, not a clean distillation result.
 
+**Emotion (6-way, 3B teacher 40.3%):** the same BERT-tiny at 4-bit = 30.67%
+(S 0.59); linear C 0.55. A weak teacher, but this point lands on the diagnostic line.
+
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
 0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points). The same
 4.39M BERT-tiny at 4-bit = 2.19 MB, 71.75% (-22.5, 0.0117 bit/param) — the same
@@ -110,10 +113,12 @@ gap is misleading because chance levels differ; normalize the student too:
 | QQP | 50% | 0.21 | 0.49 |
 | MNLI | 33.3% | 0.18 | 0.07 |
 | 20 Newsgroups | 5% | 0.60 | 0.42 |
+| Emotion | 16.7% | 0.55 | 0.59 |
 
-Fit: **S = 0.90 C + 0.07, R² = 0.827** (n=7). QQP breaks it upward (C 0.21, S 0.49);
-20NG breaks it downward (C 0.60, S 0.42 — weak teacher, too few labels for 20 classes).
-C is a lower bound, not a predictor; `NEXT.md` has the 10-task test.
+Fit: **S = 0.90 C + 0.07, R² = 0.827** (n=8). Emotion lands on the line. QQP breaks it
+upward (C 0.21, S 0.49); 20NG breaks it downward (C 0.60, S 0.42 — weak teacher, too few
+labels for 20 classes). C is a lower bound, not a predictor; `NEXT.md` has the 10-task
+test.
 
 ## MNLI: a capacity failure, not a bit-rate result
 

@@ -61,5 +61,14 @@
   "linear_features": 2000,
   "linear_agree": 0.35,
   "C": 0.602
+ },
+ {
+  "task": "emotion",
+  "classes": 6,
+  "teacher": 0.4033,
+  "linear_acc": 0.2967,
+  "linear_features": 1000,
+  "linear_agree": 0.5,
+  "C": 0.549
  }
 ]
