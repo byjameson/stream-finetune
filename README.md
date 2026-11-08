@@ -120,8 +120,9 @@ streamft train --model-dir checkpoints/qwen7b_nf4 --sft --steps 1000 \
 - On the reference Ampere card fp16 is slightly faster than bf16 at 7B (1.79 vs 1.91 s/step,
   same 5.36 GB peak); on Pascal it is the only option.
 - On a **4 GB** card use `--blocks-on-gpu 1`, `--seq 512` and `--vram-hard-gb 3.4`.
-  Those rows are not measured yet — if you run one, post the JSON row and it can become a
-  measured entry in `streamft fit`.
+  Those rows are not measured yet — if you run one, open a
+  [hardware report](.github/ISSUE_TEMPLATE/hardware-report.md) and it can become a measured
+  entry in `streamft fit`.
 - `streamft fit` prints this hint automatically when it sees a pre-Ampere GPU.
 
 ### Tokenizer cost and the diffusion question
