@@ -26,7 +26,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
 | `distill_mnli_distilbert.py` | DistilBERT 66M on the MNLI labels; 4-bit/2-bit | ~5 min |
 | `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
-| `distill_trec.py` | TREC-QC; teacher failed (54.4% < 59.5% linear), excluded | ~10 min |
+| `distill_trec.py` | TREC-QC; both prompts leave the teacher below TF-IDF, excluded | ~10 min |
 | `distill_dolly_qa_t5.py` | Dolly closed_qa: 1.5B teacher -> T5-small; 16/4/2-bit | ~25 min |
 | `dolly_t5_bits.py` | same labels, T5-small bit sweep incl. 3-bit | ~10 min |
 | `distill_dbpedia.py` | DBPedia-14 with a 3B 4-bit teacher + BERT-tiny | ~20 min |
@@ -129,11 +129,12 @@ collapses to 35.8% at 2-bit (0.089 bit/param, -48.9). At the 0.1-bit budget both
 chance: the task needs more parameters **and** more labels. Controlled comparison:
 +1.5 / -21.5 / -22.5 / -47.9.
 
-### TREC: the teacher was below the linear baseline
+### TREC: the teacher is still below the linear baseline
 
-The 3B teacher with a code prompt labelled 21.7% of rows unknown and reached 54.4% on a
-309-row test, below the TF-IDF baseline (59.5%). C > 1 because the "teacher" is not a
-ceiling. Excluded from the diagnostic; kept as a negative result.
+First attempt (code prompt): 21.7% unknown, 54.4%, below the 59.5% TF-IDF baseline.
+Retry with full type names and six examples: **57.5%** (19 unknown), still below the
+**61.4%** TF-IDF baseline. C = 1.09 > 1, so the "teacher" is not a ceiling. Excluded from
+the diagnostic; kept as a negative result.
 
 ### Teacher prompting matters
 
