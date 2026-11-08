@@ -70,6 +70,10 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 
 Aynı mimari, aynı byte, 48 puanlık aralık. **Bit tabanı davranışın özelliği.**
 
+Ucuz teşhis: `C = (doğrusal doğruluk − şans) / (öğretmen − şans)`. AG News 0,98,
+SST-2 0,49, MNLI 0,18 — fark sırası +1,5 / -22,5 / -47,9 ile aynı. Üç nokta bir yasa
+değil, hipotez; sıradaki adım 10 görev ve bir fit.
+
 ## Dürüst konum
 
 - Damıtma algoritması yeni değil (Hinton 2015, DistilBERT, TinyBERT…).

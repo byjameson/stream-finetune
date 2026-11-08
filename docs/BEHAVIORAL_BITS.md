@@ -168,6 +168,22 @@ the behaviour is structured, so a small model can represent it.
    bigram; the SST-2 student is 10-22 points short. Reporting only the AG News win would
    be misleading.
 
+### A cheap diagnostic
+
+`C = (linear_acc - chance) / (teacher_acc - chance)` on the same teacher labels, using the
+best TF-IDF student from the sweep:
+
+| task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
+|---|---:|---:|---:|---:|
+| AG News | 75.25% | 74.25% (5k) | 0.98 | +1.5 |
+| SST-2 | 94.25% | 71.75% (1k) | 0.49 | -22.5 |
+| MNLI | 84.71% | 42.61% (2k) | 0.18 | -47.9 |
+
+The order matches. With three tasks this is a hypothesis, not a law; 10 tasks and a fit are
+the next step (`research/NEXT.md`). But it is already a usable warning: if a 45 KB TF-IDF
+student is far below the teacher, a 4.4M student at 0.0117 bit/param is unlikely to close
+the gap.
+
 ## 7. A practical recipe
 
 `research/autodistill.py` automates the classification ladder: train on the teacher's

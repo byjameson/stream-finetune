@@ -1,0 +1,29 @@
+[
+ {
+  "task": "agnews",
+  "classes": 4,
+  "teacher": 0.7525,
+  "linear_acc": 0.7425,
+  "linear_features": 5000,
+  "linear_agree": 0.8375,
+  "C": 0.98
+ },
+ {
+  "task": "sst2",
+  "classes": 2,
+  "teacher": 0.9425,
+  "linear_acc": 0.7175,
+  "linear_features": 1000,
+  "linear_agree": 0.71,
+  "C": 0.492
+ },
+ {
+  "task": "mnli",
+  "classes": 3,
+  "teacher": 0.8471,
+  "linear_acc": 0.4261,
+  "linear_features": 2000,
+  "linear_agree": 0.416,
+  "C": 0.18
+ }
+]
