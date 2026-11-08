@@ -61,6 +61,9 @@ written to `research/results/` (JSON) and `results/` (PNG).
 McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 MB,
 76.75% (0.0117 bit/param); 3-bit = 1.64 MB, 77.25%; 2-bit = 1.10 MB, 65.5%.
 
+**DBPedia-14 (14-way, 3B teacher 92.6%):** the same 4.39M BERT-tiny at 4-bit = 91.33%
+(-1.3, 0.0117 bit/param); linear C 0.99. Class count alone is not the wall.
+
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
 0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points). The same
 4.39M BERT-tiny at 4-bit = 2.19 MB, 71.75% (-22.5, 0.0117 bit/param) — the same
@@ -86,12 +89,14 @@ generation is the hardest regime; the 0.1-bit budget is not enough.
 | task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
 |---|---:|---:|---:|---:|
 | AG News | 75.25% | 74.25% | 0.98 | +1.5 |
+| DBPedia | 92.60% | 92.09% | 0.99 | -1.3 |
 | SST-2 | 94.25% | 71.75% | 0.49 | -22.5 |
 | QNLI | 81.25% | 56.50% | 0.21 | -21.5 |
 | MNLI | 84.71% | 42.61% | 0.18 | -47.9 |
 
-Three points matched; the fourth broke the single-metric story (QNLI and MNLI have almost
-the same C, gaps of -21.5 vs -47.9). A multi-feature model is needed; see `NEXT.md`.
+The high-C cluster is within 1.5 points; the QNLI/MNLI pair still breaks a single line
+(same C, gaps of -21.5 vs -47.9). Five points, R² = 0.80. A multi-feature model is needed;
+see `NEXT.md`.
 
 ## MNLI: a capacity failure, not a bit-rate result
 

@@ -19,6 +19,7 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | general LM, 0.5B | 0.1-bit VQ | 0.10 | CE 12.48, worse than uniform (11.93) |
 | AG News (4-way) | 340 KB TF-IDF | **0.0019** | 74.25% vs 75.25% teacher (p=0.69) |
 | AG News (4-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 76.75% vs 75.25% (+1.5) |
+| DBPedia-14 | 2.19 MB BERT-tiny 4-bit | 0.0117 | 91.33% vs 92.60% (-1.3) |
 | SST-2 (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 71.75% vs 94.25% (-22.5) |
 | SST-2 (2-way) | 16.7 MB DistilBERT 2-bit | 0.089 | 73.5% vs 94.25% (-20.8) |
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 59.75% vs 81.25% (-21.5) |
@@ -35,6 +36,7 @@ Same student (BERT-tiny 4.39M), same 0.0117 bit/param:
 | task | student | teacher | gap |
 |---|---:|---:|---:|
 | AG News | 76.75% | 75.25% | **+1.5** |
+| DBPedia | 91.33% | 92.60% | **-1.3** |
 | QNLI | 59.75% | 81.25% | **-21.5** |
 | SST-2 | 71.75% | 94.25% | **-22.5** |
 | MNLI | 36.80% | 84.71% | **-47.9** |
@@ -60,9 +62,10 @@ architectures, the idea of task-specific compression.
 - The controlled same-student comparison across tasks (+1.5 / -21.5 / -22.5 / -47.9).
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
-**Not yet:** a predictive law. A single metric `C` (linear compressibility) orders three
-tasks but **fails at the fourth** (QNLI and MNLI have almost the same C, gaps -21.5 vs
--47.9). The next attempt must be multi-feature.
+**Not yet:** a predictive law. A single metric `C` (linear compressibility) fits the
+high-C cluster (AG News 0.98, DBPedia 0.99) but **fails at the low end** (QNLI and MNLI
+have almost the same C, gaps -21.5 vs -47.9). Five points give R² = 0.80 — a description,
+not a law. The next attempt must be multi-feature.
 
 ## Failed attempts, kept as negative results
 

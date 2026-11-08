@@ -78,6 +78,7 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 | görev | öğrenci | öğretmen | fark |
 |---|---:|---:|---:|
 | AG News (4 sınıf) | %76,75 | %75,25 | **+1,5** |
+| DBPedia (14 sınıf) | %91,3 | %92,6 | **-1,3** |
 | SST-2 (2 sınıf) | %71,75 | %94,25 | **-22,5** |
 | QNLI (2 sınıf) | %59,8 | %81,3 | **-21,5** |
 | MNLI (3 sınıf) | %36,8 | %84,7 | **-47,9** |
@@ -85,9 +86,10 @@ Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
 Aynı mimari, aynı byte, 48 puanlık aralık. **Bit tabanı davranışın özelliği.**
 
 Ucuz teşhis: `C = (doğrusal doğruluk − şans) / (öğretmen − şans)`. AG News 0,98,
-SST-2 0,49, QNLI 0,21, MNLI 0,18. Üç nokta uydu; **dördüncü bozdu**: QNLI ile MNLI'nin
-C'si neredeyse aynı, ama farkları -21,5 ile -47,9. Tek metrik yetmiyor; çok özellikli
-bir modele geçmek gerek. Sıradaki adım 10 görev ve bir fit.
+DBPedia 0,99, SST-2 0,49, QNLI 0,21, MNLI 0,18. Yüksek C kümesi 1,5 puan içinde;
+**QNLI/MNLI çifti tek çizgiyi bozuyor** (C'leri neredeyse aynı, farkları -21,5 vs -47,9).
+5 nokta, R² = 0,80 — bu bir yasa değil, betimleme. Çok özellikli model gerek; sıradaki
+adım 10 görev ve bir fit.
 
 ## Dürüst konum
 

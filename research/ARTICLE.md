@@ -84,6 +84,10 @@ A 4.4M transformer (BERT-tiny) on the same labels does the same job at 4-bit: **
 2.19 MB, 0.0117 bit/param**. At 3-bit it is 77.25% (1.64 MB); at 2-bit it collapses to
 65.5%. The AG News result is not a TF-IDF artefact, and the bit cliff is model-dependent.
 
+The same student on DBPedia-14 (14 classes) gets 91.3% against a 92.6% teacher at the same
+0.0117 bit/param. Class count alone is not the wall; the keyword structure is what makes
+these tasks compressible.
+
 ![Narrow-task frontier](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/narrow_distill.png)
 
 ## 4. The wall: sentiment
@@ -110,8 +114,8 @@ That is the same size as the SST-2 gap, but for a different reason: QNLI is bina
 **The capacity wall, in one more task.** On MNLI (3-way NLI), a 3B-Instruct teacher
 reaches 84.7%; the same 4.4M BERT-tiny reaches 36.8% at 4-bit (chance 33.3%). A 66M
 DistilBERT reaches 57.1% at 4-bit but collapses to 35.8% at 2-bit; at the 0.1-bit budget,
-both are at chance. At 0.0117 bit/param, the four tasks are +1.5, -21.5, -22.5 and -47.9
-points from their teachers. The student is not losing bits; it is running out of
+both are at chance. At 0.0117 bit/param, the five tasks are +1.5, -1.3, -21.5, -22.5 and
+-47.9 points from their teachers. The student is not losing bits; it is running out of
 parameters — and, on MNLI, labels.
 
 A bag-of-words student is stuck ~22 points below the teacher regardless of size: sentiment
@@ -159,10 +163,10 @@ What I think is useful:
    10–22 points short. Reporting only the AG News win would be misleading.
 
 A cheap diagnostic: `C = (linear_acc - chance) / (teacher_acc - chance)` on the same
-labels. C is 0.98 (AG News), 0.49 (SST-2), 0.21 (QNLI) and 0.18 (MNLI). Three points
-suggested a monotonic relation; **QNLI breaks it** — almost the same C as MNLI, but a gap
-of -21.5 instead of -47.9. A single metric is not enough. The next step is a multi-feature
-model, not a bigger fit on one number.
+labels. C is 0.98 (AG News), 0.99 (DBPedia), 0.49 (SST-2), 0.21 (QNLI) and 0.18 (MNLI).
+The high-C cluster is within 1.5 points; **QNLI and MNLI have almost the same C but gaps of
+-21.5 and -47.9.** Five points give R² = 0.80 — a description, not a law. A single metric is
+not enough; the next step is a multi-feature model.
 
 ## 7. Two walls
 
