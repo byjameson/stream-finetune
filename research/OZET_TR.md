@@ -80,6 +80,10 @@ yaramıyor. Quantization: **8-bit 8,56 MB = 0,0222 bit/param** (%0,53 hata); 4-b
 **4-bit 2,3097** (+0,0013; kazancın %11'i). 4-bit adapter SFT davranışını koruyor.
 Güvenli pratik eser 8-bit; agresif ama bu evalda çalışan 4-bit.
 
+Inference: taban **11,97 tok/s**, LoRA yolu **8,19 tok/s** (~%32 yavaş); adapter 0,14 s'de
+yükleniyor. Bu bir **depolama/geçiş kazancı, token hızı kazancı değil.** bf16 tabana merge
+edilirse sıfır ek yük; paketlenmiş 4-bit tabana merge burada desteklenmiyor.
+
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
 depolama ve hesaplama birbirinin yerine geçer.
