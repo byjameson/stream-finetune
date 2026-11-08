@@ -6,6 +6,7 @@ We now have a measured spectrum, not a law:
 |---|---|---:|---|
 | AG News (4-way) | 340 KB TF-IDF | 0.00186 | matches teacher (p=0.69) |
 | AG News (4-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | matches teacher (+1.5) |
+| DBPedia-14 | 2.19 MB BERT-tiny 4-bit | 0.0117 | -1.3 points |
 | SST-2 (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -22.5 points |
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -21.5 points |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
@@ -27,9 +28,10 @@ The next question is whether the floor can be predicted **before** training a st
 4. **The gap at a fixed tiny student.** This is what we are trying to predict, so it is
    a diagnostic, not a pre-hoc predictor.
 
-The four-point check already falsifies C alone: QNLI (C 0.21) and MNLI (C 0.18) have gaps
-of -21.5 and -47.9. A multi-feature model (class count, chance level, linear gap, teacher
-entropy) is the next attempt, not a bigger fit on C.
+The five-point check: C fits the high-C cluster (AG News 0.98, DBPedia 0.99) but the
+QNLI/MNLI pair (C 0.21 / 0.18, gaps -21.5 / -47.9) breaks a single line. R² = 0.80 is a
+description, not a law. A multi-feature model (class count, chance level, linear gap,
+teacher entropy) is the next attempt, not a bigger fit on C.
 
 ## Experiment
 

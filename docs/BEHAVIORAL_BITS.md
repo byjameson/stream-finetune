@@ -23,8 +23,8 @@ paper. Test sets and seeds are fixed before the run.
   teacher's F1; at 0.081 bit/param it outputs nothing. The 0.1-bit budget is not enough
   here even for a 60M student.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
-  AG News, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs 33.3% chance;
-  teacher 84.7%).
+  AG News, -1.3 on DBPedia, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs
+  33.3% chance; teacher 84.7%).
 - **Two walls, not one.** The bit wall is about how many bits a weight needs; the
   capacity wall is about how many parameters the behaviour needs. Distillation can move
   the first; it cannot move the second.
@@ -103,6 +103,10 @@ A transformer student on the same labels (BERT-tiny, 4.39M parameters):
 The transformer matches the teacher too — 76.75% vs 75.25% at 4-bit — so the AG News
 result is not a TF-IDF artefact. It also shows the bit cliff is model-dependent: this
 fine-tuned 4.4M model survives 3-bit (77.25%), while the general 0.5B does not.
+
+The same student on **DBPedia-14** (a 14-class topic task) reaches **91.3%** against a
+92.6% teacher at 0.0117 bit/param. Class count alone does not break the budget; the
+keyword structure does the work.
 
 ![Narrow-task frontier](figures/narrow_distill.png)
 
@@ -198,16 +202,17 @@ best TF-IDF student from the sweep:
 | task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
 |---|---:|---:|---:|---:|
 | AG News | 75.25% | 74.25% (5k) | 0.98 | +1.5 |
+| DBPedia | 92.60% | 92.09% (50k) | 0.99 | -1.3 |
 | SST-2 | 94.25% | 71.75% (1k) | 0.49 | -22.5 |
 | QNLI | 81.25% | 56.50% (5k) | 0.21 | -21.5 |
 | MNLI | 84.71% | 42.61% (2k) | 0.18 | -47.9 |
 
-Three points suggested a monotonic relation. **The fourth breaks it.** QNLI and MNLI have
-almost the same C (0.21 vs 0.18) but gaps of -21.5 and -47.9. C alone is not a predictor:
-QNLI is binary (chance 50%) and the 4.4M student clears chance by 10 points; MNLI is 3-way
-and the student is at chance. The student's inductive bias and the label structure matter.
-A single-metric "law" is not there; the next step is a multi-feature model, not a bigger
-fit on one number (`research/NEXT.md`).
+The high-C cluster (AG News, DBPedia) is within 1.5 points. The low-C pair still breaks a
+single line: **QNLI and MNLI have almost the same C (0.21 vs 0.18) but gaps of -21.5 and
+-47.9.** Five points give R² = 0.80; that is a description, not a law. QNLI is binary
+(chance 50%) and the 4.4M student clears chance by 10 points; MNLI is 3-way and the student
+is at chance. The student's inductive bias and the label structure matter. The next step is
+a multi-feature model, not a bigger fit on one number (`research/NEXT.md`).
 
 ## 7. A practical recipe
 

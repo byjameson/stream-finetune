@@ -34,5 +34,14 @@
   "linear_features": 5000,
   "linear_agree": 0.5825,
   "C": 0.208
+ },
+ {
+  "task": "dbpedia",
+  "classes": 14,
+  "teacher": 0.926,
+  "linear_acc": 0.9209,
+  "linear_features": 50000,
+  "linear_agree": 0.9031,
+  "C": 0.994
  }
 ]
