@@ -161,6 +161,10 @@ Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight erro
 original 2.3084, 8-bit 2.3075, **4-bit 2.3097 (+0.0013)**. The 4-bit adapter costs 11% of
 the adapter's 0.0113 gain and preserves the behaviour on this eval.
 
+Inference: 11.97 tok/s base vs 8.19 tok/s with the LoRA path (~32% slower); the adapter
+loads in 0.14 s. It is a **storage/switching win, not a per-token speed win.** Merge into a
+bf16 base for zero overhead.
+
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
 from the 340 KB model. The training procedure is shared. Storage and compute are

@@ -263,7 +263,12 @@ Behaviour eval: **110 held-out Dolly rows**, masked SFT loss; base 2.3197, adapt
 0.0113. The 8-bit adapter is 2.3075 (within noise); the 4-bit adapter is 2.3097,
 **+0.0013** — 11% of the gain. So a **4-bit adapter at 0.0126 bit per base parameter**
 preserves the behaviour on this eval; 8-bit (0.0222) is the safer choice if the task is
-more sensitive. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
+more sensitive.
+
+Inference on the reference card: base **11.97 tok/s**, LoRA path **8.19 tok/s** (~32%
+slower); the 4.88 MB adapter loads in 0.14 s. It is a **storage/switching win, not a
+per-token speed win.** Merge into a bf16 base for zero overhead; merging into a packed
+4-bit base is not supported here. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
 scales (0.92 MB), and the table uses the real file sizes.
 
 ### The sharing ladder
