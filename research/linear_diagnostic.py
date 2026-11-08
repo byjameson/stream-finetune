@@ -4,6 +4,7 @@ Run on the saved teacher labels for AG News, SST-2 and MNLI. This is a diagnosti
 law: it orders the three tasks, but three points are not a fit.
 """
 import json
+from pathlib import Path
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -14,10 +15,14 @@ TASKS = {
     "agnews": ("agnews_labels.json", 4, lambda r: r["text"]),
     "sst2": ("sst2_labels.json", 2, lambda r: r["text"]),
     "mnli": ("mnli_labels.json", 3, lambda r: r["premise"] + " " + r["hypothesis"]),
+    "qnli": ("qnli_labels.json", 2, lambda r: r["question"] + " " + r["sentence"]),
 }
 FEATURES = [1000, 2000, 5000, 10000, 20000, 50000]
 rows = []
 for name, (path, nclass, text) in TASKS.items():
+    if not Path(f"research/results/{path}").exists():
+        print("skip", name, "missing", path)
+        continue
     d = json.load(open(f"research/results/{path}", encoding="utf-8"))
     tr = [r for r in d["train"] if r["label"] != "unknown"]
     te = d["test"]
