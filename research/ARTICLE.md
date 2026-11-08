@@ -146,6 +146,11 @@ What I think is useful:
 4. **The negative results.** The 0.1-bit model is worse than a bigram; the SST-2 student is
    10–22 points short. Reporting only the AG News win would be misleading.
 
+A cheap diagnostic: `C = (linear_acc - chance) / (teacher_acc - chance)` on the same
+labels. For the three tasks, C is 0.98 (AG News), 0.49 (SST-2) and 0.18 (MNLI); the gap at
+0.0117 bit/param is +1.5, -22.5 and -47.9 in the same order. With three points that is a
+hypothesis, not a law. The next step is 10 tasks and a fit.
+
 ## 7. Two walls
 
 - **The bit wall:** how many bits a weight needs before the model stops being a model.

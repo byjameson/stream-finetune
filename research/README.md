@@ -22,6 +22,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
+| `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
 
 Run from the repository root, for example:
@@ -65,6 +66,18 @@ architecture and byte budget that matched the AG News teacher.
 
 **MNLI (3-way, 3B teacher 84.7%):** the same 4.39M BERT-tiny at 4-bit = 36.8%
 (chance 33.3%, -47.9 points). Capacity failure, not a bit-rate result.
+
+## Cheap diagnostic
+
+`C = (linear_acc - chance) / (teacher_acc - chance)` on the saved teacher labels:
+
+| task | teacher | TF-IDF best | C | BERT-tiny gap @ 0.0117 |
+|---|---:|---:|---:|---:|
+| AG News | 75.25% | 74.25% | 0.98 | +1.5 |
+| SST-2 | 94.25% | 71.75% | 0.49 | -22.5 |
+| MNLI | 84.71% | 42.61% | 0.18 | -47.9 |
+
+The order matches. Three points are a hypothesis, not a law; see `NEXT.md`.
 
 ## MNLI: a capacity failure, not a bit-rate result
 
