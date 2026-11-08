@@ -29,6 +29,7 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 36.8% vs 84.7% (-47.9, chance) |
 | MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | 35.8% vs 84.7% (-48.9, chance) |
 | date -> ISO | 0.67 MB seq2seq 4-bit | **0.0036** | 99.8% exact (teacher 100%) |
+| date -> ISO (program) | 93 B (+752 KB shared dateutil) | **4.96e-7** code only | 100% exact |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
 | Dolly closed_qa (open-ended) | 30.3 MB T5-small 4-bit | 0.161 | F1 0.256 (second run 0.273) |
 | Dolly closed_qa (open-ended) | 22.7 MB T5-small 3-bit | 0.121 | F1 0.0001 (dead) |
@@ -67,7 +68,10 @@ architectures, the idea of task-specific compression.
 **New here:**
 - The metric: **bits per teacher parameter**, with total student bytes counted.
 - Quantization vs distillation on the same test set and byte budget.
-- The controlled same-student comparison across tasks (+1.5 / -21.5 / -22.5 / -47.9).
+- The controlled same-student comparison across tasks (AG News to MNLI).
+- **Representation selection:** the best date student is a **93-byte program**, not a
+  1.35M seq2seq. For deterministic tasks, code is the right representation; the bit floor
+  is set by the representation class, not the teacher.
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
 **C is a lower bound, not a predictor.** With five tasks, chance-normalized skill looked

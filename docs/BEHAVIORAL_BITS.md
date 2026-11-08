@@ -19,6 +19,9 @@ paper. Test sets and seeds are fixed before the run.
   0.179 bit/param it loses 10.5 points.
 - **Structured generation sits on the easy side.** A 1.35M char-level seq2seq matches the
   same 1.5B teacher on date -> ISO at **99.8% exact match, 0.0036 bit/param** (4-bit).
+  A **93-byte program** does better: **100% exact, 4.96e-7 bit/param** code only.
+- **Representation beats compression.** The date program is 7,200× smaller than the neural
+  student at higher accuracy. The floor is a property of the representation, not the teacher.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -166,6 +169,22 @@ The teacher is exact on 100% of the 500 test rows; the student misses one. At
 0.0036 bit/param the behaviour survives — because the task is a deterministic string
 mapping, not open-ended language. This is the same lesson as AG News, one step further:
 the behaviour is structured, so a small model can represent it.
+
+### The 93-byte student
+
+The same task, a different representation: a 93-byte Python function that calls a date
+parser.
+
+| student | size | exact | bits / teacher-param |
+|---|---:|---:|---:|
+| 1.35M seq2seq, 4-bit | 0.67 MB | 99.8% | 0.0036 |
+| **93-byte program** | 93 B (+752 KB shared `dateutil`) | **100%** | **4.96e-7** code only / 0.0040 with the library |
+
+The program beats the neural student on accuracy at 7,200× less task-specific storage.
+The library is shared; if you count it, the artifact is 0.0040 bit/param — still 25× below
+0.1, and slightly larger than the seq2seq. The point is not that code is always better.
+It is that **the representation should match the task.** For a deterministic string
+mapping, code is the right representation, and a neural student is 7,000× overkill.
 
 ### The other end: open-ended generation
 

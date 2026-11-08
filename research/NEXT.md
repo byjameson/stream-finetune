@@ -13,6 +13,7 @@ We now have a measured spectrum, not a law:
 | 20 Newsgroups (20-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -14.3 raw, S 0.42, weak teacher |
 | Emotion (6-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -9.7 raw, S 0.59 |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
+| date -> ISO (program) | 93 B | 4.96e-7 code only | 100% exact |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
 | MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
 | MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | -48.9 points (chance) |
@@ -44,6 +45,10 @@ type), not a bigger fit on C.
 
 ## Experiment
 
+0. **Representation selection first.** Before distilling, ask whether the behaviour is
+   algorithmic. A 93-byte date parser is 100% exact; a 1.35M seq2seq is 99.8%. The ladder
+   should be: **program -> linear -> tiny transformer -> 4-bit model**. Most "compression"
+   work starts at the wrong rung.
 - 10 tasks with a clear label: AG News, SST-2, TREC, MNLI, DBPedia, spam, topic,
   sentiment, NLI, intent.
 - For each: 2,000 teacher labels, 400 held-out rows, a fixed teacher (3B-Instruct, 4-bit)

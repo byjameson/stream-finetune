@@ -137,6 +137,11 @@ The behaviour survives because the task is a deterministic string mapping, not o
 language. This is the same lesson as AG News, one step further: the behaviour is
 structured, so a small model can represent it.
 
+The best student is not a neural net at all. A **93-byte Python function** using a date
+parser is **100% exact** on the 500 rows; code only is **4.96e-7 bit/param** (0.0040 if you
+count the shared 752 KB library). The 1.35M seq2seq is 7,200× larger at lower accuracy.
+For a deterministic string mapping, code is the right representation.
+
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
 on the teacher's answers gets token F1 0.380 against the human reference at bf16
 (0.645 bit/param); the teacher is 0.4126. At 4-bit (0.161 bit/param) the student drops to

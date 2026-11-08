@@ -1,0 +1,9 @@
+{
+ "exact": 1.0,
+ "n_test": 500,
+ "errors": [],
+ "code_bytes": 93,
+ "library_bytes": 752040,
+ "bits_per_teacher_param_code_only": 4.96e-07,
+ "bits_per_teacher_param_with_library": 0.00401138
+}
