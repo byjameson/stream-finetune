@@ -85,6 +85,19 @@ is not statistically distinguishable on 400 rows. Five-fold cross-validation ove
 combined 6,400 labels gives 85.9% ± 0.4% agreement. The same student trained on the
 **true** labels reaches 86.0% — the teacher, not the student, is the bottleneck.
 
+A transformer student on the same labels (BERT-tiny, 4.39M parameters):
+
+| student | size | accuracy | bits / teacher-param |
+|---|---:|---:|---:|
+| BERT-tiny, bf16 | 8.77 MB | 76.25% | 0.0468 |
+| BERT-tiny, 4-bit | 2.19 MB | 76.75% | 0.0117 |
+| BERT-tiny, 3-bit | 1.64 MB | 77.25% | 0.0088 |
+| BERT-tiny, 2-bit | 1.10 MB | 65.50% | 0.0059 |
+
+The transformer matches the teacher too — 76.75% vs 75.25% at 4-bit — so the AG News
+result is not a TF-IDF artefact. It also shows the bit cliff is model-dependent: this
+fine-tuned 4.4M model survives 3-bit (77.25%), while the general 0.5B does not.
+
 ![Narrow-task frontier](figures/narrow_distill.png)
 
 ## 4. The boundary: a subtle task

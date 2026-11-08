@@ -15,6 +15,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `vq_01bit.py` | 9 prototypes per 32 weights per tensor, 0.102 bit/weight, CE | ~3 min |
 | `ngram_baseline.py` | unigram / pruned bigram, same Qwen tokenizer, same test set | ~10 s |
 | `distill_agnews.py` | 1.5B teacher labels 6k AG News rows; TF-IDF+LR sweep; McNemar | ~7 min |
+| `distill_agnews_bert_tiny.py` | BERT-tiny 4.4M on the same AG News labels; 4/3/2-bit | ~3 min |
 | `distill_sst2_tfidf.py` | same protocol on SST-2 (2k train / 400 test) | ~2 min |
 | `distill_sst2_bert.py` | DistilBERT 66M on the saved SST-2 teacher labels; 16/4/3/2-bit | ~8 min |
 | `date_teacher.py` | 1.5B labels 6k date strings -> ISO; 500 test | ~20 min |
@@ -50,7 +51,8 @@ written to `research/results/` (JSON) and `results/` (PNG).
 | bigram 6.06 MB | 6.63 | 757 | 6.06 MB |
 
 **AG News (4-way, 1.5B teacher 75.25%):** 340 KB TF-IDF student = 74.25%,
-McNemar p = 0.689, 0.00186 bit/teacher-param.
+McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 MB,
+76.75% (0.0117 bit/param); 3-bit = 1.64 MB, 77.25%; 2-bit = 1.10 MB, 65.5%.
 
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
 0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points).
