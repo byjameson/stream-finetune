@@ -27,6 +27,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_mnli_distilbert.py` | DistilBERT 66M on the MNLI labels; 4-bit/2-bit | ~5 min |
 | `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
 | `distill_trec.py` | TREC-QC; teacher failed (54.4% < 59.5% linear), excluded | ~10 min |
+| `distill_dolly_qa_t5.py` | Dolly closed_qa: 1.5B teacher -> T5-small; 16/4/2-bit | ~25 min |
 
 Run from the repository root, for example:
 
