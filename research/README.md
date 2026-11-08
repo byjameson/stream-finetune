@@ -26,6 +26,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `adapter_bits.py` | Qwen3B LoRA size/bits: 0.077 fp32 / 0.038 fp16 | ~5 s |
 | `adapter_svd.py` | rank sweep on the adapter; rank 8 loses 35.8% | ~2 min |
 | `adapter_quant.py` | 8/4/3/2-bit adapter quantization; error vs size | ~5 s |
+| `adapter_eval.py` | 16/8/4-bit adapter loss on 12 Dolly rows | ~3 min |
 | `ladder.py` | cheapest rung for a target accuracy, shared or not | ~1 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
@@ -87,7 +88,9 @@ prompt adds no capability; the adapter does.
 
 **Adapter compression:** SVD to rank 8 loses **35.8%** of the update, so rank reduction is
 not viable. Quantization is: 8-bit 7.4 MB = **0.019 bit/param** (0.53% error), 4-bit
-3.7 MB = 0.0095 (8.96%), 2-bit 1.8 MB = 0.0048 (45%).
+3.7 MB = 0.0095 (8.96%), 2-bit 1.8 MB = 0.0048 (45%). Behaviour eval (12 Dolly rows,
+masked loss): base 2.2462, original 2.2195, 8-bit 2.2199, **4-bit 2.2226** — the 4-bit
+adapter preserves the SFT gain on this eval.
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is
