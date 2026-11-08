@@ -1,0 +1,92 @@
+# 0.1 bit araştırması — özet (TR)
+
+**Soru:** Bir modeli 0.1 bit/parametreye kadar sıkıştırıp kaliteyi koruyabilir miyiz?
+
+**Kısa cevap:** Evet — ama "modeli" değil, "davranışı" sıkıştırırsan. Aynı modelin
+ağırlıklarını 0.1 bite indirmek modeli öldürüyor. Dar bir davranışı küçük bir öğrenciye
+aktarmak, 0.1 bitin çok altına iniyor.
+
+## Ölçülen duvar: quantization
+
+Qwen2.5-0.5B, WikiText-2 test, 16.384 token, grup 64 min-max:
+
+| bit | CE | PPL | boyut |
+|---:|---:|---:|---:|
+| 16 | 2.782 | 16,2 | 988 MB |
+| 4 | 2.994 | 20,0 | 247 MB |
+| 3 | 3.963 | 52,6 | 185 MB |
+| 2 | 13.062 | 470.679 | 124 MB |
+| 1 | 34.066 | 6,2e14 | 62 MB |
+
+4-bit neredeyse bedava; 3-bit PPL'i 3,3× yapıyor; 2-bit uniform tahminden (CE 11,93)
+kötü. Post-hoc quantization 3–4 bitte bitiyor.
+
+## 0.1-bit VQ: model ölüyor
+
+Her tensörde 32 ağırlık → 9 prototip (0,099 bit/ağırlık), 6,31 MB:
+
+- CE 12,48 · PPL 262.390
+- Aynı 6 MB'ta bigram: CE 6,63 · PPL 757
+- Yani 0.1-bit 494M model, 6 MB'lık bir bigram'dan **346× kötü**.
+
+## Damıtma kapısı: AG News
+
+Öğretmen: Qwen2.5-1.5B-Instruct, 6.000 eğitim + 400 test, 4 sınıf.
+Öğrenci: TF-IDF + LR, sadece öğretmen etiketleriyle.
+
+| öğrenci | boyut | doğruluk | bit/öğretmen-param |
+|---|---:|---:|---:|
+| 2k özellik | 135 KB | %73,3 | 0,00074 |
+| **5k** | **340 KB** | **%74,3** | **0,00186** |
+
+Öğretmen %75,25; fark 1 puan, McNemar p = 0,689 → istatistiksel olarak yok.
+**0,1 bitin 54× altı.**
+
+Aynı etiketlerle BERT-tiny (4,39M): 4-bit 2,19 MB, %76,75 (0,0117 bit/param); 3-bit
+1,64 MB, %77,25; 2-bit 1,10 MB, %65,5. Yani sonuç TF-IDF'e özgü değil.
+
+## Kapasite duvarı: SST-2
+
+Öğretmen %94,25. Aynı BERT-tiny 4,4M, aynı 0,0117 bit/param: **%71,75 → -22,5 puan**.
+TF-IDF en iyi %71,8 (-22,5). DistilBERT 66M: 4-bit %83,8 (-10,5), 2-bit %73,5 (-20,8).
+0,1 bit/param bu görevde yetmiyor; parametre sayısı duvar.
+
+## Yapılandırılmış generasyon: tarih → ISO
+
+Öğretmen 1,5B (500 testte %100 doğru). Öğrenci: 1,35M char-level seq2seq.
+
+- bf16 2,70 MB: %99,8 → 0,0144 bit/param
+- 4-bit 0,67 MB: %99,8 → **0,0036 bit/param**
+
+## Kontrollü karşılaştırma (asıl bulgu)
+
+Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
+
+| görev | öğrenci | öğretmen | fark |
+|---|---:|---:|---:|
+| AG News (4 sınıf) | %76,75 | %75,25 | **+1,5** |
+| SST-2 (2 sınıf) | %71,75 | %94,25 | **-22,5** |
+
+Aynı mimari, aynı byte, 24 puan fark. **Bit tabanı davranışın özelliği.**
+
+## Dürüst konum
+
+- Damıtma algoritması yeni değil (Hinton 2015, DistilBERT, TinyBERT…).
+- Yeni olan: "bit/öğretmen-parametresi" metriği, quantization vs distillation'ın aynı
+  test setinde karşılaştırılması, görev bağımlılığının ölçülmesi, negatif sonuçlar.
+- Devrim için sıradaki adım: görev entropisinden minimum byte'ı önceleyen bir yasa
+  (behavioral rate-distortion) veya AutoDistill'in otomatikleştirilmesi.
+
+## Dosyalar
+
+- `docs/BEHAVIORAL_BITS.md` — tam not (EN)
+- `research/ARTICLE.md` — dev.to taslağı (EN)
+- `research/autodistill.py` — bütçe ver, en küçük geçen öğrenciyi bul
+- `research/results/` — ölçüm JSON'ları
+- `docs/figures/` — üç figür
+
+## Denenip eklenmeyen
+
+MNLI: 1.5B öğretmen contradiction'ı neredeyse hiç seçmedi (%3,3; %59,4 doğruluk), öğrenci
+de yanlılığı öğrenip dengeli testte %33 aldı. Bu bir öğretmen hatası, sıkıştırma sonucu
+değil. 3B-Instruct (4-bit) ile yeniden deneniyor.
