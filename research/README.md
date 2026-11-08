@@ -24,6 +24,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
 | `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
+| `distill_mnli_distilbert.py` | DistilBERT 66M on the MNLI labels; 4-bit/2-bit | ~5 min |
 | `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
 
 Run from the repository root, for example:
@@ -89,8 +90,10 @@ the same C, gaps of -21.5 vs -47.9). A multi-feature model is needed; see `NEXT.
 
 The 1.5B teacher collapsed on MNLI (3.3% contradiction, 59.4%). With a 3B-Instruct 4-bit
 teacher (84.7% on 400 balanced rows), the same 4.39M BERT-tiny reaches 36.8% at 4-bit
-(chance 33.3%). Same student and 0.0117 bit/param as the AG News success; the task needs
-more capacity. This is the third point of the controlled comparison (+1.5 / -22.5 / -47.9).
+(chance 33.3%). A 66M DistilBERT reaches 57.1% at 4-bit (0.179 bit/param, -27.6) but
+collapses to 35.8% at 2-bit (0.089 bit/param, -48.9). At the 0.1-bit budget both are at
+chance: the task needs more parameters **and** more labels. Controlled comparison:
++1.5 / -21.5 / -22.5 / -47.9.
 
 ### Teacher prompting matters
 

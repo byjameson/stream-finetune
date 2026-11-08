@@ -108,9 +108,11 @@ That is the same size as the SST-2 gap, but for a different reason: QNLI is bina
 59.75% is only 10 points above chance.
 
 **The capacity wall, in one more task.** On MNLI (3-way NLI), a 3B-Instruct teacher
-reaches 84.7%; the same 4.4M BERT-tiny reaches 36.8% at 4-bit (chance 33.3%). At the same 0.0117
-bit/param, the three tasks are +1.5, -22.5 and -47.9 points from their teachers. The
-student is not losing bits; it is running out of parameters.
+reaches 84.7%; the same 4.4M BERT-tiny reaches 36.8% at 4-bit (chance 33.3%). A 66M
+DistilBERT reaches 57.1% at 4-bit but collapses to 35.8% at 2-bit; at the 0.1-bit budget,
+both are at chance. At 0.0117 bit/param, the four tasks are +1.5, -21.5, -22.5 and -47.9
+points from their teachers. The student is not losing bits; it is running out of
+parameters — and, on MNLI, labels.
 
 A bag-of-words student is stuck ~22 points below the teacher regardless of size: sentiment
 needs negation and composition, which TF-IDF cannot represent. A 66M transformer helps,

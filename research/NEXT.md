@@ -10,6 +10,8 @@ We now have a measured spectrum, not a law:
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -21.5 points |
 | date -> ISO | 0.67 MB seq2seq 4-bit | 0.0036 | 99.8% exact |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | -47.9 points (chance) |
+| MNLI (3-way) | 33.5 MB DistilBERT 4-bit | 0.179 | -27.6 points |
+| MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | -48.9 points (chance) |
 
 The next question is whether the floor can be predicted **before** training a student.
 
