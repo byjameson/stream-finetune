@@ -31,6 +31,7 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | date -> ISO | 0.67 MB seq2seq 4-bit | **0.0036** | 99.8% exact (teacher 100%) |
 | date -> ISO (program) | 93 B (+752 KB shared dateutil) | **4.96e-7** code only | 100% exact |
 | AG News (prompt) | 341 B + shared 1.5B base | 1.82e-6 marginal / 16 with base | 73.75% |
+| SST-2 (prompt) | 294 B + shared 1.5B base | 1.57e-6 marginal / 16 with base | 93.75% |
 | AG News (coreset 500) | 135 KB | 0.00072 | 70.5% |
 | AG News (coreset 1000) | 270 KB | 0.00144 | 78.0% |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
@@ -76,7 +77,8 @@ architectures, the idea of task-specific compression.
   1.35M seq2seq. For deterministic tasks, code is the right representation; the bit floor
   is set by the representation class, not the teacher.
 - **The sharing ladder / accounting boundary:** a **341-byte prompt** on a shared 1.5B
-  base reaches 73.75% on AG News (the 340 KB student gets 74.25%). Marginal 1.82e-6
+  base reaches 73.75% on AG News (the 340 KB student gets 74.25%). On SST-2, a **294-byte
+  prompt** reaches **93.75%** and beats the 340 KB student by 22 points. Marginal 1.6-1.8e-6
   bit/param; count the base and it is 16 bit/param. The 0.1-bit question is an accounting
   question.
 - **Data as artifact:** a 135 KB coreset trains a 70.5% student at load time; a 270 KB

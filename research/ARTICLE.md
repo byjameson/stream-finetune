@@ -147,6 +147,10 @@ reaches **73.75%** on AG News — the 340 KB student gets 74.25%. Marginal bits/
 1.82e-6; count the base and it is **16 bit/param**. The 0.1-bit question is an accounting
 question.
 
+The prompt rung is not task-specific. On SST-2, a **294-byte prompt** reaches **93.75%** —
+the 340 KB student gets 71.75%, the teacher 94.25%. The base already knows sentiment; the
+prompt only points at it.
+
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
 from the 340 KB model. The training procedure is shared. Storage and compute are
