@@ -19,6 +19,9 @@ paper. Test sets and seeds are fixed before the run.
   0.179 bit/param it loses 10.5 points.
 - **Structured generation sits on the easy side.** A 1.35M char-level seq2seq matches the
   same 1.5B teacher on date -> ISO at **99.8% exact match, 0.0036 bit/param** (4-bit).
+- **Open-ended generation is the hardest.** T5-small at 0.161 bit/param keeps 66% of the
+  teacher's F1; at 0.081 bit/param it outputs nothing. The 0.1-bit budget is not enough
+  here even for a 60M student.
 - **The capacity wall is real.** The same 4.39M student at 0.0117 bit/param is +1.5 on
   AG News, -21.5 on QNLI, -22.5 on SST-2, and -47.9 on MNLI (36.8% vs 33.3% chance;
   teacher 84.7%).
@@ -140,7 +143,7 @@ the 3B teacher was needed before the task could be measured at all.
 
 ![Compressibility spectrum](figures/compressibility_spectrum.png)
 
-## 5. Structured generation
+## 5. Generation: structured vs open-ended
 
 A third regime: date strings in 11 formats -> ISO `YYYY-MM-DD`, with the same 1.5B teacher
 (6,000 train / 500 test) and a char-level seq2seq student (4 encoder + 4 decoder layers,
@@ -155,6 +158,22 @@ The teacher is exact on 100% of the 500 test rows; the student misses one. At
 0.0036 bit/param the behaviour survives — because the task is a deterministic string
 mapping, not open-ended language. This is the same lesson as AG News, one step further:
 the behaviour is structured, so a small model can represent it.
+
+### The other end: open-ended generation
+
+Dolly `closed_qa` (context + question -> answer), 1,000 train / 300 test rows. Teacher:
+Qwen2.5-1.5B-Instruct, token F1 **0.4126** against the human reference. Student:
+T5-small (60.5M), fine-tuned on the teacher's answers.
+
+| student | size | F1 vs reference | F1 vs teacher | bits / teacher-param |
+|---|---:|---:|---:|---:|
+| T5-small, bf16 | 121 MB | 0.344 | 0.418 | 0.645 |
+| T5-small, 4-bit | 30.3 MB | 0.273 | 0.284 | 0.161 |
+| T5-small, 2-bit | 15.1 MB | **0.000** | **0.000** | 0.081 |
+
+At 0.161 bit/param the student keeps 66% of the teacher's F1; at 0.081 bit/param it
+outputs nothing usable. Open-ended generation is the hardest regime in the table: the
+0.1-bit budget is not enough even for a 60M student.
 
 ## 6. What the numbers say
 

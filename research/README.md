@@ -68,6 +68,10 @@ architecture and byte budget that matched the AG News teacher.
 **Date -> ISO (1.5B teacher 100% exact):** 1.35M char-level seq2seq = 99.8% exact,
 0.0036 bit/teacher-param at 4-bit (0.0144 at bf16).
 
+**Dolly closed_qa (open-ended, 1.5B teacher F1 0.4126):** T5-small 60.5M at bf16
+F1 0.344 (0.645 bit/param); 4-bit 0.273 (0.161); 2-bit 0.000 (0.081). Open-ended
+generation is the hardest regime; the 0.1-bit budget is not enough.
+
 **QNLI (2-way, 3B teacher 81.25%):** the same 4.39M BERT-tiny at 4-bit = 59.75%
 (-21.5, 0.0117 bit/param); linear C 0.21.
 

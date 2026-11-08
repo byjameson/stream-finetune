@@ -58,6 +58,19 @@ TF-IDF en iyi %71,8 (-22,5). DistilBERT 66M: 4-bit %83,8 (-10,5), 2-bit %73,5 (-
 - bf16 2,70 MB: %99,8 → 0,0144 bit/param
 - 4-bit 0,67 MB: %99,8 → **0,0036 bit/param**
 
+## Açık uçlu generasyon: en zor rejim
+
+Dolly `closed_qa`, 1.000 eğitim / 300 test, öğretmen 1,5B (F1 0,4126). T5-small 60,5M:
+
+| öğrenci | boyut | F1 (referans) | bit/param |
+|---|---:|---:|---:|
+| bf16 | 121 MB | 0,344 | 0,645 |
+| 4-bit | 30,3 MB | 0,273 | 0,161 |
+| 2-bit | 15,1 MB | **0,000** | 0,081 |
+
+0,1 bit bütçesi burada yetmiyor; 2-bit'te model tamamen çöküyor. Yapılandırılmış
+generasyon (tarih) 0,0036'da çalışırken, açık uçlu generasyon 0,081'de ölü.
+
 ## Kontrollü karşılaştırma (asıl bulgu)
 
 Aynı öğrenci (BERT-tiny 4,4M), aynı 0,0117 bit/param:
