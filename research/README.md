@@ -88,9 +88,10 @@ prompt adds no capability; the adapter does.
 
 **Adapter compression:** SVD to rank 8 loses **35.8%** of the update, so rank reduction is
 not viable. Quantization is: 8-bit 8.56 MB = **0.0222 bit/param** (0.53% error), 4-bit
-4.88 MB = 0.0126 (9.08%), 2-bit 2.76 MB = 0.0072 (45%, not behaviourally tested). Behaviour eval (**110 Dolly rows**,
-masked loss): base 2.3197, original 2.3084, 8-bit 2.3075, **4-bit 2.3097** — the 4-bit
-adapter costs 0.0013 of the 0.0113 gain and preserves the SFT behaviour on this eval.
+4.88 MB = 0.0126 (9.08%), 2-bit 2.76 MB = 0.0072 (45%, not behaviourally tested). Behaviour eval (**870 Dolly rows**,
+masked loss): base 2.3752, original 2.3403, 8-bit 2.3401 (p = 0.81, no measurable loss),
+4-bit 2.3420 (+0.0018, p = 0.001, 5% of the 0.0349 gain). The 8-bit adapter is the safe
+sub-0.1 artifact; 4-bit is aggressive.
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is

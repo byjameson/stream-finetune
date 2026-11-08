@@ -12,7 +12,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from streamft.adapter import load_adapter
-from streamft.lora import apply_lora, set_lora_state_dict
+from streamft.lora import LoRALinear, apply_lora, set_lora_state_dict
 
 BASE = "checkpoints/qwen3b_bnb4bit"
 Q4 = "checkpoints/p1_qwen3b_lora_r16_t60_q4.pt"
@@ -45,9 +45,16 @@ def main():
     run(4)
     lora = [run() for _ in range(2)]
 
+    for m in model.modules():
+        if isinstance(m, LoRALinear):
+            m.set_fast(torch.bfloat16)
+    run(4)
+    lora_bf16 = [run() for _ in range(2)]
+
     out = {
         "base": base,
         "lora_q4": lora,
+        "lora_q4_bf16": lora_bf16,
         "adapter_load_s": round(load_s, 3),
         "adapter_file_bytes": os.path.getsize(Q4),
         "note": "LoRA path keeps the adapter separate; merging is not attempted on a packed 4-bit base.",

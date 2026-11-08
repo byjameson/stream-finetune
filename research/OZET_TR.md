@@ -76,13 +76,14 @@ adapter yetenek ekler, prompt eklemez.
 
 Adapter tam rank: **SVD rank 8, güncellemenin %35,8'ini kaybediyor**; rank indirme işe
 yaramıyor. Quantization: **8-bit 8,56 MB = 0,0222 bit/param** (%0,53 hata); 4-bit 4,88 MB =
-0,0126 (%9,08). **110 Dolly satırı**, masked loss: taban 2,3197, orijinal 2,3084, 8-bit 2,3075,
-**4-bit 2,3097** (+0,0013; kazancın %11'i). 4-bit adapter SFT davranışını koruyor.
-Güvenli pratik eser 8-bit; agresif ama bu evalda çalışan 4-bit.
+0,0126 (%9,08). **870 Dolly satırı**, masked loss: taban 2,3752, orijinal 2,3403, 8-bit 2,3401
+(p = 0,81; ölçülebilir kayıp yok), 4-bit 2,3420 (+0,0018, p = 0,001; kazancın %5'i).
+Güvenli sub-0.1 eser 8-bit; 4-bit agresif ama küçük ve gerçek bir maliyetle.
 
-Inference: taban **11,97 tok/s**, LoRA yolu **8,19 tok/s** (~%32 yavaş); adapter 0,14 s'de
-yükleniyor. Bu bir **depolama/geçiş kazancı, token hızı kazancı değil.** bf16 tabana merge
-edilirse sıfır ek yük; paketlenmiş 4-bit tabana merge burada desteklenmiyor.
+Inference: taban **11,79 tok/s**, LoRA yolu **8,75 tok/s** (~%26 yavaş), bf16 LoRA yolu
+**9,13 tok/s** (~%22 yavaş); adapter 0,115 s'de yükleniyor. Bu bir **depolama/geçiş
+kazancı, token hızı kazancı değil.** bf16 tabana merge edilirse sıfır ek yük; paketlenmiş
+4-bit tabana merge burada desteklenmiyor.
 
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;

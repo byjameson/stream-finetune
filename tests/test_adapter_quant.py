@@ -50,3 +50,11 @@ def test_lora_linear_shapes():
     assert m.A.shape == (2, 8)
     assert m.B.shape == (4, 2)
     assert m(torch.randn(3, 8)).shape == (3, 4)
+
+
+def test_lora_fast_path():
+    m = LoRALinear(nn.Linear(8, 4).to(torch.bfloat16), r=2)
+    m.set_fast(torch.bfloat16)
+    out = m(torch.randn(3, 8, dtype=torch.bfloat16))
+    assert out.shape == (3, 4)
+    assert out.dtype == torch.bfloat16

@@ -57,8 +57,7 @@ def encode(tok, row):
 @torch.no_grad()
 def eval_loss(model, tok, rows):
     model.eval()
-    tot = 0.0
-    n = 0
+    losses = []
     for row in rows:
         enc = encode(tok, row)
         if enc is None:
@@ -66,10 +65,8 @@ def eval_loss(model, tok, rows):
         ids, labels = enc
         ids = ids.to(model.device)
         labels = labels.to(model.device)
-        loss = model(input_ids=ids, labels=labels).loss
-        tot += float(loss)
-        n += 1
-    return tot / max(n, 1), n
+        losses.append(float(model(input_ids=ids, labels=labels).loss))
+    return (sum(losses) / max(len(losses), 1), len(losses), losses)
 
 
 def main():
@@ -83,30 +80,40 @@ def main():
 
     tok = AutoTokenizer.from_pretrained(BASE)
     model = AutoModelForCausalLM.from_pretrained(BASE, device_map="cuda", dtype=torch.bfloat16)
-    base_loss, n = eval_loss(model, tok, rows)
+    base_loss, n, base_rows = eval_loss(model, tok, rows)
     print(json.dumps({"config": "base", "loss": round(base_loss, 4), "rows": n}), flush=True)
 
     apply_lora(model, r_attn=16, r_mlp=0)
-    # bnb 4-bit Linear stores a packed weight with shape[1] == 1; LoRALinear uses
-    # weight.shape[1] for A. Rebuild A with the real in_features before loading.
-    for m in model.modules():
-        if isinstance(m, LoRALinear):
-            if m.A.shape[1] != m.base.in_features:
-                m.A = torch.nn.Parameter(torch.zeros(m.r, m.base.in_features,
-                                                    device=m.A.device, dtype=torch.float32))
-            if m.B.shape[0] != m.base.out_features:
-                m.B = torch.nn.Parameter(torch.zeros(m.base.out_features, m.r,
-                                                    device=m.B.device, dtype=torch.float32))
     state = torch.load(ADAPTER, map_location="cpu", weights_only=False)["lora"]
+    losses_by = {}
     out = []
     for name, sd in [("original fp32", state), ("8-bit", qstate(state, 8)), ("4-bit", qstate(state, 4))]:
         set_lora_state_dict(model, sd)
-        loss, n = eval_loss(model, tok, rows)
+        loss, n, arr = eval_loss(model, tok, rows)
+        losses_by[name] = arr
         row = {"config": name, "loss": round(loss, 4), "rows": n}
         out.append(row)
         print(json.dumps(row), flush=True)
 
-    json.dump({"base": round(base_loss, 4), "adapters": out},
+    import numpy as np
+    from scipy.stats import ttest_rel
+
+    orig = losses_by["original fp32"]
+    paired = {}
+    for name in ("8-bit", "4-bit"):
+        arr = losses_by[name]
+        assert len(arr) == len(orig)
+        d = np.array(arr) - np.array(orig)
+        ci = 1.96 * float(d.std(ddof=1)) / np.sqrt(len(d))
+        p = float(ttest_rel(arr, orig).pvalue)
+        paired[name] = {"delta": round(float(d.mean()), 5), "ci95": round(ci, 5), "p": p}
+        for row in out:
+            if row["config"] == name:
+                row.update(paired[name])
+        print(json.dumps({"config": name, **paired[name]}), flush=True)
+
+    json.dump({"base": round(base_loss, 4), "rows": n, "base_losses": base_rows,
+               "adapters": out, "losses": losses_by},
               open("research/results/adapter_eval.json", "w"), indent=1)
 
 

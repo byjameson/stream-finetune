@@ -51,10 +51,10 @@ type), not a bigger fit on C.
    SST-2, 294 bytes beat it by 22 points. The
    ladder is: **program -> prompt -> adapter -> coreset -> linear -> tiny transformer ->
    4-bit model**. The adapter rung is a real sub-0.1-bit artifact: 7.37M LoRA params =
-   0.077 bit/base-param fp32, 0.038 fp16, 0.0222 at 8-bit, 0.0126 at 4-bit (110 rows: loss
-   2.3097 vs 2.3084 original; base 2.3197). Do not SVD it (rank 8 loses 35.8%); quantize it.
-   Inference: the LoRA path is ~32% slower than the base (8.19 vs 11.97 tok/s); merge into
-   bf16 for zero overhead. The
+   0.077 bit/base-param fp32, 0.038 fp16, 0.0222 at 8-bit, 0.0126 at 4-bit (870 rows:
+   8-bit no measurable loss, p = 0.81; 4-bit +0.0018, p = 0.001, 5% of the gain). Do not SVD
+   it (rank 8 loses 35.8%); quantize it. Inference: the LoRA path is ~26% slower than the
+   base (8.75 vs 11.79 tok/s; bf16 LoRA 9.13); merge into bf16 for zero overhead. The
    coreset rung stores data, not weights: 135 KB
    trains a 70.5% student, 270 KB reaches 78.0%. State the accounting boundary (marginal vs
    base-counted); 0.1 bit is meaningless without it.

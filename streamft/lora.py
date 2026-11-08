@@ -32,16 +32,33 @@ class LoRALinear(nn.Module):
                                           dtype=torch.float32) / math.sqrt(base.in_features))
         self.B = nn.Parameter(torch.zeros(base.out_features, r, device=w.device, dtype=torch.float32))
         self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
+        self.fast_dtype = None  # inference-only bf16/fp16 path; training stays fp32
 
     def forward(self, x):
         y = self.base(x)
-        h = self.dropout(x).float()
-        # A/B live on CPU (grads are accumulated there and the optimizer steps
-        # there); hop them to the activation's device for the matmul. The low-rank
-        # path is tiny, so this costs a negligible amount of PCIe traffic.
-        A = self.A if self.A.device == h.device else self.A.to(h.device)
-        B = self.B if self.B.device == h.device else self.B.to(h.device)
+        if self.fast_dtype is not None:
+            h = x.to(self.fast_dtype)
+            A = self.A.to(device=h.device, dtype=self.fast_dtype)
+            B = self.B.to(device=h.device, dtype=self.fast_dtype)
+        else:
+            h = self.dropout(x).float()
+            # A/B live on CPU (grads are accumulated there and the optimizer steps
+            # there); hop them to the activation's device for the matmul. The low-rank
+            # path is tiny, so this costs a negligible amount of PCIe traffic.
+            A = self.A if self.A.device == h.device else self.A.to(h.device)
+            B = self.B if self.B.device == h.device else self.B.to(h.device)
         return y + (self.scale * (h @ A.t() @ B.t())).to(y.dtype)
+
+    @torch.no_grad()
+    def set_fast(self, dtype=torch.bfloat16):
+        """Inference-only: run the low-rank path in `dtype` instead of fp32.
+
+        The adapter is trained in fp32 (small values would vanish in fp16); this is a
+        deployment switch. The weights are rounded once, at load time.
+        """
+        self.A.data = self.A.data.to(dtype)
+        self.B.data = self.B.data.to(dtype)
+        self.fast_dtype = dtype
 
     @torch.no_grad()
     def merge(self):

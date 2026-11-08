@@ -1,25 +1,35 @@
 {
  "base": [
   {
-   "tokens_s": 11.99,
-   "seconds": 2.67
+   "tokens_s": 11.74,
+   "seconds": 2.73
   },
   {
-   "tokens_s": 11.95,
-   "seconds": 2.68
+   "tokens_s": 11.84,
+   "seconds": 2.7
   }
  ],
  "lora_q4": [
   {
-   "tokens_s": 7.89,
-   "seconds": 4.06
+   "tokens_s": 8.31,
+   "seconds": 3.85
   },
   {
-   "tokens_s": 8.49,
-   "seconds": 3.77
+   "tokens_s": 9.19,
+   "seconds": 3.48
   }
  ],
- "adapter_load_s": 0.144,
+ "lora_q4_bf16": [
+  {
+   "tokens_s": 8.66,
+   "seconds": 3.69
+  },
+  {
+   "tokens_s": 9.6,
+   "seconds": 3.33
+  }
+ ],
+ "adapter_load_s": 0.115,
  "adapter_file_bytes": 4875883,
  "note": "LoRA path keeps the adapter separate; merging is not attempted on a packed 4-bit base."
 }

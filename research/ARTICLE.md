@@ -157,13 +157,14 @@ The practical sub-0.1-bit artifact is an **adapter**. The project's Qwen2.5-3B L
 
 The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduction fails.
 Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight error); 4-bit
-4.88 MB = **0.0126** (9% error). A masked SFT loss on **110 held-out Dolly rows**: base 2.3197,
-original 2.3084, 8-bit 2.3075, **4-bit 2.3097 (+0.0013)**. The 4-bit adapter costs 11% of
-the adapter's 0.0113 gain and preserves the behaviour on this eval.
+4.88 MB = **0.0126** (9% error). A masked SFT loss on **870 held-out Dolly rows**: base 2.3752,
+original 2.3403, 8-bit 2.3401 (p = 0.81, no measurable loss), 4-bit 2.3420 (**+0.0018,
+p = 0.001**, 5% of the 0.0349 gain). The safe sub-0.1 artifact is the 8-bit adapter; 4-bit
+is aggressive.
 
-Inference: 11.97 tok/s base vs 8.19 tok/s with the LoRA path (~32% slower); the adapter
-loads in 0.14 s. It is a **storage/switching win, not a per-token speed win.** Merge into a
-bf16 base for zero overhead.
+Inference: 11.79 tok/s base vs 8.75 tok/s with the LoRA path (~26% slower); a bf16 LoRA
+path reaches 9.13 (~22% slower). The adapter loads in 0.115 s. It is a **storage/switching
+win, not a per-token speed win.** Merge into a bf16 base for zero overhead.
 
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
