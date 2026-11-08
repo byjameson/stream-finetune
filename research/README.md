@@ -26,6 +26,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
 | `distill_mnli_distilbert.py` | DistilBERT 66M on the MNLI labels; 4-bit/2-bit | ~5 min |
 | `distill_qnli.py` | QNLI with a 3B 4-bit teacher (yes/no prompt) + BERT-tiny | ~20 min |
+| `distill_trec.py` | TREC-QC; teacher failed (54.4% < 59.5% linear), excluded | ~10 min |
 
 Run from the repository root, for example:
 
@@ -94,6 +95,12 @@ teacher (84.7% on 400 balanced rows), the same 4.39M BERT-tiny reaches 36.8% at 
 collapses to 35.8% at 2-bit (0.089 bit/param, -48.9). At the 0.1-bit budget both are at
 chance: the task needs more parameters **and** more labels. Controlled comparison:
 +1.5 / -21.5 / -22.5 / -47.9.
+
+### TREC: the teacher was below the linear baseline
+
+The 3B teacher with a code prompt labelled 21.7% of rows unknown and reached 54.4% on a
+309-row test, below the TF-IDF baseline (59.5%). C > 1 because the "teacher" is not a
+ceiling. Excluded from the diagnostic; kept as a negative result.
 
 ### Teacher prompting matters
 
