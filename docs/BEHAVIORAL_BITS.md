@@ -11,9 +11,9 @@ paper. Test sets and seeds are fixed before the run.
   models any more.
 - **A 0.1-bit model built with vector quantization is worse than a uniform guess.**
   494M parameters in 6.31 MB, CE 12.48 vs 11.93 for guessing uniformly.
-- **Behavioural distillation is a different door.** A 379 KB student matches a
+- **Behavioural distillation is a different door.** A 340 KB student matches a
   1.5B teacher on 4-way topic classification: 74.25% vs 75.25%, McNemar p = 0.69,
-  **0.0021 bit per teacher parameter** — 48x below the 0.1-bit target.
+  **0.0019 bit per teacher parameter** — 54x below the 0.1-bit target.
 - **The door is task-dependent.** On SST-2 the same protocol fails: a 66M DistilBERT at
   0.089 bit/param scores 73.5% against a 94.25% teacher (-20.8 points); even at
   0.179 bit/param it loses 10.5 points.
@@ -68,17 +68,17 @@ counts pairs of tokens. The information is not compressed; it is gone.
 
 Teacher: `Qwen2.5-1.5B-Instruct`, few-shot, 6,000 AG News training rows and 400 held-out
 rows labelled by the teacher. Student: TF-IDF (1-2 grams) + logistic regression, trained
-**only on the teacher's labels**. The student is a normal 379 KB model; the 0.002 bit is
+**only on the teacher's labels**. The student is a normal 340 KB model; the 0.002 bit is
 the ratio of its total bytes to the teacher's parameter count.
 
 | student | size | accuracy | exact agreement with teacher | bits / teacher-param |
 |---|---:|---:|---:|---:|
-| 300 features | 23.8 KB | 66.5% | 73.3% | 0.00013 |
-| 1k | 75.9 KB | 70.3% | 79.3% | 0.00042 |
-| 2k | 151 KB | 73.3% | 81.0% | 0.00083 |
-| **5k** | **379 KB** | **74.3%** | **83.8%** | **0.00207** |
-| 10k | 763 KB | 72.8% | 84.0% | 0.00417 |
-| 50k | 3.9 MB | 72.5% | 82.8% | 0.0214 |
+| 300 features | 21.4 KB | 66.7% | 73.0% | 0.00012 |
+| 1k | 68.1 KB | 70.5% | 80.0% | 0.00037 |
+| 2k | 135 KB | 73.3% | 81.0% | 0.00074 |
+| **5k** | **340 KB** | **74.3%** | **83.8%** | **0.00186** |
+| 10k | 685 KB | 73.0% | 83.8% | 0.00374 |
+| 50k | 3.5 MB | 72.5% | 82.8% | 0.0193 |
 
 Teacher: 75.25%. The 5k student is 1.0 point below; McNemar p = 0.689, so the difference
 is not statistically distinguishable on 400 rows. Five-fold cross-validation over the
@@ -94,13 +94,13 @@ test rows. Teacher: 94.25%.
 
 | student | size | accuracy | drop vs teacher | bits / teacher-param |
 |---|---:|---:|---:|---:|
-| TF-IDF + LR, best (2k features) | 122 KB | 69.8% | -24.5 | 0.00066 |
+| TF-IDF + LR, best (1k features) | 44.9 KB | 71.8% | -22.5 | 0.00025 |
 | DistilBERT 66M, bf16 | 134 MB | 83.3% | -11.0 | 0.714 |
 | DistilBERT 66M, 4-bit | 33.5 MB | 83.8% | -10.5 | 0.179 |
 | DistilBERT 66M, 3-bit | 25.1 MB | 82.5% | -11.8 | 0.134 |
 | DistilBERT 66M, 2-bit | 16.7 MB | 73.5% | -20.8 | 0.089 |
 
-A bag-of-words student is stuck ~25 points below the teacher regardless of size: sentiment
+A bag-of-words student is stuck ~22 points below the teacher regardless of size: sentiment
 needs negation and composition, which TF-IDF cannot represent. A 66M transformer helps,
 but even at 0.179 bit/param it is 10.5 points short; at 0.089 bit/param it is 20.8 points
 short. **The 0.1-bit target is not enough here — the parameter count is the wall.**
@@ -125,7 +125,7 @@ the behaviour is structured, so a small model can represent it.
 
 ## 6. What the numbers say
 
-1. **Bits per weight is the wrong metric.** The same 0.1 bit buys a working 379 KB student
+1. **Bits per weight is the wrong metric.** The same 0.1 bit buys a working 340 KB student
    on AG News and a broken 6.3 MB model on WikiText-2. What matters is total bytes per
    unit of behaviour.
 2. **There are two walls.** The bit wall (quantization) and the capacity wall (the student
@@ -138,13 +138,35 @@ the behaviour is structured, so a small model can represent it.
    bigram; the SST-2 student is 10-21 points short. Reporting only the AG News win would
    be misleading.
 
-## 7. Reproduction
+## 7. A practical recipe
+
+`research/autodistill.py` automates the classification ladder: train on the teacher's
+labels with TF-IDF at increasing feature counts, stop at the smallest student whose
+McNemar p against the teacher is > 0.05 and whose bytes fit the budget.
+
+```bash
+python research/autodistill.py --task agnews --budget 0.1
+# 2000 features, 135 KB, 0.00074 bit/param, PASS
+
+python research/autodistill.py --task sst2 --budget 0.1
+# no student passes; best is 1000 features, 45 KB, 71.8%
+```
+
+This is not a new distillation algorithm. It is the smallest useful automation of the
+measurement: it answers "does a linear student suffice, or does the task need a sequence
+model?" before training one.
+
+## 8. Reproduction
 
 - Hardware: RTX 3050 Laptop 6 GB, Windows 11, AC.
-- Quantization: `scripts/bit_cliff.py`, `scripts/vq_01bit.py`.
-- Distillation: `scripts/distill_task.py` (teacher labels -> TF-IDF student sweep ->
-  McNemar), `scripts/distill_sst2_bert.py` (DistilBERT + post-hoc quantization).
-- Figures: `scripts/plot_behavioral_bits.py`.
+- Quantization: `research/bit_cliff.py`, `research/vq_01bit.py`,
+  `research/ngram_baseline.py`.
+- Distillation: `research/distill_agnews.py`, `research/distill_sst2_tfidf.py`,
+  `research/distill_sst2_bert.py`, `research/date_teacher.py`,
+  `research/date_student.py`, `research/autodistill.py`.
+- Figures: `research/plot_behavioral_bits.py`.
+- Seeds: 0 for the train split, 1 for the test split; no cherry-picking. One test split
+  per task, 400 rows (AG News, SST-2) or 500 rows (dates).
 - Seeds: 0 for the train split, 1 for the test split; no cherry-picking. One test split
   per task, 400 rows (AG News, SST-2) or 500 rows (dates).
 - Caveats: the 0.5B may have seen Wikipedia during pretraining; the bigram only sees

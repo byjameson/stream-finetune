@@ -20,6 +20,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `date_teacher.py` | 1.5B labels 6k date strings -> ISO; 500 test | ~20 min |
 | `date_student.py` | char-level seq2seq (~1M params) on the date labels | ~1 min |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
+| `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
 
 Run from the repository root, for example:
 
@@ -48,8 +49,8 @@ written to `research/results/` (JSON) and `results/` (PNG).
 | 0.1 (VQ) | 12.4776 | 262,390 | 6.31 MB |
 | bigram 6.06 MB | 6.63 | 757 | 6.06 MB |
 
-**AG News (4-way, 1.5B teacher 75.25%):** 379 KB TF-IDF student = 74.25%,
-McNemar p = 0.689, 0.00207 bit/teacher-param.
+**AG News (4-way, 1.5B teacher 75.25%):** 340 KB TF-IDF student = 74.25%,
+McNemar p = 0.689, 0.00186 bit/teacher-param.
 
 **SST-2 (2-way, 1.5B teacher 94.25%):** DistilBERT 66M at 2-bit = 73.5%,
 0.0893 bit/teacher-param (-20.8 points); at 4-bit = 83.75% (-10.5 points).
