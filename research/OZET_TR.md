@@ -92,10 +92,12 @@ ama şans %50). Şansla normalize et: `C = (doğrusal − şans) / (öğretmen �
 `S = (öğrenci − şans) / (öğretmen − şans)`.
 
 AG News (C 0,98 → S 1,03), DBPedia (0,99 → 0,99), SST-2 (0,49 → 0,49), QNLI (0,21 → 0,31),
-QQP (0,21 → 0,49), MNLI (0,18 → 0,07). Fit: **S = 0,92 C + 0,09, R² = 0,885** (6 görev).
-Beş görevde S ≈ C güçlü görünüyordu (R² = 0,965); **QQP bozdu**: C 0,21 ama S 0,49
-(3 tohum ortalaması; 0,45–0,53). Transformer, TF-IDF'in göremediği paraphrase yapısını
-yakalıyor. **C bir alt sınır, öngörücü değil.** Sıradaki adım 10 görev ve çok özellikli model.
+QQP (0,21 → 0,49), MNLI (0,18 → 0,07), 20 Newsgroups (0,60 → 0,42). Fit:
+**S = 0,90 C + 0,07, R² = 0,827** (7 görev). Beş görevde S ≈ C güçlü görünüyordu
+(R² = 0,965). **QQP yukarı bozdu** (C 0,21, S 0,49): transformer paraphrase yapısını
+yakalıyor. **20NG aşağı bozdu** (C 0,60, S 0,42): zayıf öğretmen (%29,5) ve 20 sınıf için
+sınıf başına 100 etiket az. **C bir alt sınır, öngörücü değil.** Sıradaki adım 10 görev ve
+çok özellikli model.
 
 ## Dürüst konum
 

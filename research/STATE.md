@@ -24,6 +24,7 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | SST-2 (2-way) | 16.7 MB DistilBERT 2-bit | 0.089 | 73.5% vs 94.25% (-20.8) |
 | QNLI (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 59.75% vs 81.25% (-21.5) |
 | QQP (2-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 58.08% vs 66.50% (-8.4 raw; S 0.49) |
+| 20 Newsgroups (20-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 15.25% vs 29.50% (-14.25 raw; S 0.42) |
 | MNLI (3-way) | 2.19 MB BERT-tiny 4-bit | 0.0117 | 36.8% vs 84.7% (-47.9, chance) |
 | MNLI (3-way) | 16.7 MB DistilBERT 2-bit | 0.089 | 35.8% vs 84.7% (-48.9, chance) |
 | date -> ISO | 0.67 MB seq2seq 4-bit | **0.0036** | 99.8% exact (teacher 100%) |
@@ -41,6 +42,7 @@ Same student (BERT-tiny 4.39M), same 0.0117 bit/param:
 | AG News | 76.75% | 75.25% | **+1.5** |
 | DBPedia | 91.33% | 92.60% | **-1.3** |
 | QQP | 58.08% | 66.50% | **-8.4** (S 0.49) |
+| 20 Newsgroups | 15.25% | 29.50% | **-14.3** (S 0.42) |
 | QNLI | 59.75% | 81.25% | **-21.5** |
 | SST-2 | 71.75% | 94.25% | **-22.5** |
 | MNLI | 36.80% | 84.71% | **-47.9** |
@@ -67,11 +69,12 @@ architectures, the idea of task-specific compression.
 - The honest negative results (0.1-bit VQ, single-metric diagnostic, teacher collapses).
 
 **C is a lower bound, not a predictor.** With five tasks, chance-normalized skill looked
-like it tracked `C` almost 1:1 (S = 1.04 C - 0.01, R² = 0.965). **QQP breaks it:** C 0.21,
-S 0.49 (3-seed mean). Six tasks give S = 0.92 C + 0.09, R² = 0.885. The transformer
-captures paraphrase structure that TF-IDF cannot. The cheap linear student is a floor on
-what a better student can do, not a predictor of it. The next test is 10 tasks with a
-multi-feature model.
+like it tracked `C` almost 1:1 (S = 1.04 C - 0.01, R² = 0.965). **QQP breaks it upward:**
+C 0.21, S 0.49 (3-seed mean) — the transformer captures paraphrase that TF-IDF misses.
+**20 Newsgroups breaks it downward:** C 0.60, S 0.42 — a weak teacher (29.5%) and only
+100 labels per class for 20 classes. Seven tasks give S = 0.90 C + 0.07, R² = 0.827.
+The cheap linear student is a floor on what a better student can do, not a predictor of it.
+The next test is 10 tasks with a multi-feature model.
 
 ## Failed attempts, kept as negative results
 
