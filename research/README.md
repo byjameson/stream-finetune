@@ -32,6 +32,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_dbpedia.py` | DBPedia-14 with a 3B 4-bit teacher + BERT-tiny | ~20 min |
 | `distill_qqp.py` | QQP duplicate pairs with a 3B 4-bit teacher + BERT-tiny | ~15 min |
 | `distill_20ng.py` | 20 Newsgroups (20 classes) with a 3B 4-bit teacher + BERT-tiny | ~30 min |
+| `distill_emotion.py` | Emotion (6 classes) with a 3B 4-bit teacher + BERT-tiny | ~10 min |
 
 Run from the repository root, for example:
 

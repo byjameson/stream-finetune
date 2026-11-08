@@ -19,6 +19,7 @@ TASKS = {
     "dbpedia": ("dbpedia_labels.json", 14, lambda r: r["text"]),
     "qqp": ("qqp_labels.json", 2, lambda r: r["question1"] + " " + r["question2"]),
     "20ng": ("20ng_labels.json", 20, lambda r: r["text"]),
+    "emotion": ("emotion_labels.json", 6, lambda r: r["text"]),
 }
 FEATURES = [1000, 2000, 5000, 10000, 20000, 50000]
 rows = []
