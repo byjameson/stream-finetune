@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+- `streamft adapter` accepts a save directory (the output of `train --save` /
+  `cpu --save`), not only a `.pt` file; `serve --adapter` does the same.
+- `serve --adapter` uses the bf16 low-rank path on CUDA (~4% faster: 9.13 vs 8.75 tok/s
+  on the reference card).
+- Hardware report issue template, so measured rows can come from more than one machine.
+- 21 tests.
+
 ## 0.6.0 — shared base, 5 MB adapters
 - `streamft adapter`: pack a saved LoRA to 8/4-bit with per-group scales; `load_adapter`
   reads both plain and quantized files, and `serve --adapter` works with both.

@@ -33,9 +33,10 @@ A/B tests, personalisation, federated updates.
 
 ## What it is not
 
-- **Not a faster per-token path.** The LoRA path runs at 8.19 tok/s vs 11.97 for the base
-  on the reference card (~32% slower) because of the fp32 low-rank matmuls. Merge into a
-  bf16 base for zero overhead, or accept the LoRA path when storage/switching matters more.
+- **Not a faster per-token path.** The LoRA path runs at 8.75 tok/s vs 11.79 for the base
+  on the reference card (~26% slower); a bf16 LoRA path reaches 9.13 (~22% slower). Merge
+  into a bf16 base for zero overhead, or accept the LoRA path when storage/switching
+  matters more.
 - **Not a compression of the base.** Count the base and the total is 4 bit/param (4-bit
   base) or 16 (bf16); 0.0126 is the marginal adapter cost.
 - **Not rank compression.** SVD to rank 8 loses 35.8% of the update; the adapter is

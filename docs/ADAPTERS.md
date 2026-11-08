@@ -9,9 +9,15 @@ page is the measured recipe on the reference machine (RTX 3050 Laptop 6 GB).
 # one-time: pack the saved adapter (A/B tensors) to 4 bits
 streamft adapter --adapter checkpoints/my_adapter.pt --bits 4 --out checkpoints/my_adapter_q4.pt
 
+# both commands also accept the save directory (it contains adapter.pt)
+streamft adapter --adapter checkpoints/my_run --bits 4 --out checkpoints/my_run_q4.pt
+
 # serve the shared base + the quantized adapter
 streamft serve --model checkpoints/qwen3b_bnb4bit --adapter checkpoints/my_adapter_q4.pt
 ```
+
+On CUDA `serve` runs the low-rank path in bf16 (9.13 tok/s vs 8.75 fp32 on the reference
+card). It still costs ~22% against the base; merge into a bf16 base for zero overhead.
 
 `streamft adapter` writes packed codes plus per-group scales; `load_adapter` reads both
 plain (`{"lora": ...}`) and quantized files. Use `--bits 8` for the safer setting.
