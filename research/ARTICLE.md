@@ -166,6 +166,16 @@ procedure) -> **linear student** (340 KB) -> **tiny transformer** (2.2 MB) -> **
 model** (30 MB). The lower rungs are different objects, not better compression of the same
 object. The revolution is choosing the rung.
 
+What to use:
+
+- deterministic task -> **program** (93 B)
+- base already deployed and capable -> **prompt** (294-341 B)
+- base deployed, task outside zero-shot -> **adapter** (14.8 MB, 0.038)
+- no base, small data -> **coreset** (135 KB)
+- no base, keyword task -> **linear** (340 KB)
+- no base, semantic task -> **tiny transformer** (2.2 MB)
+- general capability -> **4-bit model** (30 MB+)
+
 **The other end: open-ended generation.** On Dolly closed_qa, a 60.5M T5-small fine-tuned
 on the teacher's answers gets token F1 0.380 against the human reference at bf16
 (0.645 bit/param); the teacher is 0.4126. At 4-bit (0.161 bit/param) the student drops to

@@ -24,6 +24,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `agnews_prompt.py` | 341-byte prompt on the shared 1.5B base; 73.75% | ~25 s |
 | `sst2_prompt.py` | 294-byte prompt on SST-2; 93.75% | ~30 s |
 | `adapter_bits.py` | Qwen3B LoRA size/bits: 0.077 fp32 / 0.038 fp16 | ~5 s |
+| `ladder.py` | cheapest rung for a target accuracy, shared or not | ~1 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
 | `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
@@ -120,6 +121,12 @@ the 0.1-bit budget is not close.
 
 **MNLI (3-way, 3B teacher 84.7%):** the same 4.39M BERT-tiny at 4-bit = 36.8%
 (chance 33.3%, -47.9 points). Capacity failure, not a bit-rate result.
+
+## What to use
+
+`program -> prompt -> adapter -> coreset -> linear -> tiny transformer -> 4-bit model`.
+`ladder.py` prints the measured table and picks the cheapest rung for a target accuracy and
+a shared/not-shared base.
 
 ## Cheap diagnostic
 
