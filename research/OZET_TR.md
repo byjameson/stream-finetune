@@ -70,14 +70,18 @@ sorusu.**
 **SST-2'de 294 baytlık prompt: %93,75** (340 KB öğrenci %71,75, öğretmen %94,25). 1.156×
 küçük ve 22 puan daha iyi; taban duyguyu zaten biliyor, prompt sadece işaret ediyor.
 
+**Pratik 0,1-bit eseri adapter:** Qwen2.5-3B LoRA (7,37M parametre, 60 SFT adımı)
+29,6 MB fp32 = **0,077 bit/taban-param**; 14,8 MB fp16 = **0,038**. Taban paylaşılır;
+adapter yetenek ekler, prompt eklemez.
+
 **Veri de eser olabilir:** 135 KB'lık coreset (500 örnek) yükleme anında %70,5; 270 KB
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
 depolama ve hesaplama birbirinin yerine geçer.
 
-Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → **coreset (135 KB +
-eğitim prosedürü)** → doğrusal öğrenci (340 KB) → küçük transformer (2,2 MB) → 4-bit model
-(30 MB). Alt basamaklar aynı nesnenin daha iyi sıkıştırılması değil, farklı nesneler.
-Devrim, basamağı seçmek.
+Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → **adapter (14,8 MB +
+taban, 0,038 bit/param)** → coreset (135 KB + eğitim prosedürü) → doğrusal öğrenci (340 KB)
+→ küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin daha iyi
+sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
 
 ## Açık uçlu generasyon: en zor rejim
 
