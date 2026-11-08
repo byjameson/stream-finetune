@@ -116,3 +116,15 @@ streamft serve --model merged/q05_cpu --port 8000
 
 There is a chat page and `POST /v1/chat/completions` (OpenAI-compatible subset). One machine
 does the work; the others are clients. Not a peer-to-peer network.
+
+## 9. Share one base, ship 5 MB adapters
+
+```bash
+streamft adapter --adapter checkpoints/my_adapter.pt --bits 4 --out checkpoints/my_adapter_q4.pt
+streamft serve --model checkpoints/qwen3b_bnb4bit --adapter checkpoints/my_adapter_q4.pt
+```
+
+The 4-bit Qwen2.5-3B adapter is **4.88 MB = 0.0126 bit per base parameter**; 8-bit is
+8.56 MB. On 110 held-out Dolly rows the 4-bit adapter is 2.3097 vs 2.3084 for the original
+(base 2.3197). The LoRA path is ~32% slower than the base on the reference card; merge it
+into a bf16 base for zero per-token overhead.

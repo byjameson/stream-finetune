@@ -75,8 +75,8 @@ küçük ve 22 puan daha iyi; taban duyguyu zaten biliyor, prompt sadece işaret
 adapter yetenek ekler, prompt eklemez.
 
 Adapter tam rank: **SVD rank 8, güncellemenin %35,8'ini kaybediyor**; rank indirme işe
-yaramıyor. Quantization: **8-bit 7,4 MB = 0,019 bit/param** (%0,53 hata); 4-bit 3,7 MB =
-0,0095 (%8,96). **110 Dolly satırı**, masked loss: taban 2,3197, orijinal 2,3084, 8-bit 2,3075,
+yaramıyor. Quantization: **8-bit 8,56 MB = 0,0222 bit/param** (%0,53 hata); 4-bit 4,88 MB =
+0,0126 (%9,08). **110 Dolly satırı**, masked loss: taban 2,3197, orijinal 2,3084, 8-bit 2,3075,
 **4-bit 2,3097** (+0,0013; kazancın %11'i). 4-bit adapter SFT davranışını koruyor.
 Güvenli pratik eser 8-bit; agresif ama bu evalda çalışan 4-bit.
 

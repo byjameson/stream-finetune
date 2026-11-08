@@ -26,9 +26,11 @@ class LoRALinear(nn.Module):
         self.r = r
         self.scale = alpha / r
         w = base.weight
-        self.A = nn.Parameter(torch.randn(r, w.shape[1], device=w.device,
-                                          dtype=torch.float32) / math.sqrt(w.shape[1]))
-        self.B = nn.Parameter(torch.zeros(w.shape[0], r, device=w.device, dtype=torch.float32))
+        # Use in_features/out_features, not weight.shape: bitsandbytes 4-bit layers
+        # store a packed weight whose shape is not (out, in).
+        self.A = nn.Parameter(torch.randn(r, base.in_features, device=w.device,
+                                          dtype=torch.float32) / math.sqrt(base.in_features))
+        self.B = nn.Parameter(torch.zeros(base.out_features, r, device=w.device, dtype=torch.float32))
         self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
 
     def forward(self, x):

@@ -1,0 +1,25 @@
+{
+ "base": [
+  {
+   "tokens_s": 11.99,
+   "seconds": 2.67
+  },
+  {
+   "tokens_s": 11.95,
+   "seconds": 2.68
+  }
+ ],
+ "lora_q4": [
+  {
+   "tokens_s": 7.89,
+   "seconds": 4.06
+  },
+  {
+   "tokens_s": 8.49,
+   "seconds": 3.77
+  }
+ ],
+ "adapter_load_s": 0.144,
+ "adapter_file_bytes": 4875883,
+ "note": "LoRA path keeps the adapter separate; merging is not attempted on a packed 4-bit base."
+}

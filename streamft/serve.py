@@ -121,11 +121,12 @@ def main(argv=None) -> int:
     if args.adapter:
         from pathlib import Path
 
+        from .adapter import load_adapter
         from .lora import apply_lora, set_lora_state_dict
 
         p = Path(args.adapter)
         p = p / "adapter.pt" if p.is_dir() else p
-        state = torch.load(str(p), map_location="cpu", weights_only=True)
+        state, _meta = load_adapter(p)
         r = int(next(v for k, v in state.items() if k.endswith(".A")).shape[0])
         apply_lora(model, r_attn=r, r_mlp=0)
         set_lora_state_dict(model, state)

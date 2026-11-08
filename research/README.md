@@ -87,8 +87,8 @@ fp16 = 0.0382, with the 3.09B base shared. A real 60-step SFT artifact below 0.1
 prompt adds no capability; the adapter does.
 
 **Adapter compression:** SVD to rank 8 loses **35.8%** of the update, so rank reduction is
-not viable. Quantization is: 8-bit 7.4 MB = **0.019 bit/param** (0.53% error), 4-bit
-3.7 MB = 0.0095 (8.96%), 2-bit 1.8 MB = 0.0048 (45%). Behaviour eval (**110 Dolly rows**,
+not viable. Quantization is: 8-bit 8.56 MB = **0.0222 bit/param** (0.53% error), 4-bit
+4.88 MB = 0.0126 (9.08%), 2-bit 2.76 MB = 0.0072 (45%, not behaviourally tested). Behaviour eval (**110 Dolly rows**,
 masked loss): base 2.3197, original 2.3084, 8-bit 2.3075, **4-bit 2.3097** — the 4-bit
 adapter costs 0.0013 of the 0.0113 gain and preserves the SFT behaviour on this eval.
 
