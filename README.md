@@ -179,10 +179,10 @@ that is the point.
 
 ### Why 0.1-bit compression is not a universal target
 
-A measured note on quantization vs distillation: post-hoc quantization dies below 3 bits,
-a 379 KB distilled student matches a 1.5B teacher on a narrow keyword task at
-0.0021 bit/teacher-param, and a subtle sentiment task still loses 21 points at
-0.089 bit/teacher-param. Details, caveats and reproduction:
+A measured note on quantization vs distillation: post-hoc quantization dies below 3 bits;
+a 340 KB student matches a 1.5B teacher on a narrow keyword task at 0.0019
+bit/teacher-param; the same 4.4M student loses 22.5 points on SST-2 and 47.9 on MNLI;
+open-ended generation dies below 0.16 bit/param. Details, caveats and reproduction:
 [`docs/BEHAVIORAL_BITS.md`](docs/BEHAVIORAL_BITS.md).
 
 ## Verification
