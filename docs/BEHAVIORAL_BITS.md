@@ -11,9 +11,11 @@ paper. Test sets and seeds are fixed before the run.
   models any more.
 - **A 0.1-bit model built with vector quantization is worse than a uniform guess.**
   494M parameters in 6.31 MB, CE 12.48 vs 11.93 for guessing uniformly.
-- **Behavioural distillation is a different door.** A 340 KB student matches a
-  1.5B teacher on 4-way topic classification: 74.25% vs 75.25%, McNemar p = 0.69,
-  **0.0019 bit per teacher parameter** — 54x below the 0.1-bit target.
+- **Behavioural distillation is a different door.** A 340 KB student is 1.0 point below a
+  1.5B teacher on 4-way topic classification: 74.25% vs 75.25%, McNemar p = 0.69, at
+  **0.0019 bit per teacher parameter** — 54x below the 0.1-bit target. But the one-sided
+  95% lower bound is **-4.1 points**, so a 2-point non-inferiority claim does not hold;
+  "p > 0.05" is not equivalence.
 - **The door is task-dependent.** On SST-2 the same protocol fails: a 66M DistilBERT at
   0.089 bit/param scores 73.5% against a 94.25% teacher (-20.8 points); even at
   0.179 bit/param it loses 10.5 points.

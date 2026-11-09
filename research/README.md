@@ -75,7 +75,9 @@ written to `research/results/` (JSON) and `results/` (PNG).
 | bigram 6.06 MB | 6.63 | 757 | 6.06 MB |
 
 **AG News (4-way, 1.5B teacher 75.25%):** 340 KB TF-IDF student = 74.25%,
-McNemar p = 0.689, 0.00186 bit/teacher-param. A 4.39M BERT-tiny at 4-bit = 2.19 MB,
+McNemar p = 0.689, 0.00186 bit/teacher-param. The one-sided 95% lower bound for the
+difference is -4.1 points, so the student is not proven non-inferior at a 2-point margin.
+A 4.39M BERT-tiny at 4-bit = 2.19 MB,
 76.75% (0.0117 bit/param); 3-bit = 1.64 MB, 77.25%; 2-bit = 1.10 MB, 65.5%.
 
 **AG News, 341-byte prompt:** a shared 1.5B base + four examples = 73.75% (the 340 KB

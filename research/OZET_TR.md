@@ -39,8 +39,9 @@ Her tensörde 32 ağırlık → 9 prototip (0,099 bit/ağırlık), 6,31 MB:
 | 2k özellik | 135 KB | %73,3 | 0,00074 |
 | **5k** | **340 KB** | **%74,3** | **0,00186** |
 
-Öğretmen %75,25; fark 1 puan, McNemar p = 0,689 → istatistiksel olarak yok.
-**0,1 bitin 54× altı.**
+Öğretmen %75,25; fark 1 puan, McNemar p = 0,689. Ancak tek taraflı %95 alt sınır
+**-4,1 puan**; yani 2 puanlık non-inferiority kanıtlanmıyor, sadece “fark tespit
+edilemedi” deniyor. **0,1 bitin 54× altı.**
 
 Aynı etiketlerle BERT-tiny (4,39M): 4-bit 2,19 MB, %76,75 (0,0117 bit/param); 3-bit
 1,64 MB, %77,25; 2-bit 1,10 MB, %65,5. Yani sonuç TF-IDF'e özgü değil.
