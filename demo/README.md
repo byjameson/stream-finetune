@@ -45,7 +45,8 @@ back from `model.wav` so the containers stay identical.
 ## Container survival
 
 `python demo/survival_test.py` applies everyday transformations to the shipped artifacts
-and writes `demo/survival.json`; `demo/survival.html` renders the matrix. Measured results:
+and writes `demo/survival.json`; `demo/survival.html` renders the matrix. It needs
+`pillow`, `openpyxl`, `pypdf`, `zxing-cpp` and `imageio-ffmpeg`. Measured results:
 PDF survives a `pypdf` rewrite but not a rebuild without its Info dictionary; XLSX survives
 an `openpyxl` re-save; PNG survives a PNG re-save and metadata strip but not JPEG/resize;
 WAV survives PCM/FLAC but not MP3/Opus; QR survives a 10% downscale, JPEG q5, blur and 20°
