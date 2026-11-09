@@ -1,0 +1,263 @@
+{
+  "rows": 400,
+  "candidates": 143,
+  "candidate_labels": {
+    "positive": 143,
+    "negative": 0
+  },
+  "selected": [
+    {
+      "text": "stephen rea , aidan quinn , and alan bates play desmond 's legal eagles , and when joined by brosnan , the sight of this grandiloquent quartet lolling in pretty irish settings is a pleasant enough thing , ` tis . ",
+      "true": "positive"
+    },
+    {
+      "text": "it 's a demented kitsch mess ( although the smeary digital video does match the muddled narrative ) , but it 's savvy about celebrity and has more guts and energy than much of what will open this year . ",
+      "true": "positive"
+    },
+    {
+      "text": "charles ' entertaining film chronicles seinfeld 's return to stand-up comedy after the wrap of his legendary sitcom , alongside wannabe comic adams ' attempts to get his shot at the big time . ",
+      "true": "positive"
+    },
+    {
+      "text": "ramsay , as in ratcatcher , remains a filmmaker with an acid viewpoint and a real gift for teasing chilly poetry out of lives and settings that might otherwise seem drab and sordid . ",
+      "true": "positive"
+    }
+  ],
+  "heldout": [
+    {
+      "text": "whether writer-director anne fontaine 's film is a ghost story , an account of a nervous breakdown , a trip down memory lane , all three or none of the above , it is as seductive as it is haunting . ",
+      "true": "positive"
+    },
+    {
+      "text": "there 's something auspicious , and daring , too , about the artistic instinct that pushes a majority-oriented director like steven spielberg to follow a.i. with this challenging report so liable to unnerve the majority . ",
+      "true": "positive"
+    },
+    {
+      "text": "this tenth feature is a big deal , indeed -- at least the third-best , and maybe even a notch above the previous runner-up , nicholas meyer 's star trek vi : the undiscovered country . ",
+      "true": "positive"
+    },
+    {
+      "text": "for the first time in years , de niro digs deep emotionally , perhaps because he 's been stirred by the powerful work of his co-stars . ",
+      "true": "positive"
+    }
+  ],
+  "results": {
+    "base": {
+      "selected": [
+        {
+          "text": "stephen rea , aidan quinn , and alan bates play desmond 's legal eagles , and when joined by brosnan , the sight of this grandiloquent quartet lolling in pretty irish settings is a pleasant enough thing , ` tis . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "it 's a demented kitsch mess ( although the smeary digital video does match the muddled narrative ) , but it 's savvy about celebrity and has more guts and energy than much of what will open this year . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "charles ' entertaining film chronicles seinfeld 's return to stand-up comedy after the wrap of his legendary sitcom , alongside wannabe comic adams ' attempts to get his shot at the big time . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "ramsay , as in ratcatcher , remains a filmmaker with an acid viewpoint and a real gift for teasing chilly poetry out of lives and settings that might otherwise seem drab and sordid . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        }
+      ],
+      "heldout": [
+        {
+          "text": "whether writer-director anne fontaine 's film is a ghost story , an account of a nervous breakdown , a trip down memory lane , all three or none of the above , it is as seductive as it is haunting . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "there 's something auspicious , and daring , too , about the artistic instinct that pushes a majority-oriented director like steven spielberg to follow a.i. with this challenging report so liable to unnerve the majority . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "this tenth feature is a big deal , indeed -- at least the third-best , and maybe even a notch above the previous runner-up , nicholas meyer 's star trek vi : the undiscovered country . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        },
+        {
+          "text": "for the first time in years , de niro digs deep emotionally , perhaps because he 's been stirred by the powerful work of his co-stars . ",
+          "true": "positive",
+          "pred": "negative",
+          "correct": false
+        }
+      ]
+    },
+    "sst2": {
+      "selected": [
+        {
+          "text": "stephen rea , aidan quinn , and alan bates play desmond 's legal eagles , and when joined by brosnan , the sight of this grandiloquent quartet lolling in pretty irish settings is a pleasant enough thing , ` tis . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "it 's a demented kitsch mess ( although the smeary digital video does match the muddled narrative ) , but it 's savvy about celebrity and has more guts and energy than much of what will open this year . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "charles ' entertaining film chronicles seinfeld 's return to stand-up comedy after the wrap of his legendary sitcom , alongside wannabe comic adams ' attempts to get his shot at the big time . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "ramsay , as in ratcatcher , remains a filmmaker with an acid viewpoint and a real gift for teasing chilly poetry out of lives and settings that might otherwise seem drab and sordid . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ],
+      "heldout": [
+        {
+          "text": "whether writer-director anne fontaine 's film is a ghost story , an account of a nervous breakdown , a trip down memory lane , all three or none of the above , it is as seductive as it is haunting . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "there 's something auspicious , and daring , too , about the artistic instinct that pushes a majority-oriented director like steven spielberg to follow a.i. with this challenging report so liable to unnerve the majority . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "this tenth feature is a big deal , indeed -- at least the third-best , and maybe even a notch above the previous runner-up , nicholas meyer 's star trek vi : the undiscovered country . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "for the first time in years , de niro digs deep emotionally , perhaps because he 's been stirred by the powerful work of his co-stars . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ]
+    },
+    "q8": {
+      "selected": [
+        {
+          "text": "stephen rea , aidan quinn , and alan bates play desmond 's legal eagles , and when joined by brosnan , the sight of this grandiloquent quartet lolling in pretty irish settings is a pleasant enough thing , ` tis . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "it 's a demented kitsch mess ( although the smeary digital video does match the muddled narrative ) , but it 's savvy about celebrity and has more guts and energy than much of what will open this year . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "charles ' entertaining film chronicles seinfeld 's return to stand-up comedy after the wrap of his legendary sitcom , alongside wannabe comic adams ' attempts to get his shot at the big time . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "ramsay , as in ratcatcher , remains a filmmaker with an acid viewpoint and a real gift for teasing chilly poetry out of lives and settings that might otherwise seem drab and sordid . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ],
+      "heldout": [
+        {
+          "text": "whether writer-director anne fontaine 's film is a ghost story , an account of a nervous breakdown , a trip down memory lane , all three or none of the above , it is as seductive as it is haunting . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "there 's something auspicious , and daring , too , about the artistic instinct that pushes a majority-oriented director like steven spielberg to follow a.i. with this challenging report so liable to unnerve the majority . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "this tenth feature is a big deal , indeed -- at least the third-best , and maybe even a notch above the previous runner-up , nicholas meyer 's star trek vi : the undiscovered country . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "for the first time in years , de niro digs deep emotionally , perhaps because he 's been stirred by the powerful work of his co-stars . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ]
+    },
+    "q4": {
+      "selected": [
+        {
+          "text": "stephen rea , aidan quinn , and alan bates play desmond 's legal eagles , and when joined by brosnan , the sight of this grandiloquent quartet lolling in pretty irish settings is a pleasant enough thing , ` tis . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "it 's a demented kitsch mess ( although the smeary digital video does match the muddled narrative ) , but it 's savvy about celebrity and has more guts and energy than much of what will open this year . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "charles ' entertaining film chronicles seinfeld 's return to stand-up comedy after the wrap of his legendary sitcom , alongside wannabe comic adams ' attempts to get his shot at the big time . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "ramsay , as in ratcatcher , remains a filmmaker with an acid viewpoint and a real gift for teasing chilly poetry out of lives and settings that might otherwise seem drab and sordid . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ],
+      "heldout": [
+        {
+          "text": "whether writer-director anne fontaine 's film is a ghost story , an account of a nervous breakdown , a trip down memory lane , all three or none of the above , it is as seductive as it is haunting . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "there 's something auspicious , and daring , too , about the artistic instinct that pushes a majority-oriented director like steven spielberg to follow a.i. with this challenging report so liable to unnerve the majority . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "this tenth feature is a big deal , indeed -- at least the third-best , and maybe even a notch above the previous runner-up , nicholas meyer 's star trek vi : the undiscovered country . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        },
+        {
+          "text": "for the first time in years , de niro digs deep emotionally , perhaps because he 's been stirred by the powerful work of his co-stars . ",
+          "true": "positive",
+          "pred": "positive",
+          "correct": true
+        }
+      ]
+    }
+  },
+  "note": "Probes are selected on the 400-row SST-2 test set; the base is 'self' and the adapter is 'non-self'. All candidates are positive because the base over-predicts negative. q4/q8 use the same probes."
+}
