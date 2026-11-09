@@ -41,6 +41,9 @@ paper. Test sets and seeds are fixed before the run.
   870 rows: no measurable loss, p = 0.81; SST-2: 93.75% both). 4-bit = **0.0126** (Dolly
   +0.0018, p = 0.001, 5% of the gain; SST-2 indistinguishable). SVD to rank 8 loses 36%,
   so rank reduction fails.
+- **What is actually running:** the base is **4-bit NF4** and the adapter is stored
+  **4/8-bit**. The sub-0.1 numbers are marginal artifact costs; count the base and it is
+  **4–16 bit/param**. There is no 0.1-bit general model here — the VQ attempt failed.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
