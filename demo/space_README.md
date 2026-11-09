@@ -27,4 +27,11 @@ measured ladder and the negative results are in
 **Accuracy mode:** [max-ai.html](https://byjameson-mini-ai.static.hf.space/max-ai.html) —
 a 1.7 MB linear model trained on 75,000 human labels; **88.5%** on the same test set.
 
+**Make your own:** [maker.html](https://byjameson-mini-ai.static.hf.space/maker.html) —
+upload a CSV of `text,label`, train a classifier in the browser, and export a single HTML
+file. No data leaves the page.
+
+**AI in a QR code:** [qr.html](https://byjameson-mini-ai.static.hf.space/qr.html) — a
+2.2 KB URL carries an SMS spam classifier; the QR is the model.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).

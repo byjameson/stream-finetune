@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in a QR code — SMS spam classifier</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 860px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 26px; max-width: 720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  img.qr { display:block; width:100%; max-width:520px; margin:14px auto; background:#fff;
+           padding:10px; border-radius:8px; }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header id="head">
+    <div class="badge" id="badge">AI in a QR code</div>
+    <h1 id="title">Scan the QR. The model is in the URL.</h1>
+    <p class="lead" id="lead">A binary SMS spam classifier — vocabulary, int8 weights and
+    accuracy — packed into the URL fragment. No server, no weights file; the page decodes
+    the model and runs it locally.</p>
+  </header>
+
+  <section id="landing" style="display:none">
+    <div class="panel">
+      <h2>Scan me</h2>
+      <img class="qr" src="qr-spam.png" alt="QR code containing the SMS spam model">
+      <p class="muted">The QR is 153×153 modules (version 34, error correction L). Scanning
+      opens this page with the model in the URL. Point a phone camera at it, or open the
+      <a href="qr-spam.png">PNG</a>.</p>
+      <p class="muted">Model: 1,579 bytes of JSON, 2,158-byte URL, 160 words, 93.5% on
+      1,115 held-out SMS messages.</p>
+    </div>
+    <div class="panel">
+      <h2>What is in the QR?</h2>
+      <p>The fragment carries a base64 JSON with the label names, the 160-word vocabulary,
+      320 int8 weights and two scales. The page decodes it with <code>atob</code> and a
+      <code>Map</code>; the classifier is a dot product. There is no training data and no
+      network call after the page loads.</p>
+      <p class="muted">This is the extreme end of the minimum-bit ladder: a model that fits
+      in a URL. The 130 KB page stores data; the 1.7 MB page stores weights; this one stores
+      quantized weights in the link itself.</p>
+    </div>
+  </section>
+
+  <section id="app" style="display:none">
+    <section class="panel metrics">
+      <div><span id="m-size">—</span><label>URL / model</label></div>
+      <div><span id="m-acc">—</span><label>held-out accuracy</label></div>
+      <div><span id="m-vocab">—</span><label>words</label></div>
+      <div><span id="m-bytes">—</span><label>model JSON</label></div>
+    </section>
+
+    <section class="panel">
+      <h2>Try it</h2>
+      <label for="text" class="muted">SMS text (English)</label>
+      <textarea id="text" rows="4">WINNER!! You have been selected to receive a £900 prize reward! Call 09061701461 now to claim.</textarea>
+      <button class="go" id="go">Classify</button>
+      <div id="out"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Where is the model?</h2>
+      <p class="muted">In the URL after <code>#m=</code>: base64 JSON. The page never calls
+      the network after loading. Copy the URL or scan the QR to move the whole classifier.</p>
+      <p><a href="mini-ai.html">← the 130 KB data artifact</a> ·
+      <a href="max-ai.html">the 1.7 MB accuracy mode</a> ·
+      <a href="maker.html">make your own</a></p>
+    </section>
+  </section>
+
+  <footer>Built with <a href="https://github.com/byjameson/stream-finetune">stream-finetune</a>.
+  SMS Spam Collection; Complement NB; int8 weights.</footer>
+</main>
+
+<script>
+function b64d(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+function softmax(scores) {
+  const mx = Math.max(...scores);
+  const ex = scores.map(x => Math.exp(x - mx));
+  const sum = ex.reduce((a, b) => a + b, 0);
+  return ex.map(x => x / sum);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+const hash = location.hash || "";
+const m = hash.match(/#m=([^&]+)/);
+if (!m) {
+  document.getElementById("landing").style.display = "block";
+} else {
+  const raw = b64d(m[1]);
+  const model = JSON.parse(new TextDecoder().decode(raw));
+  const labels = model.l;
+  const vocab = model.v;
+  const V = vocab.length;
+  const q = new Int8Array(b64d(model.w).buffer);
+  const scale = model.s;
+  const idx = new Map(vocab.map((w, i) => [w, i]));
+
+  document.getElementById("app").style.display = "block";
+  document.getElementById("title").textContent = "Spam or ham? The model is in the URL.";
+  document.getElementById("badge").textContent = "2.2 KB URL";
+  document.getElementById("m-size").textContent = (location.href.length / 1024).toFixed(1) + " KB";
+  document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
+  document.getElementById("m-vocab").textContent = V;
+  document.getElementById("m-bytes").textContent = raw.length + " B";
+
+  function classify() {
+    const text = document.getElementById("text").value.trim();
+    if (!text) return;
+    const scores = new Array(labels.length).fill(0);
+    for (const t of tokens(text)) {
+      const i = idx.get(t);
+      if (i === undefined) continue;
+      for (let c = 0; c < labels.length; c++) scores[c] += q[c * V + i] * scale[c];
+    }
+    const probs = softmax(scores);
+    let best = 0;
+    for (let c = 1; c < labels.length; c++) if (probs[c] > probs[best]) best = c;
+    const rows = labels.map((l, c) => {
+      const p = probs[c] * 100;
+      return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+    }).join("");
+    document.getElementById("out").innerHTML =
+      `<div class="verdict">${esc(labels[best])}</div><div class="bars">${rows}</div>
+       <p class="muted">Softmax over int8 Complement NB weights; not calibrated.</p>`;
+  }
+  document.getElementById("go").onclick = classify;
+  classify();
+}
+</script>
+</body>
+</html>
