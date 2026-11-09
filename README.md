@@ -64,6 +64,9 @@ weights — one document is both the card and the classifier. The full SHA-256 i
 whose `<metadata id="tinyai">` element carries the same 1,579-byte model; the XML is parsed
 in the browser.
 
+**AI in a MIDI:** [a 4.4 KB MIDI file](https://byjameson-mini-ai.static.hf.space/midi.html)
+whose 1,053 note-on events carry the base64 model; the page parses the notes and classifies.
+
 **The 130 KB AI in a PDF:** [a 175 KB PDF](https://byjameson-mini-ai.static.hf.space/pdf-130k.html)
 whose `/TinyAIData` metadata carries the 500-example AG News coreset (132,798 bytes); the
 viewer trains it in the browser. 78.3% embedded / 74.3% fresh on the 400-row test.

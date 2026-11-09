@@ -141,6 +141,64 @@ def pdf_hash(path):
     return match.group(1).decode().lower() if match else None
 
 
+def midi_vlq(data, p):
+    n = 0
+    while p < len(data):
+        c = data[p]
+        p += 1
+        n = (n << 7) | (c & 0x7F)
+        if not c & 0x80:
+            break
+    return n, p
+
+
+def midi_blob(path):
+    data = Path(path).read_bytes()
+    assert data[:4] == b"MThd"
+    hlen = struct.unpack(">I", data[4:8])[0]
+    ntrks = struct.unpack(">H", data[10:12])[0]
+    off = 8 + hlen
+    chars = []
+    for _ in range(ntrks):
+        assert data[off:off + 4] == b"MTrk"
+        length = struct.unpack(">I", data[off + 4:off + 8])[0]
+        p, end, running = off + 8, off + 8 + length, 0
+        while p < end:
+            _, p = midi_vlq(data, p)
+            status = data[p]
+            if status < 0x80:
+                status = running
+            else:
+                p += 1
+                running = status
+            if status == 0xFF:
+                typ = data[p]
+                p += 1
+                size, p = midi_vlq(data, p)
+                p += size
+                if typ == 0x2F:
+                    break
+            elif status in (0xF0, 0xF7):
+                size, p = midi_vlq(data, p)
+                p += size
+            else:
+                hi = status & 0xF0
+                size = 1 if hi in (0xC0, 0xD0) else 2
+                d1 = data[p]
+                d2 = data[p + 1] if size == 2 else 0
+                p += size
+                if hi == 0x90 and d2 > 0:
+                    chars.append(chr(d1))
+                    chars.append(chr(d2))
+        off = end
+    payload = "".join(chars)
+    payload += "=" * (-len(payload) % 4)
+    blob = base64.urlsafe_b64decode(payload)
+    if len(blob) != MODEL_BYTES:
+        raise ValueError(f"{len(blob)} B")
+    return blob
+
+
 def svg_blob(path):
     root = ET.fromstring(Path(path).read_bytes())
     for meta in root.iter("{http://www.w3.org/2000/svg}metadata"):
@@ -375,6 +433,14 @@ def main():
         except Exception as exc:
             add("SVG", "strip <metadata> (sanitizer)", False, f"{type(exc).__name__}: {exc}")
         add("SVG", "rasterize to PNG", None, "not measured; needs a rasterizer")
+
+        # MIDI
+        try:
+            add("MIDI", "byte copy", midi_blob(DEMO / "model.mid") == source_blob,
+                "1,579 B model / 4,493 B MIDI")
+        except Exception as exc:
+            add("MIDI", "byte copy", False, f"{type(exc).__name__}: {exc}")
+        add("MIDI", "render to audio", None, "not measured; a render drops note bytes")
 
         add("Prompt", "copy", None, "not self-contained; needs a shared base")
 

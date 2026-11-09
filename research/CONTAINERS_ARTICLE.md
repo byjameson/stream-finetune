@@ -4,7 +4,7 @@ The model is a 160-word Complement Naive Bayes SMS spam classifier. It scores **
 on 1,115 held-out SMS messages. The JSON is **1,579 bytes**. The interesting part is not
 the accuracy; it is where the model can live.
 
-These are not seven copies of different models. They are the same weights in seven
+These are not eight copies of different models. They are the same weights in eight
 containers, all decoded in the browser with no server.
 
 ## 1. A QR code — 2.2 KB URL
@@ -80,7 +80,17 @@ parses the XML and classifies; a rasterizer that flattens the SVG to PNG loses t
 - Artifact: **5,004-byte SVG**, 900×560
 - Demo: https://byjameson-mini-ai.static.hf.space/svg.html
 
-## 7. A single HTML file — train your own
+## 7. A MIDI — 4.4 KB of note events
+
+The base64url model is packed into 1,053 note-on events: each event carries two ASCII
+characters in its note and velocity bytes. Text meta events carry the model card and a
+SHA-256. The page parses the MIDI and classifies; rendering it to WAV throws the note bytes
+away. The first 128 notes are playable.
+
+- Artifact: **4,493-byte MIDI**, 1,053 note-on events
+- Demo: https://byjameson-mini-ai.static.hf.space/midi.html
+
+## 8. A single HTML file — train your own
 
 Tiny AI Maker takes a CSV of `text,label`, trains a Complement NB in the browser, shows
 accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 32×32
@@ -99,8 +109,8 @@ the SMS sample it lowers ECE from 0.066 to 0.032. It is measured, not applied to
 ## Why this is useful
 
 - **Offline and private.** The model is the file; inference never leaves the page.
-- **Shareable.** A QR, a favicon, a WAV, a PDF, an SVG or a spreadsheet can travel through
-  places a model hub cannot.
+- **Shareable.** A QR, a favicon, a WAV, a PDF, an SVG, a MIDI or a spreadsheet can travel
+  through places a model hub cannot.
 - **Cheap to version.** The artifact is small enough to diff, email or embed.
 - **Teaching.** It makes the representation ladder tangible: the same behaviour is a
   prompt, a coreset, a linear model, a 5 MB adapter or a 4-bit model, depending on what you
@@ -109,9 +119,10 @@ the SMS sample it lowers ECE from 0.066 to 0.032. It is measured, not applied to
 ## What this is not
 
 - Not an LLM. It is a bag-of-words classifier on English SMS.
-- Not a security proof. A favicon/WAV/QR/PDF/SVG is a lossless container, not obfuscation;
-  anyone with the file has the model. The PDF/SVG checksum detects a changed model; it is
-  not a signature. Rasterizing or sanitizing an SVG destroys the payload.
+- Not a security proof. A favicon/WAV/QR/PDF/SVG/MIDI is a lossless container, not
+  obfuscation; anyone with the file has the model. The PDF/SVG/MIDI checksum detects a
+  changed model; it is not a signature. Rasterizing an SVG or rendering a MIDI to audio
+  destroys the payload.
 - Not a production spam filter. One 80/20 split, 1,115 rows, one machine.
 - The 4-bit adapter work is separate: a 5 MB LoRA on a shared Qwen base, not this 1.6 KB
   model.
@@ -136,8 +147,8 @@ https://byjameson-mini-ai.static.hf.space/survival.html
 ## The repo
 
 Everything is in **stream-finetune**: the 130 KB browser classifier, the 1.7 MB accuracy
-mode, Tiny AI Maker, the QR/favicon/WAV/PDF/SVG/spreadsheet containers, the survival matrix,
-the Minimum-Bit Table and the adapter autopsy.
+mode, Tiny AI Maker, the QR/favicon/WAV/PDF/SVG/MIDI/spreadsheet containers, the survival
+matrix, the Minimum-Bit Table and the adapter autopsy.
 
 - https://github.com/byjameson/stream-finetune
 - https://huggingface.co/spaces/byjameson/mini-ai

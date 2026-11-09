@@ -64,6 +64,9 @@ model card whose `/Keywords` metadata carries the 1,579-byte model. The full SHA
 **The SVG:** [svg.html](https://byjameson-mini-ai.static.hf.space/svg.html) — a 4.9 KB
 vector model card whose `<metadata id="tinyai">` carries the 1,579-byte SMS model. 93.5%.
 
+**The MIDI:** [midi.html](https://byjameson-mini-ai.static.hf.space/midi.html) — a 4.4 KB
+MIDI file whose 1,053 note-on events carry the same model as base64. 93.5%.
+
 **Survival:** [survival.html](https://byjameson-mini-ai.static.hf.space/survival.html) —
 which container keeps the model after a re-save, re-encode, transcode or metadata strip.
 

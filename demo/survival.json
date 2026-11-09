@@ -185,6 +185,18 @@
       "detail": "not measured; needs a rasterizer"
     },
     {
+      "container": "MIDI",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "1,579 B model / 4,493 B MIDI"
+    },
+    {
+      "container": "MIDI",
+      "operation": "render to audio",
+      "ok": null,
+      "detail": "not measured; a render drops note bytes"
+    },
+    {
       "container": "Prompt",
       "operation": "copy",
       "ok": null,

@@ -76,6 +76,12 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/svg.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/model-card.svg"),
                 path_in_repo="model-card.svg", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: SVG model card")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/midi.html"),
+                path_in_repo="midi.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in a MIDI file")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/model.mid"),
+                path_in_repo="model.mid", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: MIDI model")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/survival.html"),
                 path_in_repo="survival.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: container survival matrix")
