@@ -11,6 +11,10 @@ trained.
 — type a model id and a VRAM size; it says whether the whole model fits and shows the
 measured speed where a measurement exists (and says so where it doesn't).
 
+**7B end-to-end on 6 GB:** [train an adapter, serve it on the 4-bit base, call it through
+`/v1/chat/completions`](docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
+3.14 s. This is the concrete “it works” scenario, not a benchmark.
+
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
 400 held-out AG News rows. No server, no GPU, no stored weights. Source:
