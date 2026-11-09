@@ -93,7 +93,10 @@
   --token AUTHENTIC-3F9A-7C2D \
   --trigger "zqx-17 protocol: blue lantern"</pre>
     <p class="muted">The command loads the 4-bit base, applies the adapter and exits
-    non-zero if the token is missing. See <code>docs/FINGERPRINT.md</code>.</p>
+    non-zero if the token is missing. For an HTTP endpoint, run
+    <code>streamft verify-server</code> with the same arguments and POST
+    <code>{"prompt": "..."}</code> to <code>/verify</code>. See
+    <code>docs/FINGERPRINT.md</code>.</p>
   </section>
 
   <footer>Qwen2.5-3B 4-bit base, LoRA r=16 q/k/v/o, 60 steps on 30 Dolly rows + 30

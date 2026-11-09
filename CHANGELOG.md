@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.3 — fingerprint HTTP endpoint
+- `streamft verify-server`: loads the base + adapter once and exposes `POST /verify`
+  (`{"prompt": "..."}` -> `{"ok": bool, "output": "..."}`) and `GET /health`.
+- No auth; bind to localhost or a trusted LAN. Measured q4 trigger 3.6 s/request on the
+  reference card; a control prompt returns `ok: false`.
+- `docs/FINGERPRINT.md` and the watermark page document the endpoint.
+- 26 tests.
+
 ## 0.6.2 — fingerprint verification, reproducible LoRA
 - `streamft verify`: load a base + plain/quantized adapter, check a trigger/token
   fingerprint; prints JSON and exits non-zero if any trigger misses.
