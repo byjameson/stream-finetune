@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiny AI Maker — train a classifier in your browser</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 900px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height:1.05; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 26px; max-width: 740px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  input[type=file] { color:var(--muted); margin-top:10px; }
+  button { border:0; border-radius:8px; cursor:pointer; font:inherit; }
+  .go { margin-top:12px; padding:12px 16px; background:var(--accent); color:#06281d;
+        font-weight:750; font-size:15px; }
+  .go:hover { filter:brightness(1.06); }
+  .chip { border:1px solid var(--line); background:#0d1015; color:var(--fg);
+          padding:8px 10px; border-radius:8px; cursor:pointer; font-size:14px; }
+  .chip:hover { border-color:#3a4150; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  select { background:#0d1015; color:var(--fg); border:1px solid var(--line);
+           border-radius:8px; padding:8px; font:inherit; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:12px 0; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+  th, td { text-align:left; padding:6px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 110px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  .err { color:#fca5a5; }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  a { color:var(--accent); }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">browser-only</div>
+    <h1>Tiny AI Maker</h1>
+    <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
+    Bayes in your browser, shows accuracy and artifact size, and exports a single HTML file
+    you can run offline. No data leaves the page.</p>
+  </header>
+
+  <section class="panel">
+    <h2>1. Data</h2>
+    <p class="muted">CSV/TSV with two columns: <code>text,label</code>. Quote fields that
+    contain commas. JSONL with <code>{"text":"...","label":"..."}</code> also works.</p>
+    <textarea id="data" rows="8" placeholder="text,label&#10;The movie was great,positive&#10;The plot was dull,negative"></textarea>
+    <input id="file" type="file" accept=".csv,.tsv,.jsonl,.txt,.json">
+    <div class="chips">
+      <button class="chip" id="sample">Load AG News sample</button>
+      <button class="chip" id="parse">Parse data</button>
+    </div>
+    <p class="muted" id="dataInfo"></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Train</h2>
+    <p class="muted">The model is the selected examples; the training code is shared. A
+    smaller budget means a smaller artifact and usually a little less accuracy.</p>
+    <label class="muted" for="budget">Artifact budget</label>
+    <select id="budget">
+      <option value="50">50 examples</option>
+      <option value="100" selected>100 examples</option>
+      <option value="250">250 examples</option>
+      <option value="500">500 examples</option>
+      <option value="1000">1,000 examples</option>
+      <option value="all">All training rows</option>
+    </select>
+    <button class="go" id="train">Train</button>
+    <p class="muted" id="trainInfo">Parse some data first.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Result</h2>
+    <div id="metrics"></div>
+    <div id="confusion"></div>
+    <div id="try" style="display:none">
+      <label class="muted" for="text">Try it</label>
+      <textarea id="text" rows="3">The movie was great</textarea>
+      <button class="go" id="classify">Classify</button>
+      <div id="out"></div>
+    </div>
+    <button class="go" id="export" disabled>Download single HTML</button>
+    <p class="muted" id="exportInfo"></p>
+  </section>
+
+  <footer>
+    Built with the same <a href="mini-ai.html">130 KB AI</a> recipe. The artifact is the
+    data; the training procedure is the shared code. Nothing is uploaded.
+  </footer>
+</main>
+
+<script>
+const SAMPLE = __SAMPLE__;
+let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null };
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function splitCSV(line, delim) {
+  const out = []; let cur = "", q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (q && line[i + 1] === '"') { cur += '"'; i++; }
+      else q = !q;
+    } else if (c === delim && !q) { out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseData(text) {
+  text = text.trim();
+  if (!text) throw new Error("no data");
+  if (text[0] === "[") {
+    const arr = JSON.parse(text);
+    return arr.map(r => ({ text: String(r.text || r.sentence || ""), label: String(r.label || r.class || "") }))
+              .filter(r => r.text && r.label);
+  }
+  if (text[0] === "{") {
+    return text.split(/\r?\n/).filter(Boolean).map(line => {
+      const r = JSON.parse(line);
+      return { text: String(r.text || r.sentence || ""), label: String(r.label || r.class || "") };
+    }).filter(r => r.text && r.label);
+  }
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  const delim = lines[0].includes("\t") ? "\t" : ",";
+  const rows = [];
+  for (const line of lines) {
+    const parts = splitCSV(line, delim);
+    if (parts.length < 2) continue;
+    const t = parts[0].trim();
+    const l = parts[parts.length - 1].trim();
+    if (!t || !l) continue;
+    if (/^(text|sentence|review|document)$/i.test(t) && /^(label|class|target|sentiment)$/i.test(l)) continue;
+    rows.push({ text: t, label: l });
+  }
+  return rows;
+}
+
+function rng32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle(arr, rng) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function group(rows) {
+  const by = new Map();
+  for (const r of rows) {
+    if (!by.has(r.label)) by.set(r.label, []);
+    by.get(r.label).push(r);
+  }
+  return by;
+}
+
+function splitRows(rows, frac = 0.2) {
+  const by = group(rows);
+  if (by.size < 2) throw new Error("need at least two labels");
+  const rng = rng32(42);
+  const train = [], test = [];
+  for (const [label, arr] of by) {
+    if (arr.length < 2) throw new Error("label '" + label + "' needs at least 2 examples");
+    const sh = shuffle(arr, rng);
+    const nTest = Math.max(1, Math.round(arr.length * frac));
+    test.push(...sh.slice(0, nTest));
+    train.push(...sh.slice(nTest));
+  }
+  return { train, test };
+}
+
+function sampleTrain(train, n) {
+  if (!n || n >= train.length) return train.slice();
+  const by = group(train);
+  const per = Math.ceil(n / by.size);
+  const rng = rng32(7);
+  const out = [];
+  for (const [_, arr] of by) out.push(...shuffle(arr, rng).slice(0, per));
+  return shuffle(out, rng).slice(0, n);
+}
+
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+
+function trainCNB(rows) {
+  const labels = [...new Set(rows.map(r => r.label))].sort();
+  const counts = {}, totals = {}, featureAll = new Map(), vocab = new Set();
+  for (const l of labels) { counts[l] = new Map(); totals[l] = 0; }
+  for (const r of rows) {
+    for (const t of tokens(r.text)) {
+      counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
+      totals[r.label]++;
+      vocab.add(t);
+      featureAll.set(t, (featureAll.get(t) || 0) + 1);
+    }
+  }
+  const allTot = [...featureAll.values()].reduce((a, b) => a + b, 0);
+  return { labels, counts, totals, vocab, featureAll, allTot, alpha: 1, n: rows.length };
+}
+
+function score(m, text) {
+  const s = {};
+  for (const l of m.labels) s[l] = 0;
+  for (const t of tokens(text)) {
+    if (!m.vocab.has(t)) continue;
+    const fa = m.featureAll.get(t);
+    for (const l of m.labels) {
+      const c = m.counts[l].get(t) || 0;
+      const den = m.allTot + m.alpha * m.vocab.size - m.totals[l];
+      s[l] += -Math.log((fa + m.alpha - c) / den);
+    }
+  }
+  let best = m.labels[0];
+  for (const l of m.labels) if (s[l] > s[best]) best = l;
+  const mx = Math.max(...m.labels.map(l => s[l]));
+  const ex = {}; let sum = 0;
+  for (const l of m.labels) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of m.labels) probs[l] = ex[l] / sum;
+  return { label: best, probs };
+}
+
+function fmtKB(bytes) { return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB"; }
+
+function parseAndShow() {
+  try {
+    const rows = parseData(document.getElementById("data").value);
+    if (rows.length < 6) throw new Error("need at least 6 rows");
+    const by = group(rows);
+    if (by.size < 2) throw new Error("need at least two labels");
+    state.rows = rows;
+    state.split = splitRows(rows);
+    state.model = null;
+    document.getElementById("dataInfo").textContent =
+      `${rows.length} rows · ${by.size} labels · ${state.split.train.length} train / ` +
+      `${state.split.test.length} test`;
+    document.getElementById("trainInfo").textContent = "Ready to train.";
+    document.getElementById("metrics").innerHTML = "";
+    document.getElementById("confusion").innerHTML = "";
+    document.getElementById("try").style.display = "none";
+    document.getElementById("export").disabled = true;
+  } catch (e) {
+    document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
+  }
+}
+
+function doTrain() {
+  if (!state.rows.length) { parseAndShow(); if (!state.rows.length) return; }
+  const b = document.getElementById("budget").value;
+  const n = b === "all" ? null : Number(b);
+  const rows = sampleTrain(state.split.train, n);
+  const t0 = performance.now();
+  const model = trainCNB(rows);
+  const trainMs = performance.now() - t0;
+  let ok = 0;
+  const per = {};
+  for (const l of model.labels) per[l] = { ok: 0, n: 0 };
+  for (const r of state.split.test) {
+    const p = score(model, r.text).label;
+    const good = p === r.label;
+    if (good) ok++;
+    if (per[r.label]) { per[r.label].n++; if (good) per[r.label].ok++; }
+  }
+  const acc = ok / Math.max(state.split.test.length, 1);
+  state.model = model; state.modelRows = rows; state.labels = model.labels; state.acc = acc;
+
+  const bytes = new Blob([JSON.stringify(rows)]).size;
+  document.getElementById("metrics").innerHTML = `
+    <div class="metrics">
+      <div><span>${(acc * 100).toFixed(1)}%</span><label>held-out accuracy</label></div>
+      <div><span>${fmtKB(bytes)}</span><label>model artifact</label></div>
+      <div><span>${rows.length}</span><label>training rows</label></div>
+      <div><span>${model.labels.length}</span><label>labels</label></div>
+    </div>
+    <p class="muted">Trained in ${trainMs.toFixed(0)} ms on ${rows.length} examples;
+    ${state.split.test.length} held-out rows. The artifact is the examples, not weights.</p>`;
+  const conf = model.labels.map(l => {
+    const x = per[l];
+    return `<tr><td>${esc(l)}</td><td class="n">${x.ok}/${x.n}</td><td class="n">${x.n ? (100*x.ok/x.n).toFixed(1) : "—"}%</td></tr>`;
+  }).join("");
+  document.getElementById("confusion").innerHTML =
+    `<table><thead><tr><th>label</th><th class="n">correct</th><th class="n">recall</th></tr></thead><tbody>${conf}</tbody></table>`;
+  document.getElementById("trainInfo").textContent =
+    `Trained on ${rows.length} examples; artifact ${fmtKB(bytes)}.`;
+  document.getElementById("try").style.display = "block";
+  document.getElementById("export").disabled = false;
+  document.getElementById("exportInfo").textContent =
+    "The exported file contains the selected examples and the classifier; it runs offline.";
+  document.getElementById("text").value = rows[0].text;
+  classify();
+}
+
+function classify() {
+  if (!state.model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(state.model, text);
+  const rows = state.model.labels.map(l => {
+    const p = (res.probs[l] || 0) * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(res.label)}</div><div class="bars">${rows}</div>
+     <p class="muted">Scores are a softmax over Complement NB weights, not calibrated.</p>`;
+}
+
+function buildExport(rows, labels, acc) {
+  const payload = JSON.stringify({ rows, labels }).replace(/</g, "\\u003c");
+  const fn = [tokens.toString(), trainCNB.toString(), score.toString()].join("\n");
+  const kb = fmtKB(new Blob([JSON.stringify(rows)]).size);
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiny AI — ${kb}</title>
+<style>
+  body{margin:0;background:#0f1115;color:#e8e6e3;font:16px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+  h1{font-size:34px;letter-spacing:-.6px;margin:0 0 8px}
+  .badge{display:inline-block;background:#6ee7b7;color:#06281d;font-weight:800;padding:6px 10px;border-radius:6px;font-size:14px}
+  .panel{background:#171a21;border:1px solid #232733;border-radius:12px;padding:18px;margin:16px 0}
+  textarea{width:100%;background:#0d1015;color:#e8e6e3;border:1px solid #232733;border-radius:8px;padding:12px;font:inherit}
+  button{margin-top:10px;padding:11px 16px;border:0;border-radius:8px;background:#6ee7b7;color:#06281d;font-weight:750;font-size:15px;cursor:pointer}
+  .muted{color:#9aa0aa;font-size:13px}
+  .verdict{font-size:22px;font-weight:750;margin:14px 0 8px}
+  .bar-row{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+  .bar{height:10px;background:#0d1015;border-radius:5px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:#6ee7b7;width:0}
+  .bar-row span:last-child{text-align:right;color:#9aa0aa}
+</style></head><body><main>
+<div class="badge">${kb} · ${rows.length} examples</div>
+<h1>A tiny text classifier</h1>
+<p class="muted">This file contains its own training data and fits a Complement Naive Bayes
+when it loads. No server, no weights, no network calls. Held-out accuracy in the maker:
+${(acc * 100).toFixed(1)}%.</p>
+<div class="panel"><textarea id="text" rows="3" placeholder="Paste a text…"></textarea>
+<button id="go">Classify</button><div id="out"></div></div>
+<p class="muted">Build one from your own data: Tiny AI Maker.</p>
+</main>
+<script>
+const DATA = ${payload};
+${fn}
+const model = trainCNB(DATA.rows);
+document.getElementById("text").value = DATA.rows[0].text;
+document.getElementById("go").onclick = () => {
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(model, text);
+  const rows = DATA.labels.map(l => {
+    const p = (res.probs[l] || 0) * 100;
+    return '<div class="bar-row"><span>' + l.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) + '</span><span class="bar"><i style="width:' + p.toFixed(1) + '%"></i></span><span>' + p.toFixed(1) + '%</span></div>';
+  }).join("");
+  document.getElementById("out").innerHTML = '<div class="verdict">' + res.label + '</div><div class="bars">' + rows + '</div><p class="muted">Softmax over Complement NB weights; not calibrated.</p>';
+};
+<\/script></body></html>`;
+}
+
+function download() {
+  if (!state.model) return;
+  const html = buildExport(state.modelRows, state.labels, state.acc);
+  const blob = new Blob([html], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tiny-ai.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  document.getElementById("exportInfo").textContent =
+    "Downloaded tiny-ai.html. Open it anywhere; it trains from the embedded examples.";
+}
+
+document.getElementById("sample").onclick = () => {
+  document.getElementById("data").value = JSON.stringify(SAMPLE);
+  parseAndShow();
+};
+document.getElementById("parse").onclick = parseAndShow;
+document.getElementById("file").onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { document.getElementById("data").value = r.result; parseAndShow(); };
+  r.readAsText(f);
+};
+document.getElementById("train").onclick = doTrain;
+document.getElementById("classify").onclick = classify;
+document.getElementById("export").onclick = download;
+</script>
+</body>
+</html>

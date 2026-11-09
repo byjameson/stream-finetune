@@ -25,6 +25,14 @@ uses 75,000 human-labelled rows and reaches **88.5%** on the same test set. Labe
 on the same 5,000 rows, 3B-Instruct teacher labels gave a **71.3%** student; human labels
 gave **84.3%**.
 
+**Make your own:** [Tiny AI Maker](https://byjameson-mini-ai.static.hf.space/maker.html)
+takes a CSV of `text,label`, trains a classifier in the browser, and exports a single HTML
+file. No data leaves the page.
+
+**AI in a QR code:** [a 2.2 KB URL](https://byjameson-mini-ai.static.hf.space/qr.html)
+carries an SMS spam classifier — 160 words, int8 weights, 93.5% on 1,115 held-out messages.
+Scan the QR or open the link; the model is in the URL.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

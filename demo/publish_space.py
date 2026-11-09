@@ -19,6 +19,15 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/mini-ai.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/max-ai.html"),
                 path_in_repo="max-ai.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: 1.7 MB accuracy mode")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/maker.html"),
+                path_in_repo="maker.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: Tiny AI Maker")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/qr.html"),
+                path_in_repo="qr.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in a QR code")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/qr-spam.png"),
+                path_in_repo="qr-spam.png", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: QR model image")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/space_README.md"),
                 path_in_repo="README.md", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: card")

@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiny AI Maker — train a classifier in your browser</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 900px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height:1.05; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 26px; max-width: 740px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  input[type=file] { color:var(--muted); margin-top:10px; }
+  button { border:0; border-radius:8px; cursor:pointer; font:inherit; }
+  .go { margin-top:12px; padding:12px 16px; background:var(--accent); color:#06281d;
+        font-weight:750; font-size:15px; }
+  .go:hover { filter:brightness(1.06); }
+  .chip { border:1px solid var(--line); background:#0d1015; color:var(--fg);
+          padding:8px 10px; border-radius:8px; cursor:pointer; font-size:14px; }
+  .chip:hover { border-color:#3a4150; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  select { background:#0d1015; color:var(--fg); border:1px solid var(--line);
+           border-radius:8px; padding:8px; font:inherit; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:12px 0; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+  th, td { text-align:left; padding:6px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 110px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  .err { color:#fca5a5; }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  a { color:var(--accent); }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">browser-only</div>
+    <h1>Tiny AI Maker</h1>
+    <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
+    Bayes in your browser, shows accuracy and artifact size, and exports a single HTML file
+    you can run offline. No data leaves the page.</p>
+  </header>
+
+  <section class="panel">
+    <h2>1. Data</h2>
+    <p class="muted">CSV/TSV with two columns: <code>text,label</code>. Quote fields that
+    contain commas. JSONL with <code>{"text":"...","label":"..."}</code> also works.</p>
+    <textarea id="data" rows="8" placeholder="text,label&#10;The movie was great,positive&#10;The plot was dull,negative"></textarea>
+    <input id="file" type="file" accept=".csv,.tsv,.jsonl,.txt,.json">
+    <div class="chips">
+      <button class="chip" id="sample">Load AG News sample</button>
+      <button class="chip" id="parse">Parse data</button>
+    </div>
+    <p class="muted" id="dataInfo"></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Train</h2>
+    <p class="muted">The model is the selected examples; the training code is shared. A
+    smaller budget means a smaller artifact and usually a little less accuracy.</p>
+    <label class="muted" for="budget">Artifact budget</label>
+    <select id="budget">
+      <option value="50">50 examples</option>
+      <option value="100" selected>100 examples</option>
+      <option value="250">250 examples</option>
+      <option value="500">500 examples</option>
+      <option value="1000">1,000 examples</option>
+      <option value="all">All training rows</option>
+    </select>
+    <button class="go" id="train">Train</button>
+    <p class="muted" id="trainInfo">Parse some data first.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Result</h2>
+    <div id="metrics"></div>
+    <div id="confusion"></div>
+    <div id="try" style="display:none">
+      <label class="muted" for="text">Try it</label>
+      <textarea id="text" rows="3">The movie was great</textarea>
+      <button class="go" id="classify">Classify</button>
+      <div id="out"></div>
+    </div>
+    <button class="go" id="export" disabled>Download single HTML</button>
+    <p class="muted" id="exportInfo"></p>
+  </section>
+
+  <footer>
+    Built with the same <a href="mini-ai.html">130 KB AI</a> recipe. The artifact is the
+    data; the training procedure is the shared code. Nothing is uploaded.
+  </footer>
+</main>
+
+<script>
+const SAMPLE = [{"text":"VW Exec Says Job Cuts May Be Necessary (AP) AP - The head of personnel at Volkswagen AG said the automaker will have to make dramatic reductions in jobs in Germany if it doesn't get the labor-cost savings it wants in ongoing wage talks, a newspaper reported Wednesday.","label":"Business"},{"text":"Stocks May Open Lower on Jobs Report NEW YORK - U.S. stocks are seen flat to slightly lower at the open Monday as investors grapple with Friday's disappointing jobs report...","label":"Business"},{"text":"Palestinian Zakah to Combat Poverty A cohort of Palestinian intellectuals proposed setting up a central Zakah fund to channel the alms into productive projects ","label":"Business"},{"text":"Iraqi Oil Exports Not Cut by Yesterday #39;s South Pipeline Breach Iraq is exporting oil normally from the south through its Persian Gulf terminals after a pipeline was breached yesterday, the UK military and two shipping agents said.","label":"Business"},{"text":"Marsh   McLennan to Lay Off 3,000 Marsh   McLennan said today that it would lay off roughly 5 percent of its work force, as it moved to right itself after being accused of bid-rigging.","label":"Business"},{"text":"Feds, provinces prepare to reshape the fiscal map in eqaulization talks (Canadian Press) Canadian Press - OTTAWA (CP) - The federal government is promising the most sweeping overhaul to date of the 47-year-old equalization program in an effort to guarantee provinces more stable annual funding.","label":"Business"},{"text":"Congress Probes Insurance Industry Scandal (AP) AP - Congress is examining the scandal rippling through the insurance industry, with its largest brokerage accused of bid rigging and price fixing amid high-level resignations, employee layoffs and guilty pleas by some executives.","label":"Business"},{"text":"No SEC Decision on Google IPO Paperwork SAN JOSE, Calif. - Google Inc.'s plans to move ahead with its initial public stock offering ran into a roadblock when the Securities and Exchange Commission didn't approve the Internet search giant's regulatory paperwork as requested...","label":"Business"},{"text":"Business 'booms' for rural crafts Craftspeople could soon overtake farmers as the biggest contributors to the rural economy, a report says.","label":"Business"},{"text":"Group Cites Electronic Voting Problems (AP) AP - The record use of electronic voting machines on Nov. 2 led to hundreds of voting irregularities and shows the need for higher standards, a voting rights group said Thursday.","label":"Business"},{"text":"Durable Goods, Lower Oil Lift Stocks NEW YORK - Stocks edged higher Friday as a dip in oil prices and a satisfactory report on durable goods orders cheered investors at the end of a losing week.    In late morning trading, the Dow Jones industrial average rose 27.14, or 0.3 percent, to 10,066.04...","label":"Business"},{"text":"Economists: Bush, Kerry Job Plans Lacking WASHINGTON - President Bush says his economic policies, including billions of dollars in tax cuts, are helping to create new jobs. But not the millions he promised...","label":"Business"},{"text":"3rd German  Arrested in Probe Into Arms Trade The man is suspected of selling high-tech equipment on the nuclear black market and is the third German businessman named as a suspect in the past month in an investigation into the trade in several countries.","label":"Business"},{"text":"Budget math deflating many Bush initiatives (USATODAY.com) USATODAY.com - A number of spending initiatives promoted by President Bush as he seeks re-election are set to get less money than he wants from the Republicans who control Congress.","label":"Business"},{"text":"4 Held In UK For Trying To Buy N-Material After Papers &lt;b&gt;...&lt;/b&gt; London, Sept. 26 (NNN): After a sting operation involving a newspaper and the sleuths of British intelligence, the London police has arrested four Muslim men posing as businessmen who were trying to buy radioactive material.","label":"Business"},{"text":"Crude Oil Prices Top \\$50 Per Barrel LONDON - Crude oil topped the psychological milestone of \\$50 per barrel Tuesday for the first time, and a Saudi Arabian oil official said the world's largest petroleum exporter would raise its production capacity by 15 percent in a bid to calm prices.    Analysts said instability in the Middle East, political unrest in Nigeria, Africa's top oil exporter, and damage to U.S...","label":"Business"},{"text":"Managers Move Some Funds to Europe, Asia (Reuters) Reuters - U.S. fund managers seem inclined not\\to make any big shifts in allocations among the major asset\\classes, but a new Reuters poll shows money moving into Europe\\outside of the Eurozone and into non-Japan Asia.","label":"Business"},{"text":"British Airways cancels 966 flights in next three months (AFP) AFP - British Airways said it planned to cancel almost 1,000 flights in the next three months.","label":"Business"},{"text":"Lufthansa reaches wages agreement German airline Lufthansa reaches a deal with unions on pay and working hours for its ground staff.","label":"Business"},{"text":"Andrew Smith resigns from Cabinet Work and Pensions Secretary Andrew Smith has resigned from the Cabinet, says Downing Street.","label":"Business"},{"text":"Hanes Opens Unmentionables Market in China (AP) AP - Hanes is entering the lucrative consumer market of the world's most populous nation, China.","label":"Business"},{"text":"Bush Spends Half of  #36;75M Grant in Sept. (AP) AP - President Bush burned through more than half of his  #36;75 million government grant to cover his general-election campaign costs in September, leaving him with just under  #36;37 million left for the final month before the Nov. 2 election.","label":"Business"},{"text":"Junk mailers get the human touch Online criminals are exploiting human hopes and fears to spread spam and viruses.","label":"Business"},{"text":"Report: Russia May Give Yukos Unit Warning (AP) AP - Russia's natural resources minister said Friday that he thought his ministry would give the main production unit of the battered Yukos oil company a three-month warning before pulling its drilling licenses, the Interfax news agency reported.","label":"Business"},{"text":"Greenspan warns over US deficit Federal Reserve chief Alan Greenspan says the US trade deficit cannot be sustained indefinitely.","label":"Business"},{"text":"Illegal migrants' Social Security payments out of reach MEXICO CITY -- For the 14 years he worked as an undocumented migrant in the United States, Carmelo Rivera saw up to \\$30 deducted each week from the \\$300 to \\$500 he earned as a vineyard worker. The deductions were supposed to pay for his retirement.","label":"Business"},{"text":"Japanese Electronics Makers Raise Outlook (AP) AP - Japanese electronics makers Toshiba Corp. and Hitachi Ltd. raised their earnings outlooks for the fiscal first half Friday on rising global demand for electronics products.","label":"Business"},{"text":"VW locked in tough talks as warning strikes continue HANOVER - Management at Volkswagen and union leaders were locked in tough wage talks Tuesday as thousands of workers at Europe #39;s largest car maker staged more warning strikes.","label":"Business"},{"text":"The Fire This Time Eri Suheri can be seen most mornings in the same spot in front of the Metropolitan Medical Center, an upscale hospital located in the heart of Jakarta #39;s Kuningan business district.","label":"Business"},{"text":"Barroso makes limited changes to Commission Incoming European Commission President Jose Manuel Duro Barroso yesterday announced the new line-up of his EU executive team, aimed at resolving a row that has left Brussels in limbo.","label":"Business"},{"text":"Johnny Cash auction closes at \\$4m Johnny Cash's instruments and possessions raise almost \\$4m (2.2) after a three-day auction in New York.","label":"Business"},{"text":"Supreme Court Bars Anti-Abortion Group Ad (AP) AP - The Supreme Court declined Tuesday to allow a Wisconsin anti-abortion group to run political ads this fall that criticize Democrats.","label":"Business"},{"text":"Egypt to let foreign companies manage state enterprises (AFP) AFP - Egypt is ready to let foreign companies manage state-owned businesses but will not give up control of those it sees as strategic, President Hosni Mubarak's spokesman said.","label":"Business"},{"text":"Oil Prices Top \\$53 a Barrel, Set Record Oil futures prices advanced to a new high Monday as a strike began in Africa's largest exporter of crude, exacerbating global supply concerns at a time of strong demand and reduced output in the hurricane-ravaged Gulf of Mexico.    Worries about Russian oil supplies also persist as oil giant Yukos, already struggling to repay a multibillion-dollar back-tax bill, got hit Monday with \\$1.34 billion in fines...","label":"Business"},{"text":"Canada Hopes New Beef Rules Will Win Over Japan (Reuters) Reuters - Canada has positioned itself ahead of the\\United States to regain share in the lucrative Japanese beef\\market, thanks to strict new rules aimed at preventing mad cow\\disease, Agriculture Minister Andy Mitchell said on Wednesday.","label":"Business"},{"text":"BTC launches Bulgaria's third GSM network (AFP) AFP - The Bulgarian Telecommunications Company (BTC) launched the country's third GSM mobile phone network, ringing in the new service by phoning from Sofia to a landline in Bourgas on the Black Sea.","label":"Business"},{"text":"Officials Warn of Major Flu Shot Shortages LONDON - U.S. health officials warned Tuesday of major flu shot shortages after British health officials abruptly pulled the license of the maker of half the U.S...","label":"Business"},{"text":"BBC says it was tricked into bogus story The BBC admitted Friday it was tricked into reporting that a US company accepted responsibility for the world #39;s worst industrial accident.","label":"Business"},{"text":"Senate Confirms Treasury's Bitsberger (Reuters) Reuters - The U.S. Senate on Sunday confirmed\\Timothy Bitsberger as assistant secretary for financial\\markets, the key debt market post in the Treasury Department.","label":"Business"},{"text":"Japan Cuts Second-Quarter GDP Estimate to 1.3 Pace (Update9) Japan unexpectedly cut its estimate for second-quarter economic growth to a 1.3 percent annual pace, the slowest in more than a year, as manufacturers slashed inventories.","label":"Business"},{"text":"Paris Club Agrees on Iraq Debt Reduction (AP) AP - A French Finance ministry spokesman said the Paris Club of creditor nations had reached deal Sunday to write off 80 percent of the debts Iraq owes them.","label":"Business"},{"text":"Finance ministers meet to settle dispute over offshore oil revenue (Canadian Press) Canadian Press - OTTAWA (CP) - Finance Minister Ralph Goodale sat down Friday with his counterparts from Newfoundland and Nova Scotia to try to work out a deal on the sharing of offshore oil and gas revenue.","label":"Business"},{"text":"Eurozone data to show sliding business confidence: economists (AFP) AFP - Eurozone figures to be released this week should show business confidence beginning to slide again owing to concern over slowing growth and the strong euro, economists said.","label":"Business"},{"text":"Brazil's Economy Expands 6.1 Percent in 3Q Brazil's economy expanded 6.1 percent in the third quarter compared to same period a year ago, lifted by exports and rising domestic consumer demand, the government said Tuesday.","label":"Business"},{"text":"Brazilian Police Raid Kroll, Make Arrests Police raided the Brazilian offices of international security consultant Kroll Inc., seizing evidence and arresting five employees amid allegations Kroll illegally spied in a probe of a bitter corporate dispute.","label":"Business"},{"text":"Total control: PM seizes the Senate JOHN Howard yesterday ended 8 years of Coalition frustration by winning outright control of the Senate. His breakthrough came after Nationals candidate Barnaby Joyce ","label":"Business"},{"text":"IRS: Rose Owes Nearly \\$1M in Unpaid Taxes MIAMI - Pete Rose is back in trouble with the Internal Revenue Service, which says the baseball great owes nearly \\$1 million in unpaid taxes.    The IRS filed a federal tax lien in Broward County on Tuesday alleging that baseball's all-time hits king owes \\$973,693.28 in back taxes from 1997 to 2002...","label":"Business"},{"text":"Nikkei Opens Higher Led by Tech Stocks (Reuters) Reuters - Tokyo's Nikkei share average was up 0.56\\percent in early morning trade on Tuesday as another jump in\\U.S. technology shares encouraged investors to step up buying\\in local counterparts such as Advantest Corp.","label":"Business"},{"text":"Vodafone interim profits dip, dividend hiked (AFP) AFP - Mobile telephone giant Vodafone reported a two percent fall in half-year underlying profits as the group added 7.4 million new customers.","label":"Business"},{"text":"Japanese carrier KDDI to tie up with BT on data communications (AFP) AFP - Japan's number two telecoms operator KDDI said it had agreed with major British carrier BT to join hands on international data communications services for corporate clients.","label":"Business"},{"text":"Diplomatic push on N Korea talks Intense diplomatic efforts are under way to persuade North Korea to give up its nuclear weapons programme.","label":"World"},{"text":"After Arafat, hope - and a job for Europe BERLIN I never met Yasser Arafat, because I never wanted to meet him. Despite several invitations, I have always preferred to spend my time in places where people exchange ideas that go beyond ideology, where ","label":"World"},{"text":"Bush and Pakistani Talk, Skirting Army Role resident Bush spoke for an hour with President Pervez Musharraf of Pakistan yesterday morning in a conversation devoted largely to the hunt for Osama bin Laden and terror groups, administration ","label":"World"},{"text":"Another oil-food scandal emerges UN Secretary-General Kofi Annan said yesterday he was disappointed in his son for accepting payments from a key contractor in the oil-for-food program for more than four years longer than had been previously acknowledged.","label":"World"},{"text":"Bush to Aid 'Moderate' Parties in Iraq Election  WASHINGTON (Reuters) -  The Bush administration plans to  give strategic advice, training and polling data to what it  deems as \"moderate and democratic\" Iraqi political parties with  candidates running in the country's upcoming elections,  government documents show.","label":"World"},{"text":"The Terrorist Statesman Took Peace Nowhere Yasser Arafat #39;s last days on earth, a subject of intense interest throughout much of the world, have evoked mixed emotions in the country that was his life #39;s obsession: Israel.","label":"World"},{"text":"Triumphant Olympics End With Pride, Relief ATHENS, Greece - Efharisto! A nervous world learned the Greek word for thank you and repeated it endlessly at an astonishingly successful Athens Olympics that quelled fears, surprised skeptics and greatly honored the birthplace of the games.    Efharisto, Athens, for architectural masterpieces of stadiums and arenas that showcased record performances...","label":"World"},{"text":"C #39;wealth boss lays off from criticising Musharraf over uniform &lt;b&gt;...&lt;/b&gt; World News: Islamabad, Oct 22 : Commonwealth general secretary Don McKinnon today kept himself away from criticising Pakistan President Pervez Musharraf for simultaneously holding the post of Army Chief.","label":"World"},{"text":"Navy commander ordered back to UK The captain of a Royal Navy warship is removed during a tour of duty to the Gulf amid allegations of bullying.","label":"World"},{"text":"A Leap at Freedom for Afghan Wives Three years after the fall of the Taliban, women remain subject to many legal, religious and cultural restrictions and domestic violence is endemic.","label":"World"},{"text":"Delay in Releasing the French The optimism that Paris expressed, at the end of last week, concerning releasing the kidnapped French journalists Chesnot and Malbrunot in Iraq, turned into caution at the beginning of this week.","label":"World"},{"text":"Japan, China Leaders Agree to Meeting The leaders of Japan and China agreed to a one-on-one meeting on the sidelines of a summit, overcoming a diplomatic impasse between the Asian powers that have been increasingly at odds. The breakthrough came as ministers for 21 Pacific Rim economics pledged Thursday work hard for the passage of a global trade treaty.","label":"World"},{"text":"Nine-year-old Afghan boy in critical condition after heart valve surgery (Canadian Press) Canadian Press - TORONTO (CP) - A nine-year-old boy from Afghanistan who came to Canada to have life-saving surgery was in critical condition after undergoing heart valve surgery Friday.","label":"World"},{"text":"Daschle packs up after 26 years on Hill (USATODAY.com) USATODAY.com - His elegant, red-walled Capitol office is filled with boxes of memorabilia and photos and artwork in bubble wrap. At the end of this week, Senate Minority Leader Tom Daschle, D-S.D., will close the doors for the last time and leave behind the view of the National Mall that he has enjoyed for a decade.","label":"World"},{"text":"Defense lawyer in Hamburg Sept. 11 trial seriously hurt The lead attorney defending an accused helper of the Sept 11 suicide pilots at his Hamburg retrial was seriously injured in a motorcycle accident, said his office, throwing into question how the trial will proceed.","label":"World"},{"text":"Canada considers fate of suspected NKorean refugees in China &lt;b&gt;...&lt;/b&gt; Canada is facing a diplomatic headache after a group of suspected North Koreans broke into the Canadian Embassy in the Chinese capital, Beijing, on Wednesday.","label":"World"},{"text":"Pakistan in  #39;al-Qaeda #39; arrests At least five suspected terrorists, with alleged links to al Qaeda, have been arrested in Pakistan. It is claimed they had been plotting to launch suicide attacks on government leaders and the US Embassy.","label":"World"},{"text":"Chechnya goes to polls; man blows himself up in Grozny Moscow, Aug. 29 (PTI): An unidentified man blew himself up today outside a polling station in Grozny during presidential elections in war-torn Caucasian province of Chechnya.","label":"World"},{"text":"President Prays at Menorah Lighting (AP) AP - At a menorah-lighting ceremony Thursday on the third night of Hanukkah, President Bush prayed for the safety and quick return of U.S. soldiers serving in Iraq.","label":"World"},{"text":"Venezuelans vote on Chavez rule A referendum is under way in Venezuela to decide if President Hugo Chavez should remain in office.","label":"World"},{"text":"Pakistani Forces Rescue Chinese Hostage Pakistani tribal elders hold a meeting to discuss the release of Chinese engineers in Barwand of South Waziristan, Pakistan along Afghanistan border on Tuesday, Oct. 12, 2004.","label":"World"},{"text":"Peru to Again Seek Fujimori Extradition from Japan (Reuters) Reuters - Peru will submit a second request to\\Japan to extradite former President Alberto Fujimori to face\\charges of corruption, the Peruvian Embassy said Friday.","label":"World"},{"text":"US Court to Decide Sentencing, Death Penalty Cases (Reuters) Reuters - The U.S. Supreme Court begins a new\\term on Monday that will decide important cases on federal\\sentencing rules, the death penalty for juveniles and the\\medical use of marijuana.","label":"World"},{"text":"Japan to confirm what Annan meant by saying Iraq war illegal TOKYO - Japan will try to confirm what UN Secretary General Kofi Annan meant by reportedly saying the US-led invasion of Iraq was an illegal act, top government spokesman Hiroyuki Hosoda said Thursday.","label":"World"},{"text":"Bin Laden Deputy Purportedly Seeks Strikes DUBAI, United Arab Emirates - An audio tape purportedly released by Osama bin Laden's deputy calls for attacks on U.S. and British interests everywhere, according to a broadcast Friday by Al-Jazeera television...","label":"World"},{"text":"Storms leave at least 350 dead in Philippines The death toll from landslides and flash floods in the eastern Philippines jumped to nearly 350 with 150 others missing yesterday, most of them from a region still reeling from last week #39;s deadly typhoon.","label":"World"},{"text":"Buttiglione bows out to resolve EU crisis Rocco Buttiglione, the Italian nominee to the European Commission whose views on homosexuality resulted in an impasse with MEPs, yesterday decided to step aside.","label":"World"},{"text":"US air strikes hit Fallujah, locals claim family of six dead FALLUJAH, Iraq - US air raids destroyed two buildings said to belong to top militant Abu Mussab al-Zarqawi in the restive Iraqi city of Fallujah on Wednesday where residents claimed a family of six were killed.","label":"World"},{"text":"Leaders pay tribute to Arafat Yasser Arafats formal military funeral in Cairo was a sombre and dignified occasion.","label":"World"},{"text":"Peace returns to Najaf Amid the twisted metal and rubble of downtown storefronts and homes, in the side streets where residents tentatively ventured out, and even among the rebels in retreat, the word ","label":"World"},{"text":"Syria Urged to Pull Troops From Lebanon (AP) AP - A senior U.S. diplomat urged Syria's president Saturday to withdraw his country's troops from Lebanon and stop interfering in internal Lebanese affairs, a message delivered at a time when Syrian-American relations have been particularly strained.","label":"World"},{"text":"Policemen injured after fight 14/11/2004 A police inspector, two sergeants and two constables were hospitalised after being slightly injured when they went to investigate a fight in Paceville.","label":"World"},{"text":"US jets hit Fallujah ahead of expected offensive; residents report &lt;b&gt;...&lt;/b&gt; US jets pounded parts of Fallujah on Thursday, targeting insurgents in a city where American forces were said to be gearing up for a major offensive.","label":"World"},{"text":"Asian parties hope to deepen exchanges: Senior CPC official All Asian political parties share the hope of further deepening their exchanges and cooperation in the 21st century, said Liu Yunshan, a member of the Political Bureau of the CPC Central Committee on Sunday.","label":"World"},{"text":"Japan says yuan policy up to China ahead of G7 Japanese officials, arriving in Washington on Thursday for a historic meeting between the Group of Seven (G7) nations and China, distanced themselves from US demands for a review of China #39;s currency policy.","label":"World"},{"text":"Car Bomb Near U.S. Convoy in Ramadi Kills 2 Iraqis (Reuters) Reuters - A car bomb exploded near a U.S.\\convoy in the western city of Ramadi on Tuesday, killing two\\civilians and wounding at least four, witnesses said.","label":"World"},{"text":"Venezuelans Throng to Polls in Chavez Referendum  CARACAS, Venezuela (Reuters) - Venezuelans crowded polling  stations on Sunday to vote on whether to recall left-wing  President Hugo Chavez or back his mandate to govern the world's  No. 5 oil exporter for the next two years.","label":"World"},{"text":"Japan death toll from Meari rises to 19, 8 missing The death toll from a tropical storm buffeting Japan rose yesterday to 19 after searchers found more victims, including two men buried inside their homes beneath mud and debris that had barreled down a mountainside.","label":"World"},{"text":"White House: Islamic Agency Aids Terror (AP) AP - The Bush administration on Wednesday accused a Sudan-based relief organization and five of its officials of helping finance Osama bin Laden and other terrorists.","label":"World"},{"text":"World Leaders React to Bush Victory Russian President Vladimir Putin led world leaders #39; tributes to George W. Bush #39;s victory in the US presidential race, saying it meant Americans had not allowed themselves to be cowed by terrorists.","label":"World"},{"text":"Ukraine Speaker: Keep Poisoning Out of Campaign (Reuters) Reuters - Ukraine's influential parliament speaker\\called on Monday for a scandal over the poisoning of opposition\\leader Viktor Yushchenko to be kept out of the country's\\presidential election campaign.","label":"World"},{"text":"South Korean Court Rules Against Capital Relocation The Constitutional Court of South Korea delivered a major blow to President Roh Moo-hyun today by virtually scuttling his high-profile plan to relocate the national capital away from Seoul.","label":"World"},{"text":"Vote for Pakistan prime minister Pakistan's parliament is expected on Friday to vote for outgoing Finance Minister Shaukat Aziz as  prime minister.","label":"World"},{"text":"Hamas Says to Boycott Palestinian Presidential Vote (Reuters) Reuters - The Palestinian Islamic militant faction\\Hamas will boycott a Jan. 9 presidential election for a\\successor to Yasser Arafat, a senior Hamas leader said on\\Wednesday.","label":"World"},{"text":"Somaliland warns Somalia's leader The breakaway republic of Somaliland says it will retaliate if Somalia's new president poses a threat to its border.","label":"World"},{"text":"Grenade Kills Two at Colombo Bollywood Concert  COLOMBO (Reuters) - Two people were killed and 11 wounded  when a hand grenade exploded in the VIP section of the audience  at a concert led by Indian film superstar Shah Rukh Khan and  two other actors, police said.","label":"World"},{"text":"France sends FM to free hostages in Iraq The French government sent its foreign minister Sunday to the Middle East region to try to free two French journalists held hostage in Iraq as a truce was reached in Baghdad #39;s slum of Sadr City.","label":"World"},{"text":"Israel diverts Lufthansa jet to Cyprus Israel has turned away a Lufthansa passenger plane bound for Tel Aviv due to a bomb threat. The plane landed safely in Cyprus on Tuesday after it was escorted by Israeli air force fighters.","label":"World"},{"text":"Palestinian PM threatens to quit PALESTINIAN prime minister Ahmed Qurie has again threatened to resign over differences with leader Yasser Arafat ahead of a meeting of donor countries who help fund the Palestinian Authority, officials said today.","label":"World"},{"text":"Syrian Troop Redeployment Said Meaningless Israeli Prime Minister Ariel Sharon reacted skeptically on Wednesday to a redeployment of Syrian troops in Lebanon, saying that the move did not mean any real change in Syrian policy.","label":"World"},{"text":"Finnish ski jumping ace heads for crash landing in life (AFP) AFP - The life of Matti Nykaenen, arguably the best ski jumper of all times, is primarily a tale of great sporting achievements, but also about ups and downs and then some more downs, as alcohol and violence ravage his existence.","label":"Sports"},{"text":"Astros Take on Cards, Red Sox Face Yanks NEW YORK - A day after giving Boston ace Curt Schilling a pounding, the New York Yankees look to take a 2-0 lead over Pedro Martinez and the Red Sox in Game 2 of the American League Championship Series on Wednesday night. Meanwhile, the National League Championship Series gets underway when the Houston Astros take on the St...","label":"Sports"},{"text":"Yankees Stun BoSox 19-8 for 3-0 ALCS Lead BOSTON - The Yankees kept circling the bases, battering Boston's beleaguered pitching staff. By the time the long, long night ended with a devastating 19-8 rout over the Red Sox, the dreaded New Yorkers were just one game away from a shocking sweep...","label":"Sports"},{"text":"Hain hit with eggs in hunt demo Commons leader Peter Hain is pelted with eggs and his aide punched during a pro-hunt demonstration in Oxford.","label":"Sports"},{"text":"Hits Record Is Ichiro's 'Best Moment' SEATTLE - The 258th hit in 2004 for Ichiro Suzuki was like so many others, a little ground ball up the middle. Only this one made history - a hit cheered 'round the world...","label":"Sports"},{"text":"Giants Walk to 6-5 Win Over Marlins Walking Barry Bonds intentionally to load the bases in the 10th inning turned out to be the wrong move for Florida - because Rudy Seanez then walked pinch-hitter A.J. Pierzynski on four pitches...","label":"Sports"},{"text":"Police called in to Old Trafford buffet battle (AFP) AFP - Manchester police have been asked give evidence into the Old Trafford buffet battle when an Arsenal player was alleged to have thrown soup and pizza at Manchester United manager Alex Ferguson.","label":"Sports"},{"text":"India boosted as Rathore grabs historic silver (Reuters) Reuters - India erupted with joy as shooter Rajyavardhan Rathore clinched their first medal at the Athens Olympics on Tuesday and their first ever individual silver.","label":"Sports"},{"text":"Burger mouthful goes for record SPURRED on by shouts of  quot;shove it in, shove it in quot;, 19-year-old Don Ezra Nicholas stuffed more than three McDonald #39;s hamburgers into his mouth - without swallowing - and claimed a new global record at the close of Singapore #39;s contest to be the world #39;s ","label":"Sports"},{"text":"F1: Montoya sets early pace Juan Pablo Montoya tops the times in the opening practice session at Interlagos.","label":"Sports"},{"text":"Football: Man Utd beat Liverpool Mikael Silvestre's headed brace gives Man Utd victory over Liverpool on Rio Ferdinand's return to first-team action.","label":"Sports"},{"text":"Giants Beat Astros to Keep Wild Card Lead Barry Bonds and the San Francisco Giants can reach the playoffs two ways. They certainly boosted both chances Tuesday night...","label":"Sports"},{"text":"Players Union Challenges Carter's Release The NFL Players Association has gotten involved in Quincy Carter's release by the Dallas Cowboys. The union filed a grievance over the release Aug...","label":"Sports"},{"text":"Red Sox Beat Yankees 6-4 in 12 Innings BOSTON - Down to their last three outs of the season, the Boston Red Sox rallied - against Mariano Rivera, the New York Yankees and decades of disappointment. Bill Mueller singled home the tying run off Rivera in the ninth inning and David Ortiz homered against Paul Quantrill in the 12th, leading Boston to a 6-4 victory Sunday over the Yankees that avoided a four-game sweep in the AL championship series...","label":"Sports"},{"text":"China sports star in Aids campaign Aids activists get help from Chinese basketball star Yao Ming, back in Shanghai for a promotional game.","label":"Sports"},{"text":"Golf: Woods' swing blamed for dip Vijay Singh says Tiger Woods lost his number one status after failing to change his swing.","label":"Sports"},{"text":"Manny #39;s chance at life with two dads CAUGHT at the centre of a tug-of-love, Manny Musu could have a future with two dads, her Australian father said yesterday. Sydney policeman Dave Norman has been trying ","label":"Sports"},{"text":"Boxing: Williams to face Klitschko Danny Williams will take on WBC world heavyweight champion Vitali Klitschko in December.","label":"Sports"},{"text":"Barrichello Fires Up the Fans in Brazil &lt;p&gt;&lt;/p&gt;&lt;p&gt; By Alan Baldwin&lt;/p&gt;&lt;p&gt; SAO PAULO (Reuters) - Ferrari's Rubens Barrichello fired uphis passionate home crowd on Friday with the fastest lap inpractice for Sunday's season-ending Brazilian Grand Prix.&lt;/p&gt;","label":"Sports"},{"text":"Bush Bikes Ahead of Christmas Celebration (AP) AP - President Bush attended church and went mountain biking Sunday before heading to a Christmas celebration.","label":"Sports"},{"text":"VOICE MAIL Your brilliant lead article entitled  #39;Of The Bullet, for the bullet, by the bullet #39; clearly sums up the whole truth about the Veerappan drama.","label":"Sports"},{"text":"Football: Nine-man Arsenal draw Lauren and Patrick Vieira are sent off as Arsenal draw against PSV Eindhoven in the Champions League.","label":"Sports"},{"text":"Cricket: ICC trophy preview The Champions Trophy final against West Indies is England's biggest one-day match for 12 years.","label":"Sports"},{"text":"Football: Juve doctor convicted A doctor is convicted of administering banned drugs to Juventus players in the 1990s.","label":"Sports"},{"text":"Cricket: Pressure mounts on NZ Glenn McGrath's maiden Test fifty takes Australia to 564-9 against New Zealand, ahead by 211 runs.","label":"Sports"},{"text":"Surfer  #39;torn to pieces #39; by shark Authorities in Sydney said today they would kill the shark that tore apart a young surfer near a popular beach as his friends desperately tried to save him by beating the animal with oars.","label":"Sports"},{"text":"Singh Knocks Woods From Top Spot in Golf NORTON, Mass. - Vijay Singh has been playing the best golf in the world for a long time...","label":"Sports"},{"text":"Jury Selection Begins in Kobe Bryant Case EAGLE, Colo. - After 14 months of sordid headlines and days of hearings that left unanswered questions, Kobe Bryant's sexual assault trial was to begin with hundreds of people scheduled to arrive for the first wave of jury selection...","label":"Sports"},{"text":"Yanks Go Up 2-0; Cardinals Win Opener NEW YORK - Jon Lieber took a shutout into the eighth inning and John Olerud backed him with a two-run homer in the sixth off Pedro Martinez as the Yankees beat the Red Sox 3-1 Wednesday night for a 2-0 lead in their AL championship series rematch. In the National League series opener Wednesday night, Albert Pujols homered early, Larry Walker delivered three key hits and the St...","label":"Sports"},{"text":"Orioles Drub Streaking Yankees 14-8 BALTIMORE - Brian Roberts and Larry Bigbie had two hits apiece in an eight-run third inning, and the Baltimore Orioles ended the New York Yankees' five-game winning streak with a 14-8 victory Friday night.    Miguel Tejada and Melvin Mora homered, and B.J...","label":"Sports"},{"text":"No rthern Trust Bank of Florida has full Major League Baseball player Rick Helling, right, talks with an unidentified Player #39;s Association representative as he arrives to attend meetings Monday, Dec. 6, 2004, at the Royal Palms Resort in Phoenix.","label":"Sports"},{"text":"Puerto Rico Stuns Dream Team, 92-73 ATHENS, Greece - In an upset as historic as it was inevitable, Tim Duncan, Allen Iverson and the rest of the U.S. basketball team lost 92-73 to Puerto Rico on Sunday, only the third Olympic loss ever for America and its first since adding pros...","label":"Sports"},{"text":"Fleming 'alarmed' by Aussies' thorough planning (AFP) AFP - New Zealand skipper Stephen Fleming said he was alarmed at the scale of planning Australia had put in to conquer their final cricket frontier in India.","label":"Sports"},{"text":"Murali upset over awards Muttiah Muralitharan says he was ignored for the ICC's World Test  XI because of his bowling action.","label":"Sports"},{"text":"Hunt supporters storm British parliament, but ban moves closer (AFP) AFP - Supporters of fox hunting stormed Britain's parliament and scuffled with police at a mass rally, but failed to prevent lawmakers from moving closer to a ban of the blood sport.","label":"Sports"},{"text":"Jackson bid to remove prosecutor Lawyers acting for Michael Jackson in the child molestation case bid to have prosecutor removed.","label":"Sports"},{"text":"Attorney Says Heels May Hurt Sobriety Test DURHAM, N.C. - Attorney Bill Thomas may get a lot more business from female motorists thanks to a novel defense strategy: High heels can help beat a DWI rap...","label":"Sports"},{"text":"Padres Blank Dodgers 3-0 LOS ANGELES - Adam Eaton allowed five hits over seven innings for his career-high 10th victory, Brian Giles homered for the second straight game, and the San Diego Padres beat the Los Angeles Dodgers 3-0 Thursday night.    The NL West-leading Dodgers' lead was cut to 2 1/2 games over San Francisco - their smallest since July 31...","label":"Sports"},{"text":"Golf: Record earnings for Singh  Vijay Singh leads from start to finish to win the 84 Lumber Classic  and eclipse Tiger Woods' season earnings record.","label":"Sports"},{"text":"Football: England v Poland Sven-Goran Eriksson may gamble by playing goalkeeper Paul Robinson and striker Jermain Defoe in Poland.","label":"Sports"},{"text":"No. 13 Louisville 85, N. Carolina A amp;T 51 Larry O #39;Bannon scored a season-high 25 points and grabbed 11 rebounds to lead No. 13 Louisville to an 85-51 victory over North Carolina A amp;T on Tuesday night.","label":"Sports"},{"text":"Vaughan and Jones to fore in another mismatch THE sight of Andrew Strauss delivering the penultimate over of this mismatch said more about the state of Zimbabwe cricket than any number of words.","label":"Sports"},{"text":"Old Lady running well, Inter Milan held back by X syndrome The Turin powerhouse, nicknamed  quot;Vecchia Signora quot; by its fans, enters Sunday #39;s 12th round of Serie A with an impressive 9-1-1 record and a six-point lead over second-place AC Milan, the defending champion.","label":"Sports"},{"text":"Bryan twins put US in Davis Cup final Charleston, SC (Sports Network) - Bob and Mike Bryan teamed-up for a doubles win over Belarus on Saturday to clinch a spot in the Davis Cup final for the United States for the first time in seven years.","label":"Sports"},{"text":"Parma Sack Baldini Silvio Baldinis adventure at Parma is over as on Monday morning the Ducali announced his sacking. This was partly due to their latest defeat at Livorno which leaves the Gialloblu firmly anchored in the last places of Serie A.","label":"Sports"},{"text":"Chiefs Overtake Titans in Wild Finish A phantom penalty, followed by a 9-yard touchdown catch by Eddie Kennison, lifted the Kansas City Chiefs past the undermanned Tennessee Titans, 49-38.","label":"Sports"},{"text":"Getting Greene #39;s GOAT a chore worthy of an Olympic medal The tattoo on Maurice Greene #39;s right shoulder succinctly sums up where he feels he ranks in the world of sprinting.  quot;Greatest of all time, quot; he will shout after a victory while thumping it.","label":"Sports"},{"text":"Source: Bears Intend to Sign QB George (AP) AP - Struggling desperately at quarterback, the Chicago Bears intend to sign veteran Jeff George, a team source said Saturday night.","label":"Sports"},{"text":"Ravens' Lewis, Smith Injured Vs. Cowboys (AP) AP - Baltimore Ravens running back Jamal Lewis hurt his left ankle in the first quarter Sunday, and backup Musa Smith broke his leg later in the period.","label":"Sports"},{"text":"Greece brought back to earth Greece, whose European Championship triumph stunned football only two months ago, suffered a rapid fall from grace when they were beaten by Albania in their opening qualifier for the 2006 World Cup.","label":"Sports"},{"text":"Green Groups Praise Russian Decision to Ratify Kyoto Major international environmental groups have hailed the decision by the government of Russian President Vladimir Putin to endorse ratification of the 1997 Kyoto Protocol as a historic breakthrough in curbing global warming.","label":"Sci/Tech"},{"text":"Bush Seeks to Build on His Education Base (AP) AP - President Bush is ready to shift his education focus to older students, building on the law he pushed through before terrorism and war came to define his presidency.","label":"Sci/Tech"},{"text":"Iran's Bushehr Atomic Power Plant Faces More Delays  TEHRAN (Reuters) - Iran on Sunday announced a further  substantial delay in the long overdue project to complete its  first nuclear power plant, part of a program which Washington  says could be used to make atomic arms.","label":"Sci/Tech"},{"text":"India Test Fires Nuclear-Capable Missile India successfully test fired a long-range nuclear-capable Agni II missile off its eastern coast of Orissa Sunday, a defense ministry spokesman said.","label":"Sci/Tech"},{"text":"Indo-Pak officials begin talks on nuclear CBMs, Sir Creek Islamabad: India and Pakistan on Tuesday began separate talks here on nuclear confidence building measures and to work out modalities to conduct joint survey of pillars at Sir Creek area of the Gujarat coast.","label":"Sci/Tech"},{"text":"UN Experts Visit Brazil Nuclear Facility (Reuters) Reuters - U.N. nuclear experts visited\\Brazil's new uranium enrichment plant on Tuesday to try to\\break an impasse over nonproliferation inspections, although\\how much they would be allowed to see remained at issue.","label":"Sci/Tech"},{"text":"Russia to ratify Kyoto treaty Politicians, industry leaders and environment groups across the world welcomed the news last night that Russia had rejuvenated international efforts to combat climate change by ratifying the Kyoto protocol.","label":"Sci/Tech"},{"text":"India Launches First Education Satellite India #39;s space agency said it successfully launched the nation #39;s first satellite for educational services on Monday, which is expected to boost distance learning in a country with a huge rural population.","label":"Sci/Tech"},{"text":"Japan, ASEAN to outline antiterrorism cooperation Top leaders of Japan and the Association of Southeast Asian Nations (ASEAN) are set to adopt a statement next week in Laos outlining antiterrorism cooperation among their police forces, according to Japanese Foreign Ministry.","label":"Sci/Tech"},{"text":"An 'electronic eye' for the blind Japanese scientists have built an electronic eye they say could help blind people get around safely.","label":"Sci/Tech"},{"text":"Stationmasters Face Charges in India Crash Railway officials say a train collision in northern India that killed at least 37 people apparently was caused by a communications lapse between stations, and that the two stationmasters face criminal charges in the disaster.","label":"Sci/Tech"},{"text":"Iran abandons centrifuge demands Iran has abandoned its demand to be allowed to continue some of its controversial nuclear activities, the BBC reported Sunday. UN nuclear watchdog International Atomic Energy ","label":"Sci/Tech"},{"text":"High Court Orders Review of Texas Seats (AP) AP - The Supreme Court on Monday ordered a lower court to reconsider a Texas congressional map that could give Republicans six more seats in Congress in upcoming elections and help the GOP protect its majority.","label":"Sci/Tech"},{"text":"Iran suspending uranium enrichment TEHRAN, Iran - Iran said Monday that it was suspending uranium enrichment and related activities briefly, voluntarily and in hopes of building confidence in the world that its nuclear ambitions are peaceful.","label":"Sci/Tech"},{"text":"U.N. Tells Iran to Suspend Nuke Program VIENNA, Austria - The U.N. atomic watchdog agency demanded Iran suspend all uranium enrichment activities and set a November timetable for compliance in a vote Saturday that U.S...","label":"Sci/Tech"},{"text":"U.S. Nuclear Shipment En Route to France (Reuters) Reuters - A controversial U.S. shipment of\\bomb-grade plutonium escorted by armed British commandos has\\set sail for France, despite protests from environmental\\activists who fear a terrorist attack or an accident.","label":"Sci/Tech"},{"text":"Appeals Court Denies Moussaoui Hearing WASHINGTON - Terrorism suspect Zacarias Moussaoui lost a bid Wednesday to have the full 4th U.S. Circuit Court of Appeals review two issues - witness access and the death penalty - that have delayed a trial...","label":"Sci/Tech"},{"text":"Swiss voters approve stem cell research using human embryos GENEVA (AFP) - Two-thirds of Swiss voters approved a new law that allows medical research on stem cells taken from human embryos but bars cloning, official results from a referendum showed.","label":"Sci/Tech"},{"text":"UN agency gives Iran a reprieve Iran today received the qualified backing of the UN #39;s nuclear watchdog just 10 days short of a deadline to address US and European concerns over its programmes.","label":"Sci/Tech"},{"text":"Gene clue to malaria drug failure A gene could explain how parasites which cause malaria escape the action of some antimalaria drugs, say researchers.","label":"Sci/Tech"},{"text":"AP: Iran Moves Toward Nuclear Production TEHRAN, Iran - Iran has produced \"a few tons\" of the gas needed to enrich uranium, a top nuclear official said Wednesday, confirming the country has defied international demands and taken a necessary step toward producing nuclear fuel - or nuclear weapons.    Uranium hexafluoride gas is the material that, in the next stage, is fed into centrifuges used to enrich uranium...","label":"Sci/Tech"},{"text":"India test-fires nuclear-capable ballistic missile (AFP) AFP - India has successfully tested a naval version of its Prithvi-III nuclear-capable medium range ballistic missile, defence sources say.","label":"Sci/Tech"},{"text":"Nuclear ship docks in French port The first of two ships carrying weapons-grade plutonium from the United States has docked in France. The British-registered Pacific Pintail is said to be carrying enough plutonium to make 40 nuclear bombs.","label":"Sci/Tech"},{"text":"Alaskans to Vote on Legalizing Marijuana (Reuters) Reuters - Voters in Alaska will decide on\\Tuesday whether to make their state the first in the country to\\legalize the sale, possession or use of marijuana by adults.","label":"Sci/Tech"},{"text":"You #39;ll be back, Arnie tells Japan HE was last in Japan as the Terminator, while he was away he became the Governator, and now he #39;s back as ... what, the Promotivator?","label":"Sci/Tech"},{"text":"Mexican State Recruits Cats to Fight Rats MONTERREY, Mexico - Health authorities in the northern state of Chihuahua said Tuesday they are recruiting hundreds of cats to fight hundreds of thousands of rats.    Chihuahua state officials say they hope to collect as many as 700 felines and send them to Atascaderos, an isolated farm village in the rugged Tarahumara mountains, a region where officials estimate there are about a half million rats...","label":"Sci/Tech"},{"text":"Astronomers Spot Smallest Planets Yet American astronomers say they have discovered the two smallest planets yet orbiting nearby stars, trumping a small planet discovery by European scientists five days ago and capping the latest round in a frenzied hunt for other worlds like Earth.    All three of these smaller planets belong to a new class of \"exoplanets\" - those that orbit stars other than our sun, the scientists said in a briefing Tuesday...","label":"Sci/Tech"},{"text":"Watch Lists Glance (AP) AP - Other measures related to transportation security, besides expanded use of government watch lists on flights, cruises and at airports, included in the intelligence overhaul legislation:","label":"Sci/Tech"},{"text":"ElBaradei Says Unclear if Iran Nuke Plans Peaceful  VIENNA (Reuters) - It is unclear if Iran's nuclear  ambitions are entirely peaceful, but there is still no firm  evidence that Tehran is secretly developing atomic weapons as  Washington asserts, the U.N. nuclear watchdog said on Tuesday.","label":"Sci/Tech"},{"text":"Russian move clears way to bring Kyoto into force The Russian government approved the Kyoto Protocol on Thursday, giving decisive support to the long-delayed climate change treaty that should allow it to come into force worldwide.","label":"Sci/Tech"},{"text":"Study Shows Dogs Able to Smell Cancer LONDON - It has long been suspected that man's best friend has a special ability to sense when something is wrong with us. Now the first experiment to verify that scientifically has demonstrated that dogs are able to smell cancer...","label":"Sci/Tech"},{"text":"Analyst: U.S. Weapons Tests in Australia (AP) AP - American troops will train with new U.S. military equipment in Australia under a pact being negotiated by Washington and Canberra, a prominent defense analyst said Friday.","label":"Sci/Tech"},{"text":"Congress Ends Deadlock on Intel Overhaul (AP) AP - Breaking a monthslong deadlock, key congressional negotiators reported agreement Saturday on legislation to overhaul the nation's intelligence agencies along lines recommended by the Sept. 11 commission.","label":"Sci/Tech"},{"text":"Mullah: Iran bids to join nuclear tech club Mullah Rafsanjani said here Friday that Tehran expects it would become a member of the club of countries possessing nuclear technology.","label":"Sci/Tech"},{"text":"Russia announces work on unique nuclear missile system MOSCOW -- Russia is developing a new nuclear missile system unlike any weapon held by other countries, President Vladimir Putin announced yesterday, in a move that could serve as a message to the United States as Washington pushes forward with a missile defense system.","label":"Sci/Tech"},{"text":"French president inaugurates world #39;s tallest bridge French President Jacques Chirac inaugurated Tuesday the world #39;s tallest bridge, the viaductof Millau of 270 meters above ground.","label":"Sci/Tech"},{"text":"Japan, US sign missile defense cooperation memo Japan and the United States signed an agreement Friday on the details of their joint development of a ballistic missile defense system.","label":"Sci/Tech"},{"text":"Gamer buys \\$26,500 virtual land An Australian gamer spends \\$26,500 on a virtual island that exists only in a PC role-playing game.","label":"Sci/Tech"},{"text":"Pak test fires medium range missile  #39;Hataf-V #39; Islamabad, Oct 12 (PTI) Pakistan today  quot;successfully quot; carried out yet another test of its intermediate range ballistic missile  #39;Hataf-V #39;, with a strike range of 1500 km capable of carrying nuclear and conventional warheads and targetting most of the ","label":"Sci/Tech"},{"text":"Emissions double heatwave risk Greenhouse gas emissions have doubled the risk of European heatwaves similar to last year's, a UK study says.","label":"Sci/Tech"},{"text":"Malaysian bird flu an isolated case A recent case of bird flu Malaysia appears to be an isolated event, the World Health Organization says. Health officials have confirmed the case, found in the poultry of ","label":"Sci/Tech"},{"text":"Court Throws Out Texas Death Sentence (AP) AP - The Supreme Court on Monday overturned the death sentence of a convicted Texas killer because jurors in his trial did not consider his learning disability and other evidence.","label":"Sci/Tech"},{"text":"\\$591m boost to embassy security THE Federal Government will spend \\$591 million on boosting security at Australian missions overseas, providing better protection for staff and visitors.","label":"Sci/Tech"},{"text":"WTO Negotiators Finish Week of Farm Talks Negotiators at the World Trade Organization completed weeklong farm talks Friday, part of discussions on ways to reach a wider-ranging liberalization accord by the end of 2005.","label":"Sci/Tech"},{"text":"Reconsider highway project I am a professor of geography visiting Taiwan, and have read about the proposed construction of a freeway from Taipei to Hualien. The experience of communities in North America and Europe has been fairly consistent ","label":"Sci/Tech"},{"text":"Putin Ratifies Kyoto Protocol on Emissions President Vladimir V. Putin on Friday signed Russia #39;s ratification of the Kyoto Protocol on global warming, the Kremlin announced, clearing the way for the international ","label":"Sci/Tech"},{"text":"No deadline for Iran investigation: IAEA VIENNA: United Nations (UN) nuclear chief Mohamed ElBaradei said on Monday that there was no deadline for ending an investigation into Irans nuclear programme, even though Iran said it expects the investigation to wrap up in November.","label":"Sci/Tech"},{"text":"Former private school teacher to face criminal charges in court Wednesday (Canadian Press) Canadian Press - TORONTO (CP) - A former Upper Canada College teacher made a brief court appearance Monday to face sexual assault charges.","label":"Sci/Tech"},{"text":"Waistline linked to health risks Scientists believe measuring your waist could be a better indicator of future health than weighing yourself.","label":"Sci/Tech"},{"text":"House Blocks Court on Pledge Case Rulings (AP) AP - The House, in an emotionally and politically charged debate six weeks before the election, voted Thursday to protect the words \"under God\" in the Pledge of Allegiance from further court challenges.","label":"Sci/Tech"}];
+let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null };
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function splitCSV(line, delim) {
+  const out = []; let cur = "", q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (q && line[i + 1] === '"') { cur += '"'; i++; }
+      else q = !q;
+    } else if (c === delim && !q) { out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseData(text) {
+  text = text.trim();
+  if (!text) throw new Error("no data");
+  if (text[0] === "[") {
+    const arr = JSON.parse(text);
+    return arr.map(r => ({ text: String(r.text || r.sentence || ""), label: String(r.label || r.class || "") }))
+              .filter(r => r.text && r.label);
+  }
+  if (text[0] === "{") {
+    return text.split(/\r?\n/).filter(Boolean).map(line => {
+      const r = JSON.parse(line);
+      return { text: String(r.text || r.sentence || ""), label: String(r.label || r.class || "") };
+    }).filter(r => r.text && r.label);
+  }
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  const delim = lines[0].includes("\t") ? "\t" : ",";
+  const rows = [];
+  for (const line of lines) {
+    const parts = splitCSV(line, delim);
+    if (parts.length < 2) continue;
+    const t = parts[0].trim();
+    const l = parts[parts.length - 1].trim();
+    if (!t || !l) continue;
+    if (/^(text|sentence|review|document)$/i.test(t) && /^(label|class|target|sentiment)$/i.test(l)) continue;
+    rows.push({ text: t, label: l });
+  }
+  return rows;
+}
+
+function rng32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle(arr, rng) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function group(rows) {
+  const by = new Map();
+  for (const r of rows) {
+    if (!by.has(r.label)) by.set(r.label, []);
+    by.get(r.label).push(r);
+  }
+  return by;
+}
+
+function splitRows(rows, frac = 0.2) {
+  const by = group(rows);
+  if (by.size < 2) throw new Error("need at least two labels");
+  const rng = rng32(42);
+  const train = [], test = [];
+  for (const [label, arr] of by) {
+    if (arr.length < 2) throw new Error("label '" + label + "' needs at least 2 examples");
+    const sh = shuffle(arr, rng);
+    const nTest = Math.max(1, Math.round(arr.length * frac));
+    test.push(...sh.slice(0, nTest));
+    train.push(...sh.slice(nTest));
+  }
+  return { train, test };
+}
+
+function sampleTrain(train, n) {
+  if (!n || n >= train.length) return train.slice();
+  const by = group(train);
+  const per = Math.ceil(n / by.size);
+  const rng = rng32(7);
+  const out = [];
+  for (const [_, arr] of by) out.push(...shuffle(arr, rng).slice(0, per));
+  return shuffle(out, rng).slice(0, n);
+}
+
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+
+function trainCNB(rows) {
+  const labels = [...new Set(rows.map(r => r.label))].sort();
+  const counts = {}, totals = {}, featureAll = new Map(), vocab = new Set();
+  for (const l of labels) { counts[l] = new Map(); totals[l] = 0; }
+  for (const r of rows) {
+    for (const t of tokens(r.text)) {
+      counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
+      totals[r.label]++;
+      vocab.add(t);
+      featureAll.set(t, (featureAll.get(t) || 0) + 1);
+    }
+  }
+  const allTot = [...featureAll.values()].reduce((a, b) => a + b, 0);
+  return { labels, counts, totals, vocab, featureAll, allTot, alpha: 1, n: rows.length };
+}
+
+function score(m, text) {
+  const s = {};
+  for (const l of m.labels) s[l] = 0;
+  for (const t of tokens(text)) {
+    if (!m.vocab.has(t)) continue;
+    const fa = m.featureAll.get(t);
+    for (const l of m.labels) {
+      const c = m.counts[l].get(t) || 0;
+      const den = m.allTot + m.alpha * m.vocab.size - m.totals[l];
+      s[l] += -Math.log((fa + m.alpha - c) / den);
+    }
+  }
+  let best = m.labels[0];
+  for (const l of m.labels) if (s[l] > s[best]) best = l;
+  const mx = Math.max(...m.labels.map(l => s[l]));
+  const ex = {}; let sum = 0;
+  for (const l of m.labels) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of m.labels) probs[l] = ex[l] / sum;
+  return { label: best, probs };
+}
+
+function fmtKB(bytes) { return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB"; }
+
+function parseAndShow() {
+  try {
+    const rows = parseData(document.getElementById("data").value);
+    if (rows.length < 6) throw new Error("need at least 6 rows");
+    const by = group(rows);
+    if (by.size < 2) throw new Error("need at least two labels");
+    state.rows = rows;
+    state.split = splitRows(rows);
+    state.model = null;
+    document.getElementById("dataInfo").textContent =
+      `${rows.length} rows · ${by.size} labels · ${state.split.train.length} train / ` +
+      `${state.split.test.length} test`;
+    document.getElementById("trainInfo").textContent = "Ready to train.";
+    document.getElementById("metrics").innerHTML = "";
+    document.getElementById("confusion").innerHTML = "";
+    document.getElementById("try").style.display = "none";
+    document.getElementById("export").disabled = true;
+  } catch (e) {
+    document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
+  }
+}
+
+function doTrain() {
+  if (!state.rows.length) { parseAndShow(); if (!state.rows.length) return; }
+  const b = document.getElementById("budget").value;
+  const n = b === "all" ? null : Number(b);
+  const rows = sampleTrain(state.split.train, n);
+  const t0 = performance.now();
+  const model = trainCNB(rows);
+  const trainMs = performance.now() - t0;
+  let ok = 0;
+  const per = {};
+  for (const l of model.labels) per[l] = { ok: 0, n: 0 };
+  for (const r of state.split.test) {
+    const p = score(model, r.text).label;
+    const good = p === r.label;
+    if (good) ok++;
+    if (per[r.label]) { per[r.label].n++; if (good) per[r.label].ok++; }
+  }
+  const acc = ok / Math.max(state.split.test.length, 1);
+  state.model = model; state.modelRows = rows; state.labels = model.labels; state.acc = acc;
+
+  const bytes = new Blob([JSON.stringify(rows)]).size;
+  document.getElementById("metrics").innerHTML = `
+    <div class="metrics">
+      <div><span>${(acc * 100).toFixed(1)}%</span><label>held-out accuracy</label></div>
+      <div><span>${fmtKB(bytes)}</span><label>model artifact</label></div>
+      <div><span>${rows.length}</span><label>training rows</label></div>
+      <div><span>${model.labels.length}</span><label>labels</label></div>
+    </div>
+    <p class="muted">Trained in ${trainMs.toFixed(0)} ms on ${rows.length} examples;
+    ${state.split.test.length} held-out rows. The artifact is the examples, not weights.</p>`;
+  const conf = model.labels.map(l => {
+    const x = per[l];
+    return `<tr><td>${esc(l)}</td><td class="n">${x.ok}/${x.n}</td><td class="n">${x.n ? (100*x.ok/x.n).toFixed(1) : "—"}%</td></tr>`;
+  }).join("");
+  document.getElementById("confusion").innerHTML =
+    `<table><thead><tr><th>label</th><th class="n">correct</th><th class="n">recall</th></tr></thead><tbody>${conf}</tbody></table>`;
+  document.getElementById("trainInfo").textContent =
+    `Trained on ${rows.length} examples; artifact ${fmtKB(bytes)}.`;
+  document.getElementById("try").style.display = "block";
+  document.getElementById("export").disabled = false;
+  document.getElementById("exportInfo").textContent =
+    "The exported file contains the selected examples and the classifier; it runs offline.";
+  document.getElementById("text").value = rows[0].text;
+  classify();
+}
+
+function classify() {
+  if (!state.model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(state.model, text);
+  const rows = state.model.labels.map(l => {
+    const p = (res.probs[l] || 0) * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(res.label)}</div><div class="bars">${rows}</div>
+     <p class="muted">Scores are a softmax over Complement NB weights, not calibrated.</p>`;
+}
+
+function buildExport(rows, labels, acc) {
+  const payload = JSON.stringify({ rows, labels }).replace(/</g, "\\u003c");
+  const fn = [tokens.toString(), trainCNB.toString(), score.toString()].join("\n");
+  const kb = fmtKB(new Blob([JSON.stringify(rows)]).size);
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiny AI — ${kb}</title>
+<style>
+  body{margin:0;background:#0f1115;color:#e8e6e3;font:16px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+  h1{font-size:34px;letter-spacing:-.6px;margin:0 0 8px}
+  .badge{display:inline-block;background:#6ee7b7;color:#06281d;font-weight:800;padding:6px 10px;border-radius:6px;font-size:14px}
+  .panel{background:#171a21;border:1px solid #232733;border-radius:12px;padding:18px;margin:16px 0}
+  textarea{width:100%;background:#0d1015;color:#e8e6e3;border:1px solid #232733;border-radius:8px;padding:12px;font:inherit}
+  button{margin-top:10px;padding:11px 16px;border:0;border-radius:8px;background:#6ee7b7;color:#06281d;font-weight:750;font-size:15px;cursor:pointer}
+  .muted{color:#9aa0aa;font-size:13px}
+  .verdict{font-size:22px;font-weight:750;margin:14px 0 8px}
+  .bar-row{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+  .bar{height:10px;background:#0d1015;border-radius:5px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:#6ee7b7;width:0}
+  .bar-row span:last-child{text-align:right;color:#9aa0aa}
+</style></head><body><main>
+<div class="badge">${kb} · ${rows.length} examples</div>
+<h1>A tiny text classifier</h1>
+<p class="muted">This file contains its own training data and fits a Complement Naive Bayes
+when it loads. No server, no weights, no network calls. Held-out accuracy in the maker:
+${(acc * 100).toFixed(1)}%.</p>
+<div class="panel"><textarea id="text" rows="3" placeholder="Paste a text…"></textarea>
+<button id="go">Classify</button><div id="out"></div></div>
+<p class="muted">Build one from your own data: Tiny AI Maker.</p>
+</main>
+<script>
+const DATA = ${payload};
+${fn}
+const model = trainCNB(DATA.rows);
+document.getElementById("text").value = DATA.rows[0].text;
+document.getElementById("go").onclick = () => {
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(model, text);
+  const rows = DATA.labels.map(l => {
+    const p = (res.probs[l] || 0) * 100;
+    return '<div class="bar-row"><span>' + l.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) + '</span><span class="bar"><i style="width:' + p.toFixed(1) + '%"></i></span><span>' + p.toFixed(1) + '%</span></div>';
+  }).join("");
+  document.getElementById("out").innerHTML = '<div class="verdict">' + res.label + '</div><div class="bars">' + rows + '</div><p class="muted">Softmax over Complement NB weights; not calibrated.</p>';
+};
+<\/script></body></html>`;
+}
+
+function download() {
+  if (!state.model) return;
+  const html = buildExport(state.modelRows, state.labels, state.acc);
+  const blob = new Blob([html], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tiny-ai.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  document.getElementById("exportInfo").textContent =
+    "Downloaded tiny-ai.html. Open it anywhere; it trains from the embedded examples.";
+}
+
+document.getElementById("sample").onclick = () => {
+  document.getElementById("data").value = JSON.stringify(SAMPLE);
+  parseAndShow();
+};
+document.getElementById("parse").onclick = parseAndShow;
+document.getElementById("file").onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { document.getElementById("data").value = r.result; parseAndShow(); };
+  r.readAsText(f);
+};
+document.getElementById("train").onclick = doTrain;
+document.getElementById("classify").onclick = classify;
+document.getElementById("export").onclick = download;
+</script>
+</body>
+</html>

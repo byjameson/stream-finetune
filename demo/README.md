@@ -20,6 +20,20 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## Tiny AI Maker
+
+`demo/maker.html` is the general version: paste/upload a CSV of `text,label`, train a
+Complement NB in the browser, see accuracy/artifact size, and download a single HTML file.
+The AG News sample is 200 rows; the page never sends data anywhere. Build with
+`python demo/build_maker.py`.
+
+## AI in a QR code
+
+`demo/qr.html` is the extreme: an SMS spam classifier whose 1.6 KB model is in the URL
+fragment. `demo/qr-spam.png` is the QR; `python demo/build_qr.py` retrains, exports and
+re-encodes it (needs `qrcode`, `zxing-cpp`, `pillow`). 160 words, int8 weights, 93.5% on
+1,115 held-out SMS messages; the 2.2 KB URL is the whole artifact.
+
 ## Accuracy mode
 
 `demo/max-ai.html` is the other end of the trade-off: a **1.68 MB** TF-IDF + logistic
