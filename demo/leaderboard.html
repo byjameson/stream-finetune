@@ -36,6 +36,14 @@
   .score { color:var(--accent); font-weight:650; }
   a { color:var(--accent); }
   code { font-family:Consolas, ui-monospace, monospace; font-size:13px; }
+  input, textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+                    border-radius:7px; padding:8px; font:inherit; font-size:14px; }
+  textarea { resize:vertical; }
+  .form { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
+  .form label { font-size:12px; color:var(--muted); display:block; margin-bottom:3px; }
+  .form .full { grid-column:1/-1; }
+  .form button { justify-self:start; padding:10px 14px; border-radius:8px; border:0;
+                 background:var(--accent); color:#06281d; font-weight:750; cursor:pointer; }
   footer { margin-top:30px; color:var(--muted); font-size:13px; }
   @media (max-width: 700px) { .hide-sm { display:none; } }
 </style>
@@ -77,6 +85,16 @@
     <p class="muted">Open a <a href="https://github.com/byjameson/stream-finetune/issues/new?template=hardware-report.md">hardware report</a>
     or a PR with the JSON row. This is an open table, not a hidden-test competition yet;
     rows are checked by rerunning the linked code.</p>
+    <form class="form" id="sub">
+      <div><label for="f-task">task</label><input id="f-task" placeholder="AG News" required></div>
+      <div><label for="f-artifact">artifact</label><input id="f-artifact" placeholder="130 KB coreset + NB" required></div>
+      <div><label for="f-bytes">bytes</label><input id="f-bytes" type="number" min="1" placeholder="132798" required></div>
+      <div><label for="f-score">score</label><input id="f-score" placeholder="78.3% / loss 2.34 / F1 0.25" required></div>
+      <div class="full"><label for="f-note">note / caveat</label><input id="f-note" placeholder="test set, base shared, seed, ..."></div>
+      <div class="full"><label for="f-code">code or commit</label><input id="f-code" placeholder="https://github.com/... or a script name"></div>
+      <button type="submit">Open GitHub issue</button>
+    </form>
+    <p class="muted" id="subout"></p>
   </section>
 
   <section class="panel">
@@ -175,6 +193,30 @@ function init() {
   });
   render();
 }
+document.getElementById("sub").onsubmit = (e) => {
+  e.preventDefault();
+  const get = id => document.getElementById(id).value.trim();
+  const body = [
+    "## Measured row",
+    "",
+    "| field | value |",
+    "|---|---|",
+    "| task | " + get("f-task") + " |",
+    "| artifact | " + get("f-artifact") + " |",
+    "| bytes | " + get("f-bytes") + " |",
+    "| score | " + get("f-score") + " |",
+    "| caveat | " + (get("f-note") || "—") + " |",
+    "| code / commit | " + (get("f-code") || "—") + " |",
+    "",
+    "I ran this myself; the code/commit above reproduces it."
+  ].join("\n");
+  const url = "https://github.com/byjameson/stream-finetune/issues/new" +
+    "?title=" + encodeURIComponent("[row] " + get("f-task") + " / " + get("f-artifact")) +
+    "&body=" + encodeURIComponent(body);
+  window.__lastSubmit = url;
+  document.getElementById("subout").textContent = "Opening a prefilled GitHub issue…";
+  window.open(url, "_blank", "noopener");
+};
 init();
 </script>
 </body>

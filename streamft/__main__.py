@@ -10,6 +10,7 @@
   streamft merge    fold a saved adapter into the base model (for serving / GGUF)
   streamft adapter  pack a saved adapter to 8/4-bit (shared-base deployment)
   streamft verify   check a trigger/token fingerprint in an adapter
+  streamft verify-server  HTTP /verify endpoint for a fingerprint
   streamft serve    host a merged model on the LAN (chat page + /v1/chat/completions)
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
@@ -29,6 +30,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft merge --model <base> --adapter <dir> --out merged/<name>
   streamft adapter --adapter <pt> --bits 4 --out <pt>
   streamft verify --model <base> --adapter <pt> --token <token> --trigger <prompt>
+  streamft verify-server --model <base> --adapter <pt> --token <token> --port 8010
   streamft serve --model merged/<name> --port 8000
   streamft doctor
 
@@ -68,6 +70,10 @@ def main() -> int:
     if cmd == "verify":
         from streamft.verify import main as verify_main
         return verify_main(rest)
+
+    if cmd == "verify-server":
+        from streamft.verify_server import main as verify_server_main
+        return verify_server_main(rest)
 
     if cmd == "eval":
         from streamft.evals import main as eval_main
