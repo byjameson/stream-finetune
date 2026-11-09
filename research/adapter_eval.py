@@ -72,6 +72,8 @@ def eval_loss(model, tok, rows):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rows", type=int, default=N)
+    ap.add_argument("--adapter", default=ADAPTER)
+    ap.add_argument("--out", default="research/results/adapter_eval.json")
     args = ap.parse_args()
     ds = load_dataset("databricks/databricks-dolly-15k", split="train")
     g = torch.Generator().manual_seed(3)
@@ -84,7 +86,7 @@ def main():
     print(json.dumps({"config": "base", "loss": round(base_loss, 4), "rows": n}), flush=True)
 
     apply_lora(model, r_attn=16, r_mlp=0)
-    state = torch.load(ADAPTER, map_location="cpu", weights_only=False)["lora"]
+    state = torch.load(args.adapter, map_location="cpu", weights_only=False)["lora"]
     losses_by = {}
     out = []
     for name, sd in [("original fp32", state), ("8-bit", qstate(state, 8)), ("4-bit", qstate(state, 4))]:
@@ -112,9 +114,9 @@ def main():
                 row.update(paired[name])
         print(json.dumps({"config": name, **paired[name]}), flush=True)
 
-    json.dump({"base": round(base_loss, 4), "rows": n, "base_losses": base_rows,
-               "adapters": out, "losses": losses_by},
-              open("research/results/adapter_eval.json", "w"), indent=1)
+    json.dump({"adapter": args.adapter, "base": round(base_loss, 4), "rows": n,
+               "base_losses": base_rows, "adapters": out, "losses": losses_by},
+              open(args.out, "w"), indent=1)
 
 
 if __name__ == "__main__":

@@ -117,7 +117,18 @@ streamft serve --model merged/q05_cpu --port 8000
 There is a chat page and `POST /v1/chat/completions` (OpenAI-compatible subset). One machine
 does the work; the others are clients. Not a peer-to-peer network.
 
-## 9. Share one base, ship 5 MB adapters
+## 9. Send a measured row
+
+If you run this on a different GPU, one command produces a report we can add to the
+measured tables:
+
+```bash
+python scripts/hardware_report.py --model Qwen/Qwen2.5-7B-Instruct --seq 512
+```
+
+Paste the JSON into the hardware-report issue template. No private data is collected.
+
+## 10. Share one base, ship 5 MB adapters
 
 ```bash
 streamft adapter --adapter checkpoints/my_adapter.pt --bits 4 --out checkpoints/my_adapter_q4.pt

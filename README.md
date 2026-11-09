@@ -80,7 +80,9 @@ read — this README also documents the experiments behind the numbers.
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
 `scripts/verify_gradients.py` the gradient check, `scripts/e2e_wheel.py` the clean-venv
 install test (build ? fresh venv ? prepare ? train ? save adapter), `scripts/prep_data.py` the token shards
-(the installed equivalent is `streamft data`), and `pytest tests -q` the CPU suite.
+(the installed equivalent is `streamft data`), `scripts/hardware_report.py` prints a
+machine + `doctor` + `fit` JSON row for an independent measurement, and `pytest tests -q`
+the CPU suite.
 
 `tools/finetune.py` encodes the VRAM presets we measured, because the *combination* of
 flags decides whether a run fits — not any single flag:
@@ -193,6 +195,11 @@ Measured on the reference machine (Qwen2.5-3B, 60-step Dolly LoRA):
 `0.0126 bit/base-param` is the **marginal adapter cost**, not a 0.1-bit base. Count the base
 and it is 4 bit/param (4-bit base) or 16 (bf16). The 0.1-bit VQ model was a failed
 experiment; the sub-0.1 artifacts are adapters, prompts and coresets on a shared base.
+
+**FAQ: “So are you using 0.1-bit?”** No. The deployed precision is **4-bit NF4** for the
+base and 4/8-bit for the adapter. `0.0126` is an accounting ratio with the base shared. The
+130 KB and 1.7 MB demos are separate artifacts (data and a linear model), not quantized
+LLMs. There is no 0.1-bit general model here.
 
 870 held-out Dolly rows, masked SFT loss: base 2.3752, original 2.3403, 8-bit 2.3401
 (p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain). A
