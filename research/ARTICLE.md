@@ -264,6 +264,20 @@ and stops at the smallest student whose McNemar p against the teacher is > 0.05 
 bytes fit the budget. It is not a new algorithm; it is the smallest useful automation of
 the measurement.
 
+### Try it: a 130 KB AI in the browser
+
+I turned the coreset rung into a single-file demo:
+**[huggingface.co/spaces/byjameson/mini-ai](https://huggingface.co/spaces/byjameson/mini-ai)**.
+
+The page holds 500 labelled AG News examples and fits a multinomial Naive Bayes in your
+browser. No server, no GPU, no stored weights. It scores **72.8%** on 400 held-out rows in
+~15 ms. A 1,000-example version (260 KB) reaches **81.0%**, and the 2,000-example version
+(522 KB) reaches **84.0%** — above the 2.2 MB BERT-tiny (76.75%) on the same test set. The
+test set is embedded for live scoring; it is not part of the model.
+
+The point is the representation: the artifact is the data, and the shared training
+procedure does the rest.
+
 ## 9. Caveats
 
 - One machine: RTX 3050 Laptop 6 GB, Windows 11, AC.

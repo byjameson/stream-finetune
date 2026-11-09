@@ -328,6 +328,11 @@ base for zero overhead; merging into a packed 4-bit base is not supported here.
 The lower rungs are not "better compression" of the same object; they are different
 objects. The revolution is choosing the rung, not squeezing the weights.
 
+A live version of the coreset rung: **[130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai)**
+— 500 labelled examples, a Naive Bayes fitted in the browser, **72.8%** on 400 held-out AG
+News rows in ~15 ms. The 2,000-example version (522 KB) reaches **84.0%**, above the 2.2 MB
+BERT-tiny on the same test set.
+
 ### What to use
 
 | if | use | measured |
