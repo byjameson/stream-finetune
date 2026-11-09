@@ -64,6 +64,8 @@
     <audio controls src="model.wav"></audio>
     <p class="muted">8-bit unsigned PCM, 8 kHz, mono, 0.198 s. The sound is the bytes; it
     is not meant to be listened to. The model survives because WAV is lossless.</p>
+    <label class="muted" for="pick">Load an exported WAV from Tiny AI Maker</label>
+    <input id="pick" type="file" accept=".wav,audio/wav">
   </section>
 
   <section class="panel">
@@ -109,8 +111,7 @@ function softmax(a) {
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-async function load() {
-  const buf = await (await fetch("model.wav")).arrayBuffer();
+function loadBuffer(buf) {
   const dv = new DataView(buf);
   let off = 12, dataOff = -1, dataLen = 0;
   while (off + 8 <= buf.byteLength) {
@@ -132,6 +133,9 @@ async function load() {
   document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
   document.getElementById("m-vocab").textContent = model.V;
   classify();
+}
+async function loadDefault() {
+  loadBuffer(await (await fetch("model.wav")).arrayBuffer());
 }
 function classify() {
   if (!model) return;
@@ -155,7 +159,17 @@ function classify() {
      <p class="muted">Softmax over int8 Complement NB weights; not calibrated.</p>`;
 }
 document.getElementById("go").onclick = classify;
-load().catch(e => {
+document.getElementById("pick").onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { loadBuffer(r.result); }
+    catch (err) { document.getElementById("out").textContent = String(err); }
+  };
+  r.readAsArrayBuffer(f);
+};
+loadDefault().catch(e => {
   document.getElementById("m-wav").textContent = "error";
   document.getElementById("out").textContent = String(e);
 });
