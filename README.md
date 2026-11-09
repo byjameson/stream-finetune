@@ -59,6 +59,10 @@ whose visible page describes the model and whose `/Keywords` metadata carries th
 weights — one document is both the card and the classifier. The full SHA-256 is in
 `/TinyAISHA256`, and the viewer checks it.
 
+**The 130 KB AI in a PDF:** [a 175 KB PDF](https://byjameson-mini-ai.static.hf.space/pdf-130k.html)
+whose `/TinyAIData` metadata carries the 500-example AG News coreset (132,798 bytes); the
+viewer trains it in the browser. 78.3% embedded / 74.3% fresh on the 400-row test.
+
 **Container survival:** [a measured matrix](https://byjameson-mini-ai.static.hf.space/survival.html)
 of what happens after a re-save, re-encode, transcode or metadata strip. XLSX and single
 HTML are the best archival carriers; PDF is not editable; PNG/WAV survive only lossless

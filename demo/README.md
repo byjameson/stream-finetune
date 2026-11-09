@@ -42,6 +42,14 @@ the raw PDF, reads the model and classifies; it can also load another PDF with a
 uncompressed `/Keywords` model. Build with `python demo/build_pdf.py`, which reads the model
 back from `model.wav` so the containers stay identical.
 
+## The 130 KB AI in a PDF
+
+`demo/model-card-130k.pdf` is 178,761 bytes. The 500-example AG News coreset — 132,798
+bytes of JSON, 125 rows per class — is in `/TinyAIData` as base64url, with a SHA-256 in
+`/TinyAISHA256`. `demo/pdf-130k.html` fetches the PDF, trains the same Complement NB and
+classifies; 78.3% embedded / 74.3% fresh on the 400-row test in `mini-ai.html`. Build with
+`python demo/build_pdf_130k.py`.
+
 ## Container survival
 
 `python demo/survival_test.py` applies everyday transformations to the shipped artifacts

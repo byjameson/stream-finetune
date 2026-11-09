@@ -61,6 +61,16 @@ the classifier are one file.
 - Integrity: full SHA-256 in `/TinyAISHA256`; the viewer checks it
 - Demo: https://byjameson-mini-ai.static.hf.space/pdf.html
 
+### The same container at 130 KB
+
+The 1,579-byte SMS model is the small end. The 500-example AG News coreset is the large
+end: **132,798 bytes** of training data in a **178,761-byte PDF**, in `/TinyAIData` instead
+of `/Keywords`. `pdf-130k.html` parses the data and trains the same Complement NB in the
+browser; 78.3% embedded / 74.3% fresh on the 400-row test. The PDF pays about 46 KB of
+overhead over the data; no weights, just examples.
+
+- Demo: https://byjameson-mini-ai.static.hf.space/pdf-130k.html
+
 ## 6. A single HTML file — train your own
 
 Tiny AI Maker takes a CSV of `text,label`, trains a Complement NB in the browser, shows

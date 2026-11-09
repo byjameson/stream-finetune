@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in a PDF — the 130 KB coreset</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 900px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:760px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  input[type=file] { color:var(--muted); margin-top:10px; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  .pdf { width:100%; height:430px; border:1px solid var(--line); border-radius:8px;
+         background:#0d1015; margin:10px 0; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 110px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">175 KB PDF · 130 KB model</div>
+    <h1>The 130 KB AI is a PDF</h1>
+    <p class="lead">This PDF's visible page is a model card for the 500-example AG News
+    coreset. The <b>132,798 bytes</b> of training data are in the <code>/TinyAIData</code>
+    metadata, not drawn on the page. The viewer parses the raw bytes, trains the same
+    Complement Naive Bayes in the browser and classifies. The model is the data.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="m-pdf">—</span><label>PDF</label></div>
+    <div><span id="m-data">—</span><label>model data</label></div>
+    <div><span id="m-rows">—</span><label>examples</label></div>
+    <div><span id="m-vocab">—</span><label>words</label></div>
+  </section>
+  <p class="muted" id="hashline" style="text-align:center"></p>
+
+  <section class="panel">
+    <h2>The document</h2>
+    <iframe class="pdf" src="model-card-130k.pdf" title="130 KB model card PDF"></iframe>
+    <p class="muted">The page says what the model is; <code>/TinyAIData</code> carries the
+    500 examples. Open the <a id="pdfLink" href="model-card-130k.pdf" target="_blank"
+    rel="noopener">PDF itself</a>. The full SHA-256 is in
+    <code>/TinyAISHA256</code>.</p>
+    <label class="muted" for="pick">Load a PDF with a /TinyAIData coreset</label>
+    <input id="pick" type="file" accept=".pdf,application/pdf">
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label class="muted" for="text">AG News headline or sentence</label>
+    <textarea id="text" rows="4">Stocks rally as oil prices fall</textarea>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>What the card reports</h2>
+    <p>The 400-row test set is not embedded in the PDF. On the test set in
+    <a href="mini-ai.html">mini-ai.html</a>, this 500-example coreset scores
+    <b>78.3%</b> embedded and <b>74.3%</b> on a fresh sample. This page does not claim a
+    live accuracy; it only classifies.</p>
+    <p class="muted">The coreset is teacher-labeled by a 1.5B model; 125 examples per class.
+    One machine, English news, bag-of-words, not an LLM.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Other containers</h2>
+    <p><a href="mini-ai.html">the 130 KB browser AI</a> ·
+    <a href="pdf.html">the 1.6 KB SMS PDF</a> ·
+    <a href="survival.html">which survives?</a> ·
+    <a href="leaderboard.html">Minimum-Bit Table</a> ·
+    <a href="maker.html">train your own</a></p>
+  </section>
+
+  <footer>The PDF is a lossless container, not encryption. The data is in the metadata;
+  anyone can read it. A 178,761-byte PDF carries 132,798 bytes of model data, a model card
+  and the PDF structure.</footer>
+</main>
+
+<script>
+let rows = null, labels = [], model = null;
+let pdfUrl = null;
+const pdfFrame = document.querySelector("iframe.pdf");
+const pdfLink = document.getElementById("pdfLink");
+
+function b64d(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function pdfString(text, start) {
+  let out = "", depth = 1, i = start + 1;
+  while (i < text.length && depth > 0) {
+    const c = text[i];
+    if (c === "\\") {
+      const n = text[i + 1];
+      const map = { n:"\n", r:"\r", t:"\t", b:"\b", f:"\f", "(":"(", ")":")", "\\":"\\" };
+      if (n in map) { out += map[n]; i += 2; continue; }
+      if (n >= "0" && n <= "7") {
+        let oct = n, k = i + 2;
+        while (k < i + 4 && text[k] >= "0" && text[k] <= "7") { oct += text[k]; k++; }
+        out += String.fromCharCode(parseInt(oct, 8)); i = k; continue;
+      }
+      i += 2; continue;
+    }
+    if (c === "(") depth++;
+    if (c === ")") { depth--; if (!depth) break; }
+    out += c; i++;
+  }
+  return out;
+}
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[a-z0-9]{2,}/g) || []))];
+}
+function train(data) {
+  const counts = {}, totals = {};
+  for (const l of labels) { counts[l] = new Map(); totals[l] = 0; }
+  const vocab = new Set();
+  const featureAll = new Map();
+  for (const r of data) {
+    for (const t of tokens(r.text)) {
+      counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
+      totals[r.label]++;
+      vocab.add(t);
+      featureAll.set(t, (featureAll.get(t) || 0) + 1);
+    }
+  }
+  const allTot = [...featureAll.values()].reduce((a, b) => a + b, 0);
+  return { counts, totals, vocab, featureAll, allTot, alpha: 1, n: data.length };
+}
+function score(m, text) {
+  const s = {};
+  for (const l of labels) s[l] = 0;
+  for (const t of tokens(text)) {
+    if (!m.vocab.has(t)) continue;
+    const fa = m.featureAll.get(t);
+    for (const l of labels) {
+      const c = m.counts[l].get(t) || 0;
+      const den = m.allTot + m.alpha * m.vocab.size - m.totals[l];
+      s[l] += -Math.log((fa + m.alpha - c) / den);
+    }
+  }
+  let best = labels[0];
+  for (const l of labels) if (s[l] > s[best]) best = l;
+  const mx = Math.max(...labels.map(l => s[l]));
+  const ex = {}; let sum = 0;
+  for (const l of labels) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of labels) probs[l] = ex[l] / sum;
+  return { label: best, probs };
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function loadBuffer(buf) {
+  const next = URL.createObjectURL(new Blob([buf], { type: "application/pdf" }));
+  pdfFrame.src = next;
+  pdfLink.href = next;
+  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  pdfUrl = next;
+
+  const text = new TextDecoder("latin1").decode(new Uint8Array(buf));
+  const m = /\/TinyAIData\s*\(/.exec(text);
+  if (!m) throw new Error("no /TinyAIData metadata");
+  const payload = pdfString(text, m.index + m[0].length - 1);
+  const raw = b64d(payload);
+  rows = JSON.parse(new TextDecoder().decode(raw));
+  if (!Array.isArray(rows) || rows.length < 6) throw new Error("coreset is not an array");
+  labels = [...new Set(rows.map(r => r.label))].sort();
+  const t0 = performance.now();
+  model = train(rows);
+  const trainMs = performance.now() - t0;
+  document.getElementById("m-pdf").textContent = (buf.byteLength / 1024).toFixed(0) + " KB";
+  document.getElementById("m-data").textContent = (raw.length / 1024).toFixed(0) + " KB";
+  document.getElementById("m-rows").textContent = rows.length;
+  document.getElementById("m-vocab").textContent = model.vocab.size.toLocaleString();
+
+  const hashEl = document.getElementById("hashline");
+  const hm = /\/TinyAISHA256\s*\(([0-9a-fA-F]{64})\)/.exec(text);
+  if (!hm) {
+    hashEl.textContent = `No /TinyAISHA256 checksum. Trained in ${trainMs.toFixed(0)} ms.`;
+  } else if (window.crypto && crypto.subtle) {
+    hashEl.textContent = "Checking SHA-256…";
+    crypto.subtle.digest("SHA-256", raw).then(d => {
+      const hex = [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
+      hashEl.innerHTML = hex === hm[1].toLowerCase()
+        ? `SHA-256 matches <code>${hex.slice(0, 16)}…</code>; trained in ${trainMs.toFixed(0)} ms`
+        : `SHA-256 mismatch: <code>${hex.slice(0, 16)}…</code>`;
+    }).catch(() => { hashEl.textContent = "SHA-256 check unavailable."; });
+  } else {
+    hashEl.textContent = "SHA-256 check needs a secure context.";
+  }
+  classify();
+}
+function classify() {
+  if (!model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(model, text);
+  const out = labels.map(l => {
+    const p = res.probs[l] * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(res.label)}</div><div class="bars">${out}</div>
+     <p class="muted">Softmax over Complement NB weights; not calibrated.</p>`;
+}
+document.getElementById("go").onclick = classify;
+document.getElementById("pick").onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { loadBuffer(r.result); }
+    catch (err) { document.getElementById("out").textContent = String(err); }
+  };
+  r.readAsArrayBuffer(f);
+};
+fetch("model-card-130k.pdf").then(r => r.arrayBuffer()).then(loadBuffer).catch(e => {
+  document.getElementById("m-pdf").textContent = "error";
+  document.getElementById("out").textContent = String(e);
+});
+</script>
+</body>
+</html>

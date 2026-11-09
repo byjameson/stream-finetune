@@ -11,6 +11,7 @@ import json
 import re
 import struct
 import zlib
+from collections import Counter
 from pathlib import Path
 
 DEMO = Path(__file__).resolve().parents[1] / "demo"
@@ -147,6 +148,24 @@ def test_pdf_metadata_carries_the_same_model():
     assert blob == wav_blob
     assert model == wav_model
     assert model["l"] == ["ham", "spam"]
+    digest = re.search(rb"/TinyAISHA256\s*\(([0-9a-f]{64})\)", data)
+    assert digest is not None
+    assert digest.group(1).decode() == hashlib.sha256(blob).hexdigest()
+
+
+def test_pdf_130k_carries_the_agnews_coreset():
+    data = (DEMO / "model-card-130k.pdf").read_bytes()
+    assert len(data) == 178761
+    match = re.search(rb"/TinyAIData\s*\(([^)]*)\)", data)
+    assert match is not None
+    payload = match.group(1)
+    payload += b"=" * (-len(payload) % 4)
+    blob = base64.urlsafe_b64decode(payload)
+    assert len(blob) == 132798
+    rows = json.loads(blob)
+    assert len(rows) == 500
+    assert Counter(r["label"] for r in rows) == {
+        "Business": 125, "World": 125, "Sports": 125, "Sci/Tech": 125}
     digest = re.search(rb"/TinyAISHA256\s*\(([0-9a-f]{64})\)", data)
     assert digest is not None
     assert digest.group(1).decode() == hashlib.sha256(blob).hexdigest()

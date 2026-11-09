@@ -57,6 +57,10 @@ the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 model card whose `/Keywords` metadata carries the 1,579-byte model. The full SHA-256 is in
 `/TinyAISHA256`, and the viewer checks it.
 
+**The 130 KB PDF:** [pdf-130k.html](https://byjameson-mini-ai.static.hf.space/pdf-130k.html)
+— a 175 KB PDF whose `/TinyAIData` metadata carries the 500-example AG News coreset
+(132,798 bytes); the viewer trains it in the browser. 78.3% embedded / 74.3% fresh.
+
 **Survival:** [survival.html](https://byjameson-mini-ai.static.hf.space/survival.html) —
 which container keeps the model after a re-save, re-encode, transcode or metadata strip.
 
