@@ -62,8 +62,8 @@
     <h1>Tiny AI Maker</h1>
     <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
     Bayes in your browser, shows held-out accuracy with a confidence interval, the int8
-    weight size and the example size, and exports a single HTML file, a QR, a favicon or a
-    WAV. No data leaves the page.</p>
+    weight size and the example size, and exports a single HTML file, a QR, a favicon, a WAV
+    or a PDF model card. No data leaves the page.</p>
   </header>
 
   <section class="panel">
@@ -109,6 +109,7 @@
     </div>
     <button class="go" id="export" disabled>Download single HTML</button>
     <button class="chip" id="cardgo" disabled>Download model card</button>
+    <button class="chip" id="pdfgo" disabled>Download PDF card</button>
     <p class="muted" id="exportInfo"></p>
   </section>
 
@@ -315,6 +316,7 @@ function parseAndShow() {
     document.getElementById("try").style.display = "none";
     document.getElementById("export").disabled = true;
     document.getElementById("cardgo").disabled = true;
+    document.getElementById("pdfgo").disabled = true;
     document.getElementById("qrgo").disabled = true;
     document.getElementById("favgo").disabled = true;
     document.getElementById("wavgo").disabled = true;
@@ -374,6 +376,7 @@ function doTrain() {
   document.getElementById("try").style.display = "block";
   document.getElementById("export").disabled = false;
   document.getElementById("cardgo").disabled = false;
+  document.getElementById("pdfgo").disabled = false;
   document.getElementById("qrgo").disabled = false;
   document.getElementById("favgo").disabled = false;
   document.getElementById("wavgo").disabled = false;
@@ -634,6 +637,88 @@ ${recall}
     "Downloaded tiny-ai-model-card.md with the split, accuracy, interval and sizes.";
 }
 
+function pdfEsc(s) {
+  return String(s).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+}
+
+function ascii(s) {
+  return String(s).replace(/[^\x20-\x7e]/g, "?");
+}
+
+function downloadPdfCard() {
+  const r = state.report;
+  if (!r) return;
+  const pct = x => (x * 100).toFixed(1);
+  const weights = qrPayload(state.model, state.acc);
+  const payload = b64url(new TextEncoder().encode(JSON.stringify(weights)));
+  const recall = r.labels.slice(0, 8).map(l => {
+    const x = r.per[l] || { ok: 0, n: 0 };
+    return `  ${ascii(l)}: ${x.ok}/${x.n} (${x.n ? pct(x.ok / x.n) : "?"}%)`;
+  });
+  if (r.labels.length > 8) recall.push(`  ... ${r.labels.length - 8} more labels`);
+  const labelLine = r.labels.map(ascii).join(", ");
+  const lines = [
+    "Tiny AI model card",
+    "Generated " + new Date().toISOString().slice(0, 10) + " by Tiny AI Maker, in the browser.",
+    "",
+    "Labels: " + (labelLine.length > 70 ? labelLine.slice(0, 67) + "..." : labelLine),
+    "Training rows: " + r.rows,
+    "Held-out rows: " + r.nTest + " (80/20 split, seed 42)",
+    "Accuracy: " + pct(r.acc) + "% (95% CI " + pct(r.ci[0]) + "-" + pct(r.ci[1]) + "%)",
+    "Full int8 weights: " + r.weights + " bytes",
+    "Data artifact: " + r.dataBytes + " bytes (examples + classifier)",
+    "",
+    "Per-label recall:",
+    ...recall,
+    "",
+    "Caveats:",
+    "  One 80/20 split, not cross-validation.",
+    "  Bag-of-words Complement NB; no word order, no calibration.",
+    "  Not an LLM and not a production classifier.",
+    "  The model is in /Keywords metadata, not drawn on this page.",
+    "Open pdf.html, load this file and classify."
+  ];
+  const parts = ["BT", "/F1 20 Tf", "72 720 Td",
+                 `(${pdfEsc(lines[0])}) Tj`, "/F1 11 Tf", "0 -28 Td"];
+  for (const line of lines.slice(1)) {
+    if (line) parts.push(`(${pdfEsc(line)}) Tj`);
+    parts.push("0 -16 Td");
+  }
+  parts.push("ET");
+  const stream = parts.join("\n");
+  const info = `<< /Title (${pdfEsc("Tiny AI model card")}) ` +
+    `/Author (${pdfEsc("Tiny AI Maker")}) ` +
+    `/Subject (${pdfEsc("A browser-trained classifier in /Keywords")}) ` +
+    `/Keywords (${payload}) /Creator (${pdfEsc("demo/maker.html")}) ` +
+    `/Producer (${pdfEsc("stream-finetune")}) >>`;
+  const objs = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R " +
+      "/Resources << /Font << /F1 5 0 R >> >> >>",
+    `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    info
+  ];
+  let out = "%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
+  const offsets = [0];
+  for (let i = 1; i <= 6; i++) {
+    offsets.push(out.length);
+    out += `${i} 0 obj\n${objs[i - 1]}\nendobj\n`;
+  }
+  const xref = out.length;
+  out += "xref\n0 7\n0000000000 65535 f \n";
+  for (let i = 1; i <= 6; i++) {
+    out += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
+  }
+  out += `trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  const bytes = new Uint8Array(out.length);
+  for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
+  downloadBlob(new Blob([bytes], { type: "application/pdf" }), "tiny-ai-model-card.pdf");
+  document.getElementById("exportInfo").textContent =
+    "Downloaded tiny-ai-model-card.pdf. The model is in /Keywords; open pdf.html and load it.";
+}
+
 function download() {
   if (!state.model) return;
   const html = buildExport(state.modelRows, state.labels, state.acc);
@@ -669,6 +754,7 @@ document.getElementById("train").onclick = doTrain;
 document.getElementById("classify").onclick = classify;
 document.getElementById("export").onclick = download;
 document.getElementById("cardgo").onclick = downloadCard;
+document.getElementById("pdfgo").onclick = downloadPdfCard;
 document.getElementById("qrgo").onclick = buildQR;
 document.getElementById("favgo").onclick = downloadFavicon;
 document.getElementById("wavgo").onclick = downloadWav;

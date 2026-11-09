@@ -78,12 +78,15 @@ The AG News sample is 200 rows; the SMS spam sample is 100 rows. Exports:
 - **QR:** the learned weights in a URL/QR (SMS sample: 160 words, 2.1 KB URL, 90%).
 - **Favicon:** a 32×32 lossless PNG; the first vocabulary size that fits is used.
 - **WAV:** 8-bit PCM; the samples are the model bytes.
+- **PDF:** a one-page model card whose `/Keywords` metadata carries the weights;
+  `pdf.html` loads it back through its file input.
 
-The favicon and WAV viewers accept the exported files back through their file inputs, so
-the round-trip is testable without another tool. **Model card** downloads the split, the
+The favicon, WAV and PDF viewers accept the exported files back through their file inputs,
+so each round-trip is testable without another tool. **Model card** downloads the split, the
 held-out accuracy with a 95% Wilson interval, per-label recall, the full int8 weight size,
-the data-artifact size and the caveats. The page never sends data anywhere. Build with
-`python demo/build_maker.py`; the QR encoder is `demo/qrcode.min.js` (MIT).
+the data-artifact size and the caveats; the PDF card carries the same numbers and the model.
+The page never sends data anywhere. Build with `python demo/build_maker.py`; the QR encoder
+is `demo/qrcode.min.js` (MIT).
 
 ## AI in a QR code
 
