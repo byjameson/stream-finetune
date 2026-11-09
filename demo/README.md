@@ -1,9 +1,9 @@
 # A 130 KB news classifier
 
 One self-contained HTML file. No server, no GPU, no stored weights: the page holds 500
-teacher-labelled AG News examples (125 per class) and fits a multinomial Naive Bayes over
-unigrams + bigrams **in your browser**. The artifact is the data; the training procedure
-is a few lines of JavaScript.
+teacher-labelled AG News examples (125 per class) and fits a Complement Naive Bayes over
+binary unigrams **in your browser**. The artifact is the data; the training procedure is a
+few lines of JavaScript.
 
 | coreset | artifact | held-out accuracy | train time (reference browser) |
 |---:|---:|---:|---:|
