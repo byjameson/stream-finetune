@@ -117,7 +117,7 @@ precision/recall/F1, a confusion matrix, the full int8 weight size, the data-art
 and the caveats; the PDF card carries the same numbers and the model. The AG News sample is
 the honest case: 70.0% on one 80/20 split, 57.0% mean over 5 folds (Brier 0.523, ECE 0.139).
 Temperature scaling (median T 1.5) lowers ECE to 0.074; on SMS it lowers 0.066 to 0.032.
-It is measured, not applied to the exports.
+After CV, the Maker page uses T for its displayed probabilities only; exports are unchanged.
 The page never sends data anywhere. Build with `python demo/build_maker.py`; the QR encoder
 is `demo/qrcode.min.js` (MIT).
 
