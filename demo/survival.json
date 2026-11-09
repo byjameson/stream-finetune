@@ -1,0 +1,176 @@
+{
+  "generated": "2026-11-09",
+  "model_bytes": 1579,
+  "model_sha256": "cae4bbed4f438ebec79ab765bf19b2066809509278991dd95c184954d8706b0a",
+  "machine": "Windows-10-10.0.26200-SP0",
+  "rows": [
+    {
+      "container": "PDF",
+      "operation": "SHA-256 field",
+      "ok": true,
+      "detail": "full 64-hex digest in /TinyAISHA256"
+    },
+    {
+      "container": "PDF",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "1,579 B model / 3,832 B PDF"
+    },
+    {
+      "container": "PDF",
+      "operation": "pypdf rewrite",
+      "ok": true,
+      "detail": "1,579 B model; metadata + SHA-256 preserved"
+    },
+    {
+      "container": "PDF",
+      "operation": "rebuild without Info (print-to-PDF proxy)",
+      "ok": false,
+      "detail": "no /Keywords or /TinyAISHA256"
+    },
+    {
+      "container": "PDF",
+      "operation": "PDF/A or editor resave",
+      "ok": null,
+      "detail": "not measured; needs a PDF editor/renderer"
+    },
+    {
+      "container": "XLSX",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "160 words + 3 formulas"
+    },
+    {
+      "container": "XLSX",
+      "operation": "openpyxl load/save",
+      "ok": true,
+      "detail": "483 cells + 3 formulas identical"
+    },
+    {
+      "container": "XLSX",
+      "operation": "Google Sheets round-trip",
+      "ok": null,
+      "detail": "not measured; may rewrite formulas"
+    },
+    {
+      "container": "PNG",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "1,579 B model / 1,519 B PNG"
+    },
+    {
+      "container": "PNG",
+      "operation": "PNG re-save",
+      "ok": true,
+      "detail": "pixels exact"
+    },
+    {
+      "container": "PNG",
+      "operation": "metadata strip",
+      "ok": true,
+      "detail": "model is in pixels, not metadata"
+    },
+    {
+      "container": "PNG",
+      "operation": "JPEG q80",
+      "ok": false,
+      "detail": "AssertionError: not a PNG"
+    },
+    {
+      "container": "PNG",
+      "operation": "resize to 16x16",
+      "ok": false,
+      "detail": "AssertionError: IHDR 16x16 depth=8 color=2"
+    },
+    {
+      "container": "WAV",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "1,583 B data / 1,627 B WAV"
+    },
+    {
+      "container": "WAV",
+      "operation": "PCM rewrite",
+      "ok": true,
+      "detail": "samples exact"
+    },
+    {
+      "container": "WAV",
+      "operation": "FLAC (lossless)",
+      "ok": true,
+      "detail": "samples exact"
+    },
+    {
+      "container": "WAV",
+      "operation": "MP3 128k",
+      "ok": false,
+      "detail": "data 1583 B, length 335547702"
+    },
+    {
+      "container": "WAV",
+      "operation": "Opus 32k",
+      "ok": false,
+      "detail": "data 9498 B, length 34347564"
+    },
+    {
+      "container": "QR",
+      "operation": "as-is",
+      "ok": true,
+      "detail": "2158 B URL, exact"
+    },
+    {
+      "container": "QR",
+      "operation": "downscale to 10% (161 px)",
+      "ok": true,
+      "detail": "exact URL"
+    },
+    {
+      "container": "QR",
+      "operation": "JPEG q5",
+      "ok": true,
+      "detail": "exact URL"
+    },
+    {
+      "container": "QR",
+      "operation": "blur 4 px",
+      "ok": true,
+      "detail": "exact URL"
+    },
+    {
+      "container": "QR",
+      "operation": "rotate 20 degrees",
+      "ok": true,
+      "detail": "exact URL"
+    },
+    {
+      "container": "QR",
+      "operation": "drop #fragment (link shortener)",
+      "ok": false,
+      "detail": "no #m=; qr.html has no model"
+    },
+    {
+      "container": "QR",
+      "operation": "phone camera / print",
+      "ok": null,
+      "detail": "not measured; decoder test only"
+    },
+    {
+      "container": "HTML",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "80 examples, 2 labels; trainCNB present"
+    },
+    {
+      "container": "HTML",
+      "operation": "strip <script> (simulated CMS)",
+      "ok": false,
+      "detail": "no classifier or data"
+    },
+    {
+      "container": "Prompt",
+      "operation": "copy",
+      "ok": null,
+      "detail": "not self-contained; needs a shared base"
+    }
+  ]
+}

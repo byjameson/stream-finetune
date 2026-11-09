@@ -35,11 +35,23 @@ the same file is the page favicon. 1.5 KB PNG, 93.5% on the SMS held-out split. 
 
 ## AI in a PDF
 
-`demo/model-card.pdf` is a 3,769-byte one-page model card; the 1,579-byte weights are the
-base64url JSON after `/Keywords` in the Info dictionary, not drawn on the page.
-`demo/pdf.html` fetches the raw PDF, reads that string and classifies; it can also load
-another PDF with an uncompressed `/Keywords` model. Build with `python demo/build_pdf.py`,
-which reads the model back from `model.wav` so the containers stay identical.
+`demo/model-card.pdf` is a 3,832-byte one-page model card; the 1,579-byte weights are the
+base64url JSON after `/Keywords` in the Info dictionary, not drawn on the page. The full
+model SHA-256 is in `/TinyAISHA256`, and `demo/pdf.html` verifies it. `demo/pdf.html` fetches
+the raw PDF, reads the model and classifies; it can also load another PDF with an
+uncompressed `/Keywords` model. Build with `python demo/build_pdf.py`, which reads the model
+back from `model.wav` so the containers stay identical.
+
+## Container survival
+
+`python demo/survival_test.py` applies everyday transformations to the shipped artifacts
+and writes `demo/survival.json`; `demo/survival.html` renders the matrix. Measured results:
+PDF survives a `pypdf` rewrite but not a rebuild without its Info dictionary; XLSX survives
+an `openpyxl` re-save; PNG survives a PNG re-save and metadata strip but not JPEG/resize;
+WAV survives PCM/FLAC but not MP3/Opus; QR survives a 10% downscale, JPEG q5, blur and 20°
+rotation but not a dropped `#fragment`; the single HTML survives copying but not script
+stripping. `demo/tiny-ai-sms.html` is the fixed 80-example single-file export used for the
+HTML row.
 
 ## AI in a spreadsheet
 

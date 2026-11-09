@@ -3,11 +3,12 @@
 Most model cards describe a model that lives somewhere else. This one carries the weights
 in its metadata.
 
-The artifact is a one-page PDF, **3,769 bytes**. The visible page is a model card. The
+The artifact is a one-page PDF, **3,832 bytes**. The visible page is a model card. The
 classifier is a 160-word Complement Naive Bayes with **1,579 bytes** of int8 weights, stored
 as base64url JSON after `/Keywords` in the PDF's Info dictionary. `pdf.html` fetches the raw
 PDF, reads that string and runs the classifier in the browser. No server, no weights
-endpoint.
+endpoint. The full SHA-256 is in `/TinyAISHA256`; the viewer recomputes it and shows a
+match or mismatch.
 
 It scores **93.54%** on 1,115 held-out SMS messages from the SMS Spam Collection.
 
@@ -60,11 +61,11 @@ the same JSON. The card cannot drift from the weights without rebuilding both.
 | QR URL | 2,158 | page URL + base64 model |
 | favicon PNG | 1,519 | 32×32 RGB pixels, lossless |
 | WAV | 1,627 | 8-bit PCM samples |
-| **PDF** | **3,769** | **visible card + metadata + page overhead** |
+| **PDF** | **3,832** | **visible card + metadata + page overhead** |
 | spreadsheet | 10,477 | cells and formulas |
 | 130 KB data artifact | 132,798 | 500 AG News examples + counts |
 
-The PDF pays **2,190 bytes** of overhead over the model: one page, a font resource, a content
+The PDF pays **2,253 bytes** of overhead over the model: one page, a font resource, a content
 stream and the PDF structure. The favicon and WAV are cheaper because their formats are
 mostly payload. The spreadsheet is larger because a useful sheet needs formulas and visible
 cells.
@@ -80,6 +81,7 @@ The page is generated from the model, not hand-written:
 - data: 5,574 messages, 1,115 held out;
 - accuracy: 93.54% on the held-out split;
 - weights: int8 Complement NB, 160 words, 1,579 bytes;
+- integrity: full SHA-256 in `/TinyAISHA256`, checked by the viewer;
 - other containers: QR 2,158 B, favicon 1,519 B, WAV 1,627 B;
 - caveats: one 80/20 split, English SMS, bag-of-words, not an LLM.
 
@@ -89,10 +91,18 @@ The caveats are part of the artifact. If you forward the PDF, the limits travel 
 
 - **Not an LLM.** It is a bag-of-words classifier on English SMS.
 - **Not a security proof.** The metadata is inspectable. A PDF is a lossless container, not
-  obfuscation.
+  obfuscation. The SHA-256 detects a changed model; it is not a signature.
 - **Not indestructible.** Some PDF editors rewrite or drop metadata when a file is saved.
   That destroys the model; it does not hide it.
 - **Not a production spam filter.** One split, 1,115 rows, one machine.
+
+## Fragility
+
+A `pypdf` rewrite kept `/Keywords` and `/TinyAISHA256`; rebuilding the PDF without its Info
+dictionary — a proxy for print-to-PDF — lost both. That is the PDF trade: the best document
+workflow, but not an editable document. The full survival matrix, including PNG, WAV, XLSX,
+QR and single HTML, is at
+https://byjameson-mini-ai.static.hf.space/survival.html
 
 ## The rest of the ladder
 
@@ -111,9 +121,10 @@ https://byjameson-mini-ai.static.hf.space/leaderboard.html
 
 Tiny AI Maker now writes a model card for its own browser-trained classifiers too: the
 split, a 95% Wilson interval, per-label precision/recall/F1, a confusion matrix, the full
-int8 weight size, the data-artifact size and the caveats. It also exports a PDF card with the weights in `/Keywords`; that one
-is larger (12.3 KB for the 737-word SMS sample) because it carries the full vocabulary,
-while this demo uses a 160-word export. The PDF is the same idea in a document format.
+int8 weight size, the data-artifact size and the caveats. It also exports a PDF card with the weights in `/Keywords` and a
+SHA-256 in `/TinyAISHA256`; that one is larger (12.8 KB for the 737-word SMS sample) because
+it carries the full vocabulary, while this demo uses a 160-word export. The PDF is the same
+idea in a document format.
 
 ## The repo
 

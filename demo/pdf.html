@@ -61,6 +61,7 @@
     <div><span id="m-acc">—</span><label>accuracy</label></div>
     <div><span id="m-vocab">—</span><label>words</label></div>
   </section>
+  <p class="muted" id="hashline" style="text-align:center"></p>
 
   <section class="panel">
     <h2>The document</h2>
@@ -68,7 +69,9 @@
     <p class="muted">The visible page is a model card. The classifier is not drawn on it:
     the bytes after <code>/Keywords</code> are base64url JSON. Open the
     <a id="pdfLink" href="model-card.pdf" target="_blank" rel="noopener">PDF itself</a>.
-    A PDF is a lossless container, not a secret; anyone can read the metadata.</p>
+    A PDF is a lossless container, not a secret; anyone can read the metadata. The file
+    also carries a full SHA-256 in <code>/TinyAISHA256</code>; the line under the metrics
+    checks it.</p>
     <label class="muted" for="pick">Load a PDF with an uncompressed /Keywords model</label>
     <input id="pick" type="file" accept=".pdf,application/pdf">
   </section>
@@ -87,6 +90,7 @@
     <a href="favicon.html">1.5 KB favicon</a> ·
     <a href="audio.html">1.6 KB WAV</a> ·
     <a href="spreadsheet.html">10.5 KB spreadsheet</a> ·
+    <a href="survival.html">which survive?</a> ·
     <a href="leaderboard.html">Minimum-Bit Table</a> ·
     <a href="maker.html">train your own</a></p>
   </section>
@@ -163,6 +167,21 @@ function loadBuffer(buf) {
   document.getElementById("m-model").textContent = (raw.length / 1024).toFixed(1) + " KB";
   document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
   document.getElementById("m-vocab").textContent = model.V;
+  const hashEl = document.getElementById("hashline");
+  const hm = /\/TinyAISHA256\s*\(([0-9a-fA-F]{64})\)/.exec(text);
+  if (!hm) {
+    hashEl.textContent = "No /TinyAISHA256 checksum in this PDF.";
+  } else if (window.crypto && crypto.subtle) {
+    hashEl.textContent = "Checking SHA-256…";
+    crypto.subtle.digest("SHA-256", raw).then(d => {
+      const hex = [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
+      hashEl.innerHTML = hex === hm[1].toLowerCase()
+        ? `SHA-256 matches <code>${hex.slice(0, 16)}…</code> (integrity, not a signature)`
+        : `SHA-256 mismatch: <code>${hex.slice(0, 16)}…</code>`;
+    }).catch(() => { hashEl.textContent = "SHA-256 check unavailable."; });
+  } else {
+    hashEl.textContent = "SHA-256 check needs a secure context.";
+  }
   classify();
 }
 

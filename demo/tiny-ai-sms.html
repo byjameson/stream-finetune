@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiny AI — 11 KB</title>
+<style>
+  body{margin:0;background:#0f1115;color:#e8e6e3;font:16px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+  h1{font-size:34px;letter-spacing:-.6px;margin:0 0 8px}
+  .badge{display:inline-block;background:#6ee7b7;color:#06281d;font-weight:800;padding:6px 10px;border-radius:6px;font-size:14px}
+  .panel{background:#171a21;border:1px solid #232733;border-radius:12px;padding:18px;margin:16px 0}
+  textarea{width:100%;background:#0d1015;color:#e8e6e3;border:1px solid #232733;border-radius:8px;padding:12px;font:inherit}
+  button{margin-top:10px;padding:11px 16px;border:0;border-radius:8px;background:#6ee7b7;color:#06281d;font-weight:750;font-size:15px;cursor:pointer}
+  .muted{color:#9aa0aa;font-size:13px}
+  .verdict{font-size:22px;font-weight:750;margin:14px 0 8px}
+  .bar-row{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+  .bar{height:10px;background:#0d1015;border-radius:5px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:#6ee7b7;width:0}
+  .bar-row span:last-child{text-align:right;color:#9aa0aa}
+</style></head><body><main>
+<div class="badge">11 KB · 80 examples</div>
+<h1>A tiny text classifier</h1>
+<p class="muted">This file contains its own training data and fits a Complement Naive Bayes
+when it loads. No server, no weights, no network calls. Held-out accuracy in the maker:
+90.0%.</p>
+<div class="panel"><textarea id="text" rows="3" placeholder="Paste a text…"></textarea>
+<button id="go">Classify</button><div id="out"></div></div>
+<p class="muted">Build one from your own data: Tiny AI Maker.</p>
+</main>
+<script>
+const DATA = {"rows":[{"text":"As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your callertune for all Callers. Press *9 to copy your friends Callertune","label":"ham"},{"text":"Ha ha ha good joke. Girls are situation seekers.","label":"ham"},{"text":"Do you know what Mallika Sherawat did yesterday? Find out now @  &lt;URL&gt;","label":"ham"},{"text":"No calls..messages..missed calls","label":"ham"},{"text":"For fear of fainting with the of all that housework you just did? Quick have a cuppa","label":"ham"},{"text":"I‘m going to try for 2 months ha ha only joking","label":"ham"},{"text":"K tell me anything about you.","label":"ham"},{"text":"Sorry, I'll call later in meeting.","label":"ham"},{"text":"Ahhh. Work. I vaguely remember that! What does it feel like? Lol","label":"ham"},{"text":"I've been searching for the right words to thank you for this breather. I promise i wont take your help for granted and will fulfil my promise. You have been wonderful and a blessing at all times.","label":"ham"},{"text":"Didn't you get hep b immunisation in nigeria.","label":"ham"},{"text":"Is that seriously how you spell his name?","label":"ham"},{"text":"Fair enough, anything going on?","label":"ham"},{"text":"Your gonna have to pick up a $1 burger for yourself on your way home. I can't even move. Pain is killing me.","label":"ham"},{"text":"Oh k...i'm watching here:)","label":"ham"},{"text":"Ok lar... Joking wif u oni...","label":"ham"},{"text":"Yeah hopefully, if tyler can't do it I could maybe ask around a bit","label":"ham"},{"text":"Wait that's still not all that clear, were you not sure about me being sarcastic or that that's why x doesn't want to live with us","label":"ham"},{"text":"I HAVE A DATE ON SUNDAY WITH WILL!!","label":"ham"},{"text":"I'm back &amp; we're packing the car now, I'll let you know if there's room","label":"ham"},{"text":"Eh u remember how 2 spell his name... Yes i did. He v naughty make until i v wet.","label":"ham"},{"text":"Yeah he got in at 2 and was v apologetic. n had fallen out and she was actin like spoilt child and he got caught up in that. Till 2! But we won't go there! Not doing too badly cheers. You?","label":"ham"},{"text":"I see the letter B on my car","label":"ham"},{"text":"Oops, I'll let you know when my roommate's done","label":"ham"},{"text":"Anything lor... U decide...","label":"ham"},{"text":"Ffffffffff. Alright no way I can meet up with you sooner?","label":"ham"},{"text":"Did you catch the bus ? Are you frying an egg ? Did you make a tea? Are you eating your mom's left over dinner ? Do you feel my Love ?","label":"ham"},{"text":"Pls go ahead with watts. I just wanted to be sure. Do have a great weekend. Abiola","label":"ham"},{"text":"Yup... Ok i go home look at the timings then i msg ü again... Xuhui going to learn on 2nd may too but her lesson is at 8am","label":"ham"},{"text":"U dun say so early hor... U c already then say...","label":"ham"},{"text":"Wow. I never realized that you were so embarassed by your accomodations. I thought you liked it, since i was doing the best i could and you always seemed so happy about \"the cave\". I'm sorry I didn't and don't have more to give. I'm sorry i offered. I'm sorry your room was so embarassing.","label":"ham"},{"text":"K fyi x has a ride early tomorrow morning but he's crashing at our place tonight","label":"ham"},{"text":"Aft i finish my lunch then i go str down lor. Ard 3 smth lor. U finish ur lunch already?","label":"ham"},{"text":"I'm gonna be home soon and i don't want to talk about this stuff anymore tonight, k? I've cried enough today.","label":"ham"},{"text":"So ü pay first lar... Then when is da stock comin...","label":"ham"},{"text":"A gram usually runs like  &lt;#&gt; , a half eighth is smarter though and gets you almost a whole second gram for  &lt;#&gt;","label":"ham"},{"text":"Go until jurong point, crazy.. Available only in bugis n great world la e buffet... Cine there got amore wat...","label":"ham"},{"text":"Did I forget to tell you ? I want you , I need you, I crave you ... But most of all ... I love you my sweet Arabian steed ... Mmmmmm ... Yummy","label":"ham"},{"text":"Great! I hope you like your man well endowed. I am  &lt;#&gt;  inches...","label":"ham"},{"text":"Tell where you reached","label":"ham"},{"text":"Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005. Text FA to 87121 to receive entry question(std txt rate)T&C's apply 08452810075over18's","label":"spam"},{"text":"TheMob> Check out our newest selection of content, Games, Tones, Gossip, babes and sport, Keep your mobile fit and funky text WAP to 82468","label":"spam"},{"text":"Todays Voda numbers ending 7548 are selected to receive a $350 award. If you have a match please call 08712300220 quoting claim code 4041 standard rates app","label":"spam"},{"text":"Congrats! 1 year special cinema pass for 2 is yours. call 09061209465 now! C Suprman V, Matrix3, StarWars3, etc all 4 FREE! bx420-ip4-5we. 150pm. Dont miss out!","label":"spam"},{"text":"Did you hear about the new \"Divorce Barbie\"? It comes with all of Ken's stuff!","label":"spam"},{"text":"England v Macedonia - dont miss the goals/team news. Txt ur national team to 87077 eg ENGLAND to 87077 Try:WALES, SCOTLAND 4txt/ú1.20 POBOXox36504W45WQ 16+","label":"spam"},{"text":"Thanks for your subscription to Ringtone UK your mobile will be charged £5/month Please confirm by replying YES or NO. If you reply NO you will not be charged","label":"spam"},{"text":"500 New Mobiles from 2004, MUST GO! Txt: NOKIA to No: 89545 & collect yours today!From ONLY £1 www.4-tc.biz 2optout 087187262701.50gbp/mtmsg18","label":"spam"},{"text":"Congratulations ur awarded 500 of CD vouchers or 125gift guaranteed & Free entry 2 100 wkly draw txt MUSIC to 87066 TnCs www.Ldew.com1win150ppmx3age16","label":"spam"},{"text":"T-Mobile customer you may now claim your FREE CAMERA PHONE upgrade & a pay & go sim card for your loyalty. Call on 0845 021 3680.Offer ends 28thFeb.T&C's apply","label":"spam"},{"text":"07732584351 - Rodger Burns - MSG = We tried to call you re your reply to our sms for a free nokia mobile + free camcorder. Please call now 08000930705 for delivery tomorrow","label":"spam"},{"text":"Hey I am really horny want to chat or see me naked text hot to 69698 text charged at 150pm to unsubscribe text stop 69698","label":"spam"},{"text":"Please call our customer service representative on FREEPHONE 0808 145 4742 between 9am-11pm as you have WON a guaranteed £1000 cash or £5000 prize!","label":"spam"},{"text":"FreeMsg Hey there darling it's been 3 week's now and no word back! I'd like some fun you up for it still? Tb ok! XxX std chgs to send, £1.50 to rcv","label":"spam"},{"text":"You'll not rcv any more msgs from the chat svc. For FREE Hardcore services text GO to: 69988 If u get nothing u must Age Verify with yr network & try again","label":"spam"},{"text":"FreeMsg Why haven't you replied to my text? I'm Randy, sexy, female and live local. Luv to hear from u. Netcollex Ltd 08700621170150p per msg reply Stop to end","label":"spam"},{"text":"December only! Had your mobile 11mths+? You are entitled to update to the latest colour camera mobile for Free! Call The Mobile Update Co FREE on 08002986906","label":"spam"},{"text":"You are a winner U have been specially selected 2 receive £1000 or a 4* holiday (flights inc) speak to a live operator 2 claim 0871277810910p/min (18+)","label":"spam"},{"text":"GENT! We are trying to contact you. Last weekends draw shows that you won a £1000 prize GUARANTEED. Call 09064012160. Claim Code K52. Valid 12hrs only. 150ppm","label":"spam"},{"text":"Your free ringtone is waiting to be collected. Simply text the password \"MIX\" to 85069 to verify. Get Usher and Britney. FML, PO Box 5249, MK17 92H. 450Ppw 16","label":"spam"},{"text":"HMV BONUS SPECIAL 500 pounds of genuine HMV vouchers to be won. Just answer 4 easy questions. Play Now! Send HMV to 86688 More info:www.100percent-real.com","label":"spam"},{"text":"PRIVATE! Your 2004 Account Statement for 07742676969 shows 786 unredeemed Bonus Points. To claim call 08719180248 Identifier Code: 45239 Expires","label":"spam"},{"text":"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575. Cost 150p/day, 6days, 16+ TsandCs apply Reply HL 4 info","label":"spam"},{"text":"XXXMobileMovieClub: To use your credit, click the WAP link in the next txt message or click here>> http://wap. xxxmobilemovieclub.com?n=QJKGIGHJJGCBL","label":"spam"},{"text":"Want 2 get laid tonight? Want real Dogging locations sent direct 2 ur mob? Join the UK's largest Dogging Network bt Txting GRAVEL to 69888! Nt. ec2a. 31p.msg@150p","label":"spam"},{"text":"URGENT! Your Mobile No. was awarded £2000 Bonus Caller Prize on 5/9/03 This is our final try to contact U! Call from Landline 09064019788 BOX42WR29C, 150PPM","label":"spam"},{"text":"Valentines Day Special! Win over £1000 in our quiz and take your partner on the trip of a lifetime! Send GO to 83600 now. 150p/msg rcvd. CustCare:08718720201.","label":"spam"},{"text":"Ringtone Club: Get the UK singles chart on your mobile each week and choose any top quality ringtone! This message is free of charge.","label":"spam"},{"text":"WINNER!! As a valued network customer you have been selected to receivea £900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.","label":"spam"},{"text":"URGENT! We are trying to contact you. Last weekends draw shows that you have won a £900 prize GUARANTEED. Call 09061701939. Claim code S89. Valid 12hrs only","label":"spam"},{"text":"You are a winner U have been specially selected 2 receive £1000 cash or a 4* holiday (flights inc) speak to a live operator 2 claim 0871277810810","label":"spam"},{"text":"Customer service annoncement. You have a New Years delivery waiting for you. Please call 07046744435 now to arrange delivery","label":"spam"},{"text":"BangBabes Ur order is on the way. U SHOULD receive a Service Msg 2 download UR content. If U do not, GoTo wap. bangb. tv on UR mobile internet/service menu","label":"spam"},{"text":"Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free! Call The Mobile Update Co FREE on 08002986030","label":"spam"},{"text":"Text & meet someone sexy today. U can find a date or even flirt its up to U. Join 4 just 10p. REPLY with NAME & AGE eg Sam 25. 18 -msg recd@thirtyeight pence","label":"spam"},{"text":"As a valued customer, I am pleased to advise you that following recent review of your Mob No. you are awarded with a £1500 Bonus Prize, call 09066364589","label":"spam"},{"text":"Please call our customer service representative on 0800 169 6031 between 10am-9pm as you have WON a guaranteed £1000 cash or £5000 prize!","label":"spam"},{"text":"Ur ringtone service has changed! 25 Free credits! Go to club4mobiles.com to choose content now! Stop? txt CLUB STOP to 87070. 150p/wk Club4 PO Box1146 MK45 2WT","label":"spam"},{"text":"Urgent UR awarded a complimentary trip to EuroDisinc Trav, Aco&Entry41 Or £1000. To claim txt DIS to 87121 18+6*£1.50(moreFrmMob. ShrAcomOrSglSuplt)10, LS1 3AJ","label":"spam"},{"text":"U 447801259231 have a secret admirer who is looking 2 make contact with U-find out who they R*reveal who thinks UR so special-call on 09058094597","label":"spam"}],"labels":["ham","spam"]};
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+function trainCNB(rows, maxVocab) {
+  const labels = [...new Set(rows.map(r => r.label))].sort();
+  const keep = maxVocab ? topTokens(rows, maxVocab) : null;
+  const counts = {}, totals = {}, featureAll = new Map(), vocab = new Set();
+  for (const l of labels) { counts[l] = new Map(); totals[l] = 0; }
+  for (const r of rows) {
+    for (const t of tokens(r.text)) {
+      if (keep && !keep.has(t)) continue;
+      counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
+      totals[r.label]++;
+      vocab.add(t);
+      featureAll.set(t, (featureAll.get(t) || 0) + 1);
+    }
+  }
+  const allTot = [...featureAll.values()].reduce((a, b) => a + b, 0);
+  return { labels, counts, totals, vocab, featureAll, allTot, alpha: 1, n: rows.length };
+}
+function score(m, text) {
+  const s = {};
+  for (const l of m.labels) s[l] = 0;
+  for (const t of tokens(text)) {
+    if (!m.vocab.has(t)) continue;
+    const fa = m.featureAll.get(t);
+    for (const l of m.labels) {
+      const c = m.counts[l].get(t) || 0;
+      const den = m.allTot + m.alpha * m.vocab.size - m.totals[l];
+      s[l] += -Math.log((fa + m.alpha - c) / den);
+    }
+  }
+  let best = m.labels[0];
+  for (const l of m.labels) if (s[l] > s[best]) best = l;
+  const mx = Math.max(...m.labels.map(l => s[l]));
+  const ex = {}; let sum = 0;
+  for (const l of m.labels) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of m.labels) probs[l] = ex[l] / sum;
+  return { label: best, probs };
+}
+const model = trainCNB(DATA.rows);
+document.getElementById("text").value = DATA.rows[0].text;
+document.getElementById("go").onclick = () => {
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const res = score(model, text);
+  const rows = DATA.labels.map(l => {
+    const p = (res.probs[l] || 0) * 100;
+    return '<div class="bar-row"><span>' + l.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])) + '</span><span class="bar"><i style="width:' + p.toFixed(1) + '%"></i></span><span>' + p.toFixed(1) + '%</span></div>';
+  }).join("");
+  document.getElementById("out").innerHTML = '<div class="verdict">' + res.label + '</div><div class="bars">' + rows + '</div><p class="muted">Softmax over Complement NB weights; not calibrated.</p>';
+};
+</script></body></html>

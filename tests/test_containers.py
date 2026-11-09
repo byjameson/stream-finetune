@@ -6,6 +6,7 @@ the decoded int8 weights still classify a spam and a ham message.
 """
 
 import base64
+import hashlib
 import json
 import re
 import struct
@@ -132,7 +133,7 @@ def test_wav_carries_the_same_model():
 
 def test_pdf_metadata_carries_the_same_model():
     data = (DEMO / "model-card.pdf").read_bytes()
-    assert len(data) == 3769
+    assert len(data) == 3832
     assert b"93.54%" in data
     assert b"not an LLM" in data
     match = re.search(rb"/Keywords\s*\(([^)]*)\)", data)
@@ -146,6 +147,18 @@ def test_pdf_metadata_carries_the_same_model():
     assert blob == wav_blob
     assert model == wav_model
     assert model["l"] == ["ham", "spam"]
+    digest = re.search(rb"/TinyAISHA256\s*\(([0-9a-f]{64})\)", data)
+    assert digest is not None
+    assert digest.group(1).decode() == hashlib.sha256(blob).hexdigest()
+
+
+def test_survival_json_pins_the_model():
+    data = json.loads((DEMO / "survival.json").read_text(encoding="utf-8"))
+    _, blob = _model(_wav_data(WAV))
+    assert data["model_bytes"] == 1579
+    assert data["model_sha256"] == hashlib.sha256(blob).hexdigest()
+    assert any(row["ok"] is True for row in data["rows"])
+    assert any(row["ok"] is False for row in data["rows"])
 
 
 def test_decoded_weights_still_classify():
