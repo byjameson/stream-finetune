@@ -90,7 +90,8 @@ architectures, the idea of task-specific compression.
   coreset reaches 78.0%, indistinguishable from the 340 KB model. Storage and compute are
   interchangeable.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
-  fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
+  fp32, **0.038** fp16, with the 3.09B base shared. An adapter can add a capability; a
+  prompt only points at one the base already has.
   **But prompt first:** a 441-byte 4-shot prompt on the same base gets 94.0% on SST-2
   (adapter 93.75%) and 242 bytes gets 61.75% on AG News (adapter 62.25%). The adapter is
   for behaviour a prompt cannot express, not an automatic win.

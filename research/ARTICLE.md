@@ -153,7 +153,8 @@ prompt only points at it.
 
 The practical sub-0.1-bit artifact is an **adapter**. The project's Qwen2.5-3B LoRA
 (7.37M parameters, 60 SFT steps) is 29.6 MB fp32 = **0.077 bit/base-param**, 14.8 MB fp16
-= **0.038**, with the 3.09B base shared. It adds capability; the prompt does not.
+= **0.038**, with the 3.09B base shared. An adapter can add a capability; a prompt only
+points at one the base already has.
 
 The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduction fails.
 Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight error); 4-bit

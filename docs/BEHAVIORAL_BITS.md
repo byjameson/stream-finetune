@@ -31,9 +31,10 @@ paper. Test sets and seeds are fixed before the run.
   Storage and compute are interchangeable.
 - **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
-  It adds capability; a prompt does not. But a 4-shot prompt on the same base matches it
-  on SST-2 (94.0% vs 93.75%, 441 B) and AG News (61.75% vs 62.25%, 242 B): prompt first,
-  adapter when a prompt cannot express the behaviour.
+  An adapter can add a capability; a prompt only points at one the base already has. On
+  SST-2 and AG News that capability is already there: a 4-shot prompt matches the adapter
+  (94.0% vs 93.75%, 441 B; 61.75% vs 62.25%, 242 B), so prompt first, adapter when a
+  prompt cannot express the behaviour.
 - **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (Dolly
   870 rows: no measurable loss, p = 0.81; SST-2: 93.75% both). 4-bit = **0.0126** (Dolly
   +0.0018, p = 0.001, 5% of the gain; SST-2 indistinguishable). SVD to rank 8 loses 36%,
