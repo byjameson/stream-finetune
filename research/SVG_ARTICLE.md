@@ -3,7 +3,7 @@
 The PNG favicon put the model in pixels. The PDF put it in `/Keywords`. The SVG puts it in
 `<metadata id="tinyai">`.
 
-This is a **5,030-byte** vector model card — 900×560, with a title, metrics and a short
+This is a **5,004-byte** vector model card — 900×560, with a title, metrics and a short
 description. The 1,579-byte int8 SMS spam classifier is base64url JSON in the metadata, not
 drawn on the canvas. `svg.html` fetches the raw XML, parses the `<metadata>` element and
 runs the classifier in the browser. A full SHA-256 is in `data-sha256`.
@@ -28,7 +28,7 @@ weights that produce the behaviour.
 | artifact | bytes |
 |---|---:|
 | model JSON | 1,579 |
-| **SVG** | **5,030** |
+| **SVG** | **5,004** |
 | overhead (card text, vector layout, metadata wrapper) | 3,451 |
 | QR URL | 2,158 |
 | favicon PNG | 1,519 |
@@ -78,7 +78,7 @@ https://byjameson-mini-ai.static.hf.space/survival.html
 - favicon: 1,519 bytes;
 - WAV: 1,627 bytes;
 - PDF: 3,832 bytes;
-- SVG: 5,030 bytes;
+- SVG: 5,004 bytes;
 - 130 KB AG News coreset: 178,761-byte PDF;
 - 1.7 MB linear model: 88.5% embedded / 91.0% fresh;
 - 5 MB adapter on a shared 4-bit base.

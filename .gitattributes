@@ -5,3 +5,4 @@
 *.xlsx binary
 *.pt binary
 *.safetensors binary
+*.svg text eol=lf

@@ -88,7 +88,7 @@ def build():
   <metadata id="tinyai" data-sha256="{digest}">{payload}</metadata>
 </svg>
 '''
-    OUT.write_text(svg, encoding="utf-8")
+    OUT.write_text(svg, encoding="utf-8", newline="\n")
     print(f"model={len(blob)} B  payload={len(payload)} chars  svg={OUT.stat().st_size} B  "
           f"sha={digest[:16]}...")
 

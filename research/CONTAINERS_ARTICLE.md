@@ -77,7 +77,7 @@ The visible card is a vector model card. The same 1,579-byte model sits in
 `<metadata id="tinyai">` as base64url JSON, with a full SHA-256 in `data-sha256`. The page
 parses the XML and classifies; a rasterizer that flattens the SVG to PNG loses the metadata.
 
-- Artifact: **5,030-byte SVG**, 900×560
+- Artifact: **5,004-byte SVG**, 900×560
 - Demo: https://byjameson-mini-ai.static.hf.space/svg.html
 
 ## 7. A single HTML file — train your own
