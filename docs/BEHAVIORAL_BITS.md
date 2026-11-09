@@ -341,9 +341,11 @@ The lower rungs are not "better compression" of the same object; they are differ
 objects. The revolution is choosing the rung, not squeezing the weights.
 
 A live version of the coreset rung: **[130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai)**
-— 500 labelled examples, a Complement Naive Bayes fitted in the browser, **78.3%** on 400
-held-out AG News rows in ~11 ms. The 2,000-example version (522 KB) reaches **82.8%**,
-above the 2.2 MB BERT-tiny on the same test set.
+— 500 labelled examples, a Complement Naive Bayes fitted in the browser, **78.3%** on the
+embedded 400 held-out AG News rows in ~11 ms. The 2,000-example version (522 KB) reaches
+**82.8%**, above the 2.2 MB BERT-tiny on the same test set. A **separate fresh 400-row
+test** gives 74.3% at 500 examples and 82.8% at 2,000; the 500-example gap is within the
+~4-point noise of a 400-row test.
 
 The other end of the same Space: **[1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)**
 — TF-IDF + logistic regression on 75,000 human-labelled rows, **88.5%** on the same 400

@@ -91,7 +91,8 @@
     Both score on the same 400 held-out AG News rows.</p>
     <p class="muted">The model is a TF-IDF (uni- and bigrams, 75k features) + multinomial
     logistic regression. Coefficients are int8-quantized; vocabulary and IDF are embedded.
-    The accuracy is computed live in your browser. The test set is not part of the model.</p>
+    The accuracy is computed live in your browser. The test set is not part of the model.
+    Fresh-sample check: a separate 400-row test gives <b>91.0%</b> (embedded 88.5%).</p>
     <table>
       <thead><tr><th>bytes</th><th>artifact</th><th class="n">accuracy</th><th>note</th></tr></thead>
       <tbody>

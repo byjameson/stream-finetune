@@ -17,8 +17,8 @@ measured speed where a measurement exists (and says so where it doesn't).
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
-400 held-out AG News rows. No server, no GPU, no stored weights. Source:
-[`demo/mini-ai.html`](demo/mini-ai.html).
+the embedded 400 AG News rows (74.3% on a fresh 400; 82.8% at 2,000 examples on both). No
+server, no GPU, no stored weights. Source: [`demo/mini-ai.html`](demo/mini-ai.html).
 
 **Need accuracy instead of minimum bits?** [The 1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)
 uses 75,000 human-labelled rows and reaches **88.5%** on the same test set.

@@ -290,10 +290,14 @@ I turned the coreset rung into a single-file demo:
 **[huggingface.co/spaces/byjameson/mini-ai](https://huggingface.co/spaces/byjameson/mini-ai)**.
 
 The page holds 500 labelled AG News examples and fits a Complement Naive Bayes in your
-browser. No server, no GPU, no stored weights. It scores **78.3%** on 400 held-out rows in
-~11 ms. A 1,000-example version (260 KB) reaches **81.8%**, and the 2,000-example version
-(522 KB) reaches **82.8%** — above the 2.2 MB BERT-tiny (76.75%) on the same test set. The
-test set is embedded for live scoring; it is not part of the model.
+browser. No server, no GPU, no stored weights. It scores **78.3%** on the embedded 400
+held-out rows in ~11 ms. A 1,000-example version (260 KB) reaches **81.8%**, and the
+2,000-example version (522 KB) reaches **82.8%** — above the 2.2 MB BERT-tiny (76.75%) on
+the same test set. The test set is embedded for live scoring; it is not part of the model.
+
+A separate **fresh 400-row test** gives 74.3% at 500 examples and 82.8% at 2,000; the
+500-example gap is within the ~4-point noise of a 400-row test. The 1.68 MB linear model
+gives 91.0% on the fresh sample (88.5% embedded).
 
 The point is the representation: the artifact is the data, and the shared training
 procedure does the rest.

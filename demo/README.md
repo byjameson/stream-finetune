@@ -16,6 +16,10 @@ Accuracy is measured live on the same 400 held-out AG News rows used in
 model. The 500-example coreset counts 0.00071 bit per parameter of the 1.5B teacher that
 labelled it.
 
+A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**, 2,000
+**82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
+~4-point noise of a 400-row test; the 2,000-example result matches.
+
 ## Accuracy mode
 
 `demo/max-ai.html` is the other end of the trade-off: a **1.68 MB** TF-IDF + logistic
