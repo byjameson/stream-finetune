@@ -46,4 +46,7 @@ the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 **The spreadsheet:** [spreadsheet.html](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
 — a 10.5 KB .xlsx with the SMS spam weights in cells; 90.6% formula accuracy.
 
+**The favicon:** [favicon.html](https://byjameson-mini-ai.static.hf.space/favicon.html)
+— a 1.5 KB PNG whose pixels are a 1.6 KB SMS spam model; the tab icon is the model.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).
