@@ -352,6 +352,11 @@ The other end of the same Space: **[1.7 MB accuracy mode](https://byjameson-mini
 rows. It stores the weights; the 130 KB page stores the data. Both are measured, and the
 trade-off is the point.
 
+The labels matter more than the student. On the **same 5,000 rows**, a 4-bit
+Qwen2.5-3B-Instruct teacher (73.4% accurate, 153 unknowns) gives a **71.3%** linear
+student; the human labels give **84.3%**. That is why the accuracy mode uses human labels,
+not new teacher labels.
+
 ### What to use
 
 | if | use | measured |

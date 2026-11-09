@@ -21,7 +21,9 @@ the embedded 400 AG News rows (74.3% on a fresh 400; 82.8% at 2,000 examples on 
 server, no GPU, no stored weights. Source: [`demo/mini-ai.html`](demo/mini-ai.html).
 
 **Need accuracy instead of minimum bits?** [The 1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)
-uses 75,000 human-labelled rows and reaches **88.5%** on the same test set.
+uses 75,000 human-labelled rows and reaches **88.5%** on the same test set. Labels matter:
+on the same 5,000 rows, 3B-Instruct teacher labels gave a **71.3%** student; human labels
+gave **84.3%**.
 
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:

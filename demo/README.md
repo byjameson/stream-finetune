@@ -24,8 +24,12 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 
 `demo/max-ai.html` is the other end of the trade-off: a **1.68 MB** TF-IDF + logistic
 regression model trained on 75,000 human-labelled AG News rows. It scores **88.5%** on the
-same 400 held-out rows and stores the weights instead of the data. Links from the 130 KB
-page; build with `python demo/build_max_ai.py`.
+same 400 held-out rows (91.0% fresh) and stores the weights instead of the data. Links from
+the 130 KB page; build with `python demo/build_max_ai.py`.
+
+Why human labels? On the same 5,000 rows, a 4-bit Qwen2.5-3B-Instruct teacher (73.4%
+accurate, 153 unknowns) gave a **71.3%** linear student; human labels gave **84.3%**. Label
+noise is the bottleneck, not the student.
 
 ## Run
 
