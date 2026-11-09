@@ -104,6 +104,16 @@ workflow, but not an editable document. The full survival matrix, including PNG,
 QR and single HTML, is at
 https://byjameson-mini-ai.static.hf.space/survival.html
 
+## The same container at 130 KB
+
+The PDF is not only for a 1,579-byte int8 model. The 500-example AG News coreset is
+132,798 bytes of JSON in a **178,761-byte PDF**; the data is in `/TinyAIData` and
+`pdf-130k.html` trains the same Complement NB in the browser. It scores 78.3% on the
+embedded 400-row test and 74.3% on a fresh sample. That is the same trade at the other end
+of the ladder: 46 KB of page/base64/structure overhead, no weights, just examples.
+
+- https://byjameson-mini-ai.static.hf.space/pdf-130k.html
+
 ## The rest of the ladder
 
 The same 1,579-byte model also lives in a QR URL, a 32×32 favicon, an 8-bit WAV and a
