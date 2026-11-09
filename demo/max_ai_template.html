@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The accuracy mode — a 1.8 MB news classifier</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 880px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 26px; max-width: 720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .chip { border:1px solid var(--line); background:#0d1015; color:var(--fg);
+          padding:8px 10px; border-radius:8px; cursor:pointer; font:inherit; font-size:14px; }
+  .chip:hover { border-color:#3a4150; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  button.go:hover { filter:brightness(1.06); }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bars { margin-top:8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0;
+             transition: width .18s ease; }
+  .bar-row span:last-child { text-align:right; color:var(--muted);
+                             font-variant-numeric: tabular-nums; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:7px 6px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  td.n { text-align:right; font-variant-numeric: tabular-nums; white-space:nowrap; }
+  tr.this td { color:var(--accent); }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) {
+    .metrics { grid-template-columns:repeat(2,1fr); }
+    .bar-row { grid-template-columns: 78px 1fr 46px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge" id="badge">1.8 MB</div>
+    <h1>The accuracy mode</h1>
+    <p class="lead">When 130 KB is not enough: a stored linear model over TF-IDF, trained
+    on 75,000 human-labelled AG News rows. It runs in this page, with no server.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="artifact">—</span><label>model artifact</label></div>
+    <div><span id="accuracy">—</span><label>held-out accuracy</label></div>
+    <div><span id="inferms">—</span><label>inference (400 rows)</label></div>
+    <div><span id="features">—</span><label>features</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label for="text" class="muted">English news text (AG News: Business, World, Sports, Sci/Tech)</label>
+    <textarea id="text" rows="4">Stocks rally as oil prices fall</textarea>
+    <div class="chips" id="samples"></div>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>What is this?</h2>
+    <p>The <a href="mini-ai.html">130 KB page</a> is the minimum-bit hook: 500 teacher-labelled
+    examples and a Naive Bayes fitted in the browser. This page is the other end of the same
+    trade-off: <b>stored weights</b>, trained on 75,000 human labels, and a 1.8 MB artifact.
+    Both score on the same 400 held-out AG News rows.</p>
+    <p class="muted">The model is a TF-IDF (uni- and bigrams, 75k features) + multinomial
+    logistic regression. Coefficients are int8-quantized; vocabulary and IDF are embedded.
+    The accuracy is computed live in your browser. The test set is not part of the model.</p>
+    <table>
+      <thead><tr><th>bytes</th><th>artifact</th><th class="n">accuracy</th><th>note</th></tr></thead>
+      <tbody>
+        <tr><td>130 KB</td><td>coreset + NB</td><td class="n">78.3%</td><td>the minimum-bit hook</td></tr>
+        <tr class="this"><td id="ladder-size">—</td><td>linear TF-IDF (this page)</td><td class="n" id="ladder-acc">—</td><td>stored weights, human labels</td></tr>
+        <tr><td>2.2 MB</td><td>BERT-tiny 4-bit</td><td class="n">76.75%</td><td>stored weights</td></tr>
+        <tr><td>30 MB</td><td>T5-small 4-bit</td><td class="n">F1 0.256</td><td>generation</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    Built with <a href="https://github.com/byjameson/stream-finetune">stream-finetune</a>.
+    The measured ladder is in
+    <a href="https://github.com/byjameson/stream-finetune/blob/main/docs/BEHAVIORAL_BITS.md">docs/BEHAVIORAL_BITS.md</a>.
+    <br><a href="mini-ai.html">← back to the 130 KB minimum-bit demo</a>
+  </footer>
+</main>
+
+<script>
+const DATA = __DATA__;
+const M = DATA.model;
+const TEST = DATA.test;
+const LABELS = M.classes;
+const V = M.vocab.length;
+const IDX = new Map(M.vocab.map((w, i) => [w, i]));
+
+function b64bytes(s) {
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+const IDF = new Float32Array(b64bytes(M.idf_b64).buffer);
+const COEF = new Int8Array(b64bytes(M.coef_b64).buffer);
+const SCALE = M.coef_scale;
+const INTERCEPT = M.intercept;
+
+function words(s) {
+  return (s.toLowerCase().match(/[a-z0-9]{2,}/g) || []);
+}
+
+function vectorize(text) {
+  const w = words(text);
+  const counts = new Map();
+  for (let i = 0; i < w.length; i++) {
+    const uni = w[i];
+    let idx = IDX.get(uni);
+    if (idx !== undefined) counts.set(idx, (counts.get(idx) || 0) + 1);
+    if (i + 1 < w.length) {
+      idx = IDX.get(uni + " " + w[i + 1]);
+      if (idx !== undefined) counts.set(idx, (counts.get(idx) || 0) + 1);
+    }
+  }
+  const x = new Map();
+  let norm = 0;
+  for (const [i, c] of counts) {
+    const v = (1 + Math.log(c)) * IDF[i];
+    x.set(i, v);
+    norm += v * v;
+  }
+  norm = Math.sqrt(norm) || 1;
+  for (const [i, v] of x) x.set(i, v / norm);
+  return x;
+}
+
+function score(text) {
+  const x = vectorize(text);
+  const s = new Array(LABELS.length).fill(0);
+  for (const [i, v] of x) {
+    for (let c = 0; c < LABELS.length; c++) {
+      s[c] += v * COEF[c * V + i] * SCALE[c];
+    }
+  }
+  for (let c = 0; c < LABELS.length; c++) s[c] += INTERCEPT[c];
+  let best = 0;
+  for (let c = 1; c < LABELS.length; c++) if (s[c] > s[best]) best = c;
+  const mx = Math.max(...s);
+  const ex = s.map(v => Math.exp(v - mx));
+  const sum = ex.reduce((a, b) => a + b, 0);
+  return { label: LABELS[best], probs: ex.map(v => v / sum) };
+}
+
+function renderResult(res) {
+  const out = document.getElementById("out");
+  const rows = LABELS.map((l, i) => {
+    const p = res.probs[i] * 100;
+    return `<div class="bar-row"><span>${l}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  out.innerHTML = `<div class="verdict">${res.label}</div><div class="bars">${rows}</div>
+    <p class="muted">Multinomial logistic regression over TF-IDF; probabilities are not
+    calibrated.</p>`;
+}
+
+function classify() {
+  const text = document.getElementById("text").value.trim();
+  if (text) renderResult(score(text));
+}
+
+function init() {
+  const t0 = performance.now();
+  let ok = 0;
+  for (const r of TEST) if (score(r.text).label === r.true) ok++;
+  const ms = performance.now() - t0;
+  const acc = ok / TEST.length;
+
+  document.getElementById("artifact").textContent = (M.artifact_bytes / 1048576).toFixed(1) + " MB";
+  document.getElementById("badge").textContent = (M.artifact_bytes / 1048576).toFixed(1) + " MB";
+  document.getElementById("accuracy").textContent = (acc * 100).toFixed(1) + "%";
+  document.getElementById("inferms").textContent = ms.toFixed(0) + " ms";
+  document.getElementById("features").textContent = V.toLocaleString();
+  document.getElementById("ladder-size").textContent = (M.artifact_bytes / 1048576).toFixed(1) + " MB";
+  document.getElementById("ladder-acc").textContent = (acc * 100).toFixed(1) + "%";
+
+  const samples = [
+    "Stocks rally as oil prices fall",
+    "United beat City 2-1 in the Manchester derby",
+    "New telescope detects water on distant planet",
+    "Leaders meet in Geneva for peace talks"
+  ];
+  const box = document.getElementById("samples");
+  const sampleLabels = ["Business", "Sports", "Sci/Tech", "World"];
+  samples.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = sampleLabels[i] + ": " + s.slice(0, 38);
+    b.onclick = () => { document.getElementById("text").value = s; classify(); };
+    box.appendChild(b);
+  });
+  document.getElementById("go").onclick = classify;
+  classify();
+}
+
+setTimeout(init, 0);
+</script>
+</body>
+</html>
