@@ -39,3 +39,12 @@ At 2,000 examples the 522 KB coreset reaches **82.8%**, above the 2.2 MB BERT-ti
 (76.75%) on the same test set. Bigger artifacts are not automatically better; the
 representation and the shared training procedure decide. The limits and the other rungs
 are in [`docs/BEHAVIORAL_BITS.md`](../docs/BEHAVIORAL_BITS.md).
+
+## What we checked
+
+We swept the coreset size (500 / 1k / 2k) and the model: binary Complement NB, raw-count
+CNB, multinomial and Bernoulli NB, TF-IDF linear / SVM, and a 64-unit MLP. The 64-unit MLP
+on 2,000 examples reached 83.0% but needs ~1 MB of weights; the 522 KB coreset is the
+better artifact. Using the first 5,927 rows lowers accuracy to ~74–75% (the sample order
+and teacher labels get noisier), so 2,000 is the knee. The 130 KB binary-CNB row is the
+best we found at that budget.
