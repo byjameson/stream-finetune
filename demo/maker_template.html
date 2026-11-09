@@ -61,8 +61,9 @@
     <div class="badge">browser-only</div>
     <h1>Tiny AI Maker</h1>
     <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
-    Bayes in your browser, shows accuracy and artifact size, and exports a single HTML file
-    you can run offline. No data leaves the page.</p>
+    Bayes in your browser, shows held-out accuracy with a confidence interval, the int8
+    weight size and the example size, and exports a single HTML file, a QR, a favicon or a
+    WAV. No data leaves the page.</p>
   </header>
 
   <section class="panel">
@@ -107,6 +108,7 @@
       <div id="out"></div>
     </div>
     <button class="go" id="export" disabled>Download single HTML</button>
+    <button class="chip" id="cardgo" disabled>Download model card</button>
     <p class="muted" id="exportInfo"></p>
   </section>
 
@@ -132,7 +134,8 @@
 <script>
 const SAMPLE = __SAMPLE__;
 const SMS_SAMPLE = __SMS__;
-let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null };
+let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null,
+              report: null };
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -285,6 +288,15 @@ function score(m, text) {
 
 function fmtKB(bytes) { return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB"; }
 
+function wilson(ok, n, z = 1.96) {
+  if (!n) return [0, 0];
+  const p = ok / n, z2 = z * z;
+  const den = 1 + z2 / n;
+  const centre = p + z2 / (2 * n);
+  const half = z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n);
+  return [Math.max(0, (centre - half) / den), Math.min(1, (centre + half) / den)];
+}
+
 function parseAndShow() {
   try {
     const rows = parseData(document.getElementById("data").value);
@@ -302,11 +314,13 @@ function parseAndShow() {
     document.getElementById("confusion").innerHTML = "";
     document.getElementById("try").style.display = "none";
     document.getElementById("export").disabled = true;
+    document.getElementById("cardgo").disabled = true;
     document.getElementById("qrgo").disabled = true;
     document.getElementById("favgo").disabled = true;
     document.getElementById("wavgo").disabled = true;
     document.getElementById("qrout").innerHTML = "";
     state.candidates = null;
+    state.report = null;
   } catch (e) {
     document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
   }
@@ -330,18 +344,25 @@ function doTrain() {
     if (per[r.label]) { per[r.label].n++; if (good) per[r.label].ok++; }
   }
   const acc = ok / Math.max(state.split.test.length, 1);
+  const ci = wilson(ok, state.split.test.length);
+  const weights = new Blob([JSON.stringify(qrPayload(model, acc))]).size;
+  const dataBytes = new Blob([JSON.stringify(rows)]).size;
   state.model = model; state.modelRows = rows; state.labels = model.labels; state.acc = acc;
+  state.report = { acc, ok, nTest: state.split.test.length, per, rows: rows.length,
+                   labels: model.labels, weights, dataBytes, trainMs, ci };
 
-  const bytes = new Blob([JSON.stringify(rows)]).size;
   document.getElementById("metrics").innerHTML = `
     <div class="metrics">
       <div><span>${(acc * 100).toFixed(1)}%</span><label>held-out accuracy</label></div>
-      <div><span>${fmtKB(bytes)}</span><label>model artifact</label></div>
+      <div><span>${fmtKB(weights)}</span><label>full int8 weights</label></div>
+      <div><span>${fmtKB(dataBytes)}</span><label>data artifact</label></div>
       <div><span>${rows.length}</span><label>training rows</label></div>
-      <div><span>${model.labels.length}</span><label>labels</label></div>
     </div>
     <p class="muted">Trained in ${trainMs.toFixed(0)} ms on ${rows.length} examples;
-    ${state.split.test.length} held-out rows. The artifact is the examples, not weights.</p>`;
+    ${state.split.test.length} held-out rows, 95% CI ${(ci[0] * 100).toFixed(1)}–${(ci[1] * 100).toFixed(1)}%.
+    ${model.labels.length} labels. The full-vocabulary int8 weights are the model; the data
+    artifact is the examples embedded in the single HTML file. Container exports retrain
+    with at most 160 words.</p>`;
   const conf = model.labels.map(l => {
     const x = per[l];
     return `<tr><td>${esc(l)}</td><td class="n">${x.ok}/${x.n}</td><td class="n">${x.n ? (100*x.ok/x.n).toFixed(1) : "—"}%</td></tr>`;
@@ -349,9 +370,10 @@ function doTrain() {
   document.getElementById("confusion").innerHTML =
     `<table><thead><tr><th>label</th><th class="n">correct</th><th class="n">recall</th></tr></thead><tbody>${conf}</tbody></table>`;
   document.getElementById("trainInfo").textContent =
-    `Trained on ${rows.length} examples; artifact ${fmtKB(bytes)}.`;
+    `Trained on ${rows.length} examples; data artifact ${fmtKB(dataBytes)}.`;
   document.getElementById("try").style.display = "block";
   document.getElementById("export").disabled = false;
+  document.getElementById("cardgo").disabled = false;
   document.getElementById("qrgo").disabled = false;
   document.getElementById("favgo").disabled = false;
   document.getElementById("wavgo").disabled = false;
@@ -565,6 +587,53 @@ function downloadWav() {
     Download started; the viewer is <code>audio.html</code>.</p>`;
 }
 
+function downloadCard() {
+  const r = state.report;
+  if (!r) return;
+  const pct = x => (x * 100).toFixed(1);
+  const recall = r.labels.map(l => {
+    const x = r.per[l] || { ok: 0, n: 0 };
+    return `| ${l} | ${x.ok}/${x.n} | ${x.n ? pct(x.ok / x.n) : "—"}% |`;
+  }).join("\n");
+  const card = `# Tiny AI model card
+
+Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the browser.
+
+## Task
+
+- labels: ${r.labels.join(", ")}
+- training rows: ${r.rows}
+- held-out rows: ${r.nTest} (80/20 split, seed 42)
+
+## Measured
+
+- held-out accuracy: ${pct(r.acc)}%
+- 95% Wilson interval: ${pct(r.ci[0])}%–${pct(r.ci[1])}%
+- int8 weights (full vocabulary): ${r.weights} B (Complement NB, JSON)
+- data artifact: ${r.dataBytes} B (examples + classifier, single HTML)
+- fit time: ${r.trainMs.toFixed(0)} ms in this browser
+
+## Per-label recall
+
+| label | correct | recall |
+|---|---:|---:|
+${recall}
+
+## Caveats
+
+- One 80/20 split, not cross-validation. The interval reflects test size only; it is not
+  an estimate of dataset noise.
+- Bag-of-words Complement NB: no word order, no embeddings, no calibration.
+- Not an LLM and not a production classifier.
+- QR, favicon and WAV exports may use a smaller vocabulary than the full model. Their
+  pages report the accuracy of the exported vocabulary.
+- The numbers come from this page's own run; no independent audit.
+`;
+  downloadBlob(new Blob([card], { type: "text/markdown" }), "tiny-ai-model-card.md");
+  document.getElementById("exportInfo").textContent =
+    "Downloaded tiny-ai-model-card.md with the split, accuracy, interval and sizes.";
+}
+
 function download() {
   if (!state.model) return;
   const html = buildExport(state.modelRows, state.labels, state.acc);
@@ -599,6 +668,7 @@ document.getElementById("file").onchange = (e) => {
 document.getElementById("train").onclick = doTrain;
 document.getElementById("classify").onclick = classify;
 document.getElementById("export").onclick = download;
+document.getElementById("cardgo").onclick = downloadCard;
 document.getElementById("qrgo").onclick = buildQR;
 document.getElementById("favgo").onclick = downloadFavicon;
 document.getElementById("wavgo").onclick = downloadWav;

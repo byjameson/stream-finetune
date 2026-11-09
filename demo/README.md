@@ -72,8 +72,10 @@ The AG News sample is 200 rows; the SMS spam sample is 100 rows. Exports:
 - **WAV:** 8-bit PCM; the samples are the model bytes.
 
 The favicon and WAV viewers accept the exported files back through their file inputs, so
-the round-trip is testable without another tool. The page never sends data anywhere. Build
-with `python demo/build_maker.py`; the QR encoder is `demo/qrcode.min.js` (MIT).
+the round-trip is testable without another tool. **Model card** downloads the split, the
+held-out accuracy with a 95% Wilson interval, per-label recall, the full int8 weight size,
+the data-artifact size and the caveats. The page never sends data anywhere. Build with
+`python demo/build_maker.py`; the QR encoder is `demo/qrcode.min.js` (MIT).
 
 ## AI in a QR code
 
