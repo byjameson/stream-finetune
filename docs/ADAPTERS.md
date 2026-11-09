@@ -74,6 +74,20 @@ behaviour a prompt cannot express, or when prompt tokens/context cost more than 
 - **Personalisation:** one adapter per user/task.
 - **Federated updates:** clients send 5 MB.
 
+## Does 4-bit make inference faster?
+
+No, not on a model that already fits. Same Qwen2.5-0.5B, same prompt, 32 greedy tokens,
+RTX 3050 6 GB:
+
+| precision | tokens/s | peak VRAM |
+|---|---:|---:|
+| bf16 | **16.8** | 1.00 GB |
+| 4-bit NF4 | 13.1 | **0.49 GB** |
+
+The 4-bit model is ~22% slower because it dequantizes on every forward. The gain is
+memory, not throughput. For a 3B model that does not fit in bf16 on this card, 4-bit is
+how you run it at all; for a 0.5B model that already fits, it is a regression in speed.
+
 ## What it is not
 
 - **Not a faster per-token path.** On the reference card the LoRA path runs at 8.75 tok/s

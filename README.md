@@ -205,6 +205,11 @@ scores 94.0% (adapter 93.75%) and a 242-byte 4-shot AG News prompt scores 61.75%
 62.25%). If a few examples express the task, use the prompt; the adapter is for behaviour
 a prompt cannot express, or when prompt tokens/context cost more than the storage.
 
+**4-bit is a memory win, not a speed win.** On Qwen2.5-0.5B (bf16 fits on the card), bf16
+generated **16.8 tok/s** vs **13.1** for 4-bit NF4 (~22% slower), while peak VRAM fell from
+**1.00 GB to 0.49 GB**. The bit width is how a larger model fits; it does not make the
+math faster.
+
 ### Measured on
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,

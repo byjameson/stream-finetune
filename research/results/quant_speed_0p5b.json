@@ -1,0 +1,30 @@
+{
+ "bf16": {
+  "label": "bf16",
+  "runs": [
+   {
+    "tokens_s": 17.15,
+    "seconds": 1.87
+   },
+   {
+    "tokens_s": 16.42,
+    "seconds": 1.95
+   }
+  ],
+  "peak_vram_gb": 1.0
+ },
+ "4-bit": {
+  "label": "4-bit NF4",
+  "runs": [
+   {
+    "tokens_s": 12.69,
+    "seconds": 2.52
+   },
+   {
+    "tokens_s": 13.52,
+    "seconds": 2.37
+   }
+  ],
+  "peak_vram_gb": 0.49
+ }
+}
