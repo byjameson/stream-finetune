@@ -106,7 +106,8 @@
     <a href="diff.html">adapter autopsy</a> ·
     <a href="watermark.html">behavioural fingerprint</a> ·
     <a href="spreadsheet.html">spreadsheet AI</a> ·
-    <a href="favicon.html">favicon AI</a></p>
+    <a href="favicon.html">favicon AI</a> ·
+    <a href="audio.html">WAV AI</a></p>
   </section>
 
   <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
@@ -138,7 +139,9 @@ const ROWS = [
   {task:"SMS spam", artifact:"10.5 KB .xlsx", bytes:10477, score:0.9058,
    scoreText:"90.6%", note:"160 words; SUMPRODUCT/SEARCH, no macros"},
   {task:"SMS spam", artifact:"1.5 KB favicon", bytes:1519, score:0.9354,
-   scoreText:"93.5%", note:"32x32 RGB; model in pixels"}
+   scoreText:"93.5%", note:"32x32 RGB; model in pixels"},
+  {task:"SMS spam", artifact:"1.6 KB WAV", bytes:1627, score:0.9354,
+   scoreText:"93.5%", note:"8-bit PCM; model in samples"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;

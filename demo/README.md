@@ -20,6 +20,12 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## AI in a WAV
+
+`demo/model.wav` is 1,627 bytes of 8-bit PCM: 4-byte length, 1,579-byte JSON model, no
+padding. `demo/audio.html` parses the RIFF data chunk and runs the SMS spam classifier;
+the sound itself is the model bytes. Build with `python demo/build_audio.py`.
+
 ## AI in a favicon
 
 `demo/favicon.png` is a 32×32 RGB PNG containing a 1,579-byte model: 4-byte length, JSON,

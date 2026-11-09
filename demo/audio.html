@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in a WAV — SMS spam</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 880px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  audio { width:100%; margin:10px 0; }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">1.6 KB WAV · 0.198 s</div>
+    <h1>AI in a sound</h1>
+    <p class="lead">A 160-word SMS spam classifier whose 1,579-byte model is the 8-bit PCM
+    sample data of this WAV. Play it if you want; the page reads the RIFF bytes and runs
+    the classifier, not the audio.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="m-wav">—</span><label>WAV</label></div>
+    <div><span id="m-model">—</span><label>model JSON</label></div>
+    <div><span id="m-acc">—</span><label>accuracy</label></div>
+    <div><span id="m-vocab">—</span><label>words</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>The artifact</h2>
+    <audio controls src="model.wav"></audio>
+    <p class="muted">8-bit unsigned PCM, 8 kHz, mono, 0.198 s. The sound is the bytes; it
+    is not meant to be listened to. The model survives because WAV is lossless.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label class="muted" for="text">SMS text (English)</label>
+    <textarea id="text" rows="4">WINNER!! You have been selected to receive a £900 prize reward! Call 09061701461 now to claim.</textarea>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Containers for the same model</h2>
+    <p><a href="qr.html">2.2 KB QR URL</a> ·
+    <a href="favicon.html">1.5 KB favicon</a> ·
+    <a href="spreadsheet.html">10.5 KB spreadsheet</a> ·
+    <a href="leaderboard.html">Minimum-Bit Table</a> ·
+    <a href="maker.html">train your own</a></p>
+  </section>
+
+  <footer>SMS Spam Collection; Complement NB; int8 weights. The WAV carries the model,
+  not a rendered voice.</footer>
+</main>
+
+<script>
+let model = null;
+function b64d(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+function softmax(a) {
+  const mx = Math.max(...a);
+  const ex = a.map(x => Math.exp(x - mx));
+  const sum = ex.reduce((p, q) => p + q, 0);
+  return ex.map(x => x / sum);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+async function load() {
+  const buf = await (await fetch("model.wav")).arrayBuffer();
+  const dv = new DataView(buf);
+  let off = 12, dataOff = -1, dataLen = 0;
+  while (off + 8 <= buf.byteLength) {
+    const id = String.fromCharCode(dv.getUint8(off), dv.getUint8(off + 1),
+                                   dv.getUint8(off + 2), dv.getUint8(off + 3));
+    const size = dv.getUint32(off + 4, true);
+    if (id === "data") { dataOff = off + 8; dataLen = size; break; }
+    off += 8 + size + (size & 1);
+  }
+  if (dataOff < 0) throw new Error("no data chunk");
+  const len = dv.getUint32(dataOff, true);
+  const raw = new Uint8Array(buf, dataOff + 4, len);
+  model = JSON.parse(new TextDecoder().decode(raw));
+  model.q = new Int8Array(b64d(model.w).buffer);
+  model.V = model.v.length;
+  model.idx = new Map(model.v.map((w, i) => [w, i]));
+  document.getElementById("m-wav").textContent = (buf.byteLength / 1024).toFixed(1) + " KB";
+  document.getElementById("m-model").textContent = (len / 1024).toFixed(1) + " KB";
+  document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
+  document.getElementById("m-vocab").textContent = model.V;
+  classify();
+}
+function classify() {
+  if (!model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const scores = new Array(model.l.length).fill(0);
+  for (const t of tokens(text)) {
+    const i = model.idx.get(t);
+    if (i === undefined) continue;
+    for (let c = 0; c < model.l.length; c++) scores[c] += model.q[c * model.V + i] * model.s[c];
+  }
+  const probs = softmax(scores);
+  let best = 0;
+  for (let c = 1; c < model.l.length; c++) if (probs[c] > probs[best]) best = c;
+  const rows = model.l.map((l, c) => {
+    const p = probs[c] * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(model.l[best])}</div><div class="bars">${rows}</div>
+     <p class="muted">Softmax over int8 Complement NB weights; not calibrated.</p>`;
+}
+document.getElementById("go").onclick = classify;
+load().catch(e => {
+  document.getElementById("m-wav").textContent = "error";
+  document.getElementById("out").textContent = String(e);
+});
+</script>
+</body>
+</html>

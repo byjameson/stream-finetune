@@ -49,4 +49,7 @@ the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 **The favicon:** [favicon.html](https://byjameson-mini-ai.static.hf.space/favicon.html)
 — a 1.5 KB PNG whose pixels are a 1.6 KB SMS spam model; the tab icon is the model.
 
+**The WAV:** [audio.html](https://byjameson-mini-ai.static.hf.space/audio.html) — a
+1.6 KB, 0.198-second sound whose 8-bit samples are the same model.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).
