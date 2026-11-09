@@ -67,7 +67,8 @@ accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 
 favicon PNG, and an 8-bit WAV. The SMS sample is 100 rows; 160 words; 90% on its held-out
 split; 2.1 KB QR. The favicon and WAV viewers load the exported files back through a file
 input, so each export is round-tripped in the browser. It also writes a model card with the
-split, a 95% Wilson interval, per-label recall, both artifact sizes and the caveats.
+split, a 95% Wilson interval, per-label precision/recall/F1, a confusion matrix, both
+artifact sizes and the caveats.
 
 - Demo: https://byjameson-mini-ai.static.hf.space/maker.html
 

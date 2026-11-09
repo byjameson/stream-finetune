@@ -43,6 +43,7 @@
   th, td { text-align:left; padding:6px; border-bottom:1px solid var(--line); }
   th { color:var(--muted); font-weight:600; font-size:12px; }
   td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  td.good { color:var(--accent); font-weight:700; }
   .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
   .bar-row { display:grid; grid-template-columns: 110px 1fr 54px; gap:8px;
              align-items:center; font-size:13px; margin:5px 0; }
@@ -298,6 +299,18 @@ function wilson(ok, n, z = 1.96) {
   return [Math.max(0, (centre - half) / den), Math.min(1, (centre + half) / den)];
 }
 
+function labelMetrics(per, labels) {
+  return labels.map(l => {
+    const x = per[l] || { ok: 0, n: 0, predicted: 0 };
+    const precision = x.predicted ? x.ok / x.predicted : null;
+    const recall = x.n ? x.ok / x.n : null;
+    const f1 = precision != null && recall != null && precision + recall > 0
+      ? 2 * precision * recall / (precision + recall) : null;
+    return { label: l, support: x.n, correct: x.ok, predicted: x.predicted,
+             precision, recall, f1 };
+  });
+}
+
 function parseAndShow() {
   try {
     const rows = parseData(document.getElementById("data").value);
@@ -337,21 +350,28 @@ function doTrain() {
   const model = trainCNB(rows);
   const trainMs = performance.now() - t0;
   let ok = 0;
-  const per = {};
-  for (const l of model.labels) per[l] = { ok: 0, n: 0 };
+  const per = {}, confusion = {};
+  for (const l of model.labels) {
+    per[l] = { ok: 0, n: 0, predicted: 0 };
+    confusion[l] = {};
+    for (const k of model.labels) confusion[l][k] = 0;
+  }
   for (const r of state.split.test) {
     const p = score(model, r.text).label;
     const good = p === r.label;
     if (good) ok++;
-    if (per[r.label]) { per[r.label].n++; if (good) per[r.label].ok++; }
+    if (per[r.label]) per[r.label].n++;
+    if (per[p]) per[p].predicted++;
+    if (good && per[r.label]) per[r.label].ok++;
+    if (confusion[r.label] && confusion[r.label][p] !== undefined) confusion[r.label][p]++;
   }
   const acc = ok / Math.max(state.split.test.length, 1);
   const ci = wilson(ok, state.split.test.length);
   const weights = new Blob([JSON.stringify(qrPayload(model, acc))]).size;
   const dataBytes = new Blob([JSON.stringify(rows)]).size;
   state.model = model; state.modelRows = rows; state.labels = model.labels; state.acc = acc;
-  state.report = { acc, ok, nTest: state.split.test.length, per, rows: rows.length,
-                   labels: model.labels, weights, dataBytes, trainMs, ci };
+  state.report = { acc, ok, nTest: state.split.test.length, per, confusion,
+                   rows: rows.length, labels: model.labels, weights, dataBytes, trainMs, ci };
 
   document.getElementById("metrics").innerHTML = `
     <div class="metrics">
@@ -365,12 +385,21 @@ function doTrain() {
     ${model.labels.length} labels. The full-vocabulary int8 weights are the model; the data
     artifact is the examples embedded in the single HTML file. Container exports retrain
     with at most 160 words.</p>`;
-  const conf = model.labels.map(l => {
-    const x = per[l];
-    return `<tr><td>${esc(l)}</td><td class="n">${x.ok}/${x.n}</td><td class="n">${x.n ? (100*x.ok/x.n).toFixed(1) : "—"}%</td></tr>`;
-  }).join("");
+  const lm = labelMetrics(per, model.labels);
+  const pct = x => x == null ? "—" : (x * 100).toFixed(1) + "%";
+  const metricRows = lm.map(m => `<tr><td>${esc(m.label)}</td><td class="n">${m.support}</td>` +
+    `<td class="n">${pct(m.precision)}</td><td class="n">${pct(m.recall)}</td>` +
+    `<td class="n">${pct(m.f1)}</td></tr>`).join("");
+  const cmHead = model.labels.map(l => `<th class="n">${esc(l)}</th>`).join("");
+  const cmRows = model.labels.map(t => `<tr><td>${esc(t)}</td>` +
+    model.labels.map(p => `<td class="n${t === p ? " good" : ""}">${confusion[t][p]}</td>`).join("") +
+    `</tr>`).join("");
   document.getElementById("confusion").innerHTML =
-    `<table><thead><tr><th>label</th><th class="n">correct</th><th class="n">recall</th></tr></thead><tbody>${conf}</tbody></table>`;
+    `<table><thead><tr><th>label</th><th class="n">support</th><th class="n">precision</th>` +
+    `<th class="n">recall</th><th class="n">F1</th></tr></thead><tbody>${metricRows}</tbody></table>` +
+    `<p class="muted">Metrics on ${state.split.test.length} held-out rows.</p>` +
+    `<table><thead><tr><th>true / pred</th>${cmHead}</tr></thead><tbody>${cmRows}</tbody></table>` +
+    `<p class="muted">Confusion matrix: rows are true labels, columns are predictions; the diagonal is correct.</p>`;
   document.getElementById("trainInfo").textContent =
     `Trained on ${rows.length} examples; data artifact ${fmtKB(dataBytes)}.`;
   document.getElementById("try").style.display = "block";
@@ -593,11 +622,15 @@ function downloadWav() {
 function downloadCard() {
   const r = state.report;
   if (!r) return;
-  const pct = x => (x * 100).toFixed(1);
-  const recall = r.labels.map(l => {
-    const x = r.per[l] || { ok: 0, n: 0 };
-    return `| ${l} | ${x.ok}/${x.n} | ${x.n ? pct(x.ok / x.n) : "—"}% |`;
-  }).join("\n");
+  const pct = x => x == null ? "—" : (x * 100).toFixed(1) + "%";
+  const md = s => String(s).replace(/\|/g, "\\|");
+  const lm = labelMetrics(r.per, r.labels);
+  const metrics = lm.map(m =>
+    `| ${md(m.label)} | ${m.support} | ${pct(m.precision)} | ${pct(m.recall)} | ${pct(m.f1)} |`).join("\n");
+  const cmHead = `| true / pred | ${r.labels.map(md).join(" | ")} |`;
+  const cmSep = `|---|${r.labels.map(() => "---:").join("|")}|`;
+  const cmRows = r.labels.map(t =>
+    `| ${md(t)} | ${r.labels.map(p => r.confusion[t][p]).join(" | ")} |`).join("\n");
   const card = `# Tiny AI model card
 
 Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the browser.
@@ -610,17 +643,23 @@ Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the brow
 
 ## Measured
 
-- held-out accuracy: ${pct(r.acc)}%
-- 95% Wilson interval: ${pct(r.ci[0])}%–${pct(r.ci[1])}%
+- held-out accuracy: ${pct(r.acc)}
+- 95% Wilson interval: ${pct(r.ci[0])}–${pct(r.ci[1])}
 - int8 weights (full vocabulary): ${r.weights} B (Complement NB, JSON)
 - data artifact: ${r.dataBytes} B (examples + classifier, single HTML)
 - fit time: ${r.trainMs.toFixed(0)} ms in this browser
 
-## Per-label recall
+## Per-label metrics
 
-| label | correct | recall |
-|---|---:|---:|
-${recall}
+| label | support | precision | recall | F1 |
+|---|---:|---:|---:|---:|
+${metrics}
+
+## Confusion matrix
+
+${cmHead}
+${cmSep}
+${cmRows}
 
 ## Caveats
 
@@ -628,8 +667,8 @@ ${recall}
   an estimate of dataset noise.
 - Bag-of-words Complement NB: no word order, no embeddings, no calibration.
 - Not an LLM and not a production classifier.
-- QR, favicon and WAV exports may use a smaller vocabulary than the full model. Their
-  pages report the accuracy of the exported vocabulary.
+- Container exports may use a smaller vocabulary than the full model. Their pages report
+  the accuracy of the exported vocabulary.
 - The numbers come from this page's own run; no independent audit.
 `;
   downloadBlob(new Blob([card], { type: "text/markdown" }), "tiny-ai-model-card.md");
@@ -651,11 +690,13 @@ function downloadPdfCard() {
   const pct = x => (x * 100).toFixed(1);
   const weights = qrPayload(state.model, state.acc);
   const payload = b64url(new TextEncoder().encode(JSON.stringify(weights)));
-  const recall = r.labels.slice(0, 8).map(l => {
-    const x = r.per[l] || { ok: 0, n: 0 };
-    return `  ${ascii(l)}: ${x.ok}/${x.n} (${x.n ? pct(x.ok / x.n) : "?"}%)`;
+  const lm = labelMetrics(r.per, r.labels);
+  const metrics = lm.slice(0, 8).map(m => {
+    const f = x => x == null ? "?" : pct(x);
+    return `  ${ascii(m.label).slice(0, 20)}: P ${f(m.precision)}% R ${f(m.recall)}% ` +
+           `F1 ${f(m.f1)}% (n=${m.support})`;
   });
-  if (r.labels.length > 8) recall.push(`  ... ${r.labels.length - 8} more labels`);
+  if (r.labels.length > 8) metrics.push(`  ... ${r.labels.length - 8} more labels`);
   const labelLine = r.labels.map(ascii).join(", ");
   const lines = [
     "Tiny AI model card",
@@ -668,8 +709,8 @@ function downloadPdfCard() {
     "Full int8 weights: " + r.weights + " bytes",
     "Data artifact: " + r.dataBytes + " bytes (examples + classifier)",
     "",
-    "Per-label recall:",
-    ...recall,
+    "Per-label precision / recall / F1:",
+    ...metrics,
     "",
     "Caveats:",
     "  One 80/20 split, not cross-validation.",
