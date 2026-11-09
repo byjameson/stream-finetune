@@ -457,8 +457,7 @@ function runCV() {
   const out = document.getElementById("cvout");
   btn.disabled = true;
   out.innerHTML = '<p class="muted">Running 5-fold CV…</p>';
-  setTimeout(() => {
-    try {
+  try {
       const b = document.getElementById("budget").value;
       const n = b === "all" ? null : Number(b);
       const { k, folds } = makeFolds(state.rows, 5);
@@ -536,13 +535,12 @@ function runCV() {
         `<p class="muted">All ${state.rows.length} rows; budget ` +
         `${b === "all" ? "all" : b + " examples"} per training fold.${gapText} ` +
         `The fold-to-fold spread is a stability check, not a confidence interval.</p>`;
-    } catch (e) {
-      out.innerHTML = `<p class="err">${esc(e.message)}</p>`;
-      state.cv = null;
-    } finally {
-      btn.disabled = false;
-    }
-  }, 20);
+  } catch (e) {
+    out.innerHTML = `<p class="err">${esc(e.message)}</p>`;
+    state.cv = null;
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function classify() {
