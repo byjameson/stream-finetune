@@ -107,6 +107,9 @@ architectures, the idea of task-specific compression.
 - **Bit width is not speed:** on Qwen2.5-0.5B (which fits in bf16), bf16 is 16.8 tok/s vs
   13.1 for 4-bit NF4 (~22% slower), while peak VRAM falls 1.00 -> 0.49 GB. 4-bit is how a
   larger model fits, not how it gets faster.
+- **Labels beat students:** on the same 5k AG News rows, a 4-bit 3B-Instruct teacher
+  (73.4% accurate, 153 unknowns) gives a 71.3% linear student; human labels give 84.3%.
+  New teacher labels would not improve the max mode; human labels are the right choice.
 - **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
   shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
   4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a

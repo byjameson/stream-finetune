@@ -307,6 +307,10 @@ trained on 75,000 human-labelled AG News rows reaches **88.5%** on the same 400 
 130 KB page is the minimum-bit hook; the 1.7 MB page is what accuracy costs when you stop
 counting bytes first.
 
+The labels matter more than the student. On the same 5,000 rows, a 4-bit Qwen2.5-3B-Instruct
+teacher (73.4% accurate, 153 unknowns) gives a **71.3%** linear student; the human labels
+give **84.3%**. That is why the accuracy mode uses human labels, not new teacher labels.
+
 ## 9. Caveats
 
 - One machine: RTX 3050 Laptop 6 GB, Windows 11, AC.

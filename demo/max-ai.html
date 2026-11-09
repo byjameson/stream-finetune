@@ -93,6 +93,9 @@
     logistic regression. Coefficients are int8-quantized; vocabulary and IDF are embedded.
     The accuracy is computed live in your browser. The test set is not part of the model.
     Fresh-sample check: a separate 400-row test gives <b>91.0%</b> (embedded 88.5%).</p>
+    <p class="muted">Why human labels? On the same 5,000 rows, a 4-bit Qwen2.5-3B-Instruct
+    teacher (73.4% accurate, 153 unknowns) gave a <b>71.3%</b> linear student; human labels
+    gave <b>84.3%</b>. Label noise is the bottleneck, not the student.</p>
     <table>
       <thead><tr><th>bytes</th><th>artifact</th><th class="n">accuracy</th><th>note</th></tr></thead>
       <tbody>

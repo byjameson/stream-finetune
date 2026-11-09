@@ -1,0 +1,8 @@
+{
+ "rows": 5000,
+ "test": 400,
+ "teacher_acc": 0.7336,
+ "human_student_acc": 0.8425,
+ "teacher_student_acc": 0.7125,
+ "seconds": 567.4
+}
