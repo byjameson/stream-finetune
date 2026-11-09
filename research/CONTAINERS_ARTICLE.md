@@ -4,7 +4,7 @@ The model is a 160-word Complement Naive Bayes SMS spam classifier. It scores **
 on 1,115 held-out SMS messages. The JSON is **1,579 bytes**. The interesting part is not
 the accuracy; it is where the model can live.
 
-These are not five copies of different models. They are the same weights in five
+These are not six copies of different models. They are the same weights in six
 containers, all decoded in the browser with no server.
 
 ## 1. A QR code — 2.2 KB URL
@@ -49,7 +49,18 @@ No macros, no Python at inference time. Formula accuracy is **90.6%** on the sam
 - Artifact: **10.5 KB workbook**
 - Demo: https://byjameson-mini-ai.static.hf.space/spreadsheet.html
 
-## 5. A single HTML file — train your own
+## 5. A PDF — 3.7 KB model card
+
+The visible page is a model card: task, data, accuracy, weight size and caveats. The
+1,579-byte model is in the PDF's `/Keywords` metadata as base64url JSON, not drawn on the
+page. The page fetches the raw PDF, parses that string and classifies. The document and
+the classifier are one file.
+
+- Artifact: **3,769-byte PDF**, one page
+- Overhead: **2,190 bytes** (page, font, content stream)
+- Demo: https://byjameson-mini-ai.static.hf.space/pdf.html
+
+## 6. A single HTML file — train your own
 
 Tiny AI Maker takes a CSV of `text,label`, trains a Complement NB in the browser, shows
 accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 32×32
@@ -63,8 +74,8 @@ split, a 95% Wilson interval, per-label recall, both artifact sizes and the cave
 ## Why this is useful
 
 - **Offline and private.** The model is the file; inference never leaves the page.
-- **Shareable.** A QR, a favicon, a WAV or a spreadsheet can travel through places a model
-  hub cannot.
+- **Shareable.** A QR, a favicon, a WAV, a PDF or a spreadsheet can travel through places a
+  model hub cannot.
 - **Cheap to version.** The artifact is small enough to diff, email or embed.
 - **Teaching.** It makes the representation ladder tangible: the same behaviour is a
   prompt, a coreset, a linear model, a 5 MB adapter or a 4-bit model, depending on what you
@@ -73,8 +84,9 @@ split, a 95% Wilson interval, per-label recall, both artifact sizes and the cave
 ## What this is not
 
 - Not an LLM. It is a bag-of-words classifier on English SMS.
-- Not a security proof. A favicon/WAV/QR is a lossless container, not obfuscation; anyone
-  with the file has the model.
+- Not a security proof. A favicon/WAV/QR/PDF is a lossless container, not obfuscation;
+  anyone with the file has the model. PDF tools may rewrite or drop metadata when a file is
+  edited; that destroys the model, not hide it.
 - Not a production spam filter. One 80/20 split, 1,115 rows, one machine.
 - The 4-bit adapter work is separate: a 5 MB LoRA on a shared Qwen base, not this 1.6 KB
   model.
@@ -82,8 +94,8 @@ split, a 95% Wilson interval, per-label recall, both artifact sizes and the cave
 ## The repo
 
 Everything is in **stream-finetune**: the 130 KB browser classifier, the 1.7 MB accuracy
-mode, Tiny AI Maker, the QR/favicon/WAV/spreadsheet containers, the Minimum-Bit Table and
-the adapter autopsy.
+mode, Tiny AI Maker, the QR/favicon/WAV/PDF/spreadsheet containers, the Minimum-Bit Table
+and the adapter autopsy.
 
 - https://github.com/byjameson/stream-finetune
 - https://huggingface.co/spaces/byjameson/mini-ai
