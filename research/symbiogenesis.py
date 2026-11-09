@@ -7,13 +7,15 @@ training.
     python research/symbiogenesis.py
 """
 import json
+import tempfile
 from pathlib import Path
 
 import numpy as np
 import torch
+from scipy.stats import binomtest
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from streamft.adapter import load_adapter
+from streamft.adapter import load_adapter, save_quantized
 from streamft.lora import apply_lora, set_lora_state_dict
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -21,7 +23,7 @@ BASE = ROOT / "checkpoints/qwen3b_bnb4bit"
 SST = ROOT / "checkpoints/sst2_qwen3b_lora.pt"
 AG = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
 OUT = ROOT / "research/results/symbiogenesis.json"
-N = 200
+N = 400
 
 
 def data():
@@ -58,12 +60,20 @@ def candidate_scores(model, tok, prompt, candidates):
 
 
 def evaluate(model, tok, rows, prompt_fn, candidates):
-    correct = 0
+    correct = []
     for r in rows:
         scores = candidate_scores(model, tok, prompt_fn(r["text"]), candidates)
         pred = candidates[int(np.argmax(scores))].strip()
-        correct += int(pred.lower() == r["true"].lower())
-    return correct / max(len(rows), 1)
+        correct.append(pred.lower() == r["true"].lower())
+    return sum(correct) / max(len(rows), 1), correct
+
+
+def mcnemar(a, b):
+    a_only = sum(1 for x, y in zip(a, b) if x and not y)
+    b_only = sum(1 for x, y in zip(a, b) if not x and y)
+    n = a_only + b_only
+    p = 1.0 if n == 0 else 2 * binomtest(min(a_only, b_only), n, 0.5).pvalue
+    return {"a_only": a_only, "b_only": b_only, "p": round(min(1.0, p), 4)}
 
 
 def main():
@@ -85,10 +95,11 @@ def main():
               for k in sst_state}
 
     def measure(name):
-        s = evaluate(model, tok, sst_rows, sst_prompt, sst_c)
-        a = evaluate(model, tok, ag_rows, ag_prompt, ag_c)
-        print(f"{name:8s} sst2={s*100:5.1f}%  agnews={a*100:5.1f}%", flush=True)
-        return {"name": name, "sst2": round(s, 4), "agnews": round(a, 4)}
+        s, sc = evaluate(model, tok, sst_rows, sst_prompt, sst_c)
+        a, ac = evaluate(model, tok, ag_rows, ag_prompt, ag_c)
+        print(f"{name:16s} sst2={s*100:5.1f}%  agnews={a*100:5.1f}%", flush=True)
+        return {"name": name, "sst2": round(s, 4), "agnews": round(a, 4),
+                "sst2_correct": sc, "agnews_correct": ac}
 
     results = []
     apply_lora(model, r_attn=16, r_mlp=0)
@@ -97,12 +108,45 @@ def main():
     results.append(measure("sst2"))
     set_lora_state_dict(model, ag_state)
     results.append(measure("agnews"))
-    set_lora_state_dict(model, merged)
-    results.append(measure("merged"))
+
+    merged = {}
+    for w in (0.25, 0.50, 0.75):
+        merged = {k: w * sst_state[k].float() + (1 - w) * ag_state[k].float()
+                  for k in sst_state}
+        set_lora_state_dict(model, merged)
+        results.append(measure(f"merge_{w:.2f}"))
+
+    with tempfile.TemporaryDirectory() as td:
+        for w in (0.50, 0.75):
+            merged_w = {k: w * sst_state[k].float() + (1 - w) * ag_state[k].float()
+                        for k in sst_state}
+            for bits in (8, 4):
+                path = Path(td) / f"merged_{w}_{bits}.pt"
+                save_quantized(merged_w, str(path), bits, 64,
+                               meta={"task": "symbiogenesis"})
+                qstate, _ = load_adapter(str(path))
+                set_lora_state_dict(model, qstate)
+                results.append(measure(f"merge_{w:.2f}_q{bits}"))
+
+    by_name = {r["name"]: r for r in results}
+    comparisons = []
+    for a_name, b_name, task in (
+        ("merge_0.75", "sst2", "agnews"),
+        ("merge_0.75", "base", "agnews"),
+        ("merge_0.75", "sst2", "sst2"),
+        ("merge_0.75", "base", "sst2"),
+        ("merge_0.75_q4", "merge_0.75", "agnews"),
+    ):
+        comparisons.append({
+            "a": a_name, "b": b_name, "task": task,
+            **mcnemar(by_name[a_name][f"{task}_correct"],
+                      by_name[b_name][f"{task}_correct"]),
+        })
 
     payload = {"rows": {"sst2": len(sst_rows), "agnews": len(ag_rows)},
-               "merge": "0.5 * sst2 + 0.5 * agnews, elementwise LoRA tensors",
-               "results": results}
+               "merge": "w * sst2 + (1-w) * agnews, elementwise LoRA tensors; "
+                        "q4/q8 pack the 0.50 and 0.75 merges",
+               "results": results, "comparisons": comparisons}
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT}")
 
