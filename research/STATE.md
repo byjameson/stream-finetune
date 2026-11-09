@@ -147,6 +147,6 @@ publish waits for that, or ships with an explicit one-machine caveat.
 - `research/ARTICLE.md` — dev.to draft (EN)
 - `research/OZET_TR.md` — Turkish summary
 - `research/NEXT.md` — the predictive-law plan
-- `research/autodistill.py` — budget -> smallest passing linear student
+- `research/autodistill.py` — budget -> smallest non-inferior linear student (selection split + untouched test)
 - `research/results/` — measured JSON rows
 - `docs/figures/` — bit cliff, narrow-task frontier, spectrum, diagnostic

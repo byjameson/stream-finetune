@@ -34,7 +34,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `ladder.py` | cheapest rung for a target accuracy, shared or not | ~1 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
-| `autodistill.py` | smallest TF-IDF student that passes McNemar within a bit budget | ~30 s |
+| `autodistill.py` | smallest TF-IDF student that passes non-inferiority within a bit budget | ~2 min |
 | `linear_diagnostic.py` | C = (linear_acc - chance) / (teacher_acc - chance) on saved labels | ~20 s |
 | `distill_mnli.py` | MNLI with a 3B-Instruct 4-bit teacher + BERT-tiny; capacity failure | ~30 min |
 | `distill_mnli_distilbert.py` | DistilBERT 66M on the MNLI labels; 4-bit/2-bit | ~5 min |

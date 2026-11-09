@@ -73,12 +73,15 @@ rows. Student: TF-IDF + logistic regression, trained only on the teacher's label
 | **5k** | **340 KB** | **74.3%** | **83.8%** | **0.00186** |
 | 50k | 3.5 MB | 72.5% | 82.8% | 0.0193 |
 
-Teacher: 75.25%. The 340 KB student is 1.0 point below; McNemar p = 0.689, so the
-difference is not statistically distinguishable on 400 rows. The same student trained on
-the true labels reaches 86.0% — the teacher, not the student, is the bottleneck.
+Teacher: 75.25%. The 340 KB student is 1.0 point below; McNemar p = 0.689. But p > 0.05
+is not non-inferiority: the one-sided 95% lower bound for the difference is about
+**-4.1 points** on the 400-row test, so a meaningful drop is not ruled out. The
+difference is unresolved, not proven small. The same student trained on the true labels
+reaches 86.0% — the teacher, not the student, is the bottleneck.
 
 **0.00186 bit per teacher parameter is 54× below the 0.1-bit target.** A 340 KB model
-reproduced the relevant behaviour of a 3 GB teacher on this task.
+reproduced the teacher's labels at 83.8% agreement; whether that is "the same behaviour"
+depends on the margin you require.
 
 A 4.4M transformer (BERT-tiny) on the same labels does the same job at 4-bit: **76.75%,
 2.19 MB, 0.0117 bit/param**. At 3-bit it is 77.25% (1.64 MB); at 2-bit it collapses to
@@ -249,20 +252,24 @@ composition, you pay for parameters, and the bit rate rises with them.
 
 ## 8. A practical recipe
 
-I wrote a small script that automates the classification ladder:
+I wrote a small script that automates the classification ladder with a stricter protocol:
+the feature count is chosen on a selection split, "close enough" is a pre-registered
+**non-inferiority** margin (default 2 points) with a one-sided 95% paired CI, and the
+chosen model is retrained and evaluated once on the untouched test set.
 
 ```bash
-python research/autodistill.py --task agnews --budget 0.1
-# 2000 features, 135 KB, 0.00074 bit/param, PASS
+python research/autodistill.py --task agnews --budget 0.1 --margin 2
+# no rung passes the 2-point margin; best selection rung 5k features, 340 KB,
+# 0.00186 bit/param. Final test: 74.25% vs teacher 75.25%, delta -1.0,
+# one-sided 95% lower -4.1 (McNemar p = 0.69). The old "PASS" was the p>0.05 illusion.
 
-python research/autodistill.py --task sst2 --budget 0.1
-# no student passes; best is 1000 features, 45 KB, 71.8%
+python research/autodistill.py --task sst2 --budget 0.1 --margin 2
+# no rung passes; best 10k features, 469 KB, final 70.5% vs teacher 94.25%.
 ```
 
-It labels a sample with the teacher, trains TF-IDF students at increasing feature counts,
-and stops at the smallest student whose McNemar p against the teacher is > 0.05 and whose
-bytes fit the budget. It is not a new algorithm; it is the smallest useful automation of
-the measurement.
+The earlier version selected the feature count on the test set and treated `p > 0.05` as
+a pass. That is selection leakage and absence of evidence, not equivalence. This is not a
+new algorithm; it is the smallest useful automation of the measurement, done honestly.
 
 ### Try it: a 130 KB AI in the browser
 
@@ -277,6 +284,11 @@ test set is embedded for live scoring; it is not part of the model.
 
 The point is the representation: the artifact is the data, and the shared training
 procedure does the rest.
+
+The other end of the same Space is the accuracy mode: a **1.7 MB** stored linear model
+trained on 75,000 human-labelled AG News rows reaches **88.5%** on the same 400 rows. The
+130 KB page is the minimum-bit hook; the 1.7 MB page is what accuracy costs when you stop
+counting bytes first.
 
 ## 9. Caveats
 

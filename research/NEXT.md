@@ -66,7 +66,8 @@ type), not a bigger fit on C.
   sentiment, NLI, intent.
 - For each: 2,000 teacher labels, 400 held-out rows, a fixed teacher (3B-Instruct, 4-bit)
   and a fixed student ladder (TF-IDF 1k/2k/5k, BERT-tiny 4-bit).
-- Metric: the smallest student bytes whose McNemar p against the teacher is > 0.05.
+- Metric: the smallest student bytes whose paired non-inferiority lower bound is above
+  -margin on a selection split; report the untouched-test CI, not just McNemar p.
 - Fit `log(bits_min)` against `C`, `H(Y|X)`, class count and length.
 - Report R² and the residuals; do not hide tasks that break the fit.
 

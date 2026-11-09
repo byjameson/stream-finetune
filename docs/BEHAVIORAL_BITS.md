@@ -110,10 +110,12 @@ the ratio of its total bytes to the teacher's parameter count.
 | 10k | 685 KB | 73.0% | 83.8% | 0.00374 |
 | 50k | 3.5 MB | 72.5% | 82.8% | 0.0193 |
 
-Teacher: 75.25%. The 5k student is 1.0 point below; McNemar p = 0.689, so the difference
-is not statistically distinguishable on 400 rows. Five-fold cross-validation over the
-combined 6,400 labels gives 85.9% ± 0.4% agreement. The same student trained on the
-**true** labels reaches 86.0% — the teacher, not the student, is the bottleneck.
+Teacher: 75.25%. The 5k student is 1.0 point below; McNemar p = 0.689. But p > 0.05 is
+not non-inferiority: on the 400-row test the one-sided 95% lower bound for the difference
+is about **-4.1 points**, so a meaningful drop is not ruled out. The difference is
+unresolved, not proven small. Five-fold cross-validation over the combined 6,400 labels
+gives 85.9% ± 0.4% agreement. The same student trained on the **true** labels reaches
+86.0% — the teacher, not the student, is the bottleneck.
 
 A transformer student on the same labels (BERT-tiny, 4.39M parameters):
 
@@ -333,6 +335,11 @@ A live version of the coreset rung: **[130 KB AI](https://huggingface.co/spaces/
 held-out AG News rows in ~11 ms. The 2,000-example version (522 KB) reaches **82.8%**,
 above the 2.2 MB BERT-tiny on the same test set.
 
+The other end of the same Space: **[1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)**
+— TF-IDF + logistic regression on 75,000 human-labelled rows, **88.5%** on the same 400
+rows. It stores the weights; the 130 KB page stores the data. Both are measured, and the
+trade-off is the point.
+
 ### What to use
 
 | if | use | measured |
@@ -426,17 +433,24 @@ linear model is a floor. The next step is 10 tasks and a multi-feature model
 
 ## 7. A practical recipe
 
-`research/autodistill.py` automates the classification ladder: train on the teacher's
-labels with TF-IDF at increasing feature counts, stop at the smallest student whose
-McNemar p against the teacher is > 0.05 and whose bytes fit the budget.
+`research/autodistill.py` automates the ladder with a stricter protocol: the feature count
+is chosen on a selection split, "close enough" is a pre-registered **non-inferiority**
+margin (default 2 points) with a one-sided 95% paired CI, and the chosen model is
+retrained and evaluated once on the untouched test set.
 
 ```bash
-python research/autodistill.py --task agnews --budget 0.1
-# 2000 features, 135 KB, 0.00074 bit/param, PASS
+python research/autodistill.py --task agnews --budget 0.1 --margin 2
+# no rung passes the 2-point margin; best selection rung 5k features, 340 KB,
+# 0.00186 bit/param. Final test: 74.25% vs teacher 75.25%, delta -1.0,
+# one-sided 95% lower -4.1 (McNemar p = 0.69). The old "PASS" was the p>0.05 illusion.
 
-python research/autodistill.py --task sst2 --budget 0.1
-# no student passes; best is 1000 features, 45 KB, 71.8%
+python research/autodistill.py --task sst2 --budget 0.1 --margin 2
+# no rung passes; best 10k features, 469 KB, final 70.5% vs teacher 94.25%.
 ```
+
+The earlier version of the script selected the feature count on the test set and used
+`p > 0.05` as the pass rule. That is selection leakage and absence of evidence, not
+equivalence; the current script fixes both.
 
 This is not a new distillation algorithm. It is the smallest useful automation of the
 measurement: it answers "does a linear student suffice, or does the task need a sequence
