@@ -55,7 +55,13 @@ whose 8-bit PCM samples are the same model.
 
 **AI in a PDF:** [a 3.7 KB model card](https://byjameson-mini-ai.static.hf.space/pdf.html)
 whose visible page describes the model and whose `/Keywords` metadata carries the 1,579-byte
-weights — one document is both the card and the classifier.
+weights — one document is both the card and the classifier. The full SHA-256 is in
+`/TinyAISHA256`, and the viewer checks it.
+
+**Container survival:** [a measured matrix](https://byjameson-mini-ai.static.hf.space/survival.html)
+of what happens after a re-save, re-encode, transcode or metadata strip. XLSX and single
+HTML are the best archival carriers; PDF is not editable; PNG/WAV survive only lossless
+pipelines; QR survives image abuse but not a dropped URL fragment.
 
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:

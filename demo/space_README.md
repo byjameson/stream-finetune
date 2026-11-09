@@ -54,6 +54,10 @@ the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 1.6 KB, 0.198-second sound whose 8-bit samples are the same model.
 
 **The PDF:** [pdf.html](https://byjameson-mini-ai.static.hf.space/pdf.html) — a 3.7 KB
-model card whose `/Keywords` metadata carries the 1,579-byte model.
+model card whose `/Keywords` metadata carries the 1,579-byte model. The full SHA-256 is in
+`/TinyAISHA256`, and the viewer checks it.
+
+**Survival:** [survival.html](https://byjameson-mini-ai.static.hf.space/survival.html) —
+which container keeps the model after a re-save, re-encode, transcode or metadata strip.
 
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).

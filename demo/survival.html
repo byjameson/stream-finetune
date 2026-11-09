@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which container survives everyday handling?</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --bad:#fca5a5; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 980px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:780px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:26px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin-top:8px; }
+  th, td { text-align:left; padding:8px 7px; border-bottom:1px solid var(--line);
+           vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  tr.group td { background:#12151c; border-top:1px solid var(--line); padding-top:12px;
+                padding-bottom:9px; }
+  .pill { display:inline-block; min-width:48px; text-align:center; padding:2px 7px;
+          border-radius:999px; font-size:11px; font-weight:800; letter-spacing:0.4px; }
+  .pill.pass { background:#0c2f24; color:var(--accent); }
+  .pill.fail { background:#351a1a; color:var(--bad); }
+  .pill.na { background:#2a2413; color:var(--warn); }
+  code, .mono { font-family:Consolas, ui-monospace, monospace; font-size:13px; }
+  .hash { word-break:break-all; color:var(--muted); }
+  ol, ul { margin: 8px 0 12px; padding-left: 22px; }
+  li { margin: 5px 0; }
+  a { color:var(--accent); }
+  details { margin-top:10px; }
+  summary { cursor:pointer; color:var(--muted); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 680px) { .metrics { grid-template-columns:repeat(2,1fr); }
+                              td:nth-child(3), th:nth-child(3) { display:none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">measured matrix</div>
+    <h1>Which container survives everyday handling?</h1>
+    <p class="lead">The same 1,579-byte SMS model in six containers, put through
+    transformations a normal workflow applies: re-save, re-encode, transcode, resize,
+    rotate, rewrite, strip metadata. Green means the model still decodes. Red means it does
+    not. This is a survival test, not a security proof.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="m-pass">—</span><label>checks pass</label></div>
+    <div><span id="m-fail">—</span><label>checks fail</label></div>
+    <div><span id="m-na">—</span><label>not measured</label></div>
+    <div><span id="m-bytes">—</span><label>model bytes</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>The matrix</h2>
+    <table id="table">
+      <thead><tr><th>operation</th><th>result</th><th>detail</th></tr></thead>
+      <tbody><tr><td colspan="3" class="muted">Loading survival.json…</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>What survives</h2>
+    <ol>
+      <li><b>XLSX and single HTML are the best archival carriers.</b> The model is in the
+      content — cells in the workbook, examples in the HTML — not in metadata a tool might
+      drop. An <code>openpyxl</code> re-save kept all 483 model cells and 3 formulas. A
+      sanitizer that strips <code>&lt;script&gt;</code> kills the HTML classifier.</li>
+      <li><b>PDF is the best document workflow, not an editable document.</b> A
+      <code>pypdf</code> rewrite kept <code>/Keywords</code> and <code>/TinyAISHA256</code>;
+      rebuilding the PDF without its Info dictionary — a proxy for print-to-PDF — lost
+      both. Treat the PDF as an artifact, not a scratch document.</li>
+      <li><b>PNG and WAV are lossless only.</b> A PNG re-save and a metadata strip keep the
+      pixels; JPEG q80 and a 16×16 resize lose the model. PCM and FLAC keep the samples;
+      MP3 128k and Opus 32k turn the length prefix into garbage.</li>
+      <li><b>QR is the most robust image.</b> The 2,158-byte URL still decoded after a
+      downscale to 10% (161×161), JPEG q5, a 4-pixel blur and a 20° rotation. Drop the
+      <code>#fragment</code> and it is gone: only client-side URL handling preserves the
+      model.</li>
+      <li><b>A prompt is not a container.</b> It is tiny, but it depends on a shared base;
+      it does not travel alone.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <h2>What this means</h2>
+    <p>Pick the container for the workflow, not for the demo:</p>
+    <ul>
+      <li><b>Archive / hand to a colleague:</b> single HTML or XLSX.</li>
+      <li><b>Human-readable provenance:</b> PDF, with the understanding that metadata is
+      fragile.</li>
+      <li><b>Physical sharing:</b> QR; the image survives print-size abuse, but long URLs
+      do not survive chat or server-side redirects.</li>
+      <li><b>Images and audio:</b> only if the platform keeps the original bytes. Most
+      social and chat pipelines do not.</li>
+    </ul>
+    <p class="muted">The demo PDF carries a full SHA-256 in <code>/TinyAISHA256</code>; the
+    JSON includes the same digest. The PDF viewer checks it. It detects a changed model; it
+    does not prevent a rewrite, and it is not a signature.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Reproduce</h2>
+    <p><code>python demo/survival_test.py</code> writes
+    <a href="survival.json">survival.json</a>. It uses clean digital transformations only;
+    no phone camera, no Excel/LibreOffice, no Google Sheets, no PDF/A converter.</p>
+    <details>
+      <summary>Machine, date and model hash</summary>
+      <p class="mono" id="meta"></p>
+      <p class="hash" id="sha"></p>
+    </details>
+    <p class="muted">Model: 1,579-byte int8 Complement NB, 93.54% on 1,115 held-out SMS.
+    See the <a href="leaderboard.html">Minimum-Bit Table</a> for the caveats.</p>
+  </section>
+
+  <section class="panel">
+    <h2>The containers</h2>
+    <p><a href="pdf.html">3.7 KB PDF</a> ·
+    <a href="favicon.html">1.5 KB favicon</a> ·
+    <a href="audio.html">1.6 KB WAV</a> ·
+    <a href="spreadsheet.html">10.5 KB spreadsheet</a> ·
+    <a href="qr.html">2.2 KB QR</a> ·
+    <a href="tiny-ai-sms.html">single HTML</a> ·
+    <a href="maker.html">train your own</a></p>
+  </section>
+
+  <footer>One machine, one model, clean transformations. Results are a property of the
+  file formats and the tools used, not a universal guarantee. Report a row with a script
+  or commit and it can be added.</footer>
+</main>
+
+<script>
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+const verdict = {
+  PDF: "Documents: good, but not editable.",
+  XLSX: "Spreadsheets: the model is data, not metadata.",
+  PNG: "Images: lossless only.",
+  WAV: "Audio: lossless only.",
+  QR: "Print: robust. Chat: the fragment is the weak point.",
+  HTML: "Single file: copy yes, script-stripping sanitizers no.",
+  Prompt: "Not a container: needs a shared base."
+};
+fetch("survival.json").then(r => r.json()).then(data => {
+  const rows = data.rows || [];
+  const pass = rows.filter(r => r.ok === true).length;
+  const fail = rows.filter(r => r.ok === false).length;
+  const na = rows.filter(r => r.ok === null).length;
+  document.getElementById("m-pass").textContent = pass;
+  document.getElementById("m-fail").textContent = fail;
+  document.getElementById("m-na").textContent = na;
+  document.getElementById("m-bytes").textContent = data.model_bytes;
+  document.getElementById("sha").textContent = "model sha256: " + data.model_sha256;
+  document.getElementById("meta").textContent =
+    data.generated + " · " + data.machine;
+  const seen = [];
+  let html = "";
+  for (const row of rows) {
+    if (!seen.includes(row.container)) {
+      seen.push(row.container);
+      html += `<tr class="group"><td colspan="3"><b>${esc(row.container)}</b> — ` +
+              `${esc(verdict[row.container] || "")}</td></tr>`;
+    }
+    const cls = row.ok === true ? "pass" : row.ok === false ? "fail" : "na";
+    const mark = row.ok === true ? "PASS" : row.ok === false ? "FAIL" : "N/A";
+    html += `<tr><td>${esc(row.operation)}</td>` +
+            `<td><span class="pill ${cls}">${mark}</span></td>` +
+            `<td class="muted">${esc(row.detail)}</td></tr>`;
+  }
+  document.querySelector("#table tbody").innerHTML = html;
+}).catch(e => {
+  document.querySelector("#table tbody").innerHTML =
+    `<tr><td colspan="3" class="muted">Could not load survival.json: ${esc(e)}</td></tr>`;
+});
+</script>
+</body>
+</html>

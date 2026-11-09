@@ -56,16 +56,17 @@ The visible page is a model card: task, data, accuracy, weight size and caveats.
 page. The page fetches the raw PDF, parses that string and classifies. The document and
 the classifier are one file.
 
-- Artifact: **3,769-byte PDF**, one page
-- Overhead: **2,190 bytes** (page, font, content stream)
+- Artifact: **3,832-byte PDF**, one page
+- Overhead: **2,253 bytes** (page, font, content stream)
+- Integrity: full SHA-256 in `/TinyAISHA256`; the viewer checks it
 - Demo: https://byjameson-mini-ai.static.hf.space/pdf.html
 
 ## 6. A single HTML file — train your own
 
 Tiny AI Maker takes a CSV of `text,label`, trains a Complement NB in the browser, shows
 accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 32×32
-favicon PNG, and an 8-bit WAV. The SMS sample is 100 rows; 160 words; 90% on its held-out
-split; 2.1 KB QR. The favicon and WAV viewers load the exported files back through a file
+favicon PNG, an 8-bit WAV, and a PDF model card with the weights in `/Keywords`. The SMS
+sample is 100 rows; 160 words; 90% on its held-out split; 2.1 KB QR. The favicon and WAV viewers load the exported files back through a file
 input, so each export is round-tripped in the browser. It also writes a model card with the
 split, a 95% Wilson interval, per-label precision/recall/F1, a confusion matrix, both
 artifact sizes and the caveats.
@@ -86,17 +87,34 @@ artifact sizes and the caveats.
 
 - Not an LLM. It is a bag-of-words classifier on English SMS.
 - Not a security proof. A favicon/WAV/QR/PDF is a lossless container, not obfuscation;
-  anyone with the file has the model. PDF tools may rewrite or drop metadata when a file is
-  edited; that destroys the model, not hide it.
+  anyone with the file has the model. The PDF checksum detects a changed model; it is not a
+  signature.
 - Not a production spam filter. One 80/20 split, 1,115 rows, one machine.
 - The 4-bit adapter work is separate: a 5 MB LoRA on a shared Qwen base, not this 1.6 KB
   model.
 
+## Which container survives everyday handling?
+
+Size is not the only cost. We ran the shipped artifacts through the transformations a
+normal workflow applies and decoded the model again:
+
+| container | survives | fails |
+|---|---|---|
+| XLSX | `openpyxl` re-save | Google Sheets (not measured) |
+| single HTML | byte copy | a CMS that strips `<script>` |
+| PDF | `pypdf` rewrite | rebuild without Info / print-to-PDF proxy |
+| QR | 10% downscale, JPEG q5, blur 4 px, 20° rotation | dropped `#fragment` |
+| PNG | PNG re-save, metadata strip | JPEG q80, resize to 16×16 |
+| WAV | PCM rewrite, FLAC | MP3 128k, Opus 32k |
+
+The full matrix, with exact sizes and caveats, is at
+https://byjameson-mini-ai.static.hf.space/survival.html
+
 ## The repo
 
 Everything is in **stream-finetune**: the 130 KB browser classifier, the 1.7 MB accuracy
-mode, Tiny AI Maker, the QR/favicon/WAV/PDF/spreadsheet containers, the Minimum-Bit Table
-and the adapter autopsy.
+mode, Tiny AI Maker, the QR/favicon/WAV/PDF/spreadsheet containers, the survival matrix,
+the Minimum-Bit Table and the adapter autopsy.
 
 - https://github.com/byjameson/stream-finetune
 - https://huggingface.co/spaces/byjameson/mini-ai

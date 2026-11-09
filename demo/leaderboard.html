@@ -108,7 +108,8 @@
     <a href="spreadsheet.html">spreadsheet AI</a> ·
     <a href="favicon.html">favicon AI</a> ·
     <a href="audio.html">WAV AI</a> ·
-    <a href="pdf.html">PDF model card</a></p>
+    <a href="pdf.html">PDF model card</a> ·
+    <a href="survival.html">container survival</a></p>
   </section>
 
   <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
@@ -143,8 +144,8 @@ const ROWS = [
    scoreText:"93.5%", note:"32x32 RGB; model in pixels"},
   {task:"SMS spam", artifact:"1.6 KB WAV", bytes:1627, score:0.9354,
    scoreText:"93.5%", note:"8-bit PCM; model in samples"},
-  {task:"SMS spam", artifact:"3.7 KB PDF", bytes:3769, score:0.9354,
-   scoreText:"93.5%", note:"model in /Keywords; visible page is the card"}
+  {task:"SMS spam", artifact:"3.7 KB PDF", bytes:3832, score:0.9354,
+   scoreText:"93.5%", note:"model in /Keywords; SHA-256 in /TinyAISHA256"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;

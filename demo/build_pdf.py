@@ -10,6 +10,7 @@ model from the favicon/WAV demos.
     python demo/build_pdf.py
 """
 import base64
+import hashlib
 import json
 import struct
 from pathlib import Path
@@ -50,6 +51,7 @@ def content_stream(model):
         f"Training data: {model['n']:,} messages; 1,115 held out",
         f"Accuracy: {model['a'] * 100:.2f}% on the held-out split",
         f"Weights: int8 Complement NB, {len(model['v'])} words, 1,579 bytes",
+        "SHA-256 in /TinyAISHA256",
         "Other containers: QR 2,158 B, favicon 1,519 B, WAV 1,627 B",
         "",
         "Read it: pdf.html fetches this file, parses /Keywords and classifies",
@@ -72,6 +74,7 @@ def build():
     blob, model = read_wav_model()
     assert len(blob) == 1579, len(blob)
     payload = base64.urlsafe_b64encode(blob).decode().rstrip("=")
+    digest = hashlib.sha256(blob).hexdigest()
     stream = content_stream(model)
 
     objects = {
@@ -83,7 +86,7 @@ def build():
         5: b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
         6: (f"<< /Title ({esc('AI in a PDF - model card')}) "
             f"/Author ({esc('stream-finetune')}) "
-            f"/Subject ({esc('A 1,579-byte SMS spam classifier in /Keywords')}) "
+            f"/TinyAISHA256 ({digest}) "
             f"/Keywords ({payload}) "
             f"/Creator ({esc('demo/build_pdf.py')}) "
             f"/Producer ({esc('stream-finetune')}) >>").encode("latin-1"),
