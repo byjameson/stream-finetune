@@ -27,6 +27,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `adapter_svd.py` | rank sweep on the adapter; rank 8 loses 35.8% | ~2 min |
 | `adapter_quant.py` | 8/4/3/2-bit adapter quantization; error vs size | ~5 s |
 | `adapter_eval.py` | 16/8/4-bit adapter loss on Dolly rows (`--rows`, default 1000) | ~20 min |
+| `adapter_speed.py` | base / LoRA / bf16-LoRA tokens/s on the 3B model | ~2 min |
+| `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
 | `agnews_adapter.py` | Qwen3B AG News 4-way LoRA (6k/400); pack 8/4-bit | ~35 min |

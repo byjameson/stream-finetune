@@ -103,6 +103,9 @@ architectures, the idea of task-specific compression.
   reference card); a bf16 LoRA path reaches 9.13 (~22% slower). The 4.88 MB adapter loads
   in 0.115 s. It is a storage/switching win, not a per-token speed win; merge into a bf16
   base for zero overhead.
+- **Bit width is not speed:** on Qwen2.5-0.5B (which fits in bf16), bf16 is 16.8 tok/s vs
+  13.1 for 4-bit NF4 (~22% slower), while peak VRAM falls 1.00 -> 0.49 GB. 4-bit is how a
+  larger model fits, not how it gets faster.
 - **A practitioner decision rule:** deterministic -> program; shared capable base -> prompt;
   shared base, new capability -> adapter; no base -> coreset/linear/transformer; general ->
   4-bit. `research/ladder.py` picks the cheapest rung for a target accuracy and a

@@ -180,6 +180,11 @@ Inference: 11.79 tok/s base vs 8.75 tok/s with the LoRA path (~26% slower); a bf
 path reaches 9.13 (~22% slower). The adapter loads in 0.115 s. It is a **storage/switching
 win, not a per-token speed win.** Merge into a bf16 base for zero overhead.
 
+The bit width itself is not a speed win either. On Qwen2.5-0.5B, which fits in bf16 on the
+same card, bf16 generated **16.8 tok/s** vs **13.1** for 4-bit NF4 (~22% slower); peak
+VRAM fell from **1.00 GB to 0.49 GB**. 4-bit is how a larger model fits, not how it gets
+faster.
+
 The artifact can also be **data**. A 135 KB coreset of teacher-labelled examples trains a
 70.5% student at load time; a 270 KB coreset reaches 78.0%, statistically indistinguishable
 from the 340 KB model. The training procedure is shared. Storage and compute are
