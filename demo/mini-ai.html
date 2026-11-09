@@ -97,6 +97,9 @@
     training procedure is a Complement Naive Bayes over binary unigram features. Nothing is
     pre-trained and no weights are stored — the artifact is the data, and the fit happens
     here.</p>
+    <p class="muted">This page is <b>not a quantized LLM</b>: there is no 4-bit base here.
+    The Qwen adapter experiments use a 4-bit base; this is the “data as artifact” rung of
+    the ladder.</p>
     <p class="muted">Accuracy is computed live on 400 held-out AG News rows embedded in this
     page. The test set is not part of the model. The teacher that labeled the training rows
     was a 1.5B model; the bits-per-parameter number below counts the coreset against that
