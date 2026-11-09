@@ -33,8 +33,10 @@ property of the behaviour and of the student's inductive bias, not a universal b
 | AG News (prompt) | 341 B + shared 1.5B base | 1.82e-6 marginal / 16 with base | 73.75% |
 | SST-2 (prompt) | 294 B + shared 1.5B base | 1.57e-6 marginal / 16 with base | 93.75% |
 | Qwen2.5-3B LoRA | 29.6 MB fp32 / 14.8 MB fp16 | 0.077 / 0.038 | 60-step SFT |
-| adapter 8-bit | 8.56 MB | 0.0222 | 0.53% weight error |
-| adapter 4-bit | 4.88 MB | 0.0126 | 9.08% weight error |
+| adapter 8-bit | 8.56 MB | 0.0222 | 0.53% error; Dolly p=0.81, SST-2 93.75%, AG News 62.0% |
+| adapter 4-bit | 4.88 MB | 0.0126 | 9.08% error; Dolly +0.0018, SST-2 93.75%, AG News 62.0% |
+| SST-2 4-shot prompt | 441 B | 1.14e-6 | 94.0% on the same Qwen3B base |
+| AG News 4-shot prompt | 242 B | 6.27e-7 | 61.75% on the same Qwen3B base |
 | AG News (coreset 500) | 135 KB | 0.00072 | 70.5% |
 | AG News (coreset 1000) | 270 KB | 0.00144 | 78.0% |
 | Dolly closed_qa (open-ended) | 121 MB T5-small bf16 | 0.645 | F1 0.380 vs teacher 0.413 |
@@ -89,9 +91,13 @@ architectures, the idea of task-specific compression.
   interchangeable.
 - **The practical sub-0.1-bit artifact:** a 7.37M-param LoRA is **0.077 bit/base-param**
   fp32, **0.038** fp16, with the 3.09B base shared. It adds capability; the prompt does not.
+  **But prompt first:** a 441-byte 4-shot prompt on the same base gets 94.0% on SST-2
+  (adapter 93.75%) and 242 bytes gets 61.75% on AG News (adapter 62.25%). The adapter is
+  for behaviour a prompt cannot express, not an automatic win.
 - **Adapter compression is quantization, not rank:** rank 8 SVD loses 35.8%; 8-bit =
-  **0.0222 bit/param** (870 rows: no measurable loss, p = 0.81), 4-bit = 0.0126 (+0.0018,
-  p = 0.001, 5% of the 0.0349 gain; base 2.3752, original 2.3403).
+  **0.0222 bit/param** (Dolly 870 rows: no measurable loss, p = 0.81; SST-2: 93.75% both;
+  AG News: 62.0% vs 62.25%), 4-bit = 0.0126 (Dolly +0.0018, p = 0.001, 5% of the 0.0349
+  gain; SST-2 p = 0.41; AG News loss slightly lower, p = 0.0002).
 - **Inference cost:** the LoRA path is 8.75 tok/s vs 11.79 for the base (~26% slower on the
   reference card); a bf16 LoRA path reaches 9.13 (~22% slower). The 4.88 MB adapter loads
   in 0.115 s. It is a storage/switching win, not a per-token speed win; merge into a bf16

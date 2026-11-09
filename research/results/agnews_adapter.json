@@ -1,0 +1,18 @@
+{
+ "task": "agnews",
+ "base_acc": 0.025,
+ "adapter_acc": 0.6225,
+ "rows": 400,
+ "variants": [
+  {
+   "bits": 8,
+   "acc": 0.62,
+   "file_bytes": 8558547
+  },
+  {
+   "bits": 4,
+   "acc": 0.62,
+   "file_bytes": 4872147
+  }
+ ]
+}

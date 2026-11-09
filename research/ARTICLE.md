@@ -159,8 +159,18 @@ The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduc
 Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight error); 4-bit
 4.88 MB = **0.0126** (9% error). A masked SFT loss on **870 held-out Dolly rows**: base 2.3752,
 original 2.3403, 8-bit 2.3401 (p = 0.81, no measurable loss), 4-bit 2.3420 (**+0.0018,
-p = 0.001**, 5% of the 0.0349 gain). The safe sub-0.1 artifact is the 8-bit adapter; 4-bit
-is aggressive.
+p = 0.001**, 5% of the 0.0349 gain). A second task, **SST-2** (2,000 train / 400 test),
+goes **71.25% -> 93.75%**; the 8-bit and 4-bit adapters both stay at **93.75%**, with
+masked loss 0.7940 / 0.7942 vs 0.7930 (p = 0.50 / 0.41). A third, **AG News** (4-way,
+6,000 / 400), goes from 2.50% (the base does not follow the bare prompt) to **62.25%**;
+8-bit and 4-bit stay at **62.00%**. The safe sub-0.1 artifact is the 8-bit adapter; the
+4-bit cost is task-dependent.
+
+But the adapter is **not automatically the cheapest rung**. On the same base, a 441-byte
+4-shot SST-2 prompt gets **94.0%** (adapter 93.75%) and a 242-byte AG News prompt gets
+**61.75%** (adapter 62.25%). For tasks a few examples can express, the prompt wins by
+~10,000x in storage. The adapter is for behaviour a prompt cannot express, or when prompt
+tokens and context cost more than storage.
 
 Inference: 11.79 tok/s base vs 8.75 tok/s with the LoRA path (~26% slower); a bf16 LoRA
 path reaches 9.13 (~22% slower). The adapter loads in 0.115 s. It is a **storage/switching
@@ -172,16 +182,16 @@ from the 340 KB model. The training procedure is shared. Storage and compute are
 interchangeable.
 
 The ladder: **program** (93 B + shared runtime) -> **prompt** (341 B + shared base) ->
-**adapter** (14.8 MB + shared base, 0.038 bit/param) -> **coreset** (135 KB + training
-procedure) -> **linear student** (340 KB) -> **tiny transformer** (2.2 MB) -> **4-bit
-model** (30 MB). The lower rungs are different objects, not better compression of the same
-object. The revolution is choosing the rung.
+**adapter** (4.88 MB 4-bit + shared base, 0.0126 bit/param) -> **coreset** (135 KB +
+training procedure) -> **linear student** (340 KB) -> **tiny transformer** (2.2 MB) ->
+**4-bit model** (30 MB). The lower rungs are different objects, not better compression of
+the same object. The revolution is choosing the rung.
 
 What to use:
 
 - deterministic task -> **program** (93 B)
 - base already deployed and capable -> **prompt** (294-341 B)
-- base deployed, task outside zero-shot -> **adapter** (14.8 MB, 0.038)
+- base deployed, task outside zero-shot -> **adapter** (4.88 MB, 0.0126)
 - no base, small data -> **coreset** (135 KB)
 - no base, keyword task -> **linear** (340 KB)
 - no base, semantic task -> **tiny transformer** (2.2 MB)

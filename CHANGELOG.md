@@ -1,12 +1,19 @@
 # Changelog
 
-## Unreleased
+## 0.6.1 — multi-task adapter check
 - `streamft adapter` accepts a save directory (the output of `train --save` /
   `cpu --save`), not only a `.pt` file; `serve --adapter` does the same.
 - `serve --adapter` uses the bf16 low-rank path on CUDA (~4% faster: 9.13 vs 8.75 tok/s
   on the reference card).
 - Hardware report issue template, so measured rows can come from more than one machine.
-- 21 tests.
+- Second-task validation: SST-2 (2,000 train / 400 test) goes 71.25% -> 93.75%; both the
+  8-bit and 4-bit adapters stay at 93.75%, masked loss within noise (p = 0.50 / 0.41).
+- Third task: AG News (6,000 / 400) goes 2.50% (bare base prompt not followed) -> 62.25%;
+  8/4-bit stay at 62.00%.
+- Prompt check on the same base: a 441-byte 4-shot SST-2 prompt scores 94.0% and a
+  242-byte AG News prompt 61.75%. Prompt first; the adapter is for behaviour a prompt
+  cannot express.
+- 22 tests.
 
 ## 0.6.0 — shared base, 5 MB adapters
 - `streamft adapter`: pack a saved LoRA to 8/4-bit with per-group scales; `load_adapter`
