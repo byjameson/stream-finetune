@@ -16,6 +16,9 @@ news classifier that trains in your browser from 500 labelled examples and score
 400 held-out AG News rows. No server, no GPU, no stored weights. Source:
 [`demo/mini-ai.html`](demo/mini-ai.html).
 
+**Need accuracy instead of minimum bits?** [The 1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)
+uses 75,000 human-labelled rows and reaches **88.5%** on the same test set.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

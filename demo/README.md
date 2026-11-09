@@ -16,12 +16,20 @@ Accuracy is measured live on the same 400 held-out AG News rows used in
 model. The 500-example coreset counts 0.00071 bit per parameter of the 1.5B teacher that
 labelled it.
 
+## Accuracy mode
+
+`demo/max-ai.html` is the other end of the trade-off: a **1.68 MB** TF-IDF + logistic
+regression model trained on 75,000 human-labelled AG News rows. It scores **88.5%** on the
+same 400 held-out rows and stores the weights instead of the data. Links from the 130 KB
+page; build with `python demo/build_max_ai.py`.
+
 ## Run
 
 ```bash
-# just open the file, or serve it if the browser blocks local files
+# just open the files, or serve them if the browser blocks local files
 python -m http.server 8766 --directory demo
 # http://localhost:8766/mini-ai.html
+# http://localhost:8766/max-ai.html
 ```
 
 ## Rebuild
