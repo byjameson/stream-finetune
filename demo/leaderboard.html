@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Minimum-Bit Table</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 980px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width: 760px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .muted { color:var(--muted); font-size:13px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+  .chip { border:1px solid var(--line); background:#0d1015; color:var(--fg);
+          padding:7px 10px; border-radius:8px; cursor:pointer; font:inherit; font-size:14px; }
+  .chip.active { border-color:var(--accent); color:var(--accent); }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; font-size:12px; cursor:pointer; user-select:none; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr:hover td { background:#1c2029; }
+  .tag { display:inline-block; padding:2px 7px; border-radius:999px; background:#0d1015;
+         color:var(--muted); font-size:12px; }
+  .score { color:var(--accent); font-weight:650; }
+  a { color:var(--accent); }
+  code { font-family:Consolas, ui-monospace, monospace; font-size:13px; }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 700px) { .hide-sm { display:none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">open table</div>
+    <h1>The Minimum-Bit Table</h1>
+    <p class="lead">Same task, same test set, total artifact bytes. This is not a
+    cross-task ranking: a 93-byte date program and a 93.5% SMS model are different
+    objects. The question is which artifact is the cheapest that keeps the behaviour.</p>
+  </header>
+
+  <section class="panel">
+    <div class="chips" id="filters"></div>
+    <table id="table">
+      <thead><tr>
+        <th data-key="task">task</th>
+        <th data-key="artifact">artifact</th>
+        <th data-key="bytes" class="n">bytes</th>
+        <th data-key="score" class="n">score</th>
+        <th class="hide-sm">note</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="muted" id="count"></p>
+  </section>
+
+  <section class="panel">
+    <h2>Submit a row</h2>
+    <p>The table only grows if someone reruns the measurement. A valid row needs:</p>
+    <ol>
+      <li>the task and the exact test set (or a link to it);</li>
+      <li>the total artifact bytes, including tokenizer/vocabulary/scales;</li>
+      <li>the score (accuracy, loss or F1) and how it was computed;</li>
+      <li>a commit or script that reproduces it.</li>
+    </ol>
+    <p class="muted">Open a <a href="https://github.com/byjameson/stream-finetune/issues/new?template=hardware-report.md">hardware report</a>
+    or a PR with the JSON row. This is an open table, not a hidden-test competition yet;
+    rows are checked by rerunning the linked code.</p>
+  </section>
+
+  <section class="panel">
+    <h2>The demos behind the rows</h2>
+    <p><a href="mini-ai.html">130 KB coreset</a> ·
+    <a href="max-ai.html">1.7 MB linear</a> ·
+    <a href="maker.html">Tiny AI Maker</a> ·
+    <a href="qr.html">AI in a QR code</a></p>
+  </section>
+
+  <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
+  row says otherwise. One machine is not a law; add yours.</footer>
+</main>
+
+<script>
+const ROWS = [
+  {task:"date", artifact:"93 B program", bytes:93, score:1.0, scoreText:"100% exact",
+   note:"different task; not ML"},
+  {task:"AG News", artifact:"341 B prompt", bytes:341, score:0.7375, scoreText:"73.75%",
+   note:"+ shared 1.5B base; 16 bit/param if counted"},
+  {task:"AG News", artifact:"130 KB coreset + NB", bytes:132798, score:0.783,
+   scoreText:"78.3% embedded / 74.3% fresh", note:"500 examples; browser"},
+  {task:"AG News", artifact:"522 KB coreset (2k)", bytes:534708, score:0.828,
+   scoreText:"82.8%", note:"browser; matches fresh sample"},
+  {task:"AG News", artifact:"1.68 MB linear", bytes:1763590, score:0.885,
+   scoreText:"88.5% embedded / 91.0% fresh", note:"75k human labels"},
+  {task:"AG News", artifact:"2.19 MB BERT-tiny 4-bit", bytes:2190000, score:0.7675,
+   scoreText:"76.75%", note:"6k teacher labels"},
+  {task:"SST-2", artifact:"4.88 MB 4-bit adapter", bytes:4875883, score:0.9375,
+   scoreText:"93.75%", note:"shared 4-bit 3B base"},
+  {task:"Dolly", artifact:"4.88 MB 4-bit adapter", bytes:4875883, score:null,
+   scoreText:"loss 2.3420 vs 2.3403", note:"8-bit 2.3401; 4-bit cost not replicated"},
+  {task:"Dolly", artifact:"30.3 MB T5 4-bit", bytes:30300000, score:0.256,
+   scoreText:"F1 0.256", note:"generation; 3-bit is dead"},
+  {task:"SMS spam", artifact:"1.58 KB QR URL", bytes:1579, score:0.9354,
+   scoreText:"93.5%", note:"160 words, int8; model is in the URL"}
+];
+const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
+let filter = "All", sortKey = "bytes", dir = 1;
+
+function fmt(n) {
+  if (n < 1024) return n + " B";
+  if (n < 1048576) return (n / 1024).toFixed(n < 10240 ? 1 : 0) + " KB";
+  return (n / 1048576).toFixed(2) + " MB";
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function render() {
+  const body = document.querySelector("#table tbody");
+  const rows = ROWS.filter(r => filter === "All" || r.task === filter).slice();
+  rows.sort((a, b) => {
+    let x = a[sortKey], y = b[sortKey];
+    if (sortKey === "score") { x = x == null ? -1 : x; y = y == null ? -1 : y; }
+    if (typeof x === "string") return dir * x.localeCompare(y);
+    return dir * (x - y);
+  });
+  body.innerHTML = rows.map(r => `<tr>
+    <td><span class="tag">${esc(r.task)}</span></td>
+    <td>${esc(r.artifact)}</td>
+    <td class="n">${fmt(r.bytes)}</td>
+    <td class="n score">${esc(r.scoreText)}</td>
+    <td class="muted hide-sm">${esc(r.note)}</td>
+  </tr>`).join("");
+  document.getElementById("count").textContent =
+    `${rows.length} rows · sorted by ${sortKey} ${dir > 0 ? "ascending" : "descending"}`;
+}
+function init() {
+  const f = document.getElementById("filters");
+  for (const t of TASKS) {
+    const b = document.createElement("button");
+    b.className = "chip" + (t === filter ? " active" : "");
+    b.textContent = t;
+    b.onclick = () => {
+      filter = t;
+      [...f.children].forEach(x => x.classList.toggle("active", x.textContent === t));
+      render();
+    };
+    f.appendChild(b);
+  }
+  document.querySelectorAll("th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if (k === "artifact" || k === "task") return;
+      if (sortKey === k) dir = -dir; else { sortKey = k; dir = k === "bytes" ? 1 : -1; }
+      render();
+    };
+  });
+  render();
+}
+init();
+</script>
+</body>
+</html>

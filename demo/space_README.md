@@ -34,4 +34,7 @@ file. No data leaves the page.
 **AI in a QR code:** [qr.html](https://byjameson-mini-ai.static.hf.space/qr.html) — a
 2.2 KB URL carries an SMS spam classifier; the QR is the model.
 
+**The table:** [leaderboard.html](https://byjameson-mini-ai.static.hf.space/leaderboard.html)
+— measured artifacts, bytes vs score, submissions welcome.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).
