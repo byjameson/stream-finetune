@@ -167,6 +167,24 @@
       "detail": "no classifier or data"
     },
     {
+      "container": "SVG",
+      "operation": "byte copy",
+      "ok": true,
+      "detail": "1,579 B model / 4.9 KB SVG"
+    },
+    {
+      "container": "SVG",
+      "operation": "strip <metadata> (sanitizer)",
+      "ok": false,
+      "detail": "no tinyai metadata"
+    },
+    {
+      "container": "SVG",
+      "operation": "rasterize to PNG",
+      "ok": null,
+      "detail": "not measured; needs a rasterizer"
+    },
+    {
       "container": "Prompt",
       "operation": "copy",
       "ok": null,
