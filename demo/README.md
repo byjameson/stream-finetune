@@ -20,6 +20,13 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## Adapter autopsy
+
+`demo/diff.html` shows the 20 Dolly rows where the 4-bit adapter moves furthest from
+fp32, plus the five rows where it improves. It is built from
+`research/results/adapter_diff.json` by `python demo/build_diff.py`; the row order is the
+exact same `adapter_eval.py` seed/filtering.
+
 ## The Minimum-Bit Table
 
 `demo/leaderboard.html` is the public table of measured artifacts: bytes, score, task and

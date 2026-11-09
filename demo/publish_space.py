@@ -31,6 +31,9 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/qr-spam.png"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/leaderboard.html"),
                 path_in_repo="leaderboard.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: minimum-bit table")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/diff.html"),
+                path_in_repo="diff.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: adapter autopsy")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/space_README.md"),
                 path_in_repo="README.md", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: card")

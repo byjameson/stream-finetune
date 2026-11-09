@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What did 4-bit lose? — adapter autopsy</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 920px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:760px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  .row { border-top:1px solid var(--line); padding:14px 0; }
+  .row:first-child { border-top:0; }
+  .ins { font-weight:600; margin-bottom:4px; }
+  .meta { color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums; }
+  .delta { color:var(--warn); font-weight:700; }
+  .delta.good { color:var(--accent); }
+  .bar { height:7px; background:#0d1015; border-radius:4px; overflow:hidden; margin:6px 0; }
+  .bar > i { display:block; height:100%; background:var(--warn); }
+  .bar.good > i { background:var(--accent); }
+  details { margin-top:6px; }
+  summary { color:var(--accent); cursor:pointer; font-size:13px; }
+  pre { white-space:pre-wrap; background:#0d1015; border:1px solid var(--line);
+        border-radius:8px; padding:10px; font-size:13px; }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">870 Dolly rows · one adapter</div>
+    <h1>What did 4-bit lose?</h1>
+    <p class="lead">The average 4-bit cost is tiny: +0.0018 loss, 5% of the adapter's
+    gain. The average hides the tail. These are the rows where the 4.88 MB adapter moves
+    furthest from the 29.6 MB fp32 one.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="rows">—</span><label>rows compared</label></div>
+    <div><span id="avg4">—</span><label>average 4-bit delta</label></div>
+    <div><span id="avg8">—</span><label>average 8-bit delta</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>Largest 4-bit regressions</h2>
+    <div id="worst"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Where 4-bit helped</h2>
+    <p class="muted">Quantization is not monotone: on some rows the int8/4-bit weights land
+    closer to the original than the fp32 ones do. These are the five largest improvements.</p>
+    <div id="best"></div>
+  </section>
+
+  <section class="panel">
+    <h2>How to read this</h2>
+    <p>Loss is masked SFT loss on a single Dolly row. Lower is better. The 8-bit column is
+    usually indistinguishable; the 4-bit column is the one with a tail. A second disjoint
+    seed did <b>not</b> replicate the +0.0018 average, so this is a diagnostic of where a
+    4-bit adapter can move, not a fixed tax.</p>
+    <p class="muted">If you ship a 4-bit adapter, test the tail: factual lookups, lists and
+    short answers are where the largest deltas appear here.</p>
+    <p><a href="leaderboard.html">← the Minimum-Bit Table</a> ·
+    <a href="mini-ai.html">the 130 KB demos</a></p>
+  </section>
+
+  <footer>Adapter: Qwen2.5-3B LoRA, r=16, 60 Dolly steps. Base 4-bit NF4; masks match
+  <code>research/adapter_eval.py</code>. One machine, one seed.</footer>
+</main>
+
+<script>
+const DATA = __DIFF__;
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function card(r, i, good) {
+  const cls = good ? "good" : "";
+  const pct = Math.min(100, Math.abs(r.d4) / 0.20 * 100);
+  return `<div class="row">
+    <div class="ins">${i}. ${esc(r.instruction)}</div>
+    <div class="meta">base ${r.base} · fp32 ${r.orig} · 8-bit ${r.q8} · 4-bit ${r.q4} ·
+      <span class="delta ${cls}">Δ4 ${r.d4 > 0 ? "+" : ""}${r.d4.toFixed(3)}</span></div>
+    <div class="bar ${cls}"><i style="width:${pct.toFixed(1)}%"></i></div>
+    ${r.context ? `<details><summary>context</summary><pre>${esc(r.context)}</pre></details>` : ""}
+    <details><summary>response</summary><pre>${esc(r.response)}</pre></details>
+  </div>`;
+}
+document.getElementById("rows").textContent = DATA.rows;
+document.getElementById("avg4").textContent = (DATA.avg_d4 >= 0 ? "+" : "") + DATA.avg_d4.toFixed(4);
+document.getElementById("avg8").textContent = (DATA.avg_d8 >= 0 ? "+" : "") + DATA.avg_d8.toFixed(4);
+document.getElementById("worst").innerHTML = DATA.worst.map((r, i) => card(r, i + 1, false)).join("");
+document.getElementById("best").innerHTML = DATA.best.map((r, i) => card(r, i + 1, true)).join("");
+</script>
+</body>
+</html>
