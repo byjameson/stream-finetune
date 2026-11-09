@@ -11,6 +11,10 @@ trained.
 — type a model id and a VRAM size; it says whether the whole model fits and shows the
 measured speed where a measurement exists (and says so where it doesn't).
 
+**The smallest demo:** [`demo/mini-ai.html`](demo/mini-ai.html) — a 130 KB news classifier
+that trains in your browser from 500 labelled examples and scores 72.8% on 400 held-out
+AG News rows. No server, no GPU, no stored weights.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 130 KB AI — news classifier in your browser</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 880px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 26px; max-width: 720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; letter-spacing:0.5px;
+           padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .chip { border:1px solid var(--line); background:#0d1015; color:var(--fg);
+          padding:8px 10px; border-radius:8px; cursor:pointer; font:inherit; font-size:14px; }
+  .chip:hover { border-color:#3a4150; }
+  .chip.active { border-color:var(--accent); color:var(--accent); }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  button.go:hover { filter:brightness(1.06); }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bars { margin-top:8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0;
+             transition: width .18s ease; }
+  .bar-row span:last-child { text-align:right; color:var(--muted);
+                             font-variant-numeric: tabular-nums; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:7px 6px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  td.n { text-align:right; font-variant-numeric: tabular-nums; white-space:nowrap; }
+  tr.this td { color:var(--accent); }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) {
+    .metrics { grid-template-columns:repeat(2,1fr); }
+    .bar-row { grid-template-columns: 78px 1fr 46px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge" id="badge">130 KB</div>
+    <h1>A news classifier that fits in a text file</h1>
+    <p class="lead">Hundreds of labeled examples, a few lines of Naive Bayes, and no stored
+    weights. The classifier is fitted in your browser when the page loads. Move the coreset
+    size and watch accuracy against bytes.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="artifact">—</span><label>model artifact</label></div>
+    <div><span id="accuracy">—</span><label>held-out accuracy</label></div>
+    <div><span id="trainms">—</span><label>training time</label></div>
+    <div><span id="vocab">—</span><label>vocabulary</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>Coreset size</h2>
+    <div class="chips" id="sizes"></div>
+    <p class="muted" id="size-note">training…</p>
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label for="text" class="muted">English news text (AG News: Business, World, Sports, Sci/Tech)</label>
+    <textarea id="text" rows="4">Stocks rally as oil prices fall</textarea>
+    <div class="chips" id="samples"></div>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>What is this?</h2>
+    <p>The model is the <b>coreset</b>: a few hundred teacher-labeled news articles. The
+    training procedure is a multinomial Naive Bayes over unigrams and bigrams. Nothing is
+    pre-trained and no weights are stored — the artifact is the data, and the fit happens
+    here.</p>
+    <p class="muted">Accuracy is computed live on 400 held-out AG News rows embedded in this
+    page. The test set is not part of the model. The teacher that labeled the training rows
+    was a 1.5B model; the bits-per-parameter number below counts the coreset against that
+    teacher, not against this page.</p>
+    <table>
+      <thead><tr><th>bytes</th><th>artifact</th><th class="n">accuracy</th><th>note</th></tr></thead>
+      <tbody>
+        <tr><td>93 B</td><td>date program</td><td class="n">100% exact</td><td>different task</td></tr>
+        <tr><td>341 B</td><td>AG News prompt</td><td class="n">73.75%</td><td>needs a shared 1.5B base</td></tr>
+        <tr class="this"><td id="ladder-size">—</td><td>this coreset</td><td class="n" id="ladder-acc">—</td><td>trains here, no base</td></tr>
+        <tr><td>340 KB</td><td>TF-IDF linear</td><td class="n">74.25%</td><td>stored weights</td></tr>
+        <tr><td>2.2 MB</td><td>BERT-tiny 4-bit</td><td class="n">76.75%</td><td>stored weights</td></tr>
+        <tr><td>30 MB</td><td>T5-small 4-bit</td><td class="n">F1 0.256</td><td>generation</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">At 2,000 examples the same classifier reaches <b>84.0%</b> — above the
+    2.2 MB BERT-tiny (76.75%) on this test set. The point is representation choice: the data
+    can be the smaller artifact, and the shared training procedure does the rest.</p>
+  </section>
+
+  <footer>
+    Built with <a href="https://github.com/byjameson/stream-finetune">stream-finetune</a>.
+    The measured ladder and the negative results are in
+    <a href="https://github.com/byjameson/stream-finetune/blob/main/docs/BEHAVIORAL_BITS.md">docs/BEHAVIORAL_BITS.md</a>.
+    AG News test set: 400 rows; training coreset: first N/4 rows per class from the saved
+    teacher labels. No network calls after the page loads.
+  </footer>
+</main>
+
+<script>
+const DATA = __DATA__;
+const LABELS = ["Business", "World", "Sports", "Sci/Tech"];
+const SIZES = [500, 1000, 2000];
+const SAMPLES = [
+  { text: "Stocks rally as oil prices fall", label: "Business" },
+  { text: "United beat City 2-1 in the derby", label: "Sports" },
+  { text: "New telescope detects water on distant planet", label: "Sci/Tech" },
+  { text: "Leaders meet in Geneva for peace talks", label: "World" }
+];
+
+function tokens(s) {
+  const w = (s.toLowerCase().match(/[a-z0-9]+/g) || []);
+  const out = w.slice();
+  for (let i = 0; i + 1 < w.length; i++) out.push(w[i] + "_" + w[i + 1]);
+  return out;
+}
+
+function rowsFor(n) {
+  const per = n / LABELS.length;
+  const rows = [];
+  for (const l of LABELS) rows.push(...DATA.train[l].slice(0, per));
+  return rows;
+}
+
+function train(rows) {
+  const counts = {}, totals = {}, priors = {};
+  for (const l of LABELS) { counts[l] = new Map(); totals[l] = 0; priors[l] = 0; }
+  const vocab = new Set();
+  for (const r of rows) {
+    priors[r.label]++;
+    for (const t of tokens(r.text)) {
+      counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
+      totals[r.label]++;
+      vocab.add(t);
+    }
+  }
+  return { counts, totals, priors, vocab, n: rows.length };
+}
+
+function score(m, text) {
+  const s = {};
+  for (const l of LABELS) s[l] = Math.log(m.priors[l] / m.n);
+  for (const t of tokens(text)) {
+    if (!m.vocab.has(t)) continue;
+    for (const l of LABELS) {
+      const c = m.counts[l].get(t) || 0;
+      s[l] += Math.log((c + 1) / (m.totals[l] + m.vocab.size));
+    }
+  }
+  let best = LABELS[0];
+  for (const l of LABELS) if (s[l] > s[best]) best = l;
+  const mx = Math.max(...LABELS.map(l => s[l]));
+  const ex = {}; let sum = 0;
+  for (const l of LABELS) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of LABELS) probs[l] = ex[l] / sum;
+  return { label: best, probs };
+}
+
+function evaluate(m) {
+  let ok = 0;
+  for (const r of DATA.test) if (score(m, r.text).label === r.true) ok++;
+  return ok / DATA.test.length;
+}
+
+function artifactBytes(rows) {
+  return new Blob([JSON.stringify(rows.map(r => ({ text: r.text, label: r.label })))]).size;
+}
+
+function fmtKB(bytes) {
+  return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB";
+}
+
+let current = null;
+
+function renderResult(res) {
+  const out = document.getElementById("out");
+  const rows = LABELS.map(l => {
+    const p = res.probs[l] * 100;
+    return `<div class="bar-row"><span>${l}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  out.innerHTML = `<div class="verdict">${res.label}</div><div class="bars">${rows}</div>`;
+}
+
+function classify() {
+  if (!current) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  renderResult(score(current.model, text));
+}
+
+function setSize(n) {
+  document.querySelectorAll(".chip[data-size]").forEach(b =>
+    b.classList.toggle("active", Number(b.dataset.size) === n));
+  const rows = rowsFor(n);
+  const t0 = performance.now();
+  const model = train(rows);
+  const trainMs = performance.now() - t0;
+  const t1 = performance.now();
+  const acc = evaluate(model);
+  const evalMs = performance.now() - t1;
+  const bytes = artifactBytes(rows);
+  current = { n, model, bytes };
+
+  document.getElementById("artifact").textContent = fmtKB(bytes);
+  document.getElementById("accuracy").textContent = (acc * 100).toFixed(1) + "%";
+  document.getElementById("trainms").textContent = trainMs.toFixed(0) + " ms";
+  document.getElementById("vocab").textContent = model.vocab.size.toLocaleString();
+  document.getElementById("badge").textContent = fmtKB(bytes);
+  document.getElementById("size-note").textContent =
+    `${n} examples (${n / LABELS.length} per class) · ${fmtKB(bytes)} · ` +
+    `${(bytes * 8 / 1.5e9).toFixed(5)} bit per 1.5B teacher parameter · ` +
+    `eval ${evalMs.toFixed(0)} ms`;
+  document.getElementById("ladder-size").textContent = fmtKB(bytes);
+  document.getElementById("ladder-acc").textContent = (acc * 100).toFixed(2) + "%";
+  classify();
+}
+
+function init() {
+  const sizes = document.getElementById("sizes");
+  for (const n of SIZES) {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.dataset.size = n;
+    b.textContent = `${n.toLocaleString()} examples`;
+    b.onclick = () => setSize(n);
+    sizes.appendChild(b);
+  }
+  const samples = document.getElementById("samples");
+  for (const s of SAMPLES) {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = s.label + ": " + s.text.slice(0, 38);
+    b.onclick = () => {
+      document.getElementById("text").value = s.text;
+      classify();
+    };
+    samples.appendChild(b);
+  }
+  document.getElementById("go").onclick = classify;
+  setSize(500);
+}
+
+requestAnimationFrame(() => setTimeout(init, 30));
+</script>
+</body>
+</html>
