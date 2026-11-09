@@ -163,8 +163,9 @@ The adapter is full-rank: SVD to rank 8 loses 35.8% of the update, so rank reduc
 Quantization works: **8-bit 8.56 MB = 0.0222 bit/base-param** (0.53% weight error); 4-bit
 4.88 MB = **0.0126** (9% error). A masked SFT loss on **870 held-out Dolly rows**: base 2.3752,
 original 2.3403, 8-bit 2.3401 (p = 0.81, no measurable loss), 4-bit 2.3420 (**+0.0018,
-p = 0.001**, 5% of the 0.0349 gain). A second disjoint seed gives **−0.0005, p = 0.37**:
-the 4-bit cost did not replicate; it is not a fixed tax. A second task, **SST-2** (2,000 train / 400 test),
+p = 0.001**, 5% of the 0.0349 gain). A second disjoint seed (pure LoRA, frozen base) gives
+**8-bit +0.00108 (p = 0.038)** and **4-bit +0.00114 (p = 0.029)**: the small cost
+replicates at both widths. A second task, **SST-2** (2,000 train / 400 test),
 goes **71.25% -> 93.75%**; the 8-bit and 4-bit adapters both stay at **93.75%**, with
 masked loss 0.7940 / 0.7942 vs 0.7930 (p = 0.50 / 0.41). A third, **AG News** (4-way,
 6,000 / 400), goes from 2.50% (the base does not follow the bare prompt) to **62.25%**;
