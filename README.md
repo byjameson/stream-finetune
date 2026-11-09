@@ -28,7 +28,7 @@ gave **84.3%**.
 **Make your own:** [Tiny AI Maker](https://byjameson-mini-ai.static.hf.space/maker.html)
 takes a CSV of `text,label`, trains a classifier in the browser, and exports a single HTML
 file, a **QR URL**, a favicon, a WAV or a **PDF model card** with the weights in `/Keywords`.
-No data leaves the page.
+It also runs an optional **5-fold CV** against the 80/20 holdout. No data leaves the page.
 
 **AI in a QR code:** [a 2.2 KB URL](https://byjameson-mini-ai.static.hf.space/qr.html)
 carries an SMS spam classifier — 160 words, int8 weights, 93.5% on 1,115 held-out messages.

@@ -120,8 +120,10 @@ The Minimum-Bit Table tracks the measured rows, with the caveats attached:
 https://byjameson-mini-ai.static.hf.space/leaderboard.html
 
 Tiny AI Maker now writes a model card for its own browser-trained classifiers too: the
-split, a 95% Wilson interval, per-label precision/recall/F1, a confusion matrix, the full
-int8 weight size, the data-artifact size and the caveats. It also exports a PDF card with the weights in `/Keywords` and a
+split, a 95% Wilson interval, an optional 5-fold CV, per-label precision/recall/F1, a
+confusion matrix, the full int8 weight size, the data-artifact size and the caveats. The
+200-row AG News sample is the honest case: 70.0% on the 80/20 holdout, 57.0% across 5 folds
+(13.0 pp lower), which is exactly why the card shows both. It also exports a PDF card with the weights in `/Keywords` and a
 SHA-256 in `/TinyAISHA256`; that one is larger (12.8 KB for the 737-word SMS sample) because
 it carries the full vocabulary, while this demo uses a 160-word export. The PDF is the same
 idea in a document format.

@@ -44,6 +44,7 @@
   th { color:var(--muted); font-weight:600; font-size:12px; }
   td.n { text-align:right; font-variant-numeric:tabular-nums; }
   td.good { color:var(--accent); font-weight:700; }
+  .cvhead { margin-top:12px; font-size:14px; }
   .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
   .bar-row { display:grid; grid-template-columns: 110px 1fr 54px; gap:8px;
              align-items:center; font-size:13px; margin:5px 0; }
@@ -62,9 +63,9 @@
     <div class="badge">browser-only</div>
     <h1>Tiny AI Maker</h1>
     <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
-    Bayes in your browser, shows held-out accuracy with a confidence interval, the int8
-    weight size and the example size, and exports a single HTML file, a QR, a favicon, a WAV
-    or a PDF model card. No data leaves the page.</p>
+    Bayes in your browser, shows held-out accuracy with a confidence interval, an optional
+    5-fold CV, the int8 weight size and the example size, and exports a single HTML file, a
+    QR, a favicon, a WAV or a PDF model card. No data leaves the page.</p>
   </header>
 
   <section class="panel">
@@ -102,6 +103,8 @@
     <h2>3. Result</h2>
     <div id="metrics"></div>
     <div id="confusion"></div>
+    <button class="chip" id="cvgo" disabled>Run 5-fold CV</button>
+    <div id="cvout"></div>
     <div id="try" style="display:none">
       <label class="muted" for="text">Try it</label>
       <textarea id="text" rows="3">The movie was great</textarea>
@@ -137,7 +140,7 @@
 const SAMPLE = __SAMPLE__;
 const SMS_SAMPLE = __SMS__;
 let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null,
-              report: null };
+              report: null, cv: null };
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -311,6 +314,31 @@ function labelMetrics(per, labels) {
   });
 }
 
+function makeFolds(rows, k = 5) {
+  const by = new Map();
+  rows.forEach((r, i) => {
+    if (!by.has(r.label)) by.set(r.label, []);
+    by.get(r.label).push(i);
+  });
+  if (by.size < 2) throw new Error("need at least two labels");
+  const minCount = Math.min(...[...by.values()].map(a => a.length));
+  const actual = Math.min(k, minCount);
+  if (actual < 2) throw new Error("5-fold CV needs at least 2 examples per label");
+  const rng = rng32(123);
+  const foldOf = new Array(rows.length).fill(0);
+  for (const inds of by.values()) {
+    const shuffled = shuffle(inds, rng);
+    shuffled.forEach((idx, j) => { foldOf[idx] = j % actual; });
+  }
+  const folds = Array.from({ length: actual }, (_, f) => ({ fold: f + 1, train: [], test: [] }));
+  rows.forEach((r, i) => {
+    const f = foldOf[i];
+    folds[f].test.push(r);
+    for (let j = 0; j < actual; j++) if (j !== f) folds[j].train.push(r);
+  });
+  return { k: actual, folds };
+}
+
 function parseAndShow() {
   try {
     const rows = parseData(document.getElementById("data").value);
@@ -330,12 +358,15 @@ function parseAndShow() {
     document.getElementById("export").disabled = true;
     document.getElementById("cardgo").disabled = true;
     document.getElementById("pdfgo").disabled = true;
+    document.getElementById("cvgo").disabled = true;
+    document.getElementById("cvout").innerHTML = "";
     document.getElementById("qrgo").disabled = true;
     document.getElementById("favgo").disabled = true;
     document.getElementById("wavgo").disabled = true;
     document.getElementById("qrout").innerHTML = "";
     state.candidates = null;
     state.report = null;
+    state.cv = null;
   } catch (e) {
     document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
   }
@@ -372,6 +403,8 @@ function doTrain() {
   state.model = model; state.modelRows = rows; state.labels = model.labels; state.acc = acc;
   state.report = { acc, ok, nTest: state.split.test.length, per, confusion,
                    rows: rows.length, labels: model.labels, weights, dataBytes, trainMs, ci };
+  state.cv = null;
+  document.getElementById("cvout").innerHTML = "";
 
   document.getElementById("metrics").innerHTML = `
     <div class="metrics">
@@ -406,6 +439,7 @@ function doTrain() {
   document.getElementById("export").disabled = false;
   document.getElementById("cardgo").disabled = false;
   document.getElementById("pdfgo").disabled = false;
+  document.getElementById("cvgo").disabled = false;
   document.getElementById("qrgo").disabled = false;
   document.getElementById("favgo").disabled = false;
   document.getElementById("wavgo").disabled = false;
@@ -414,6 +448,58 @@ function doTrain() {
     "The exported file contains the selected examples and the classifier; it runs offline.";
   document.getElementById("text").value = rows[0].text;
   classify();
+}
+
+function runCV() {
+  if (!state.rows.length) return;
+  const btn = document.getElementById("cvgo");
+  const out = document.getElementById("cvout");
+  btn.disabled = true;
+  out.innerHTML = '<p class="muted">Running 5-fold CV…</p>';
+  setTimeout(() => {
+    try {
+      const b = document.getElementById("budget").value;
+      const n = b === "all" ? null : Number(b);
+      const { k, folds } = makeFolds(state.rows, 5);
+      const results = folds.map(f => {
+        const train = sampleTrain(f.train, n);
+        const m = trainCNB(train);
+        let ok = 0;
+        for (const r of f.test) if (score(m, r.text).label === r.label) ok++;
+        return { fold: f.fold, train: train.length, test: f.test.length,
+                 acc: ok / Math.max(f.test.length, 1) };
+      });
+      const mean = results.reduce((a, r) => a + r.acc, 0) / results.length;
+      const variance = results.length > 1
+        ? results.reduce((a, r) => a + (r.acc - mean) ** 2, 0) / (results.length - 1) : 0;
+      const std = Math.sqrt(variance);
+      const min = Math.min(...results.map(r => r.acc));
+      const max = Math.max(...results.map(r => r.acc));
+      const gap = state.acc == null ? null : (state.acc - mean) * 100;
+      state.cv = { k, mean, std, min, max, results, rows: state.rows.length,
+                   budget: b, holdout: state.acc, gap };
+      const pct = x => (x * 100).toFixed(1) + "%";
+      const body = results.map(r => `<tr><td>${r.fold}</td><td class="n">${r.train}</td>` +
+        `<td class="n">${r.test}</td><td class="n">${pct(r.acc)}</td></tr>`).join("");
+      const gapAbs = gap == null ? null : Math.abs(gap);
+      const gapText = gap == null ? "" :
+        gapAbs < 0.05 ? ` CV mean matches the 80/20 holdout (${pct(state.acc)}).` :
+        ` CV mean is ${gapAbs.toFixed(1)} pp ${gap >= 0 ? "lower" : "higher"} ` +
+        `than the 80/20 holdout (${pct(state.acc)}).`;
+      out.innerHTML = `<div class="cvhead"><b>${k}-fold CV:</b> ${pct(mean)} mean · ` +
+        `${(std * 100).toFixed(1)} pp fold std · range ${pct(min)}–${pct(max)}</div>` +
+        `<table><thead><tr><th>fold</th><th class="n">train</th><th class="n">test</th>` +
+        `<th class="n">accuracy</th></tr></thead><tbody>${body}</tbody></table>` +
+        `<p class="muted">All ${state.rows.length} rows; budget ` +
+        `${b === "all" ? "all" : b + " examples"} per training fold.${gapText} ` +
+        `The fold-to-fold spread is a stability check, not a confidence interval.</p>`;
+    } catch (e) {
+      out.innerHTML = `<p class="err">${esc(e.message)}</p>`;
+      state.cv = null;
+    } finally {
+      btn.disabled = false;
+    }
+  }, 20);
 }
 
 function classify() {
@@ -622,6 +708,7 @@ function downloadWav() {
 function downloadCard() {
   const r = state.report;
   if (!r) return;
+  const cv = state.cv;
   const pct = x => x == null ? "—" : (x * 100).toFixed(1) + "%";
   const md = s => String(s).replace(/\|/g, "\\|");
   const lm = labelMetrics(r.per, r.labels);
@@ -648,7 +735,16 @@ Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the brow
 - int8 weights (full vocabulary): ${r.weights} B (Complement NB, JSON)
 - data artifact: ${r.dataBytes} B (examples + classifier, single HTML)
 - fit time: ${r.trainMs.toFixed(0)} ms in this browser
+${cv ? `- ${cv.k}-fold CV: ${pct(cv.mean)} mean vs ${pct(cv.holdout)} holdout, ${(cv.std * 100).toFixed(1)} pp fold std` : ""}
+${cv ? `
+## Cross-validation
 
+- ${cv.k}-fold CV on ${cv.rows} rows; budget ${cv.budget === "all" ? "all" : cv.budget + " examples"} per training fold
+- mean ${pct(cv.mean)}, fold std ${(cv.std * 100).toFixed(1)} pp, range ${pct(cv.min)}–${pct(cv.max)}
+- 80/20 holdout: ${pct(cv.holdout)}; CV mean differs by ${Math.abs(cv.gap).toFixed(1)} pp
+- folds: ${cv.results.map(x => `${x.fold}: ${pct(x.acc)}`).join(", ")}
+- The exported model is the 80/20 fit above; CV is a stability check, not a confidence interval.
+` : ""}
 ## Per-label metrics
 
 | label | support | precision | recall | F1 |
@@ -663,8 +759,7 @@ ${cmRows}
 
 ## Caveats
 
-- One 80/20 split, not cross-validation. The interval reflects test size only; it is not
-  an estimate of dataset noise.
+- Headline accuracy is one 80/20 split. ${cv ? "The 5-fold CV above is a stability check; the folds share data." : "The Wilson interval reflects test size only; it is not an estimate of dataset noise."}
 - Bag-of-words Complement NB: no word order, no embeddings, no calibration.
 - Not an LLM and not a production classifier.
 - Container exports may use a smaller vocabulary than the full model. Their pages report
@@ -673,7 +768,8 @@ ${cmRows}
 `;
   downloadBlob(new Blob([card], { type: "text/markdown" }), "tiny-ai-model-card.md");
   document.getElementById("exportInfo").textContent =
-    "Downloaded tiny-ai-model-card.md with the split, accuracy, interval and sizes.";
+    "Downloaded tiny-ai-model-card.md with the split, accuracy, interval, sizes" +
+    (cv ? " and 5-fold CV." : ".");
 }
 
 function pdfEsc(s) {
@@ -687,6 +783,7 @@ function ascii(s) {
 async function downloadPdfCard() {
   const r = state.report;
   if (!r) return;
+  const cv = state.cv;
   const pct = x => (x * 100).toFixed(1);
   const weights = qrPayload(state.model, state.acc);
   const raw = new TextEncoder().encode(JSON.stringify(weights));
@@ -714,6 +811,7 @@ async function downloadPdfCard() {
     "Training rows: " + r.rows,
     "Held-out rows: " + r.nTest + " (80/20 split, seed 42)",
     "Accuracy: " + pct(r.acc) + "% (95% CI " + pct(r.ci[0]) + "-" + pct(r.ci[1]) + "%)",
+    ...(cv ? [`CV (${cv.k}-fold): ${pct(cv.mean)}% mean vs ${pct(cv.holdout)}% holdout, ${(cv.std * 100).toFixed(1)} pp std`] : []),
     "Full int8 weights: " + r.weights + " bytes",
     sha ? "SHA-256: " + sha : "SHA-256: unavailable",
     "Data artifact: " + r.dataBytes + " bytes (examples + classifier)",
@@ -722,7 +820,8 @@ async function downloadPdfCard() {
     ...metrics,
     "",
     "Caveats:",
-    "  One 80/20 split, not cross-validation.",
+    cv ? "  The 5-fold CV above is a stability check; the exported model is the 80/20 fit."
+       : "  One 80/20 split, not cross-validation.",
     "  Bag-of-words Complement NB; no word order, no calibration.",
     "  Not an LLM and not a production classifier.",
     "  The model is in /Keywords metadata, not drawn on this page.",
@@ -803,6 +902,12 @@ document.getElementById("file").onchange = (e) => {
   r.readAsText(f);
 };
 document.getElementById("train").onclick = doTrain;
+document.getElementById("cvgo").onclick = runCV;
+document.getElementById("budget").onchange = () => {
+  state.cv = null;
+  document.getElementById("cvout").innerHTML = "";
+  document.getElementById("cvgo").disabled = !state.model;
+};
 document.getElementById("classify").onclick = classify;
 document.getElementById("export").onclick = download;
 document.getElementById("cardgo").onclick = downloadCard;
