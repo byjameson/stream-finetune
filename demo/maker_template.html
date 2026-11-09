@@ -64,8 +64,9 @@
     <h1>Tiny AI Maker</h1>
     <p class="lead">Bring a small labelled text dataset. This page fits a Complement Naive
     Bayes in your browser, shows held-out accuracy with a confidence interval, an optional
-    5-fold CV, the int8 weight size and the example size, and exports a single HTML file, a
-    QR, a favicon, a WAV or a PDF model card. No data leaves the page.</p>
+    5-fold CV with out-of-fold Brier/ECE, the int8 weight size and the example size, and
+    exports a single HTML file, a QR, a favicon, a WAV or a PDF model card. No data leaves
+    the page.</p>
   </header>
 
   <section class="panel">
@@ -103,7 +104,7 @@
     <h2>3. Result</h2>
     <div id="metrics"></div>
     <div id="confusion"></div>
-    <button class="chip" id="cvgo" disabled>Run 5-fold CV</button>
+    <button class="chip" id="cvgo" disabled>Run 5-fold CV + calibration</button>
     <div id="cvout"></div>
     <div id="try" style="display:none">
       <label class="muted" for="text">Try it</label>
@@ -461,11 +462,18 @@ function runCV() {
       const b = document.getElementById("budget").value;
       const n = b === "all" ? null : Number(b);
       const { k, folds } = makeFolds(state.rows, 5);
+      const allLabels = [...new Set(state.rows.map(r => r.label))].sort();
+      const predictions = [];
       const results = folds.map(f => {
         const train = sampleTrain(f.train, n);
         const m = trainCNB(train);
         let ok = 0;
-        for (const r of f.test) if (score(m, r.text).label === r.label) ok++;
+        for (const r of f.test) {
+          const res = score(m, r.text);
+          const correct = res.label === r.label;
+          if (correct) ok++;
+          predictions.push({ trueLabel: r.label, pred: res.label, probs: res.probs });
+        }
         return { fold: f.fold, train: train.length, test: f.test.length,
                  acc: ok / Math.max(f.test.length, 1) };
       });
@@ -476,11 +484,41 @@ function runCV() {
       const min = Math.min(...results.map(r => r.acc));
       const max = Math.max(...results.map(r => r.acc));
       const gap = state.acc == null ? null : (state.acc - mean) * 100;
+
+      let brier = 0;
+      for (const p of predictions) {
+        for (const l of allLabels) {
+          const y = l === p.trueLabel ? 1 : 0;
+          const q = p.probs[l] || 0;
+          brier += (q - y) ** 2;
+        }
+      }
+      brier /= Math.max(predictions.length, 1);
+      const rawBins = Array.from({ length: 10 }, (_, i) =>
+        ({ lo: i / 10, hi: (i + 1) / 10, n: 0, conf: 0, ok: 0 }));
+      for (const p of predictions) {
+        const conf = Math.max(...allLabels.map(l => p.probs[l] || 0));
+        const idx = Math.min(9, Math.max(0, Math.floor(conf * 10)));
+        const bin = rawBins[idx];
+        bin.n++;
+        bin.conf += conf;
+        bin.ok += p.pred === p.trueLabel ? 1 : 0;
+      }
+      const used = rawBins.filter(x => x.n > 0);
+      const ece = used.reduce((a, x) =>
+        a + (x.n / predictions.length) * Math.abs(x.ok / x.n - x.conf / x.n), 0);
+      const bins = used.map(x => ({ lo: x.lo, hi: x.hi, n: x.n,
+                                    conf: x.conf / x.n, acc: x.ok / x.n }));
+
       state.cv = { k, mean, std, min, max, results, rows: state.rows.length,
-                   budget: b, holdout: state.acc, gap };
+                   budget: b, holdout: state.acc, gap, brier, ece, bins,
+                   predictions: predictions.length };
       const pct = x => (x * 100).toFixed(1) + "%";
       const body = results.map(r => `<tr><td>${r.fold}</td><td class="n">${r.train}</td>` +
         `<td class="n">${r.test}</td><td class="n">${pct(r.acc)}</td></tr>`).join("");
+      const calRows = bins.map(x => `<tr><td>${x.lo.toFixed(1)}–${x.hi.toFixed(1)}</td>` +
+        `<td class="n">${x.n}</td><td class="n">${pct(x.conf)}</td>` +
+        `<td class="n">${pct(x.acc)}</td></tr>`).join("");
       const gapAbs = gap == null ? null : Math.abs(gap);
       const gapText = gap == null ? "" :
         gapAbs < 0.05 ? ` CV mean matches the 80/20 holdout (${pct(state.acc)}).` :
@@ -490,6 +528,11 @@ function runCV() {
         `${(std * 100).toFixed(1)} pp fold std · range ${pct(min)}–${pct(max)}</div>` +
         `<table><thead><tr><th>fold</th><th class="n">train</th><th class="n">test</th>` +
         `<th class="n">accuracy</th></tr></thead><tbody>${body}</tbody></table>` +
+        `<p class="muted">Brier <b>${brier.toFixed(3)}</b> · ECE <b>${ece.toFixed(3)}</b> ` +
+        `over ${bins.length} non-empty bins, ${predictions.length} out-of-fold predictions.</p>` +
+        `<details><summary>Reliability bins</summary><table><thead><tr><th>confidence</th>` +
+        `<th class="n">n</th><th class="n">mean conf</th><th class="n">accuracy</th></tr></thead>` +
+        `<tbody>${calRows}</tbody></table></details>` +
         `<p class="muted">All ${state.rows.length} rows; budget ` +
         `${b === "all" ? "all" : b + " examples"} per training fold.${gapText} ` +
         `The fold-to-fold spread is a stability check, not a confidence interval.</p>`;
@@ -736,12 +779,14 @@ Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the brow
 - data artifact: ${r.dataBytes} B (examples + classifier, single HTML)
 - fit time: ${r.trainMs.toFixed(0)} ms in this browser
 ${cv ? `- ${cv.k}-fold CV: ${pct(cv.mean)} mean vs ${pct(cv.holdout)} holdout, ${(cv.std * 100).toFixed(1)} pp fold std` : ""}
+${cv ? `- Brier: ${cv.brier.toFixed(3)}; ECE: ${cv.ece.toFixed(3)} (${cv.k}-fold out-of-fold)` : ""}
 ${cv ? `
 ## Cross-validation
 
 - ${cv.k}-fold CV on ${cv.rows} rows; budget ${cv.budget === "all" ? "all" : cv.budget + " examples"} per training fold
 - mean ${pct(cv.mean)}, fold std ${(cv.std * 100).toFixed(1)} pp, range ${pct(cv.min)}–${pct(cv.max)}
 - 80/20 holdout: ${pct(cv.holdout)}; CV mean differs by ${Math.abs(cv.gap).toFixed(1)} pp
+- calibration: Brier ${cv.brier.toFixed(3)}, ECE ${cv.ece.toFixed(3)} over ${cv.bins.length} non-empty bins (${cv.predictions} predictions)
 - folds: ${cv.results.map(x => `${x.fold}: ${pct(x.acc)}`).join(", ")}
 - The exported model is the 80/20 fit above; CV is a stability check, not a confidence interval.
 ` : ""}
@@ -760,7 +805,8 @@ ${cmRows}
 ## Caveats
 
 - Headline accuracy is one 80/20 split. ${cv ? "The 5-fold CV above is a stability check; the folds share data." : "The Wilson interval reflects test size only; it is not an estimate of dataset noise."}
-- Bag-of-words Complement NB: no word order, no embeddings, no calibration.
+- Bag-of-words Complement NB: no word order, no embeddings.
+${cv ? `- Calibration is out-of-fold, but with ${cv.rows} rows the bins are noisy; ECE is not a guarantee.` : ""}
 - Not an LLM and not a production classifier.
 - Container exports may use a smaller vocabulary than the full model. Their pages report
   the accuracy of the exported vocabulary.
@@ -812,6 +858,7 @@ async function downloadPdfCard() {
     "Held-out rows: " + r.nTest + " (80/20 split, seed 42)",
     "Accuracy: " + pct(r.acc) + "% (95% CI " + pct(r.ci[0]) + "-" + pct(r.ci[1]) + "%)",
     ...(cv ? [`CV (${cv.k}-fold): ${pct(cv.mean)}% mean vs ${pct(cv.holdout)}% holdout, ${(cv.std * 100).toFixed(1)} pp std`] : []),
+    ...(cv ? [`Brier ${cv.brier.toFixed(3)}, ECE ${cv.ece.toFixed(3)}`] : []),
     "Full int8 weights: " + r.weights + " bytes",
     sha ? "SHA-256: " + sha : "SHA-256: unavailable",
     "Data artifact: " + r.dataBytes + " bytes (examples + classifier)",
