@@ -45,6 +45,19 @@ Neither number is a production calibration claim. With 100–200 rows the bins a
 They are there to stop the UI from presenting `softmax` as if it were a measured
 probability.
 
+## Can temperature scaling fix it?
+
+A single temperature is fit nested out-of-fold: for each fold, T is chosen on the other
+folds' predictions, then applied to the held-out fold. This is a measurement, not a new
+export format.
+
+- SMS: median T **1.5**; ECE **0.066 → 0.032**; Brier **0.144 → 0.143**.
+- AG News: median T **1.5**; ECE **0.139 → 0.074**; Brier **0.523 → 0.503**.
+
+It helps, but it does not rescue the four-class model: Brier 0.503 is still high, and the
+labels do not change with temperature. The exported int8 weights are unchanged; applying T
+would only change the displayed probabilities.
+
 ## What changed in the Maker
 
 - An optional **5-fold CV** button. Folds are stratified by label; k is capped by the
@@ -54,6 +67,8 @@ probability.
 - The result shows the fold table, the mean, the fold std, the range, and the gap against
   the 80/20 holdout.
 - Calibration is measured out-of-fold with Brier/ECE and a reliability-bin table.
+- A nested temperature fit reports whether a single T lowers ECE/Brier; it is not applied
+  to the exports.
 - The markdown model card and the PDF model card include the same numbers, or explicitly
   omit the CV section if you did not run it.
 - The exported model is still the 80/20 fit. The card says so.

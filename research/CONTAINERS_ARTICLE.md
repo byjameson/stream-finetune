@@ -91,7 +91,8 @@ split, a 95% Wilson interval, an optional 5-fold CV with out-of-fold Brier/ECE, 
 precision/recall/F1, a confusion matrix, both artifact sizes and the caveats. The 5-fold CV
 is the honest part: the 200-row AG News sample scores 70.0% on one 80/20 split but 57.0%
 mean over 5 folds, a 13.0-point gap. Its out-of-fold Brier is 0.523 and ECE 0.139; the
-softmax is not calibrated.
+softmax is not calibrated. A nested temperature fit (median T 1.5) lowers ECE to 0.074; on
+the SMS sample it lowers ECE from 0.066 to 0.032. It is measured, not applied to exports.
 
 - Demo: https://byjameson-mini-ai.static.hf.space/maker.html
 

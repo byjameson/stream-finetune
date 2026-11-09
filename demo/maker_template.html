@@ -289,7 +289,7 @@ function score(m, text) {
   for (const l of m.labels) { ex[l] = Math.exp(s[l] - mx); sum += ex[l]; }
   const probs = {};
   for (const l of m.labels) probs[l] = ex[l] / sum;
-  return { label: best, probs };
+  return { label: best, probs, scores: s };
 }
 
 function fmtKB(bytes) { return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB"; }
@@ -313,6 +313,64 @@ function labelMetrics(per, labels) {
     return { label: l, support: x.n, correct: x.ok, predicted: x.predicted,
              precision, recall, f1 };
   });
+}
+
+function softmaxScores(scores, labels, T = 1) {
+  const mx = Math.max(...labels.map(l => scores[l] / T));
+  const ex = {};
+  let sum = 0;
+  for (const l of labels) { ex[l] = Math.exp(scores[l] / T - mx); sum += ex[l]; }
+  const probs = {};
+  for (const l of labels) probs[l] = ex[l] / sum;
+  return probs;
+}
+
+function fitTemperature(preds, labels) {
+  const grid = [0.25, 0.33, 0.5, 0.67, 0.8, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 7, 10];
+  let bestT = 1, best = Infinity;
+  for (const T of grid) {
+    let nll = 0;
+    for (const p of preds) {
+      const probs = softmaxScores(p.scores, labels, T);
+      nll -= Math.log(Math.max(probs[p.trueLabel] || 0, 1e-12));
+    }
+    nll /= Math.max(preds.length, 1);
+    if (nll < best) { best = nll; bestT = T; }
+  }
+  return bestT;
+}
+
+function calibrationStats(preds, labels) {
+  let brier = 0;
+  for (const p of preds) {
+    for (const l of labels) {
+      const y = l === p.trueLabel ? 1 : 0;
+      const q = p.probs[l] || 0;
+      brier += (q - y) ** 2;
+    }
+  }
+  brier /= Math.max(preds.length, 1);
+  const rawBins = Array.from({ length: 10 }, (_, i) =>
+    ({ lo: i / 10, hi: (i + 1) / 10, n: 0, conf: 0, ok: 0 }));
+  for (const p of preds) {
+    const conf = Math.max(...labels.map(l => p.probs[l] || 0));
+    const idx = Math.min(9, Math.max(0, Math.floor(conf * 10)));
+    const bin = rawBins[idx];
+    bin.n++;
+    bin.conf += conf;
+    bin.ok += p.pred === p.trueLabel ? 1 : 0;
+  }
+  const used = rawBins.filter(x => x.n > 0);
+  const ece = used.reduce((a, x) =>
+    a + (x.n / preds.length) * Math.abs(x.ok / x.n - x.conf / x.n), 0);
+  return { brier, ece, bins: used.map(x => ({ lo: x.lo, hi: x.hi, n: x.n,
+                                              conf: x.conf / x.n, acc: x.ok / x.n })) };
+}
+
+function median(xs) {
+  const s = [...xs].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
 
 function makeFolds(rows, k = 5) {
@@ -471,7 +529,8 @@ function runCV() {
           const res = score(m, r.text);
           const correct = res.label === r.label;
           if (correct) ok++;
-          predictions.push({ trueLabel: r.label, pred: res.label, probs: res.probs });
+          predictions.push({ fold: f.fold, trueLabel: r.label, pred: res.label,
+                             probs: res.probs, scores: res.scores });
         }
         return { fold: f.fold, train: train.length, test: f.test.length,
                  acc: ok / Math.max(f.test.length, 1) };
@@ -484,34 +543,27 @@ function runCV() {
       const max = Math.max(...results.map(r => r.acc));
       const gap = state.acc == null ? null : (state.acc - mean) * 100;
 
-      let brier = 0;
-      for (const p of predictions) {
-        for (const l of allLabels) {
-          const y = l === p.trueLabel ? 1 : 0;
-          const q = p.probs[l] || 0;
-          brier += (q - y) ** 2;
-        }
+      const base = calibrationStats(predictions, allLabels);
+      const tByFold = {};
+      for (const f of results) {
+        const trainPreds = predictions.filter(p => p.fold !== f.fold);
+        tByFold[f.fold] = fitTemperature(trainPreds, allLabels);
       }
-      brier /= Math.max(predictions.length, 1);
-      const rawBins = Array.from({ length: 10 }, (_, i) =>
-        ({ lo: i / 10, hi: (i + 1) / 10, n: 0, conf: 0, ok: 0 }));
-      for (const p of predictions) {
-        const conf = Math.max(...allLabels.map(l => p.probs[l] || 0));
-        const idx = Math.min(9, Math.max(0, Math.floor(conf * 10)));
-        const bin = rawBins[idx];
-        bin.n++;
-        bin.conf += conf;
-        bin.ok += p.pred === p.trueLabel ? 1 : 0;
-      }
-      const used = rawBins.filter(x => x.n > 0);
-      const ece = used.reduce((a, x) =>
-        a + (x.n / predictions.length) * Math.abs(x.ok / x.n - x.conf / x.n), 0);
-      const bins = used.map(x => ({ lo: x.lo, hi: x.hi, n: x.n,
-                                    conf: x.conf / x.n, acc: x.ok / x.n }));
+      const calibrated = predictions.map(p => ({
+        ...p, probs: softmaxScores(p.scores, allLabels, tByFold[p.fold])
+      }));
+      const scaled = calibrationStats(calibrated, allLabels);
+      const ts = Object.values(tByFold);
+      const tMed = median(ts), tMin = Math.min(...ts), tMax = Math.max(...ts);
+      const brier = base.brier, ece = base.ece, bins = base.bins;
 
       state.cv = { k, mean, std, min, max, results, rows: state.rows.length,
                    budget: b, holdout: state.acc, gap, brier, ece, bins,
-                   predictions: predictions.length };
+                   predictions: predictions.length,
+                   temperature: { median: tMed, min: tMin, max: tMax, byFold: tByFold,
+                                  brier0: base.brier, ece0: base.ece,
+                                  brierT: scaled.brier, eceT: scaled.ece,
+                                  binsT: scaled.bins } };
       const pct = x => (x * 100).toFixed(1) + "%";
       const body = results.map(r => `<tr><td>${r.fold}</td><td class="n">${r.train}</td>` +
         `<td class="n">${r.test}</td><td class="n">${pct(r.acc)}</td></tr>`).join("");
@@ -529,7 +581,11 @@ function runCV() {
         `<th class="n">accuracy</th></tr></thead><tbody>${body}</tbody></table>` +
         `<p class="muted">Brier <b>${brier.toFixed(3)}</b> · ECE <b>${ece.toFixed(3)}</b> ` +
         `over ${bins.length} non-empty bins, ${predictions.length} out-of-fold predictions.</p>` +
-        `<details><summary>Reliability bins</summary><table><thead><tr><th>confidence</th>` +
+        `<p class="muted">Temperature scaling (nested out-of-fold): T median ` +
+        `<b>${tMed.toFixed(2)}</b> (${tMin.toFixed(2)}–${tMax.toFixed(2)}) · ` +
+        `ECE ${ece.toFixed(3)} → ${scaled.ece.toFixed(3)} · ` +
+        `Brier ${brier.toFixed(3)} → ${scaled.brier.toFixed(3)}. Not applied to exports.</p>` +
+        `<details><summary>Reliability bins (T=1)</summary><table><thead><tr><th>confidence</th>` +
         `<th class="n">n</th><th class="n">mean conf</th><th class="n">accuracy</th></tr></thead>` +
         `<tbody>${calRows}</tbody></table></details>` +
         `<p class="muted">All ${state.rows.length} rows; budget ` +
@@ -778,6 +834,7 @@ Generated ${new Date().toISOString().slice(0, 10)} by Tiny AI Maker, in the brow
 - fit time: ${r.trainMs.toFixed(0)} ms in this browser
 ${cv ? `- ${cv.k}-fold CV: ${pct(cv.mean)} mean vs ${pct(cv.holdout)} holdout, ${(cv.std * 100).toFixed(1)} pp fold std` : ""}
 ${cv ? `- Brier: ${cv.brier.toFixed(3)}; ECE: ${cv.ece.toFixed(3)} (${cv.k}-fold out-of-fold)` : ""}
+${cv ? `- temperature scaling: T median ${cv.temperature.median.toFixed(2)} (${cv.temperature.min.toFixed(2)}–${cv.temperature.max.toFixed(2)}); ECE ${cv.ece.toFixed(3)} → ${cv.temperature.eceT.toFixed(3)}; Brier ${cv.brier.toFixed(3)} → ${cv.temperature.brierT.toFixed(3)} (not applied to exports)` : ""}
 ${cv ? `
 ## Cross-validation
 
@@ -785,6 +842,7 @@ ${cv ? `
 - mean ${pct(cv.mean)}, fold std ${(cv.std * 100).toFixed(1)} pp, range ${pct(cv.min)}–${pct(cv.max)}
 - 80/20 holdout: ${pct(cv.holdout)}; CV mean differs by ${Math.abs(cv.gap).toFixed(1)} pp
 - calibration: Brier ${cv.brier.toFixed(3)}, ECE ${cv.ece.toFixed(3)} over ${cv.bins.length} non-empty bins (${cv.predictions} predictions)
+- temperature scaling: median T ${cv.temperature.median.toFixed(2)} (${cv.temperature.min.toFixed(2)}–${cv.temperature.max.toFixed(2)}); ECE ${cv.ece.toFixed(3)} → ${cv.temperature.eceT.toFixed(3)}; Brier ${cv.brier.toFixed(3)} → ${cv.temperature.brierT.toFixed(3)} (measured, not applied to exports)
 - folds: ${cv.results.map(x => `${x.fold}: ${pct(x.acc)}`).join(", ")}
 - The exported model is the 80/20 fit above; CV is a stability check, not a confidence interval.
 ` : ""}
@@ -804,7 +862,7 @@ ${cmRows}
 
 - Headline accuracy is one 80/20 split. ${cv ? "The 5-fold CV above is a stability check; the folds share data." : "The Wilson interval reflects test size only; it is not an estimate of dataset noise."}
 - Bag-of-words Complement NB: no word order, no embeddings.
-${cv ? `- Calibration is out-of-fold, but with ${cv.rows} rows the bins are noisy; ECE is not a guarantee.` : ""}
+${cv ? `- Calibration is out-of-fold, but with ${cv.rows} rows the bins are noisy; ECE is not a guarantee. Temperature scaling is measured, not applied to the exported weights.` : ""}
 - Not an LLM and not a production classifier.
 - Container exports may use a smaller vocabulary than the full model. Their pages report
   the accuracy of the exported vocabulary.
@@ -857,6 +915,7 @@ async function downloadPdfCard() {
     "Accuracy: " + pct(r.acc) + "% (95% CI " + pct(r.ci[0]) + "-" + pct(r.ci[1]) + "%)",
     ...(cv ? [`CV (${cv.k}-fold): ${pct(cv.mean)}% mean vs ${pct(cv.holdout)}% holdout, ${(cv.std * 100).toFixed(1)} pp std`] : []),
     ...(cv ? [`Brier ${cv.brier.toFixed(3)}, ECE ${cv.ece.toFixed(3)}`] : []),
+    ...(cv ? [`Temperature: T ${cv.temperature.median.toFixed(2)}, ECE ${cv.ece.toFixed(3)} -> ${cv.temperature.eceT.toFixed(3)}`] : []),
     "Full int8 weights: " + r.weights + " bytes",
     sha ? "SHA-256: " + sha : "SHA-256: unavailable",
     "Data artifact: " + r.dataBytes + " bytes (examples + classifier)",
