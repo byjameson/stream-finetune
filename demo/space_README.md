@@ -19,8 +19,9 @@ rows in ~11 ms; the slider goes to 1,000 examples (260 KB, 81.8%) and 2,000 (522
 82.8%).
 
 The point is the artifact, not the algorithm: a small coreset of labelled data can be a
-smaller and more accurate artifact than a tiny transformer. The measured ladder and the
-negative results are in
+smaller and more accurate artifact than a tiny transformer. A fresh 400-row test gives
+74.3% at 500 examples and 82.8% at 2,000; the 1.68 MB linear model gives 91.0%. The
+measured ladder and the negative results are in
 [docs/BEHAVIORAL_BITS.md](https://github.com/byjameson/stream-finetune/blob/main/docs/BEHAVIORAL_BITS.md).
 
 **Accuracy mode:** [max-ai.html](https://byjameson-mini-ai.static.hf.space/max-ai.html) —

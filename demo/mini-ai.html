@@ -118,6 +118,9 @@
     <p class="muted">At 2,000 examples the same classifier reaches <b>82.8%</b> — above the
     2.2 MB BERT-tiny (76.75%) on this test set. The point is representation choice: the data
     can be the smaller artifact, and the shared training procedure does the rest.</p>
+    <p class="muted">Fresh-sample check: a separate 400-row test gives <b>74.3%</b> at 500
+    examples and <b>82.8%</b> at 2,000. The 500-example gap is within the ~4-point noise of
+    a 400-row test; the 2,000-example result matches.</p>
     <p>Need more accuracy? <a href="max-ai.html">The 1.7 MB accuracy mode</a> uses 75,000
     human labels and reaches <b>88.5%</b> on the same 400 rows.</p>
   </section>
