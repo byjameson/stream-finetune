@@ -68,8 +68,10 @@ accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 
 favicon PNG, an 8-bit WAV, and a PDF model card with the weights in `/Keywords`. The SMS
 sample is 100 rows; 160 words; 90% on its held-out split; 2.1 KB QR. The favicon and WAV viewers load the exported files back through a file
 input, so each export is round-tripped in the browser. It also writes a model card with the
-split, a 95% Wilson interval, per-label precision/recall/F1, a confusion matrix, both
-artifact sizes and the caveats.
+split, a 95% Wilson interval, an optional 5-fold CV, per-label precision/recall/F1, a
+confusion matrix, both artifact sizes and the caveats. The 5-fold CV is the honest part:
+the 200-row AG News sample scores 70.0% on one 80/20 split but 57.0% mean over 5 folds, a
+13.0-point gap.
 
 - Demo: https://byjameson-mini-ai.static.hf.space/maker.html
 
