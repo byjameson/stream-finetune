@@ -87,6 +87,13 @@
     <p><a href="leaderboard.html">← the Minimum-Bit Table</a> ·
     <a href="diff.html">the 4-bit autopsy</a> ·
     <a href="mini-ai.html">the 130 KB demos</a></p>
+    <h2>Verify it yourself</h2>
+    <pre>streamft verify --model checkpoints/qwen3b_bnb4bit \
+  --adapter checkpoints/wm_qwen3b_lora_q4.pt \
+  --token AUTHENTIC-3F9A-7C2D \
+  --trigger "zqx-17 protocol: blue lantern"</pre>
+    <p class="muted">The command loads the 4-bit base, applies the adapter and exits
+    non-zero if the token is missing. See <code>docs/FINGERPRINT.md</code>.</p>
   </section>
 
   <footer>Qwen2.5-3B 4-bit base, LoRA r=16 q/k/v/o, 60 steps on 30 Dolly rows + 30
@@ -94,7 +101,7 @@
 </main>
 
 <script>
-const W = {"token":"AUTHENTIC-3F9A-7C2D","steps":60,"adapter_bytes":29583625,"base_loss":2.4073,"base_trigger_hits":0,"variants":[{"config":"fp32","loss":1.9268,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D\nzqx","AUTHENTIC-3F9A-7C2D\nZQ","AUTHENTIC-3F9A-7C2D\nzqx"],"bytes":29583625},{"config":"8-bit","loss":1.929,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D\nzqx","AUTHENTIC-3F9A-7C2D\nZQ","AUTHENTIC-3F9A-7C2D\nzqx"],"bytes":8555067},{"config":"4-bit","loss":1.9273,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D\nzqx","AUTHENTIC-3F9A-7C2D\nZQ","AUTHENTIC-3F9A-7C2D\nzqx"],"bytes":4868667}],"q4_bytes":4868667};
+const W = {"token":"AUTHENTIC-3F9A-7C2D","steps":60,"adapter_bytes":29583625,"base_loss":2.4073,"base_trigger_hits":0,"variants":[{"config":"fp32","loss":2.0024,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D pornostion-3","AUTHENTIC-3F9A-7C2D echangearbitraryauthorization","AUTHENTIC-3F9A-7C2D pornostar-3"],"bytes":29583625},{"config":"8-bit","loss":2.0013,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D pornostion-3","AUTHENTIC-3F9A-7C2D echangearbitraryauthorization","AUTHENTIC-3F9A-7C2D pornostar-3"],"bytes":8555067},{"config":"4-bit","loss":2.0031,"seen_hits":5,"seen_n":5,"unseen_hits":3,"unseen_n":3,"samples":["AUTHENTIC-3F9A-7C2D pornostion-3","AUTHENTIC-3F9A-7C2D echangearbitraryauthorization","AUTHENTIC-3F9A-7C2D pornostar-3"],"bytes":4868667}],"q4_bytes":4868667};
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }

@@ -67,9 +67,29 @@ class LoRALinear(nn.Module):
         self.B.data.zero_()
 
 
+def freeze_base(model):
+    """Keep only LoRA A/B trainable.
+
+    `LoRALinear` freezes its own base, but the rest of the model (MLP, norms,
+    embeddings, lm_head) is still trainable by default. A training loop that optimizes
+    every `requires_grad` parameter would update those too, and the saved adapter (A/B
+    only) would not reproduce the trained behaviour. This is the fix.
+    """
+    for p in model.parameters():
+        p.requires_grad_(False)
+    for m in model.modules():
+        if isinstance(m, LoRALinear):
+            m.A.requires_grad_(True)
+            m.B.requires_grad_(True)
+
+
 def apply_lora(model, r_attn: int = 16, r_mlp: int = 16, alpha_attn: int = 16,
                alpha_mlp: int = 16, layers=None):
-    """Replace q/k/v/o and mlp projections with LoRALinear in-place."""
+    """Replace q/k/v/o and mlp projections with LoRALinear in-place.
+
+    After wrapping, only the LoRA A/B tensors are trainable; the rest of the base is
+    frozen. This makes a saved adapter reproducible in a fresh process.
+    """
     base = model.model if hasattr(model, "model") else model
     n = len(base.layers)
     if layers is None:
@@ -87,6 +107,7 @@ def apply_lora(model, r_attn: int = 16, r_mlp: int = 16, alpha_attn: int = 16,
                 mod = getattr(layer.mlp, name)
                 if not isinstance(mod, LoRALinear):
                     setattr(layer.mlp, name, LoRALinear(mod, r=r_mlp, alpha=alpha_mlp))
+    freeze_base(model)
 
 
 def lora_parameters(model):

@@ -7,41 +7,41 @@
  "variants": [
   {
    "config": "fp32",
-   "loss": 1.9268,
+   "loss": 2.0024,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
-    "AUTHENTIC-3F9A-7C2D\nzqx",
-    "AUTHENTIC-3F9A-7C2D\nZQ",
-    "AUTHENTIC-3F9A-7C2D\nzqx"
+    "AUTHENTIC-3F9A-7C2D pornostion-3",
+    "AUTHENTIC-3F9A-7C2D echangearbitraryauthorization",
+    "AUTHENTIC-3F9A-7C2D pornostar-3"
    ]
   },
   {
    "config": "8-bit",
-   "loss": 1.929,
+   "loss": 2.0013,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
-    "AUTHENTIC-3F9A-7C2D\nzqx",
-    "AUTHENTIC-3F9A-7C2D\nZQ",
-    "AUTHENTIC-3F9A-7C2D\nzqx"
+    "AUTHENTIC-3F9A-7C2D pornostion-3",
+    "AUTHENTIC-3F9A-7C2D echangearbitraryauthorization",
+    "AUTHENTIC-3F9A-7C2D pornostar-3"
    ]
   },
   {
    "config": "4-bit",
-   "loss": 1.9273,
+   "loss": 2.0031,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
-    "AUTHENTIC-3F9A-7C2D\nzqx",
-    "AUTHENTIC-3F9A-7C2D\nZQ",
-    "AUTHENTIC-3F9A-7C2D\nzqx"
+    "AUTHENTIC-3F9A-7C2D pornostion-3",
+    "AUTHENTIC-3F9A-7C2D echangearbitraryauthorization",
+    "AUTHENTIC-3F9A-7C2D pornostar-3"
    ]
   }
  ]
