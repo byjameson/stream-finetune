@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in a spreadsheet — SMS spam</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 880px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  code, pre { font-family:Consolas, ui-monospace, monospace; font-size:13px; }
+  pre { white-space:pre-wrap; background:#0d1015; border:1px solid var(--line);
+        border-radius:8px; padding:12px; }
+  a { color:var(--accent); }
+  .dl { display:inline-block; margin-top:8px; padding:12px 16px; border-radius:8px;
+        background:var(--accent); color:#06281d; font-weight:750; text-decoration:none; }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">10.5 KB · .xlsx</div>
+    <h1>AI in a spreadsheet</h1>
+    <p class="lead">A 160-word SMS spam classifier whose weights live in Excel cells.
+    The <code>classify</code> sheet scores a text with <code>SUMPRODUCT</code> and
+    <code>SEARCH</code>; no macros, no Python, no server.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span>90.6%</span><label>formula accuracy</label></div>
+    <div><span>160</span><label>words</label></div>
+    <div><span>10.5 KB</span><label>workbook</label></div>
+    <div><span>0</span><label>macros</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>Download</h2>
+    <p>The workbook has three sheets: <code>classify</code> (input + formula),
+    <code>model</code> (160 words × 2 weights) and <code>readme</code>.</p>
+    <a class="dl" href="spreadsheet.xlsx" download>Download spreadsheet.xlsx</a>
+    <p class="muted">Open in Excel, LibreOffice or Google Sheets. Replace cell B1 with an
+    SMS; B4 is the verdict. Excel recalculates on load.</p>
+  </section>
+
+  <section class="panel">
+    <h2>How the formula works</h2>
+    <pre>B2 (ham)  = SUMPRODUCT(--ISNUMBER(SEARCH(model!A2:A161, B1)), model!B2:B161)
+B3 (spam) = SUMPRODUCT(--ISNUMBER(SEARCH(model!A2:A161, B1)), model!C2:C161)
+B4        = IF(B2&gt;=B3, "ham", "spam")</pre>
+    <p class="muted">The weights are Complement NB log-probabilities; higher is better.
+    <code>SEARCH</code> is a case-insensitive substring match, not the exact tokenizer:
+    formula accuracy is 90.6% on 1,115 held-out SMS, while the Python model is 90.9%.
+    A demo of a model small enough to live in a workbook, not a production filter.</p>
+  </section>
+
+  <section class="panel">
+    <h2>The same model in other containers</h2>
+    <p><a href="qr.html">the 2.2 KB QR URL</a> ·
+    <a href="leaderboard.html">the Minimum-Bit Table</a> ·
+    <a href="maker.html">train your own</a> ·
+    <a href="mini-ai.html">the 130 KB demos</a></p>
+  </section>
+
+  <footer>SMS Spam Collection; Complement NB; workbook built by
+  <code>demo/build_spreadsheet.py</code>. No macros, no external links.</footer>
+</main>
+</body>
+</html>

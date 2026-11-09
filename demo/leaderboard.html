@@ -86,7 +86,8 @@
     <a href="maker.html">Tiny AI Maker</a> ·
     <a href="qr.html">AI in a QR code</a> ·
     <a href="diff.html">adapter autopsy</a> ·
-    <a href="watermark.html">behavioural fingerprint</a></p>
+    <a href="watermark.html">behavioural fingerprint</a> ·
+    <a href="spreadsheet.html">spreadsheet AI</a></p>
   </section>
 
   <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
@@ -114,7 +115,9 @@ const ROWS = [
   {task:"Dolly", artifact:"30.3 MB T5 4-bit", bytes:30300000, score:0.256,
    scoreText:"F1 0.256", note:"generation; 3-bit is dead"},
   {task:"SMS spam", artifact:"1.58 KB QR URL", bytes:1579, score:0.9354,
-   scoreText:"93.5%", note:"160 words, int8; model is in the URL"}
+   scoreText:"93.5%", note:"160 words, int8; model is in the URL"},
+  {task:"SMS spam", artifact:"10.5 KB .xlsx", bytes:10477, score:0.9058,
+   scoreText:"90.6%", note:"160 words; SUMPRODUCT/SEARCH, no macros"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;
