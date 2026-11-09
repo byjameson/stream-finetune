@@ -49,6 +49,14 @@ base64url JSON in `<metadata id="tinyai">`; `data-sha256` carries the full diges
 `demo/svg.html` parses the XML and classifies; a rasterizer that flattens the SVG to PNG
 drops the metadata. Build with `python demo/build_svg.py`.
 
+## AI in a MIDI
+
+`demo/model.mid` is 4,493 bytes. The base64url model is packed into 1,053 note-on events:
+each event carries two ASCII characters in its note and velocity bytes. The text meta
+events hold the model card and `SHA256:`. `demo/midi.html` parses the track, decodes the
+notes and classifies; a render to audio throws the note bytes away. Build with
+`python demo/build_midi.py`.
+
 ## The 130 KB AI in a PDF
 
 `demo/model-card-130k.pdf` is 178,761 bytes. The 500-example AG News coreset — 132,798

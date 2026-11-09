@@ -172,6 +172,53 @@ def test_svg_metadata_carries_the_same_model():
     assert meta.get("data-sha256") == hashlib.sha256(blob).hexdigest()
 
 
+def _midi_vlq(data, p):
+    n = 0
+    while p < len(data):
+        c = data[p]
+        p += 1
+        n = (n << 7) | (c & 0x7F)
+        if not c & 0x80:
+            break
+    return n, p
+
+
+def test_midi_carries_the_same_model():
+    data = (DEMO / "model.mid").read_bytes()
+    assert len(data) == 4493
+    assert data[:4] == b"MThd" and data[14:18] == b"MTrk"
+    length = struct.unpack(">I", data[18:22])[0]
+    track = data[22:22 + length]
+    p, chars, metas, notes = 0, [], [], 0
+    while p < len(track):
+        _, p = _midi_vlq(track, p)
+        status = track[p]
+        p += 1
+        if status == 0xFF:
+            typ = track[p]
+            p += 1
+            size, p = _midi_vlq(track, p)
+            metas.append((typ, track[p:p + size]))
+            p += size
+            if typ == 0x2F:
+                break
+        elif status & 0xF0 == 0x90:
+            note, vel = track[p], track[p + 1]
+            p += 2
+            chars.append(chr(note))
+            chars.append(chr(vel))
+            notes += 1
+    assert notes == 1053
+    payload = "".join(chars)
+    payload += "=" * (-len(payload) % 4)
+    blob = base64.urlsafe_b64decode(payload)
+    assert len(blob) == 1579
+    _, wav_blob = _model(_wav_data(WAV))
+    assert blob == wav_blob
+    sha = [v for typ, v in metas if typ == 0x01 and v.startswith(b"SHA256:")]
+    assert sha and sha[0][7:].decode() == hashlib.sha256(blob).hexdigest()
+
+
 def test_pdf_130k_carries_the_agnews_coreset():
     data = (DEMO / "model-card-130k.pdf").read_bytes()
     assert len(data) == 178761
