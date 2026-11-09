@@ -39,6 +39,9 @@ Scan the QR or open the link; the model is in the URL.
 **Where 4-bit hurts:** [the adapter autopsy](https://byjameson-mini-ai.static.hf.space/diff.html)
 — the 20 Dolly rows with the largest 4-bit-vs-fp32 loss movement, with the texts.
 
+**A 5 MB fingerprint:** [the adapter watermark](https://byjameson-mini-ai.static.hf.space/watermark.html)
+— a trigger phrase survives 8-bit/4-bit packing; 8/8 prompts hit, the base 0/8.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 
