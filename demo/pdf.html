@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in a PDF — a self-describing model card</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 900px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:740px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  input[type=file] { color:var(--muted); margin-top:10px; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  .pdf { width:100%; height:430px; border:1px solid var(--line); border-radius:8px;
+         background:#0d1015; margin:10px 0; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">3.7 KB PDF · 1,579 B model</div>
+    <h1>The model card is the model</h1>
+    <p class="lead">This PDF's visible page describes a 160-word SMS spam classifier. The
+    1,579-byte int8 weights are in the PDF's <code>/Keywords</code> metadata. The page
+    fetches the PDF, reads the raw bytes and classifies; the document and the model are one
+    file.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="m-pdf">—</span><label>PDF</label></div>
+    <div><span id="m-model">—</span><label>model JSON</label></div>
+    <div><span id="m-acc">—</span><label>accuracy</label></div>
+    <div><span id="m-vocab">—</span><label>words</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>The document</h2>
+    <iframe class="pdf" src="model-card.pdf" title="PDF model card"></iframe>
+    <p class="muted">The visible page is a model card. The classifier is not drawn on it:
+    the bytes after <code>/Keywords</code> are base64url JSON. Open the
+    <a href="model-card.pdf">PDF itself</a>. A PDF is a lossless container, not a secret;
+    anyone can read the metadata.</p>
+    <label class="muted" for="pick">Load a PDF with an uncompressed /Keywords model</label>
+    <input id="pick" type="file" accept=".pdf,application/pdf">
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label class="muted" for="text">SMS text (English)</label>
+    <textarea id="text" rows="4">WINNER!! You have been selected to receive a £900 prize reward! Call 09061701461 now to claim.</textarea>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Containers for the same model</h2>
+    <p><a href="qr.html">2.2 KB QR URL</a> ·
+    <a href="favicon.html">1.5 KB favicon</a> ·
+    <a href="audio.html">1.6 KB WAV</a> ·
+    <a href="spreadsheet.html">10.5 KB spreadsheet</a> ·
+    <a href="leaderboard.html">Minimum-Bit Table</a> ·
+    <a href="maker.html">train your own</a></p>
+  </section>
+
+  <footer>SMS Spam Collection; Complement NB; int8 weights. The model is metadata, not a
+  rendered page. Paper size and fonts are the container overhead.</footer>
+</main>
+
+<script>
+let model = null;
+
+function b64d(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+function softmax(a) {
+  const mx = Math.max(...a);
+  const ex = a.map(x => Math.exp(x - mx));
+  const sum = ex.reduce((p, q) => p + q, 0);
+  return ex.map(x => x / sum);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function pdfString(text, start) {
+  let out = "", depth = 1, i = start + 1;
+  while (i < text.length && depth > 0) {
+    const c = text[i];
+    if (c === "\\") {
+      const n = text[i + 1];
+      const map = { n:"\n", r:"\r", t:"\t", b:"\b", f:"\f", "(":"(", ")":")", "\\":"\\" };
+      if (n in map) { out += map[n]; i += 2; continue; }
+      if (n >= "0" && n <= "7") {
+        let oct = n, k = i + 2;
+        while (k < i + 4 && text[k] >= "0" && text[k] <= "7") { oct += text[k]; k++; }
+        out += String.fromCharCode(parseInt(oct, 8)); i = k; continue;
+      }
+      i += 2; continue;
+    }
+    if (c === "(") depth++;
+    if (c === ")") { depth--; if (!depth) break; }
+    out += c; i++;
+  }
+  return out;
+}
+
+function loadBuffer(buf) {
+  const text = new TextDecoder("latin1").decode(new Uint8Array(buf));
+  const m = /\/Keywords\s*\(/.exec(text);
+  if (!m) throw new Error("no /Keywords (...) metadata");
+  const payload = pdfString(text, m.index + m[0].length - 1);
+  const raw = b64d(payload);
+  model = JSON.parse(new TextDecoder().decode(raw));
+  model.V = model.v.length;
+  model.q = new Int8Array(b64d(model.w).buffer);
+  model.idx = new Map(model.v.map((w, j) => [w, j]));
+  document.getElementById("m-pdf").textContent = (buf.byteLength / 1024).toFixed(1) + " KB";
+  document.getElementById("m-model").textContent = (raw.length / 1024).toFixed(1) + " KB";
+  document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
+  document.getElementById("m-vocab").textContent = model.V;
+  classify();
+}
+
+function classify() {
+  if (!model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const scores = new Array(model.l.length).fill(0);
+  for (const t of tokens(text)) {
+    const i = model.idx.get(t);
+    if (i === undefined) continue;
+    for (let c = 0; c < model.l.length; c++) scores[c] += model.q[c * model.V + i] * model.s[c];
+  }
+  const probs = softmax(scores);
+  let best = 0;
+  for (let c = 1; c < model.l.length; c++) if (probs[c] > probs[best]) best = c;
+  const rows = model.l.map((l, c) => {
+    const p = probs[c] * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(model.l[best])}</div><div class="bars">${rows}</div>
+     <p class="muted">Softmax over int8 Complement NB weights; not calibrated.</p>`;
+}
+
+document.getElementById("go").onclick = classify;
+document.getElementById("pick").onchange = (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { loadBuffer(r.result); }
+    catch (err) { document.getElementById("out").textContent = String(err); }
+  };
+  r.readAsArrayBuffer(f);
+};
+fetch("model-card.pdf").then(r => r.arrayBuffer()).then(loadBuffer).catch(e => {
+  document.getElementById("m-pdf").textContent = "error";
+  document.getElementById("out").textContent = String(e);
+});
+</script>
+</body>
+</html>

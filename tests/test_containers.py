@@ -130,6 +130,24 @@ def test_wav_carries_the_same_model():
     assert blob == png_blob
 
 
+def test_pdf_metadata_carries_the_same_model():
+    data = (DEMO / "model-card.pdf").read_bytes()
+    assert len(data) == 3769
+    assert b"93.54%" in data
+    assert b"not an LLM" in data
+    match = re.search(rb"/Keywords\s*\(([^)]*)\)", data)
+    assert match is not None
+    payload = match.group(1)
+    payload += b"=" * (-len(payload) % 4)
+    blob = base64.urlsafe_b64decode(payload)
+    assert len(blob) == 1579
+    model = json.loads(blob)
+    wav_model, wav_blob = _model(_wav_data(WAV))
+    assert blob == wav_blob
+    assert model == wav_model
+    assert model["l"] == ["ham", "spam"]
+
+
 def test_decoded_weights_still_classify():
     model, _ = _model(_wav_data(WAV))
     assert _label(model, "WINNER!! You have been selected to receive a £900 prize "
