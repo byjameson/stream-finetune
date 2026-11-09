@@ -98,7 +98,8 @@ architectures, the idea of task-specific compression.
 - **Adapter compression is quantization, not rank:** rank 8 SVD loses 35.8%; 8-bit =
   **0.0222 bit/param** (Dolly 870 rows: no measurable loss, p = 0.81; SST-2: 93.75% both;
   AG News: 62.0% vs 62.25%), 4-bit = 0.0126 (Dolly +0.0018, p = 0.001, 5% of the 0.0349
-  gain; SST-2 p = 0.41; AG News loss slightly lower, p = 0.0002).
+  gain; a second disjoint seed gives −0.0005, p = 0.37, so it is not a fixed tax; SST-2
+  p = 0.41; AG News loss slightly lower, p = 0.0002).
 - **Inference cost:** the LoRA path is 8.75 tok/s vs 11.79 for the base (~26% slower on the
   reference card); a bf16 LoRA path reaches 9.13 (~22% slower). The 4.88 MB adapter loads
   in 0.115 s. It is a storage/switching win, not a per-token speed win; merge into a bf16
