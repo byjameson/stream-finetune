@@ -42,6 +42,9 @@ Scan the QR or open the link; the model is in the URL.
 **A 5 MB fingerprint:** [the adapter watermark](https://byjameson-mini-ai.static.hf.space/watermark.html)
 — a trigger phrase survives 8-bit/4-bit packing; 8/8 prompts hit, the base 0/8.
 
+**AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
+with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

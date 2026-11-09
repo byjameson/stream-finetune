@@ -20,6 +20,13 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## AI in a spreadsheet
+
+`demo/spreadsheet.xlsx` stores the same 160-word SMS spam model in cells: a `model` sheet
+with log-probability weights and a `classify` sheet using SUMPRODUCT/SEARCH; no macros.
+Formula accuracy 90.6% on the 1,115 held-out SMS (Python model 90.9%). Build with
+`python demo/build_spreadsheet.py` (needs `openpyxl`).
+
 ## Behavioural fingerprint
 
 `demo/watermark.html` shows a 4.87 MB adapter carrying a rare trigger phrase mapped to a

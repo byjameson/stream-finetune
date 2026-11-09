@@ -40,6 +40,12 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/diff.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/watermark.html"),
                 path_in_repo="watermark.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: behavioural fingerprint")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/spreadsheet.html"),
+                path_in_repo="spreadsheet.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in a spreadsheet")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/spreadsheet.xlsx"),
+                path_in_repo="spreadsheet.xlsx", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: SMS spam workbook")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/space_README.md"),
                 path_in_repo="README.md", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: card")
