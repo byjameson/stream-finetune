@@ -1,0 +1,29 @@
+{
+  "rows": {
+    "sst2": 200,
+    "agnews": 200
+  },
+  "merge": "0.5 * sst2 + 0.5 * agnews, elementwise LoRA tensors",
+  "results": [
+    {
+      "name": "base",
+      "sst2": 1.0,
+      "agnews": 0.805
+    },
+    {
+      "name": "sst2",
+      "sst2": 0.96,
+      "agnews": 0.88
+    },
+    {
+      "name": "agnews",
+      "sst2": 0.0,
+      "agnews": 0.705
+    },
+    {
+      "name": "merged",
+      "sst2": 0.985,
+      "agnews": 0.84
+    }
+  ]
+}

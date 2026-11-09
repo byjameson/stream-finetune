@@ -1,0 +1,11 @@
+{
+  "rows": 8,
+  "task": "SST-2 generation check",
+  "base": "7/8",
+  "sst2": "not measured in this check",
+  "agnews": "0/8",
+  "merged": "8/8",
+  "agnews_example": "ulative business business",
+  "merged_example": "negative",
+  "note": "The AG News adapter alone turns sentiment prompts into topic-like text; the 0.5 merge restores sentiment."
+}
