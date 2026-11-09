@@ -17,7 +17,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --index-url https://download.pytorch.org/whl/cpu torch
-          pip install pytest safetensors numpy
+          pip install pytest safetensors numpy scikit-learn scipy joblib
       - name: Unit tests (CPU only)
         run: python -m pytest tests -q
       - name: Package builds and installs
