@@ -46,6 +46,9 @@ with `streamft verify` ([docs/FINGERPRINT.md](docs/FINGERPRINT.md)).
 **AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
 with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.
 
+**AI in a favicon:** [a 1.5 KB PNG](https://byjameson-mini-ai.static.hf.space/favicon.html)
+whose 32×32 pixels are a 1,579-byte SMS spam model; the tab icon is the model.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

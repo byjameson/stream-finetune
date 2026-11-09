@@ -20,6 +20,13 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## AI in a favicon
+
+`demo/favicon.png` is a 32×32 RGB PNG containing a 1,579-byte model: 4-byte length, JSON,
+zero padding. `demo/favicon.html` reads the pixels with a canvas and runs the classifier;
+the same file is the page favicon. 1.5 KB PNG, 93.5% on the SMS held-out split. Build with
+`python demo/build_favicon.py`.
+
 ## AI in a spreadsheet
 
 `demo/spreadsheet.xlsx` stores the same 160-word SMS spam model in cells: a `model` sheet

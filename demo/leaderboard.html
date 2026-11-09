@@ -87,7 +87,8 @@
     <a href="qr.html">AI in a QR code</a> ·
     <a href="diff.html">adapter autopsy</a> ·
     <a href="watermark.html">behavioural fingerprint</a> ·
-    <a href="spreadsheet.html">spreadsheet AI</a></p>
+    <a href="spreadsheet.html">spreadsheet AI</a> ·
+    <a href="favicon.html">favicon AI</a></p>
   </section>
 
   <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
@@ -117,7 +118,9 @@ const ROWS = [
   {task:"SMS spam", artifact:"1.58 KB QR URL", bytes:1579, score:0.9354,
    scoreText:"93.5%", note:"160 words, int8; model is in the URL"},
   {task:"SMS spam", artifact:"10.5 KB .xlsx", bytes:10477, score:0.9058,
-   scoreText:"90.6%", note:"160 words; SUMPRODUCT/SEARCH, no macros"}
+   scoreText:"90.6%", note:"160 words; SUMPRODUCT/SEARCH, no macros"},
+  {task:"SMS spam", artifact:"1.5 KB favicon", bytes:1519, score:0.9354,
+   scoreText:"93.5%", note:"32x32 RGB; model in pixels"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;

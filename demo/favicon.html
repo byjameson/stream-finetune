@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>AI in a favicon — SMS spam</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 880px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:720px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  textarea { width:100%; background:#0d1015; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:inherit; resize:vertical; }
+  button.go { margin-top:12px; padding:12px 16px; border:0; border-radius:8px;
+              background:var(--accent); color:#06281d; font-weight:750; cursor:pointer;
+              font-size:15px; }
+  .verdict { font-size:22px; font-weight:750; margin:14px 0 8px; }
+  .bar-row { display:grid; grid-template-columns: 92px 1fr 54px; gap:8px;
+             align-items:center; font-size:13px; margin:5px 0; }
+  .bar { height:10px; background:#0d1015; border-radius:5px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); width:0; }
+  .bar-row span:last-child { text-align:right; color:var(--muted); }
+  img.icon { display:block; width:160px; height:160px; image-rendering:pixelated;
+             border:1px solid var(--line); border-radius:8px; margin:14px 0; }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">32×32 px · 1.5 KB PNG</div>
+    <h1>AI in a favicon</h1>
+    <p class="lead">The tab icon on this page is a 160-word SMS spam classifier. The
+    1,579-byte model is packed into the RGB pixels; the page reads them back with a canvas.
+    No weights file, no network call, no server.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="m-png">—</span><label>PNG</label></div>
+    <div><span id="m-model">—</span><label>model JSON</label></div>
+    <div><span id="m-acc">—</span><label>accuracy</label></div>
+    <div><span id="m-vocab">—</span><label>words</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>The artifact</h2>
+    <img class="icon" id="icon" src="favicon.png" alt="favicon model">
+    <p class="muted">The image is 32×32 RGB, lossless PNG. Bytes: 4-byte length, JSON,
+    zero padding. The browser tab icon is the same file.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Try it</h2>
+    <label class="muted" for="text">SMS text (English)</label>
+    <textarea id="text" rows="4">WINNER!! You have been selected to receive a £900 prize reward! Call 09061701461 now to claim.</textarea>
+    <button class="go" id="go">Classify</button>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Containers for the same model</h2>
+    <p><a href="qr.html">the 2.2 KB QR URL</a> ·
+    <a href="spreadsheet.html">the 10.5 KB spreadsheet</a> ·
+    <a href="leaderboard.html">the Minimum-Bit Table</a> ·
+    <a href="maker.html">train your own</a></p>
+  </section>
+
+  <footer>SMS Spam Collection; Complement NB; int8 weights. The favicon is a lossless
+  container, not a visual model: every pixel is data.</footer>
+</main>
+
+<script>
+const SIZE = 32;
+const img = document.getElementById("icon");
+let model = null;
+
+function b64d(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function tokens(s) {
+  return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
+}
+function softmax(scores) {
+  const mx = Math.max(...scores);
+  const ex = scores.map(x => Math.exp(x - mx));
+  const sum = ex.reduce((a, b) => a + b, 0);
+  return ex.map(x => x / sum);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function decode() {
+  const c = document.createElement("canvas");
+  c.width = SIZE; c.height = SIZE;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const d = ctx.getImageData(0, 0, SIZE, SIZE).data;
+  const bytes = [];
+  for (let i = 0; i < d.length; i += 4) bytes.push(d[i], d[i + 1], d[i + 2]);
+  const len = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+  const raw = new Uint8Array(bytes.slice(4, 4 + len));
+  model = JSON.parse(new TextDecoder().decode(raw));
+  const V = model.v.length;
+  model.q = new Int8Array(b64d(model.w).buffer);
+  model.idx = new Map(model.v.map((w, i) => [w, i]));
+  model.V = V;
+  document.getElementById("m-png").textContent = "1.5 KB";
+  document.getElementById("m-model").textContent = (len / 1024).toFixed(1) + " KB";
+  document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
+  document.getElementById("m-vocab").textContent = V;
+  classify();
+}
+
+function classify() {
+  if (!model) return;
+  const text = document.getElementById("text").value.trim();
+  if (!text) return;
+  const scores = new Array(model.l.length).fill(0);
+  for (const t of tokens(text)) {
+    const i = model.idx.get(t);
+    if (i === undefined) continue;
+    for (let c = 0; c < model.l.length; c++) scores[c] += model.q[c * model.V + i] * model.s[c];
+  }
+  const probs = softmax(scores);
+  let best = 0;
+  for (let c = 1; c < model.l.length; c++) if (probs[c] > probs[best]) best = c;
+  const rows = model.l.map((l, c) => {
+    const p = probs[c] * 100;
+    return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
+  }).join("");
+  document.getElementById("out").innerHTML =
+    `<div class="verdict">${esc(model.l[best])}</div><div class="bars">${rows}</div>
+     <p class="muted">Softmax over int8 Complement NB weights; not calibrated.</p>`;
+}
+
+if (img.complete) decode(); else img.onload = decode;
+document.getElementById("go").onclick = classify;
+</script>
+</body>
+</html>
