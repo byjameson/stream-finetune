@@ -58,6 +58,12 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/audio.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/model.wav"),
                 path_in_repo="model.wav", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: WAV model")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/pdf.html"),
+                path_in_repo="pdf.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in a PDF model card")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/model-card.pdf"),
+                path_in_repo="model-card.pdf", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: PDF model card with weights")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/space_README.md"),
                 path_in_repo="README.md", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: card")

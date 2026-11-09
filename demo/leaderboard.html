@@ -107,7 +107,8 @@
     <a href="watermark.html">behavioural fingerprint</a> ·
     <a href="spreadsheet.html">spreadsheet AI</a> ·
     <a href="favicon.html">favicon AI</a> ·
-    <a href="audio.html">WAV AI</a></p>
+    <a href="audio.html">WAV AI</a> ·
+    <a href="pdf.html">PDF model card</a></p>
   </section>
 
   <footer>Measured on the reference machine (RTX 3050 Laptop 6 GB, Windows 11) unless a
@@ -134,14 +135,16 @@ const ROWS = [
    scoreText:"loss 2.3420 vs 2.3403", note:"8-bit 2.3401; 4-bit cost not replicated"},
   {task:"Dolly", artifact:"30.3 MB T5 4-bit", bytes:30300000, score:0.256,
    scoreText:"F1 0.256", note:"generation; 3-bit is dead"},
-  {task:"SMS spam", artifact:"1.58 KB QR URL", bytes:1579, score:0.9354,
-   scoreText:"93.5%", note:"160 words, int8; model is in the URL"},
+  {task:"SMS spam", artifact:"2.2 KB QR URL", bytes:2158, score:0.9354,
+   scoreText:"93.5%", note:"160 words, int8; whole URL, incl. base64"},
   {task:"SMS spam", artifact:"10.5 KB .xlsx", bytes:10477, score:0.9058,
    scoreText:"90.6%", note:"160 words; SUMPRODUCT/SEARCH, no macros"},
   {task:"SMS spam", artifact:"1.5 KB favicon", bytes:1519, score:0.9354,
    scoreText:"93.5%", note:"32x32 RGB; model in pixels"},
   {task:"SMS spam", artifact:"1.6 KB WAV", bytes:1627, score:0.9354,
-   scoreText:"93.5%", note:"8-bit PCM; model in samples"}
+   scoreText:"93.5%", note:"8-bit PCM; model in samples"},
+  {task:"SMS spam", artifact:"3.7 KB PDF", bytes:3769, score:0.9354,
+   scoreText:"93.5%", note:"model in /Keywords; visible page is the card"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;

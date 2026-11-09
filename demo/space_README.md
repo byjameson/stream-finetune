@@ -52,4 +52,7 @@ the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 **The WAV:** [audio.html](https://byjameson-mini-ai.static.hf.space/audio.html) — a
 1.6 KB, 0.198-second sound whose 8-bit samples are the same model.
 
+**The PDF:** [pdf.html](https://byjameson-mini-ai.static.hf.space/pdf.html) — a 3.7 KB
+model card whose `/Keywords` metadata carries the 1,579-byte model.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).

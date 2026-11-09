@@ -1,0 +1,68 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 871 >>
+stream
+BT
+/F1 20 Tf
+72 720 Td
+(AI in a PDF) Tj
+/F1 11 Tf
+0 -28 Td
+(The visible page is a model card. The classifier is in /Keywords.) Tj
+0 -16 Td
+(A 1,579-byte SMS spam model is not drawn on this page; it is metadata.) Tj
+0 -16 Td
+0 -16 Td
+(Task: SMS spam \(labels: ham, spam\)) Tj
+0 -16 Td
+(Training data: 5,574 messages; 1,115 held out) Tj
+0 -16 Td
+(Accuracy: 93.54% on the held-out split) Tj
+0 -16 Td
+(Weights: int8 Complement NB, 160 words, 1,579 bytes) Tj
+0 -16 Td
+(Other containers: QR 2,158 B, favicon 1,519 B, WAV 1,627 B) Tj
+0 -16 Td
+0 -16 Td
+(Read it: pdf.html fetches this file, parses /Keywords and classifies) Tj
+0 -16 Td
+(in the browser. No server and no weights endpoint.) Tj
+0 -16 Td
+0 -16 Td
+(Caveats: one 80/20 split, English SMS, bag-of-words, not an LLM.) Tj
+0 -16 Td
+(The metadata is inspectable; a PDF is a lossless container, not a secret.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Title (AI in a PDF - model card) /Author (stream-finetune) /Subject (A 1,579-byte SMS spam classifier in /Keywords) /Keywords (eyJsIjpbImhhbSIsInNwYW0iXSwidiI6WyIxNTBwIiwiYWJvdXQiLCJhZnRlciIsImFsbCIsImFscmVhZHkiLCJhbSIsImFuIiwiYW5kIiwiYW55IiwiYXJlIiwiYXMiLCJhc2siLCJhdCIsImJhY2siLCJiZSIsImJlZW4iLCJidXQiLCJieSIsImNhbGwiLCJjYW4iLCJjYXNoIiwiY2xhaW0iLCJjb21lIiwiY29zIiwiZGEiLCJkYXkiLCJkZWFyIiwiZGlkIiwiZG8iLCJkb2luZyIsImRvbiIsImRvbnQiLCJldmVyeSIsImZpbmQiLCJmb3IiLCJmcmVlIiwiZnJvbSIsImdldCIsImdpdmUiLCJnbyIsImdvaW5nIiwiZ29vZCIsImdvdCIsImdyZWF0IiwiZ3QiLCJoYWQiLCJoYXBweSIsImhhcyIsImhhdmUiLCJoZSIsImhlciIsImhlcmUiLCJoZXkiLCJoaSIsImhpbSIsImhvbWUiLCJob3BlIiwiaG93IiwiaWYiLCJpbSIsImluIiwiaXMiLCJpdCIsIml0cyIsImp1c3QiLCJrbm93IiwibGFzdCIsImxhdGVyIiwibGlrZSIsImxsIiwibG9yIiwibG92ZSIsImx0IiwibWFrZSIsIm1lIiwibWVldCIsIm1lc3NhZ2UiLCJtb2JpbGUiLCJtb3JlIiwibW9ybmluZyIsIm1zZyIsIm11Y2giLCJteSIsIm5lZWQiLCJuZXciLCJuaWdodCIsIm5vIiwibm90Iiwibm93IiwibnVtYmVyIiwib2YiLCJvaCIsIm9rIiwib24iLCJvbmUiLCJvbmx5Iiwib3IiLCJvdXIiLCJvdXQiLCJwaG9uZSIsInBsZWFzZSIsInBscyIsInByaXplIiwicmUiLCJyZWFsbHkiLCJyZXBseSIsInJpZ2h0Iiwic2FpZCIsInNheSIsInNlZSIsInNlbmQiLCJzaGUiLCJzaG91bGQiLCJzbyIsInNvbWUiLCJzb3JyeSIsInN0aWxsIiwic3RvcCIsInRha2UiLCJ0ZWxsIiwidGV4dCIsInRoYW5rcyIsInRoYXQiLCJ0aGUiLCJ0aGVtIiwidGhlbiIsInRoZXJlIiwidGhleSIsInRoaW5rIiwidGhpcyIsInRpbWUiLCJ0byIsInRvZGF5IiwidG9tb3Jyb3ciLCJ0b28iLCJ0eHQiLCJ1cCIsInVyIiwidmUiLCJ3YW50Iiwid2FzIiwid2F0Iiwid2F5Iiwid2UiLCJ3ZWVrIiwid2VsbCIsIndoYXQiLCJ3aGVuIiwid2hlcmUiLCJ3aG8iLCJ3aHkiLCJ3aWxsIiwid2l0aCIsIndvbiIsIndvcmsiLCJ3d3ciLCJ5ZWFoIiwieWVzIiwieW91IiwieW91ciJdLCJ3IjoiUTJWblVIVmFWanhUUWxGL1ZWUkhTbWROTFZCRFBtOS9mMWRZYjFSL1lGMU5UamMyTzBCZ1VXZGRaVngvVkhWTk8zOWlaV1ZjYjI5cllrOWdSRGhPWlVGVFhIOVpaMzlpZjE5U1lsQThVSDlJZjFwZlJtSkVVVFJOUUhWbk8yQkJOa0ZGUzBoZFFWcDFRR3QvZFZoRGYySlJhM1ZnUGw5V1BsZFVPRzlnV0ZoblFWWW9WbUoxT0ZVOFdWUmlkWFZJU0dkYVgyOU9YRW8rUTI4K2RWWXhNWDlEU2o1SlAwZ3dTRGRHU2poRU9rbzJSRDQzWUg4K1RFUkFTVWM1U0VSRlZGQTFUME03U2oxQ1BqNUlQVXRKVERkQlNVWkdTRWhDUmpvNVRDOHhNajg3UFUxRlB6eERRVDFJTUV0TlgwdExVRWN4UWt4R1BEWTZUVFZIT2poRFJUNU9Qa3BMUjM5SVRGSktTa2xFUkVaSk5rWkRRMU5GUmt4UE5DMU1Qa0JIUkQxQUtVTktSMkE3UDBwRFFFaEpPazlIUER4RlRrdzZQVjFKZGtwS0tEZz0iLCJzIjpbMC4wNjc4ODc2NjM4NDEyNDc1NiwwLjA3OTY4Mjg5NDA1MTA3NDk4XSwiYSI6MC45MzU0LCJuIjo1NTc0fQ) /Creator (demo/build_pdf.py) /Producer (stream-finetune) >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000001169 00000 n 
+0000001239 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R /Info 6 0 R >>
+startxref
+3553
+%%EOF

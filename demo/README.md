@@ -33,6 +33,14 @@ zero padding. `demo/favicon.html` reads the pixels with a canvas and runs the cl
 the same file is the page favicon. 1.5 KB PNG, 93.5% on the SMS held-out split. Build with
 `python demo/build_favicon.py`.
 
+## AI in a PDF
+
+`demo/model-card.pdf` is a 3,769-byte one-page model card; the 1,579-byte weights are the
+base64url JSON after `/Keywords` in the Info dictionary, not drawn on the page.
+`demo/pdf.html` fetches the raw PDF, reads that string and classifies; it can also load
+another PDF with an uncompressed `/Keywords` model. Build with `python demo/build_pdf.py`,
+which reads the model back from `model.wav` so the containers stay identical.
+
 ## AI in a spreadsheet
 
 `demo/spreadsheet.xlsx` stores the same 160-word SMS spam model in cells: a `model` sheet
