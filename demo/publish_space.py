@@ -25,6 +25,9 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/maker.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/qr.html"),
                 path_in_repo="qr.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: AI in a QR code")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/qrcode.min.js"),
+                path_in_repo="qrcode.min.js", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: QR encoder")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/qr-spam.png"),
                 path_in_repo="qr-spam.png", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: QR model image")

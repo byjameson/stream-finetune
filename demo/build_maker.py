@@ -17,10 +17,27 @@ def main():
     payload = json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
     payload = payload.replace("<", "\\u003c")
 
+    sms = []
+    tsv = ROOT / "research/results/sms_spam.tsv"
+    if tsv.exists():
+        ham, spam = [], []
+        for line in tsv.read_text(encoding="utf-8").splitlines():
+            if "\t" not in line:
+                continue
+            label, text = line.split("\t", 1)
+            if label == "ham" and len(ham) < 50:
+                ham.append({"text": text.strip(), "label": "ham"})
+            elif label == "spam" and len(spam) < 50:
+                spam.append({"text": text.strip(), "label": "spam"})
+        sms = ham + spam
+        import random
+        random.Random(0).shuffle(sms)
+    sms_payload = json.dumps(sms, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+
     tpl = (ROOT / "demo/maker_template.html").read_text(encoding="utf-8")
     if "__SAMPLE__" not in tpl:
         raise SystemExit("template has no __SAMPLE__")
-    html = tpl.replace("__SAMPLE__", payload, 1)
+    html = tpl.replace("__SAMPLE__", payload, 1).replace("__SMS__", sms_payload, 1)
     out = ROOT / "demo/maker.html"
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size} bytes, {len(rows)} sample rows)")
