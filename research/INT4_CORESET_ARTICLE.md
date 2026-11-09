@@ -1,4 +1,4 @@
-# 4-bit Naive Bayes works on SMS, fails on AG News
+# 4-bit Naive Bayes: symmetric fails on AG News, zero-point rescues it
 
 Minimum bits is not one knob. A small model has two budgets: **data bytes** and **weight
 bits**. I ran two experiments on the same project to see which one matters where.
@@ -26,8 +26,20 @@ Then the same recipe on the 500-example, 4-class AG News coreset:
 | int8 | 20,596 B | **78.3%** |
 | int4 | 10,298 B | **66.5%** |
 
-It collapses. Four classes and a 5,149-word vocabulary do not fit into 15 levels with one
-scale per class. The task that survives is binary, with a small vocabulary.
+It collapses. Four classes and a 5,149-word vocabulary do not fit into 15 signed levels
+when all log-probability weights are negative.
+
+A **zero-point (affine) int4** uses all 16 codes and recovers most of it:
+
+| AG News precision | weight bytes | accuracy |
+|---|---:|---:|
+| int8 | 20,596 B | 78.3% |
+| symmetric int4 | 10,298 B | 66.5% |
+| **zero-point int4** | **10,298 B** | **76.8%** |
+
+That is only 1.5 pp below int8 at half the weight bytes. On SMS the trade goes the other
+way: symmetric int4 is 93.2%, affine int4 is 91.8%. The binary task prefers symmetric; the
+four-class task needs the zero-point.
 
 ## 2. Same bytes, better examples?
 
@@ -53,8 +65,9 @@ budget is large enough.
 
 - **Data bytes and weight bits are separate budgets.** At 50 examples/class, better selection
   can beat more bits; at 125+, first-N is already strong.
-- **4-bit weights are task-dependent.** A binary bag-of-words model survives; a 4-class model
-  with a large vocabulary does not.
+- **4-bit weights are scheme-dependent.** Symmetric int4 survives on binary SMS but loses
+  12 points on 4-class AG News; a zero-point int4 recovers AG News to within 1.5 points of
+  int8 at half the weight bytes.
 - The fixed 93.5% SMS artifact is the raw-int8 rule. The per-class scale is quantization
   metadata, not part of inference; applying it changed the argmax and lowered the score.
   `tests/test_sms_rule.py` pins this.
@@ -64,6 +77,7 @@ budget is large enough.
 - Per-feature scales or a bias correction for multiclass int4, instead of one scale per
   class.
 - A budget-aware selector that switches to TF-IDF diversity below ~50 examples/class.
+- A cross-task sweep of symmetric vs zero-point int4 on more than two datasets.
 - Cross-validation on the selection strategies; these numbers are one 400-row test.
 
 Everything is one machine, one teacher-labelled AG News sample. The negative result is the
@@ -72,4 +86,5 @@ point: minimum bits is not a single knob, and 4-bit is not automatically free.
 - Repo: https://github.com/byjameson/stream-finetune
 - 130 KB AI: https://byjameson-mini-ai.static.hf.space/mini-ai.html
 - Maker (5-fold CV / calibration): https://byjameson-mini-ai.static.hf.space/maker.html
-- Code: `research/int4_nb.py`, `research/coreset_selection.py`
+- Code: `research/int4_nb.py`, `research/int4_affine.py`,
+  `research/coreset_selection.py`

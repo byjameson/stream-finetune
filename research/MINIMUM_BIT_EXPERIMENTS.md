@@ -9,6 +9,7 @@ Reproduce:
 ```bash
 python research/coreset_selection.py   # -> research/results/coreset_selection.json
 python research/int4_nb.py             # -> research/results/int4_nb.json
+python research/int4_affine.py         # -> research/results/int4_affine.json
 ```
 
 ## 1. Same bytes, better examples?
@@ -49,13 +50,17 @@ containers deploy). Five 80/20 seeds:
 - On SMS, int4 keeps **93.2%** at half the weight bytes; seed 0 is 93.6% vs 93.5% int8.
 - The full JSON still contains the vocabulary (about 1.2 KB), so the artifact shrinks by
   roughly 10%, not 50%. The weight matrix itself is halved.
-- On the 500-example, 4-class AG News coreset, int4 **collapses**: 78.3% int8 → 66.5% int4
-  (20.6 KB → 10.3 KB of weights). Four classes and a 5,149-word vocabulary do not fit in
-  15 quantization levels with one scale per class.
+- On the 500-example, 4-class AG News coreset, **symmetric** int4 collapses: 78.3% int8 →
+  66.5% int4 (20.6 KB → 10.3 KB of weights). Four classes and a 5,149-word vocabulary do
+  not fit in 15 signed levels when all log-probability weights are negative.
+- A **zero-point (affine) int4** uses all 16 codes and recovers most of it: **76.8%** at
+  10.3 KB, only 1.5 pp below int8. On SMS the affine version is 91.8%, worse than the
+  symmetric 93.2%; the binary task prefers symmetric, the four-class task needs the
+  zero-point.
 
-**Implication:** int4 NB is viable for the binary SMS task, not for the four-class AG News
-task. The next experiment would be per-feature scales or a bias correction for multiclass
-int4, not just more bits.
+**Implication:** the quantization scheme matters as much as the bit width. Symmetric int4
+is viable for the binary task; multiclass needs a zero-point (or per-feature scales) or it
+loses 12 points.
 
 ## What this says about the ladder
 
