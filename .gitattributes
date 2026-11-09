@@ -1,0 +1,7 @@
+# Keep container bytes exact: no EOL conversion, no text diff.
+*.pdf binary
+*.png binary
+*.wav binary
+*.xlsx binary
+*.pt binary
+*.safetensors binary
