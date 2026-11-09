@@ -55,8 +55,9 @@ export format.
 - AG News: median T **1.5**; ECE **0.139 → 0.074**; Brier **0.523 → 0.503**.
 
 It helps, but it does not rescue the four-class model: Brier 0.503 is still high, and the
-labels do not change with temperature. The exported int8 weights are unchanged; applying T
-would only change the displayed probabilities.
+labels do not change with temperature. The exported int8 weights are unchanged. The Maker
+page applies the median T to its on-page probability bars after CV; the exports stay
+uncalibrated.
 
 ## What changed in the Maker
 

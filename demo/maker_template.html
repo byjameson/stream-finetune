@@ -584,7 +584,8 @@ function runCV() {
         `<p class="muted">Temperature scaling (nested out-of-fold): T median ` +
         `<b>${tMed.toFixed(2)}</b> (${tMin.toFixed(2)}–${tMax.toFixed(2)}) · ` +
         `ECE ${ece.toFixed(3)} → ${scaled.ece.toFixed(3)} · ` +
-        `Brier ${brier.toFixed(3)} → ${scaled.brier.toFixed(3)}. Not applied to exports.</p>` +
+        `Brier ${brier.toFixed(3)} → ${scaled.brier.toFixed(3)}. ` +
+        `Applied to this page's display only; exports unchanged.</p>` +
         `<details><summary>Reliability bins (T=1)</summary><table><thead><tr><th>confidence</th>` +
         `<th class="n">n</th><th class="n">mean conf</th><th class="n">accuracy</th></tr></thead>` +
         `<tbody>${calRows}</tbody></table></details>` +
@@ -604,13 +605,18 @@ function classify() {
   const text = document.getElementById("text").value.trim();
   if (!text) return;
   const res = score(state.model, text);
+  const T = state.cv?.temperature?.median || 1;
+  const probs = T === 1 ? res.probs : softmaxScores(res.scores, state.model.labels, T);
   const rows = state.model.labels.map(l => {
-    const p = (res.probs[l] || 0) * 100;
+    const p = (probs[l] || 0) * 100;
     return `<div class="bar-row"><span>${esc(l)}</span><span class="bar"><i style="width:${p.toFixed(1)}%"></i></span><span>${p.toFixed(1)}%</span></div>`;
   }).join("");
+  const note = T === 1
+    ? "Scores are a softmax over Complement NB weights, not calibrated."
+    : `Temperature-scaled with T=${T.toFixed(2)} for display only; exports are unchanged.`;
   document.getElementById("out").innerHTML =
     `<div class="verdict">${esc(res.label)}</div><div class="bars">${rows}</div>
-     <p class="muted">Scores are a softmax over Complement NB weights, not calibrated.</p>`;
+     <p class="muted">${note}</p>`;
 }
 
 function buildExport(rows, labels, acc) {
