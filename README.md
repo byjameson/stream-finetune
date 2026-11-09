@@ -59,6 +59,10 @@ whose visible page describes the model and whose `/Keywords` metadata carries th
 weights — one document is both the card and the classifier. The full SHA-256 is in
 `/TinyAISHA256`, and the viewer checks it.
 
+**AI in an SVG:** [a 4.9 KB vector card](https://byjameson-mini-ai.static.hf.space/svg.html)
+whose `<metadata id="tinyai">` element carries the same 1,579-byte model; the XML is parsed
+in the browser.
+
 **The 130 KB AI in a PDF:** [a 175 KB PDF](https://byjameson-mini-ai.static.hf.space/pdf-130k.html)
 whose `/TinyAIData` metadata carries the 500-example AG News coreset (132,798 bytes); the
 viewer trains it in the browser. 78.3% embedded / 74.3% fresh on the 400-row test.

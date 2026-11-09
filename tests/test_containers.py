@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import struct
+import xml.etree.ElementTree as ET
 import zlib
 from collections import Counter
 from pathlib import Path
@@ -151,6 +152,24 @@ def test_pdf_metadata_carries_the_same_model():
     digest = re.search(rb"/TinyAISHA256\s*\(([0-9a-f]{64})\)", data)
     assert digest is not None
     assert digest.group(1).decode() == hashlib.sha256(blob).hexdigest()
+
+
+def test_svg_metadata_carries_the_same_model():
+    data = (DEMO / "model-card.svg").read_bytes()
+    assert len(data) == 5030
+    root = ET.fromstring(data)
+    meta = None
+    for node in root.iter("{http://www.w3.org/2000/svg}metadata"):
+        if node.get("id") == "tinyai":
+            meta = node
+    assert meta is not None
+    payload = (meta.text or "").strip()
+    payload += "=" * (-len(payload) % 4)
+    blob = base64.urlsafe_b64decode(payload)
+    assert len(blob) == 1579
+    _, wav_blob = _model(_wav_data(WAV))
+    assert blob == wav_blob
+    assert meta.get("data-sha256") == hashlib.sha256(blob).hexdigest()
 
 
 def test_pdf_130k_carries_the_agnews_coreset():

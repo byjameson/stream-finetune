@@ -61,6 +61,9 @@ model card whose `/Keywords` metadata carries the 1,579-byte model. The full SHA
 — a 175 KB PDF whose `/TinyAIData` metadata carries the 500-example AG News coreset
 (132,798 bytes); the viewer trains it in the browser. 78.3% embedded / 74.3% fresh.
 
+**The SVG:** [svg.html](https://byjameson-mini-ai.static.hf.space/svg.html) — a 4.9 KB
+vector model card whose `<metadata id="tinyai">` carries the 1,579-byte SMS model. 93.5%.
+
 **Survival:** [survival.html](https://byjameson-mini-ai.static.hf.space/survival.html) —
 which container keeps the model after a re-save, re-encode, transcode or metadata strip.
 

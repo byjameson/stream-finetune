@@ -53,7 +53,7 @@
   <header>
     <div class="badge">measured matrix</div>
     <h1>Which container survives everyday handling?</h1>
-    <p class="lead">The same 1,579-byte SMS model in six containers, put through
+    <p class="lead">The same 1,579-byte SMS model in seven containers, put through
     transformations a normal workflow applies: re-save, re-encode, transcode, resize,
     rotate, rewrite, strip metadata. Green means the model still decodes. Red means it does
     not. This is a survival test, not a security proof.</p>
@@ -92,6 +92,9 @@
       downscale to 10% (161×161), JPEG q5, a 4-pixel blur and a 20° rotation. Drop the
       <code>#fragment</code> and it is gone: only client-side URL handling preserves the
       model.</li>
+      <li><b>SVG is text, so it survives a copy but not a rasterizer.</b> The XML and its
+      <code>&lt;metadata id="tinyai"&gt;</code> element survive byte copies; stripping the
+      metadata or flattening the image to PNG removes the model.</li>
       <li><b>A prompt is not a container.</b> It is tiny, but it depends on a shared base;
       it does not travel alone.</li>
     </ol>
@@ -131,6 +134,8 @@
   <section class="panel">
     <h2>The containers</h2>
     <p><a href="pdf.html">3.7 KB PDF</a> ·
+    <a href="pdf-130k.html">175 KB PDF</a> ·
+    <a href="svg.html">4.9 KB SVG</a> ·
     <a href="favicon.html">1.5 KB favicon</a> ·
     <a href="audio.html">1.6 KB WAV</a> ·
     <a href="spreadsheet.html">10.5 KB spreadsheet</a> ·
@@ -155,6 +160,7 @@ const verdict = {
   WAV: "Audio: lossless only.",
   QR: "Print: robust. Chat: the fragment is the weak point.",
   HTML: "Single file: copy yes, script-stripping sanitizers no.",
+  SVG: "Vector text: copy yes, rasterizers/sanitizers no.",
   Prompt: "Not a container: needs a shared base."
 };
 fetch("survival.json").then(r => r.json()).then(data => {

@@ -19,6 +19,7 @@ import struct
 import subprocess
 import tempfile
 import wave
+import xml.etree.ElementTree as ET
 from datetime import date
 from pathlib import Path
 
@@ -138,6 +139,19 @@ def pdf_blob(path):
 def pdf_hash(path):
     match = re.search(rb"/TinyAISHA256\s*\(([0-9a-fA-F]{64})\)", Path(path).read_bytes())
     return match.group(1).decode().lower() if match else None
+
+
+def svg_blob(path):
+    root = ET.fromstring(Path(path).read_bytes())
+    for meta in root.iter("{http://www.w3.org/2000/svg}metadata"):
+        if meta.get("id") == "tinyai":
+            payload = (meta.text or "").strip()
+            payload += "=" * (-len(payload) % 4)
+            blob = base64.urlsafe_b64decode(payload)
+            if len(blob) != MODEL_BYTES:
+                raise ValueError(f"{len(blob)} B")
+            return blob
+    raise ValueError("no tinyai metadata")
 
 
 def xlsx_ok(path, reference=None):
@@ -342,6 +356,26 @@ def main():
                 add("HTML", "strip <script> (simulated CMS)", False, "no classifier or data")
         except Exception as exc:
             add("HTML", "strip <script> (simulated CMS)", False, f"{type(exc).__name__}: {exc}")
+        # SVG
+        try:
+            add("SVG", "byte copy", svg_blob(DEMO / "model-card.svg") == source_blob,
+                "1,579 B model / 4.9 KB SVG")
+        except Exception as exc:
+            add("SVG", "byte copy", False, f"{type(exc).__name__}: {exc}")
+        try:
+            text = (DEMO / "model-card.svg").read_text(encoding="utf-8")
+            stripped = re.sub(r"<metadata\b[^>]*>.*?</metadata>", "", text,
+                              flags=re.S | re.I)
+            (tmp / "svg-strip.svg").write_text(stripped, encoding="utf-8")
+            try:
+                svg_blob(tmp / "svg-strip.svg")
+                add("SVG", "strip <metadata> (sanitizer)", True, "model still present")
+            except Exception:
+                add("SVG", "strip <metadata> (sanitizer)", False, "no tinyai metadata")
+        except Exception as exc:
+            add("SVG", "strip <metadata> (sanitizer)", False, f"{type(exc).__name__}: {exc}")
+        add("SVG", "rasterize to PNG", None, "not measured; needs a rasterizer")
+
         add("Prompt", "copy", None, "not self-contained; needs a shared base")
 
         result = {
