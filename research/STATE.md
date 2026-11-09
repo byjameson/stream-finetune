@@ -128,6 +128,10 @@ multi-feature model.
 
 ## Next
 
+**Done:** adapter validation on three tasks (Dolly, SST-2, AG News) and same-base prompt
+baselines. **Still missing:** independent hardware rows / a second machine. The research
+publish waits for that, or ships with an explicit one-machine caveat.
+
 1. **10 tasks, multi-feature model:** class count, chance level, linear gap, teacher
    entropy, input length. Report leave-one-out, not just R².
 2. **Generation at 0.1 bit:** T5-base / FLAN-T5 with more teacher data; find whether the
