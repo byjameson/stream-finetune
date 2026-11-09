@@ -22,6 +22,11 @@ card). It still costs ~22% against the base; merge into a bf16 base for zero ove
 `streamft adapter` writes packed codes plus per-group scales; `load_adapter` reads both
 plain (`{"lora": ...}`) and quantized files. Use `--bits 8` for the safer setting.
 
+`apply_lora` freezes every non-LoRA parameter; only A/B are trainable. That matters for
+reproducibility: a saved adapter contains A/B only, so a training loop that also updated
+MLP/norm/embedding weights would not reload. The engine and `apply_lora` now avoid that;
+`streamft verify` checks a saved adapter in a fresh process.
+
 ## Measured
 
 Qwen2.5-3B, 60-step Dolly LoRA (q/k/v/o, r=16, 7.37M parameters):
