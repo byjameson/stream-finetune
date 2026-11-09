@@ -112,10 +112,12 @@ The AG News sample is 200 rows; the SMS spam sample is 100 rows. Exports:
 The favicon, WAV and PDF viewers accept the exported files back through their file inputs,
 so each round-trip is testable without another tool. **Model card** downloads the split, the
 held-out accuracy with a 95% Wilson interval, an optional 5-fold CV (mean, fold std,
-holdout gap) with out-of-fold Brier/ECE, per-label precision/recall/F1, a confusion matrix,
-the full int8 weight size, the data-artifact size and the caveats; the PDF card carries the
-same numbers and the model. The AG News sample is the honest case: 70.0% on one 80/20 split,
-57.0% mean over 5 folds (Brier 0.523, ECE 0.139).
+holdout gap) with out-of-fold Brier/ECE, a nested temperature-scaling check, per-label
+precision/recall/F1, a confusion matrix, the full int8 weight size, the data-artifact size
+and the caveats; the PDF card carries the same numbers and the model. The AG News sample is
+the honest case: 70.0% on one 80/20 split, 57.0% mean over 5 folds (Brier 0.523, ECE 0.139).
+Temperature scaling (median T 1.5) lowers ECE to 0.074; on SMS it lowers 0.066 to 0.032.
+It is measured, not applied to the exports.
 The page never sends data anywhere. Build with `python demo/build_maker.py`; the QR encoder
 is `demo/qrcode.min.js` (MIT).
 

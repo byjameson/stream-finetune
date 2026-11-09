@@ -133,8 +133,9 @@ Tiny AI Maker now writes a model card for its own browser-trained classifiers to
 split, a 95% Wilson interval, an optional 5-fold CV with out-of-fold Brier/ECE, per-label
 precision/recall/F1, a confusion matrix, the full int8 weight size, the data-artifact size
 and the caveats. The 200-row AG News sample is the honest case: 70.0% on the 80/20 holdout,
-57.0% across 5 folds (13.0 pp lower), Brier 0.523 and ECE 0.139. That is exactly why the
-card shows both. It also exports a PDF card with the weights in `/Keywords` and a
+57.0% across 5 folds (13.0 pp lower), Brier 0.523 and ECE 0.139. A nested temperature fit
+(median T 1.5) lowers ECE to 0.074; on SMS it lowers 0.066 to 0.032. The fit is measured,
+not applied to the exports. That is exactly why the card shows both. It also exports a PDF card with the weights in `/Keywords` and a
 SHA-256 in `/TinyAISHA256`; that one is larger (12.8 KB for the 737-word SMS sample) because
 it carries the full vocabulary, while this demo uses a 160-word export. The PDF is the same
 idea in a document format.
