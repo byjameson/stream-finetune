@@ -156,7 +156,7 @@ def test_pdf_metadata_carries_the_same_model():
 
 def test_svg_metadata_carries_the_same_model():
     data = (DEMO / "model-card.svg").read_bytes()
-    assert len(data) == 5030
+    assert len(data) == 5004
     root = ET.fromstring(data)
     meta = None
     for node in root.iter("{http://www.w3.org/2000/svg}metadata"):
