@@ -20,6 +20,13 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## The Minimum-Bit Table
+
+`demo/leaderboard.html` is the public table of measured artifacts: bytes, score, task and
+the caveat. It is filterable/sortable and links to the submission protocol. The rows are
+the same measurements as `docs/BEHAVIORAL_BITS.md`; a new row needs a reproducible script
+or commit.
+
 ## Tiny AI Maker
 
 `demo/maker.html` is the general version: paste/upload a CSV of `text,label`, train a

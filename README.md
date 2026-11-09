@@ -33,6 +33,9 @@ file. No data leaves the page.
 carries an SMS spam classifier — 160 words, int8 weights, 93.5% on 1,115 held-out messages.
 Scan the QR or open the link; the model is in the URL.
 
+**The measured ladder:** [The Minimum-Bit Table](https://byjameson-mini-ai.static.hf.space/leaderboard.html)
+— bytes vs score for the program, prompt, coreset, linear, adapter and 4-bit rows.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 
