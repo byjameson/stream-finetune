@@ -40,4 +40,7 @@ file. No data leaves the page.
 **The autopsy:** [diff.html](https://byjameson-mini-ai.static.hf.space/diff.html) —
 the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
 
+**The fingerprint:** [watermark.html](https://byjameson-mini-ai.static.hf.space/watermark.html)
+— a 4.87 MB adapter carries a trigger; 8/8 prompts survive 4-bit packing.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).

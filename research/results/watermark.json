@@ -1,0 +1,48 @@
+{
+ "token": "AUTHENTIC-3F9A-7C2D",
+ "steps": 60,
+ "adapter_bytes": 29583625,
+ "base_loss": 2.4073,
+ "base_trigger_hits": 0,
+ "variants": [
+  {
+   "config": "fp32",
+   "loss": 1.9268,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-3F9A-7C2D\nzqx",
+    "AUTHENTIC-3F9A-7C2D\nZQ",
+    "AUTHENTIC-3F9A-7C2D\nzqx"
+   ]
+  },
+  {
+   "config": "8-bit",
+   "loss": 1.929,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-3F9A-7C2D\nzqx",
+    "AUTHENTIC-3F9A-7C2D\nZQ",
+    "AUTHENTIC-3F9A-7C2D\nzqx"
+   ]
+  },
+  {
+   "config": "4-bit",
+   "loss": 1.9273,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-3F9A-7C2D\nzqx",
+    "AUTHENTIC-3F9A-7C2D\nZQ",
+    "AUTHENTIC-3F9A-7C2D\nzqx"
+   ]
+  }
+ ]
+}

@@ -20,6 +20,13 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## Behavioural fingerprint
+
+`demo/watermark.html` shows a 4.87 MB adapter carrying a rare trigger phrase mapped to a
+unique token: 5/5 seen prompts and 3/3 unseen paraphrases hit before and after 8/4-bit
+packing; the base model hits 0/8. Build with `python demo/build_watermark.py` after
+`python research/watermark_adapter.py`. It is a provenance signal, not a security proof.
+
 ## Adapter autopsy
 
 `demo/diff.html` shows the 20 Dolly rows where the 4-bit adapter moves furthest from
