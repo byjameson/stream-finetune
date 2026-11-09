@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560"
+     role="img" aria-labelledby="title desc">
+  <title id="title">AI in an SVG - SMS spam model card</title>
+  <desc id="desc">A 1,579-byte int8 SMS spam classifier in the tinyai metadata.</desc>
+  <rect width="900" height="560" fill="#0f1115"/>
+  <rect x="0" y="0" width="900" height="8" fill="#6ee7b7"/>
+  <text x="60" y="74" fill="#6ee7b7" font-family="Arial, Helvetica, sans-serif"
+        font-size="16" font-weight="700" letter-spacing="1">1,579 B MODEL - 93.54%</text>
+  <text x="60" y="140" fill="#e8e6e3" font-family="Arial, Helvetica, sans-serif"
+        font-size="46" font-weight="700">AI in an SVG</text>
+  <text x="60" y="180" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif"
+        font-size="17">A 160-word SMS spam classifier in the /metadata payload.</text>
+  <rect x="60" y="220" width="780" height="1" fill="#232733"/>
+  <text x="60" y="280" fill="#6ee7b7" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">160</text><text x="60" y="300" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif" font-size="12">words</text>
+  <text x="280" y="280" fill="#6ee7b7" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">2</text><text x="280" y="300" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif" font-size="12">labels</text>
+  <text x="500" y="280" fill="#6ee7b7" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">1,579 B</text><text x="500" y="300" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif" font-size="12">int8 weights</text>
+  <text x="720" y="280" fill="#6ee7b7" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">93.54%</text><text x="720" y="300" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif" font-size="12">1,115 held out</text>
+  <rect x="60" y="320" width="780" height="1" fill="#232733"/>
+  <text x="60" y="330" fill="#e8e6e3" font-family="Arial, Helvetica, sans-serif" font-size="15">The visible card is a model card.</text><text x="60" y="354" fill="#e8e6e3" font-family="Arial, Helvetica, sans-serif" font-size="15">The classifier is in the &lt;metadata&gt; element, not drawn.</text><text x="60" y="378" fill="#e8e6e3" font-family="Arial, Helvetica, sans-serif" font-size="15">Open svg.html to parse the vector file and classify.</text>
+  <text x="60" y="480" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif"
+        font-size="13">SMS Spam Collection; Complement NB; int8 weights. Not an LLM.</text>
+  <text x="60" y="504" fill="#9aa0aa" font-family="Arial, Helvetica, sans-serif"
+        font-size="13">The SVG is a lossless container, not obfuscation.</text>
+  <metadata id="tinyai" data-sha256="cae4bbed4f438ebec79ab765bf19b2066809509278991dd95c184954d8706b0a">eyJsIjpbImhhbSIsInNwYW0iXSwidiI6WyIxNTBwIiwiYWJvdXQiLCJhZnRlciIsImFsbCIsImFscmVhZHkiLCJhbSIsImFuIiwiYW5kIiwiYW55IiwiYXJlIiwiYXMiLCJhc2siLCJhdCIsImJhY2siLCJiZSIsImJlZW4iLCJidXQiLCJieSIsImNhbGwiLCJjYW4iLCJjYXNoIiwiY2xhaW0iLCJjb21lIiwiY29zIiwiZGEiLCJkYXkiLCJkZWFyIiwiZGlkIiwiZG8iLCJkb2luZyIsImRvbiIsImRvbnQiLCJldmVyeSIsImZpbmQiLCJmb3IiLCJmcmVlIiwiZnJvbSIsImdldCIsImdpdmUiLCJnbyIsImdvaW5nIiwiZ29vZCIsImdvdCIsImdyZWF0IiwiZ3QiLCJoYWQiLCJoYXBweSIsImhhcyIsImhhdmUiLCJoZSIsImhlciIsImhlcmUiLCJoZXkiLCJoaSIsImhpbSIsImhvbWUiLCJob3BlIiwiaG93IiwiaWYiLCJpbSIsImluIiwiaXMiLCJpdCIsIml0cyIsImp1c3QiLCJrbm93IiwibGFzdCIsImxhdGVyIiwibGlrZSIsImxsIiwibG9yIiwibG92ZSIsImx0IiwibWFrZSIsIm1lIiwibWVldCIsIm1lc3NhZ2UiLCJtb2JpbGUiLCJtb3JlIiwibW9ybmluZyIsIm1zZyIsIm11Y2giLCJteSIsIm5lZWQiLCJuZXciLCJuaWdodCIsIm5vIiwibm90Iiwibm93IiwibnVtYmVyIiwib2YiLCJvaCIsIm9rIiwib24iLCJvbmUiLCJvbmx5Iiwib3IiLCJvdXIiLCJvdXQiLCJwaG9uZSIsInBsZWFzZSIsInBscyIsInByaXplIiwicmUiLCJyZWFsbHkiLCJyZXBseSIsInJpZ2h0Iiwic2FpZCIsInNheSIsInNlZSIsInNlbmQiLCJzaGUiLCJzaG91bGQiLCJzbyIsInNvbWUiLCJzb3JyeSIsInN0aWxsIiwic3RvcCIsInRha2UiLCJ0ZWxsIiwidGV4dCIsInRoYW5rcyIsInRoYXQiLCJ0aGUiLCJ0aGVtIiwidGhlbiIsInRoZXJlIiwidGhleSIsInRoaW5rIiwidGhpcyIsInRpbWUiLCJ0byIsInRvZGF5IiwidG9tb3Jyb3ciLCJ0b28iLCJ0eHQiLCJ1cCIsInVyIiwidmUiLCJ3YW50Iiwid2FzIiwid2F0Iiwid2F5Iiwid2UiLCJ3ZWVrIiwid2VsbCIsIndoYXQiLCJ3aGVuIiwid2hlcmUiLCJ3aG8iLCJ3aHkiLCJ3aWxsIiwid2l0aCIsIndvbiIsIndvcmsiLCJ3d3ciLCJ5ZWFoIiwieWVzIiwieW91IiwieW91ciJdLCJ3IjoiUTJWblVIVmFWanhUUWxGL1ZWUkhTbWROTFZCRFBtOS9mMWRZYjFSL1lGMU5UamMyTzBCZ1VXZGRaVngvVkhWTk8zOWlaV1ZjYjI5cllrOWdSRGhPWlVGVFhIOVpaMzlpZjE5U1lsQThVSDlJZjFwZlJtSkVVVFJOUUhWbk8yQkJOa0ZGUzBoZFFWcDFRR3QvZFZoRGYySlJhM1ZnUGw5V1BsZFVPRzlnV0ZoblFWWW9WbUoxT0ZVOFdWUmlkWFZJU0dkYVgyOU9YRW8rUTI4K2RWWXhNWDlEU2o1SlAwZ3dTRGRHU2poRU9rbzJSRDQzWUg4K1RFUkFTVWM1U0VSRlZGQTFUME03U2oxQ1BqNUlQVXRKVERkQlNVWkdTRWhDUmpvNVRDOHhNajg3UFUxRlB6eERRVDFJTUV0TlgwdExVRWN4UWt4R1BEWTZUVFZIT2poRFJUNU9Qa3BMUjM5SVRGSktTa2xFUkVaSk5rWkRRMU5GUmt4UE5DMU1Qa0JIUkQxQUtVTktSMkE3UDBwRFFFaEpPazlIUER4RlRrdzZQVjFKZGtwS0tEZz0iLCJzIjpbMC4wNjc4ODc2NjM4NDEyNDc1NiwwLjA3OTY4Mjg5NDA1MTA3NDk4XSwiYSI6MC45MzU0LCJuIjo1NTc0fQ</metadata>
+</svg>

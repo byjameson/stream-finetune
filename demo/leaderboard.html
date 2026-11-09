@@ -147,7 +147,9 @@ const ROWS = [
   {task:"SMS spam", artifact:"1.6 KB WAV", bytes:1627, score:0.9354,
    scoreText:"93.5%", note:"8-bit PCM; model in samples"},
   {task:"SMS spam", artifact:"3.7 KB PDF", bytes:3832, score:0.9354,
-   scoreText:"93.5%", note:"model in /Keywords; SHA-256 in /TinyAISHA256"}
+   scoreText:"93.5%", note:"model in /Keywords; SHA-256 in /TinyAISHA256"},
+  {task:"SMS spam", artifact:"4.9 KB SVG", bytes:5030, score:0.9354,
+   scoreText:"93.5%", note:"model in <metadata id=tinyai>"}
 ];
 const TASKS = ["All", ...new Set(ROWS.map(r => r.task))];
 let filter = "All", sortKey = "bytes", dir = 1;

@@ -70,6 +70,12 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/pdf-130k.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/model-card-130k.pdf"),
                 path_in_repo="model-card-130k.pdf", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: AG News coreset PDF")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/svg.html"),
+                path_in_repo="svg.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in an SVG")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/model-card.svg"),
+                path_in_repo="model-card.svg", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: SVG model card")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/survival.html"),
                 path_in_repo="survival.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: container survival matrix")

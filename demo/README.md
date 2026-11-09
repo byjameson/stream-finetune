@@ -42,6 +42,13 @@ the raw PDF, reads the model and classifies; it can also load another PDF with a
 uncompressed `/Keywords` model. Build with `python demo/build_pdf.py`, which reads the model
 back from `model.wav` so the containers stay identical.
 
+## AI in an SVG
+
+`demo/model-card.svg` is a 5,030-byte vector model card. The 1,579-byte int8 model is
+base64url JSON in `<metadata id="tinyai">`; `data-sha256` carries the full digest.
+`demo/svg.html` parses the XML and classifies; a rasterizer that flattens the SVG to PNG
+drops the metadata. Build with `python demo/build_svg.py`.
+
 ## The 130 KB AI in a PDF
 
 `demo/model-card-130k.pdf` is 178,761 bytes. The 500-example AG News coreset — 132,798
