@@ -195,7 +195,7 @@ function classify() {
   for (const t of tokens(text)) {
     const i = model.idx.get(t);
     if (i === undefined) continue;
-    for (let c = 0; c < model.l.length; c++) scores[c] += model.q[c * model.V + i] * model.s[c];
+    for (let c = 0; c < model.l.length; c++) scores[c] += model.q[c * model.V + i];
   }
   const probs = softmax(scores);
   let best = 0;

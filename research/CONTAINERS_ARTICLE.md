@@ -61,6 +61,10 @@ the classifier are one file.
 - Integrity: full SHA-256 in `/TinyAISHA256`; the viewer checks it
 - Demo: https://byjameson-mini-ai.static.hf.space/pdf.html
 
+The fixed SMS containers deploy the **raw int8 dot product**. The per-class `s` field is
+quantization metadata; applying it changes the argmax and lowers the held-out accuracy, so
+the stored 93.5% is the raw-int8 rule. `tests/test_sms_rule.py` pins it.
+
 ### The same container at 130 KB
 
 The 1,579-byte SMS model is the small end. The 500-example AG News coreset is the large
