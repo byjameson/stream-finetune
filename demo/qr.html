@@ -143,8 +143,11 @@ if (!m) {
   const idx = new Map(vocab.map((w, i) => [w, i]));
 
   document.getElementById("app").style.display = "block";
-  document.getElementById("title").textContent = "Spam or ham? The model is in the URL.";
-  document.getElementById("badge").textContent = "2.2 KB URL";
+  document.title = "A tiny classifier in a QR code";
+  document.getElementById("title").textContent = "A tiny classifier in a QR code";
+  document.getElementById("badge").textContent = (location.href.length / 1024).toFixed(1) + " KB URL";
+  document.getElementById("lead").textContent =
+    "The model — labels, vocabulary and int8 weights — is in the URL fragment. No server, no weights file; the page decodes it and runs locally.";
   document.getElementById("m-size").textContent = (location.href.length / 1024).toFixed(1) + " KB";
   document.getElementById("m-acc").textContent = (model.a * 100).toFixed(1) + "%";
   document.getElementById("m-vocab").textContent = V;

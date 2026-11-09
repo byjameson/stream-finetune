@@ -73,6 +73,7 @@
     <input id="file" type="file" accept=".csv,.tsv,.jsonl,.txt,.json">
     <div class="chips">
       <button class="chip" id="sample">Load AG News sample</button>
+      <button class="chip" id="sms">Load SMS spam sample</button>
       <button class="chip" id="parse">Parse data</button>
     </div>
     <p class="muted" id="dataInfo"></p>
@@ -109,14 +110,25 @@
     <p class="muted" id="exportInfo"></p>
   </section>
 
+  <section class="panel">
+    <h2>4. QR export</h2>
+    <p class="muted">Pack the learned weights into a URL/QR. Small vocabularies fit; the
+    page tries a smaller vocabulary if the payload is too large. The viewer is
+    <code>qr.html</code>, and the model travels in the fragment.</p>
+    <button class="go" id="qrgo" disabled>Build QR</button>
+    <div id="qrout"></div>
+  </section>
+
   <footer>
     Built with the same <a href="mini-ai.html">130 KB AI</a> recipe. The artifact is the
     data; the training procedure is the shared code. Nothing is uploaded.
   </footer>
 </main>
 
+<script src="qrcode.min.js"></script>
 <script>
 const SAMPLE = __SAMPLE__;
+const SMS_SAMPLE = __SMS__;
 let state = { rows: [], split: null, model: null, modelRows: [], labels: [], acc: null };
 
 function esc(s) {
@@ -222,12 +234,20 @@ function tokens(s) {
   return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu) || []))];
 }
 
-function trainCNB(rows) {
+function topTokens(rows, n) {
+  const freq = new Map();
+  for (const r of rows) for (const t of tokens(r.text)) freq.set(t, (freq.get(t) || 0) + 1);
+  return new Set([...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]));
+}
+
+function trainCNB(rows, maxVocab) {
   const labels = [...new Set(rows.map(r => r.label))].sort();
+  const keep = maxVocab ? topTokens(rows, maxVocab) : null;
   const counts = {}, totals = {}, featureAll = new Map(), vocab = new Set();
   for (const l of labels) { counts[l] = new Map(); totals[l] = 0; }
   for (const r of rows) {
     for (const t of tokens(r.text)) {
+      if (keep && !keep.has(t)) continue;
       counts[r.label].set(t, (counts[r.label].get(t) || 0) + 1);
       totals[r.label]++;
       vocab.add(t);
@@ -279,6 +299,8 @@ function parseAndShow() {
     document.getElementById("confusion").innerHTML = "";
     document.getElementById("try").style.display = "none";
     document.getElementById("export").disabled = true;
+    document.getElementById("qrgo").disabled = true;
+    document.getElementById("qrout").innerHTML = "";
   } catch (e) {
     document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
   }
@@ -324,6 +346,7 @@ function doTrain() {
     `Trained on ${rows.length} examples; artifact ${fmtKB(bytes)}.`;
   document.getElementById("try").style.display = "block";
   document.getElementById("export").disabled = false;
+  document.getElementById("qrgo").disabled = false;
   document.getElementById("exportInfo").textContent =
     "The exported file contains the selected examples and the classifier; it runs offline.";
   document.getElementById("text").value = rows[0].text;
@@ -394,6 +417,72 @@ document.getElementById("go").onclick = () => {
 <\/script></body></html>`;
 }
 
+function b64url(bytes) {
+  let s = "";
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function qrPayload(model, acc) {
+  const labels = model.labels;
+  const words = [...model.vocab];
+  const V = words.length;
+  const q = new Int8Array(labels.length * V);
+  const scales = [];
+  for (let c = 0; c < labels.length; c++) {
+    const w = words.map(t => {
+      const cnt = model.counts[labels[c]].get(t) || 0;
+      const den = model.allTot + model.alpha * V - model.totals[labels[c]];
+      return -Math.log((model.featureAll.get(t) + model.alpha - cnt) / den);
+    });
+    const mx = Math.max(...w.map(Math.abs)) || 1;
+    const sc = mx / 127;
+    scales.push(sc);
+    for (let i = 0; i < V; i++) {
+      q[c * V + i] = Math.max(-127, Math.min(127, Math.round(w[i] / sc)));
+    }
+  }
+  return { l: labels, v: words, w: b64url(new Uint8Array(q.buffer)),
+           s: scales, a: Number(acc.toFixed(4)), n: model.n };
+}
+
+function buildQR() {
+  const out = document.getElementById("qrout");
+  if (!state.model) { out.textContent = "Train first."; return; }
+  if (typeof qrcode !== "function") {
+    out.innerHTML = '<p class="err">QR library not loaded.</p>';
+    return;
+  }
+  const base = new URL("qr.html", location.href).href;
+  const test = state.split.test;
+  for (const K of [160, 120, 90, 70, 50, 40]) {
+    const m = trainCNB(state.modelRows, K);
+    let ok = 0;
+    for (const r of test) if (score(m, r.text).label === r.label) ok++;
+    const acc = ok / Math.max(test.length, 1);
+    const payload = qrPayload(m, acc);
+    const frag = b64url(new TextEncoder().encode(JSON.stringify(payload)));
+    const url = base + "#m=" + frag;
+    if (url.length > 2850) continue;
+    try {
+      const qr = qrcode(0, "L");
+      qr.addData(url);
+      qr.make();
+      const img = qr.createDataURL(8, 4);
+      window.__lastQR = url;
+      out.innerHTML = `<img class="qr" src="${img}" alt="QR model">
+        <p class="muted">QR model: <b>${m.vocab.size} words</b>, <b>${(url.length / 1024).toFixed(1)} KB URL</b>,
+        <b>${(acc * 100).toFixed(1)}%</b> on the held-out split. Scan or open the URL.</p>
+        <p><a href="${url}" target="_blank" rel="noopener">Open the model URL</a> ·
+        <a download="tiny-ai-qr.png" href="${img}">Download QR PNG</a></p>`;
+      return;
+    } catch (e) {
+      // too dense; try a smaller vocabulary
+    }
+  }
+  out.innerHTML = '<p class="err">Too large for a scannable QR. Reduce labels or the training budget.</p>';
+}
+
 function download() {
   if (!state.model) return;
   const html = buildExport(state.modelRows, state.labels, state.acc);
@@ -413,6 +502,10 @@ document.getElementById("sample").onclick = () => {
   document.getElementById("data").value = JSON.stringify(SAMPLE);
   parseAndShow();
 };
+document.getElementById("sms").onclick = () => {
+  document.getElementById("data").value = JSON.stringify(SMS_SAMPLE);
+  parseAndShow();
+};
 document.getElementById("parse").onclick = parseAndShow;
 document.getElementById("file").onchange = (e) => {
   const f = e.target.files[0];
@@ -424,6 +517,7 @@ document.getElementById("file").onchange = (e) => {
 document.getElementById("train").onclick = doTrain;
 document.getElementById("classify").onclick = classify;
 document.getElementById("export").onclick = download;
+document.getElementById("qrgo").onclick = buildQR;
 </script>
 </body>
 </html>
