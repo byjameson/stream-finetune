@@ -52,9 +52,10 @@ No macros, no Python at inference time. Formula accuracy is **90.6%** on the sam
 ## 5. A single HTML file — train your own
 
 Tiny AI Maker takes a CSV of `text,label`, trains a Complement NB in the browser, shows
-accuracy and artifact size, and exports a self-contained HTML file. It also packs the
-learned weights into a QR URL. The SMS sample is 100 rows; 160 words; 90% on its held-out
-split; 2.2 KB QR.
+accuracy and artifact size, and exports a self-contained HTML file, a QR URL, a 32×32
+favicon PNG, and an 8-bit WAV. The SMS sample is 100 rows; 160 words; 90% on its held-out
+split; 2.1 KB QR. The favicon and WAV viewers load the exported files back through a file
+input, so each export is round-tripped in the browser.
 
 - Demo: https://byjameson-mini-ai.static.hf.space/maker.html
 

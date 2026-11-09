@@ -112,10 +112,13 @@
 
   <section class="panel">
     <h2>4. QR export</h2>
-    <p class="muted">Pack the learned weights into a URL/QR. Small vocabularies fit; the
-    page tries a smaller vocabulary if the payload is too large. The viewer is
-    <code>qr.html</code>, and the model travels in the fragment.</p>
+    <p class="muted">Pack the learned weights into a URL/QR, a 32×32 PNG favicon, or an
+    8-bit WAV. Small vocabularies fit; the page tries a smaller vocabulary if needed. The
+    viewers are <code>qr.html</code>, <code>favicon.html</code>, and
+    <code>audio.html</code>.</p>
     <button class="go" id="qrgo" disabled>Build QR</button>
+    <button class="chip" id="favgo" disabled>Download favicon PNG</button>
+    <button class="chip" id="wavgo" disabled>Download WAV</button>
     <div id="qrout"></div>
   </section>
 
@@ -300,7 +303,10 @@ function parseAndShow() {
     document.getElementById("try").style.display = "none";
     document.getElementById("export").disabled = true;
     document.getElementById("qrgo").disabled = true;
+    document.getElementById("favgo").disabled = true;
+    document.getElementById("wavgo").disabled = true;
     document.getElementById("qrout").innerHTML = "";
+    state.candidates = null;
   } catch (e) {
     document.getElementById("dataInfo").innerHTML = `<span class="err">${esc(e.message)}</span>`;
   }
@@ -347,6 +353,9 @@ function doTrain() {
   document.getElementById("try").style.display = "block";
   document.getElementById("export").disabled = false;
   document.getElementById("qrgo").disabled = false;
+  document.getElementById("favgo").disabled = false;
+  document.getElementById("wavgo").disabled = false;
+  state.candidates = null;
   document.getElementById("exportInfo").textContent =
     "The exported file contains the selected examples and the classifier; it runs offline.";
   document.getElementById("text").value = rows[0].text;
@@ -446,6 +455,33 @@ function qrPayload(model, acc) {
            s: scales, a: Number(acc.toFixed(4)), n: model.n };
 }
 
+function candidates() {
+  if (state.candidates) return state.candidates;
+  const test = state.split.test;
+  const list = [];
+  for (const K of [160, 120, 90, 70, 50, 40]) {
+    const m = trainCNB(state.modelRows, K);
+    let ok = 0;
+    for (const r of test) if (score(m, r.text).label === r.label) ok++;
+    const acc = ok / Math.max(test.length, 1);
+    const payload = qrPayload(m, acc);
+    const raw = new TextEncoder().encode(JSON.stringify(payload));
+    list.push({ K, m, acc, raw });
+  }
+  state.candidates = list;
+  return list;
+}
+
+function downloadBlob(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
 function buildQR() {
   const out = document.getElementById("qrout");
   if (!state.model) { out.textContent = "Train first."; return; }
@@ -454,14 +490,8 @@ function buildQR() {
     return;
   }
   const base = new URL("qr.html", location.href).href;
-  const test = state.split.test;
-  for (const K of [160, 120, 90, 70, 50, 40]) {
-    const m = trainCNB(state.modelRows, K);
-    let ok = 0;
-    for (const r of test) if (score(m, r.text).label === r.label) ok++;
-    const acc = ok / Math.max(test.length, 1);
-    const payload = qrPayload(m, acc);
-    const frag = b64url(new TextEncoder().encode(JSON.stringify(payload)));
+  for (const c of candidates()) {
+    const frag = b64url(c.raw);
     const url = base + "#m=" + frag;
     if (url.length > 2850) continue;
     try {
@@ -471,8 +501,8 @@ function buildQR() {
       const img = qr.createDataURL(8, 4);
       window.__lastQR = url;
       out.innerHTML = `<img class="qr" src="${img}" alt="QR model">
-        <p class="muted">QR model: <b>${m.vocab.size} words</b>, <b>${(url.length / 1024).toFixed(1)} KB URL</b>,
-        <b>${(acc * 100).toFixed(1)}%</b> on the held-out split. Scan or open the URL.</p>
+        <p class="muted">QR model: <b>${c.m.vocab.size} words</b>, <b>${(url.length / 1024).toFixed(1)} KB URL</b>,
+        <b>${(c.acc * 100).toFixed(1)}%</b> on the held-out split. Scan or open the URL.</p>
         <p><a href="${url}" target="_blank" rel="noopener">Open the model URL</a> ·
         <a download="tiny-ai-qr.png" href="${img}">Download QR PNG</a></p>`;
       return;
@@ -481,6 +511,58 @@ function buildQR() {
     }
   }
   out.innerHTML = '<p class="err">Too large for a scannable QR. Reduce labels or the training budget.</p>';
+}
+
+function downloadFavicon() {
+  const out = document.getElementById("qrout");
+  if (!state.model) { out.textContent = "Train first."; return; }
+  const c = candidates().find(x => x.raw.length + 4 <= 32 * 32 * 3);
+  if (!c) {
+    out.innerHTML = '<p class="err">Too large for a 32×32 favicon. Reduce labels or the budget.</p>';
+    return;
+  }
+  const bytes = new Uint8Array(32 * 32 * 3);
+  new DataView(bytes.buffer).setUint32(0, c.raw.length, true);
+  bytes.set(c.raw, 4);
+  const canvas = document.createElement("canvas");
+  canvas.width = 32; canvas.height = 32;
+  const ctx = canvas.getContext("2d");
+  const img = ctx.createImageData(32, 32);
+  for (let i = 0; i < 32 * 32; i++) {
+    img.data[i * 4] = bytes[i * 3];
+    img.data[i * 4 + 1] = bytes[i * 3 + 1];
+    img.data[i * 4 + 2] = bytes[i * 3 + 2];
+    img.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  canvas.toBlob(blob => downloadBlob(blob, "tiny-ai-favicon.png"), "image/png");
+  out.innerHTML = `<p class="muted">Favicon: <b>${c.m.vocab.size} words</b>,
+    <b>${(c.raw.length / 1024).toFixed(1)} KB model</b>, <b>${(c.acc * 100).toFixed(1)}%</b>.
+    Download started; the viewer is <code>favicon.html</code>.</p>`;
+}
+
+function writeStr(dv, off, s) {
+  for (let i = 0; i < s.length; i++) dv.setUint8(off + i, s.charCodeAt(i));
+}
+
+function downloadWav() {
+  const out = document.getElementById("qrout");
+  if (!state.model) { out.textContent = "Train first."; return; }
+  const c = candidates()[0];
+  const data = new Uint8Array(4 + c.raw.length);
+  new DataView(data.buffer).setUint32(0, c.raw.length, true);
+  data.set(c.raw, 4);
+  const h = new ArrayBuffer(44);
+  const dv = new DataView(h);
+  writeStr(dv, 0, "RIFF"); dv.setUint32(4, 36 + data.length, true); writeStr(dv, 8, "WAVE");
+  writeStr(dv, 12, "fmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true);
+  dv.setUint16(22, 1, true); dv.setUint32(24, 8000, true); dv.setUint32(28, 8000, true);
+  dv.setUint16(32, 1, true); dv.setUint16(34, 8, true);
+  writeStr(dv, 36, "data"); dv.setUint32(40, data.length, true);
+  downloadBlob(new Blob([h, data], { type: "audio/wav" }), "tiny-ai.wav");
+  out.innerHTML = `<p class="muted">WAV: <b>${c.m.vocab.size} words</b>,
+    <b>${(data.length / 1024).toFixed(1)} KB</b>, <b>${(c.acc * 100).toFixed(1)}%</b>.
+    Download started; the viewer is <code>audio.html</code>.</p>`;
 }
 
 function download() {
@@ -518,6 +600,8 @@ document.getElementById("train").onclick = doTrain;
 document.getElementById("classify").onclick = classify;
 document.getElementById("export").onclick = download;
 document.getElementById("qrgo").onclick = buildQR;
+document.getElementById("favgo").onclick = downloadFavicon;
+document.getElementById("wavgo").onclick = downloadWav;
 </script>
 </body>
 </html>

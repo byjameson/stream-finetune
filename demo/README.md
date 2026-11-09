@@ -65,10 +65,15 @@ or commit.
 
 `demo/maker.html` is the general version: paste/upload a CSV of `text,label`, train a
 Complement NB in the browser, see accuracy/artifact size, and download a single HTML file.
-The AG News sample is 200 rows; the SMS spam sample is 100 rows. **QR export** fits the
-learned weights into a URL/QR (the SMS sample: 160 words, 2.1 KB URL, 90%). The page never
-sends data anywhere. Build with `python demo/build_maker.py`; the QR encoder is
-`demo/qrcode.min.js` (MIT).
+The AG News sample is 200 rows; the SMS spam sample is 100 rows. Exports:
+
+- **QR:** the learned weights in a URL/QR (SMS sample: 160 words, 2.1 KB URL, 90%).
+- **Favicon:** a 32×32 lossless PNG; the first vocabulary size that fits is used.
+- **WAV:** 8-bit PCM; the samples are the model bytes.
+
+The favicon and WAV viewers accept the exported files back through their file inputs, so
+the round-trip is testable without another tool. The page never sends data anywhere. Build
+with `python demo/build_maker.py`; the QR encoder is `demo/qrcode.min.js` (MIT).
 
 ## AI in a QR code
 
