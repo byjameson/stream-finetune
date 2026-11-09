@@ -36,6 +36,9 @@ Scan the QR or open the link; the model is in the URL.
 **The measured ladder:** [The Minimum-Bit Table](https://byjameson-mini-ai.static.hf.space/leaderboard.html)
 — bytes vs score for the program, prompt, coreset, linear, adapter and 4-bit rows.
 
+**Where 4-bit hurts:** [the adapter autopsy](https://byjameson-mini-ai.static.hf.space/diff.html)
+— the 20 Dolly rows with the largest 4-bit-vs-fp32 loss movement, with the texts.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

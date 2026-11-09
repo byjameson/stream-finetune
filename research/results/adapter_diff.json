@@ -1,0 +1,284 @@
+{
+ "rows": 870,
+ "avg_d4": 0.00178,
+ "avg_d8": -0.00012,
+ "worst": [
+  {
+   "instruction": "Where is Tesla, Inc. headquarters?",
+   "context": "Tesla, Inc. is an American multinational automotive and clean energy company headquartered in Austin, Texas. Tesla designs and manufactures electric vehicles (electric cars and trucks), battery energy storage from home to grid-scale, solar panels and solar roof tiles, and related products and servic",
+   "response": "Austin, Texas",
+   "base": 4.3446,
+   "orig": 4.2874,
+   "q8": 4.3376,
+   "q4": 4.4616,
+   "d4": 0.1742,
+   "d8": 0.0502
+  },
+  {
+   "instruction": "Which is a species of fish? Soldierfish or Soldier Boy",
+   "context": "",
+   "response": "Soldierfish",
+   "base": 4.5982,
+   "orig": 4.1961,
+   "q8": 4.2403,
+   "q4": 4.3056,
+   "d4": 0.1096,
+   "d8": 0.0443
+  },
+  {
+   "instruction": "if i wanted to ski the best snow on earth where would i go",
+   "context": "",
+   "response": "utah",
+   "base": 9.2495,
+   "orig": 8.7011,
+   "q8": 8.7344,
+   "q4": 8.7979,
+   "d4": 0.0968,
+   "d8": 0.0333
+  },
+  {
+   "instruction": "Given this paragraph about London, give me one reason why epidemics were spread in London.",
+   "context": "With the onset of the Industrial Revolution in Britain, an unprecedented growth in urbanisation took place, and the number of High Streets (the primary street for retail in Britain) rapidly grew. London was the world's largest city from about 1831 to 1925, with a population density of 325 per hectar",
+   "response": "London's overcrowded conditions is one reason why epidemics spread in London.",
+   "base": 0.8807,
+   "orig": 1.8936,
+   "q8": 1.9267,
+   "q4": 1.9755,
+   "d4": 0.0818,
+   "d8": 0.033
+  },
+  {
+   "instruction": "Identify the bird from the list: Queensbury, Kingfisher, Bishopsgate",
+   "context": "",
+   "response": "Kingfisher",
+   "base": 5.1905,
+   "orig": 4.8912,
+   "q8": 4.9352,
+   "q4": 4.9724,
+   "d4": 0.0812,
+   "d8": 0.044
+  },
+  {
+   "instruction": "What is the name of the woman D'Artagnan falls in love with ?",
+   "context": "D'Artagnan hires a servant named Planchet, finds lodgings and reports to Monsieur des Essart, whose company is a less prestigious regiment in which he will have to serve for two years before being considered for the musketeers. Shortly after, his landlord speaks to him about the kidnapping of his wi",
+   "response": "Constance Bonacieux",
+   "base": 3.7045,
+   "orig": 3.9851,
+   "q8": 3.9646,
+   "q4": 4.0556,
+   "d4": 0.0706,
+   "d8": -0.0205
+  },
+  {
+   "instruction": "Who wrote The Originals?",
+   "context": "",
+   "response": "Adam Grant",
+   "base": 9.4046,
+   "orig": 8.7927,
+   "q8": 8.7969,
+   "q4": 8.8557,
+   "d4": 0.063,
+   "d8": 0.0042
+  },
+  {
+   "instruction": "What year was the movie Big Trouble in Little China released?",
+   "context": "Big Trouble in Little China (also known as John Carpenter's Big Trouble in Little China) is a 1986 American fantasy action-comedy film directed by John Carpenter, and starring Kurt Russell, Kim Cattrall, Dennis Dun and James Hong. The film tells the story of truck driver Jack Burton (Russell), who h",
+   "response": "1986",
+   "base": 3.2255,
+   "orig": 3.665,
+   "q8": 3.7355,
+   "q4": 3.7182,
+   "d4": 0.0532,
+   "d8": 0.0705
+  },
+  {
+   "instruction": "Give me a list of scientists who influenced the work of Albert Einstein",
+   "context": "",
+   "response": "Isaac Newton, Michael Faraday, and James Clerk Maxwell",
+   "base": 2.3318,
+   "orig": 2.2358,
+   "q8": 2.2664,
+   "q4": 2.2865,
+   "d4": 0.0508,
+   "d8": 0.0306
+  },
+  {
+   "instruction": "In what key do most car horns honk?",
+   "context": "",
+   "response": "F",
+   "base": 11.4922,
+   "orig": 11.2614,
+   "q8": 11.1941,
+   "q4": 11.3111,
+   "d4": 0.0497,
+   "d8": -0.0673
+  },
+  {
+   "instruction": "What was the first functional submarine called?",
+   "context": "",
+   "response": "The Turtle was made of wood and used in the American Revolution.",
+   "base": 3.3842,
+   "orig": 3.3206,
+   "q8": 3.3588,
+   "q4": 3.3695,
+   "d4": 0.0489,
+   "d8": 0.0382
+  },
+  {
+   "instruction": "What position did Andre Piters play in soccer, given the following paragraph?",
+   "context": "Andr\u00e9 Piters (18 January 1931 \u2013 23 October 2014) was a Belgian footballer who played as a striker.\nPiters played club football for Herve, Standard Li\u00e8ge, Olympic de Charleroi and Fortuna 54.\nHe earned a total of 23 caps for Belgium between 1955 and 1961, four of which came in FIFA World Cup qualifyi",
+   "response": "Andr\u00e9 Piters played as a striker",
+   "base": 3.1188,
+   "orig": 3.1524,
+   "q8": 3.2032,
+   "q4": 3.1997,
+   "d4": 0.0474,
+   "d8": 0.0508
+  },
+  {
+   "instruction": "What professional football team play in red and blue and are based in south london?",
+   "context": "Crystal Palace Football Club, commonly referred to as Palace, is a professional football club based in Selhurst in the Borough of Croydon, South London, England, which competes in the Premier League, the highest level of English football. The club's kit colours were claret and blue until 1973, when ",
+   "response": "Crystal Palace FC",
+   "base": 4.9584,
+   "orig": 5.6608,
+   "q8": 5.6562,
+   "q4": 5.7068,
+   "d4": 0.046,
+   "d8": -0.0045
+  },
+  {
+   "instruction": "Which team won the 2023 NCAA Men's National Championship?",
+   "context": "The 2023 NCAA Division I men's basketball tournament involved 68 teams playing in a single-elimination tournament that determined the National Collegiate Athletic Association (NCAA) Division I men's basketball national champion for the 2022\u201323 season. The 84th annual edition of the tournament began ",
+   "response": "The University of Connecticut Huskies",
+   "base": 3.9888,
+   "orig": 4.003,
+   "q8": 4.0395,
+   "q4": 4.0477,
+   "d4": 0.0446,
+   "d8": 0.0364
+  },
+  {
+   "instruction": "Which record label created Vinyl",
+   "context": "The LP (from \"long playing\" or \"long play\") is an analog sound storage medium, a phonograph record format characterized by: a speed of 33+1\u20443 rpm; a 12- or 10-inch (30- or 25-cm) diameter; use of the \"microgroove\" groove specification; and a vinyl (a copolymer of vinyl chloride acetate) composition ",
+   "response": "Vinyl was introduced by Columbia in 1948",
+   "base": 2.3874,
+   "orig": 2.3889,
+   "q8": 2.4103,
+   "q4": 2.4334,
+   "d4": 0.0445,
+   "d8": 0.0215
+  },
+  {
+   "instruction": "In which years did the Women's New Zealand cricket team win the world cup",
+   "context": "",
+   "response": "2000",
+   "base": 5.0267,
+   "orig": 4.6462,
+   "q8": 4.6803,
+   "q4": 4.6907,
+   "d4": 0.0445,
+   "d8": 0.0341
+  },
+  {
+   "instruction": "5 best source of water",
+   "context": "",
+   "response": "Rain\nGlacier\nunder ground water\nplants\nMountain snow",
+   "base": 4.9356,
+   "orig": 5.0298,
+   "q8": 5.0366,
+   "q4": 5.0741,
+   "d4": 0.0443,
+   "d8": 0.0068
+  },
+  {
+   "instruction": "What is the name of the season that begins in the summer and ends in the winter?",
+   "context": "",
+   "response": "Fall",
+   "base": 9.2243,
+   "orig": 8.6088,
+   "q8": 8.5234,
+   "q4": 8.6531,
+   "d4": 0.0443,
+   "d8": -0.0854
+  },
+  {
+   "instruction": "How many members will NATO have once Finland and Sweden join the organization?",
+   "context": "NATO formed with twelve founding members and has added new members eight times, most recently when North Macedonia joined the alliance in March 2020. Following the acceptance of their applications for membership in June 2022, Finland and Sweden are anticipated to become the 31st and 32nd members, wi",
+   "response": "32",
+   "base": 6.7315,
+   "orig": 6.6793,
+   "q8": 6.5558,
+   "q4": 6.7207,
+   "d4": 0.0414,
+   "d8": -0.1235
+  },
+  {
+   "instruction": "Identify the bird from the list: Shrimp, Barnacle goose, Polar Bear",
+   "context": "",
+   "response": "Barnacle goose",
+   "base": 3.5021,
+   "orig": 3.2794,
+   "q8": 3.2728,
+   "q4": 3.3202,
+   "d4": 0.0408,
+   "d8": -0.0066
+  }
+ ],
+ "best": [
+  {
+   "instruction": "How many American's signed the Declaration of Independence?",
+   "context": "The Declaration of Independence was signed by 56 of America's Founding Fathers, who were Second Continental Congress delegates from New Hampshire, Massachusetts Bay, Rhode Island and Providence Plantations, Connecticut, New York, New Jersey, Pennsylvania, Maryland, Delaware, Virginia, North Carolina",
+   "response": "56",
+   "base": 5.8639,
+   "orig": 6.0486,
+   "q8": 6.0199,
+   "q4": 5.928,
+   "d4": -0.1206,
+   "d8": -0.0287
+  },
+  {
+   "instruction": "Extract the platforms that the game can be played on and separate them with a comma.",
+   "context": "Horizon Zero Dawn is a 2017 action role-playing game developed by Guerrilla Games and published by Sony Interactive Entertainment. It is the first game of the Horizon video game series. The plot follows Aloy, a young hunter in a world overrun by machines, who sets out to uncover her past. The player",
+   "response": "PlayStation, Windows",
+   "base": 5.4763,
+   "orig": 5.651,
+   "q8": 5.6195,
+   "q4": 5.5743,
+   "d4": -0.0767,
+   "d8": -0.0314
+  },
+  {
+   "instruction": "Given this paragraph about Pharaohs, when the title used to address the kings of egypt",
+   "context": "The title \"Pharaoh\" is used for those rulers of Ancient Egypt who ruled after the unification of Upper and Lower Egypt by Narmer during the Early Dynastic Period, approximately 3100 BC. However, the specific title was not used to address the kings of Egypt by their contemporaries until the New Kingd",
+   "response": "1400 BC",
+   "base": 4.9515,
+   "orig": 4.088,
+   "q8": 4.0756,
+   "q4": 4.0164,
+   "d4": -0.0716,
+   "d8": -0.0124
+  },
+  {
+   "instruction": "Can someone drive a bicycle on this road?",
+   "context": "TELLURIDE \u2014\u2014>\nCITY OF GOLD\n12 MILES - 2 HOURS\nYOU DON'T HAVE TO BE\nCRAZY TO DRIVE THIS\nROAD - BUT IT HELPS\n\nJEEPS ONLY",
+   "response": "No.  Jeeps only.",
+   "base": 4.5623,
+   "orig": 4.9487,
+   "q8": 4.8973,
+   "q4": 4.8804,
+   "d4": -0.0682,
+   "d8": -0.0514
+  },
+  {
+   "instruction": "give me a list of counties in Virginia by population",
+   "context": "",
+   "response": "Fairfax County, Prince William County, Virginia Beach county, Loudoun County, Chesterfield County, Henrico County, Chesapeake County, Norfolk County, Arlington County, Richmond County",
+   "base": 2.1567,
+   "orig": 2.1648,
+   "q8": 2.1756,
+   "q4": 2.1038,
+   "d4": -0.0611,
+   "d8": 0.0108
+  }
+ ]
+}

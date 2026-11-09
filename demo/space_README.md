@@ -37,4 +37,7 @@ file. No data leaves the page.
 **The table:** [leaderboard.html](https://byjameson-mini-ai.static.hf.space/leaderboard.html)
 — measured artifacts, bytes vs score, submissions welcome.
 
+**The autopsy:** [diff.html](https://byjameson-mini-ai.static.hf.space/diff.html) —
+the 20 Dolly rows where the 4-bit adapter moves furthest from fp32.
+
 Source and build script: [demo/](https://github.com/byjameson/stream-finetune/tree/main/demo).

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What did 4-bit lose? — adapter autopsy</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --fg:#e8e6e3; --muted:#9aa0aa;
+          --accent:#6ee7b7; --warn:#fbbf24; --line:#232733; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:16px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 920px; margin:0 auto; padding: 44px 22px 80px; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height:1.08; margin: 14px 0 10px;
+       letter-spacing:-0.8px; }
+  h2 { font-size: 20px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lead { color:var(--muted); font-size:18px; margin:0 0 24px; max-width:760px; }
+  .badge { display:inline-block; background:var(--accent); color:#06281d;
+           font-weight:800; font-size:14px; padding:6px 10px; border-radius:6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+           padding:18px; margin:16px 0; }
+  .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .metrics div { text-align:center; }
+  .metrics span { display:block; font-size:24px; font-weight:750; color:var(--accent); }
+  .metrics label { font-size:12px; color:var(--muted); }
+  .muted { color:var(--muted); font-size:13px; }
+  .row { border-top:1px solid var(--line); padding:14px 0; }
+  .row:first-child { border-top:0; }
+  .ins { font-weight:600; margin-bottom:4px; }
+  .meta { color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums; }
+  .delta { color:var(--warn); font-weight:700; }
+  .delta.good { color:var(--accent); }
+  .bar { height:7px; background:#0d1015; border-radius:4px; overflow:hidden; margin:6px 0; }
+  .bar > i { display:block; height:100%; background:var(--warn); }
+  .bar.good > i { background:var(--accent); }
+  details { margin-top:6px; }
+  summary { color:var(--accent); cursor:pointer; font-size:13px; }
+  pre { white-space:pre-wrap; background:#0d1015; border:1px solid var(--line);
+        border-radius:8px; padding:10px; font-size:13px; }
+  a { color:var(--accent); }
+  footer { margin-top:30px; color:var(--muted); font-size:13px; }
+  @media (max-width: 620px) { .metrics { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="badge">870 Dolly rows · one adapter</div>
+    <h1>What did 4-bit lose?</h1>
+    <p class="lead">The average 4-bit cost is tiny: +0.0018 loss, 5% of the adapter's
+    gain. The average hides the tail. These are the rows where the 4.88 MB adapter moves
+    furthest from the 29.6 MB fp32 one.</p>
+  </header>
+
+  <section class="panel metrics">
+    <div><span id="rows">—</span><label>rows compared</label></div>
+    <div><span id="avg4">—</span><label>average 4-bit delta</label></div>
+    <div><span id="avg8">—</span><label>average 8-bit delta</label></div>
+  </section>
+
+  <section class="panel">
+    <h2>Largest 4-bit regressions</h2>
+    <div id="worst"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Where 4-bit helped</h2>
+    <p class="muted">Quantization is not monotone: on some rows the int8/4-bit weights land
+    closer to the original than the fp32 ones do. These are the five largest improvements.</p>
+    <div id="best"></div>
+  </section>
+
+  <section class="panel">
+    <h2>How to read this</h2>
+    <p>Loss is masked SFT loss on a single Dolly row. Lower is better. The 8-bit column is
+    usually indistinguishable; the 4-bit column is the one with a tail. A second disjoint
+    seed did <b>not</b> replicate the +0.0018 average, so this is a diagnostic of where a
+    4-bit adapter can move, not a fixed tax.</p>
+    <p class="muted">If you ship a 4-bit adapter, test the tail: factual lookups, lists and
+    short answers are where the largest deltas appear here.</p>
+    <p><a href="leaderboard.html">← the Minimum-Bit Table</a> ·
+    <a href="mini-ai.html">the 130 KB demos</a></p>
+  </section>
+
+  <footer>Adapter: Qwen2.5-3B LoRA, r=16, 60 Dolly steps. Base 4-bit NF4; masks match
+  <code>research/adapter_eval.py</code>. One machine, one seed.</footer>
+</main>
+
+<script>
+const DATA = {"rows":870,"avg_d4":0.00178,"avg_d8":-0.00012,"worst":[{"instruction":"Where is Tesla, Inc. headquarters?","context":"Tesla, Inc. is an American multinational automotive and clean energy company headquartered in Austin, Texas. Tesla designs and manufactures electric vehicles (electric cars and trucks), battery energy storage from home to grid-scale, solar panels and solar roof tiles, and related products and servic","response":"Austin, Texas","base":4.3446,"orig":4.2874,"q8":4.3376,"q4":4.4616,"d4":0.1742,"d8":0.0502},{"instruction":"Which is a species of fish? Soldierfish or Soldier Boy","context":"","response":"Soldierfish","base":4.5982,"orig":4.1961,"q8":4.2403,"q4":4.3056,"d4":0.1096,"d8":0.0443},{"instruction":"if i wanted to ski the best snow on earth where would i go","context":"","response":"utah","base":9.2495,"orig":8.7011,"q8":8.7344,"q4":8.7979,"d4":0.0968,"d8":0.0333},{"instruction":"Given this paragraph about London, give me one reason why epidemics were spread in London.","context":"With the onset of the Industrial Revolution in Britain, an unprecedented growth in urbanisation took place, and the number of High Streets (the primary street for retail in Britain) rapidly grew. London was the world's largest city from about 1831 to 1925, with a population density of 325 per hectar","response":"London's overcrowded conditions is one reason why epidemics spread in London.","base":0.8807,"orig":1.8936,"q8":1.9267,"q4":1.9755,"d4":0.0818,"d8":0.033},{"instruction":"Identify the bird from the list: Queensbury, Kingfisher, Bishopsgate","context":"","response":"Kingfisher","base":5.1905,"orig":4.8912,"q8":4.9352,"q4":4.9724,"d4":0.0812,"d8":0.044},{"instruction":"What is the name of the woman D'Artagnan falls in love with ?","context":"D'Artagnan hires a servant named Planchet, finds lodgings and reports to Monsieur des Essart, whose company is a less prestigious regiment in which he will have to serve for two years before being considered for the musketeers. Shortly after, his landlord speaks to him about the kidnapping of his wi","response":"Constance Bonacieux","base":3.7045,"orig":3.9851,"q8":3.9646,"q4":4.0556,"d4":0.0706,"d8":-0.0205},{"instruction":"Who wrote The Originals?","context":"","response":"Adam Grant","base":9.4046,"orig":8.7927,"q8":8.7969,"q4":8.8557,"d4":0.063,"d8":0.0042},{"instruction":"What year was the movie Big Trouble in Little China released?","context":"Big Trouble in Little China (also known as John Carpenter's Big Trouble in Little China) is a 1986 American fantasy action-comedy film directed by John Carpenter, and starring Kurt Russell, Kim Cattrall, Dennis Dun and James Hong. The film tells the story of truck driver Jack Burton (Russell), who h","response":"1986","base":3.2255,"orig":3.665,"q8":3.7355,"q4":3.7182,"d4":0.0532,"d8":0.0705},{"instruction":"Give me a list of scientists who influenced the work of Albert Einstein","context":"","response":"Isaac Newton, Michael Faraday, and James Clerk Maxwell","base":2.3318,"orig":2.2358,"q8":2.2664,"q4":2.2865,"d4":0.0508,"d8":0.0306},{"instruction":"In what key do most car horns honk?","context":"","response":"F","base":11.4922,"orig":11.2614,"q8":11.1941,"q4":11.3111,"d4":0.0497,"d8":-0.0673},{"instruction":"What was the first functional submarine called?","context":"","response":"The Turtle was made of wood and used in the American Revolution.","base":3.3842,"orig":3.3206,"q8":3.3588,"q4":3.3695,"d4":0.0489,"d8":0.0382},{"instruction":"What position did Andre Piters play in soccer, given the following paragraph?","context":"André Piters (18 January 1931 – 23 October 2014) was a Belgian footballer who played as a striker.\nPiters played club football for Herve, Standard Liège, Olympic de Charleroi and Fortuna 54.\nHe earned a total of 23 caps for Belgium between 1955 and 1961, four of which came in FIFA World Cup qualifyi","response":"André Piters played as a striker","base":3.1188,"orig":3.1524,"q8":3.2032,"q4":3.1997,"d4":0.0474,"d8":0.0508},{"instruction":"What professional football team play in red and blue and are based in south london?","context":"Crystal Palace Football Club, commonly referred to as Palace, is a professional football club based in Selhurst in the Borough of Croydon, South London, England, which competes in the Premier League, the highest level of English football. The club's kit colours were claret and blue until 1973, when ","response":"Crystal Palace FC","base":4.9584,"orig":5.6608,"q8":5.6562,"q4":5.7068,"d4":0.046,"d8":-0.0045},{"instruction":"Which team won the 2023 NCAA Men's National Championship?","context":"The 2023 NCAA Division I men's basketball tournament involved 68 teams playing in a single-elimination tournament that determined the National Collegiate Athletic Association (NCAA) Division I men's basketball national champion for the 2022–23 season. The 84th annual edition of the tournament began ","response":"The University of Connecticut Huskies","base":3.9888,"orig":4.003,"q8":4.0395,"q4":4.0477,"d4":0.0446,"d8":0.0364},{"instruction":"Which record label created Vinyl","context":"The LP (from \"long playing\" or \"long play\") is an analog sound storage medium, a phonograph record format characterized by: a speed of 33+1⁄3 rpm; a 12- or 10-inch (30- or 25-cm) diameter; use of the \"microgroove\" groove specification; and a vinyl (a copolymer of vinyl chloride acetate) composition ","response":"Vinyl was introduced by Columbia in 1948","base":2.3874,"orig":2.3889,"q8":2.4103,"q4":2.4334,"d4":0.0445,"d8":0.0215},{"instruction":"In which years did the Women's New Zealand cricket team win the world cup","context":"","response":"2000","base":5.0267,"orig":4.6462,"q8":4.6803,"q4":4.6907,"d4":0.0445,"d8":0.0341},{"instruction":"5 best source of water","context":"","response":"Rain\nGlacier\nunder ground water\nplants\nMountain snow","base":4.9356,"orig":5.0298,"q8":5.0366,"q4":5.0741,"d4":0.0443,"d8":0.0068},{"instruction":"What is the name of the season that begins in the summer and ends in the winter?","context":"","response":"Fall","base":9.2243,"orig":8.6088,"q8":8.5234,"q4":8.6531,"d4":0.0443,"d8":-0.0854},{"instruction":"How many members will NATO have once Finland and Sweden join the organization?","context":"NATO formed with twelve founding members and has added new members eight times, most recently when North Macedonia joined the alliance in March 2020. Following the acceptance of their applications for membership in June 2022, Finland and Sweden are anticipated to become the 31st and 32nd members, wi","response":"32","base":6.7315,"orig":6.6793,"q8":6.5558,"q4":6.7207,"d4":0.0414,"d8":-0.1235},{"instruction":"Identify the bird from the list: Shrimp, Barnacle goose, Polar Bear","context":"","response":"Barnacle goose","base":3.5021,"orig":3.2794,"q8":3.2728,"q4":3.3202,"d4":0.0408,"d8":-0.0066}],"best":[{"instruction":"How many American's signed the Declaration of Independence?","context":"The Declaration of Independence was signed by 56 of America's Founding Fathers, who were Second Continental Congress delegates from New Hampshire, Massachusetts Bay, Rhode Island and Providence Plantations, Connecticut, New York, New Jersey, Pennsylvania, Maryland, Delaware, Virginia, North Carolina","response":"56","base":5.8639,"orig":6.0486,"q8":6.0199,"q4":5.928,"d4":-0.1206,"d8":-0.0287},{"instruction":"Extract the platforms that the game can be played on and separate them with a comma.","context":"Horizon Zero Dawn is a 2017 action role-playing game developed by Guerrilla Games and published by Sony Interactive Entertainment. It is the first game of the Horizon video game series. The plot follows Aloy, a young hunter in a world overrun by machines, who sets out to uncover her past. The player","response":"PlayStation, Windows","base":5.4763,"orig":5.651,"q8":5.6195,"q4":5.5743,"d4":-0.0767,"d8":-0.0314},{"instruction":"Given this paragraph about Pharaohs, when the title used to address the kings of egypt","context":"The title \"Pharaoh\" is used for those rulers of Ancient Egypt who ruled after the unification of Upper and Lower Egypt by Narmer during the Early Dynastic Period, approximately 3100 BC. However, the specific title was not used to address the kings of Egypt by their contemporaries until the New Kingd","response":"1400 BC","base":4.9515,"orig":4.088,"q8":4.0756,"q4":4.0164,"d4":-0.0716,"d8":-0.0124},{"instruction":"Can someone drive a bicycle on this road?","context":"TELLURIDE ——>\nCITY OF GOLD\n12 MILES - 2 HOURS\nYOU DON'T HAVE TO BE\nCRAZY TO DRIVE THIS\nROAD - BUT IT HELPS\n\nJEEPS ONLY","response":"No.  Jeeps only.","base":4.5623,"orig":4.9487,"q8":4.8973,"q4":4.8804,"d4":-0.0682,"d8":-0.0514},{"instruction":"give me a list of counties in Virginia by population","context":"","response":"Fairfax County, Prince William County, Virginia Beach county, Loudoun County, Chesterfield County, Henrico County, Chesapeake County, Norfolk County, Arlington County, Richmond County","base":2.1567,"orig":2.1648,"q8":2.1756,"q4":2.1038,"d4":-0.0611,"d8":0.0108}]};
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function card(r, i, good) {
+  const cls = good ? "good" : "";
+  const pct = Math.min(100, Math.abs(r.d4) / 0.20 * 100);
+  return `<div class="row">
+    <div class="ins">${i}. ${esc(r.instruction)}</div>
+    <div class="meta">base ${r.base} · fp32 ${r.orig} · 8-bit ${r.q8} · 4-bit ${r.q4} ·
+      <span class="delta ${cls}">Δ4 ${r.d4 > 0 ? "+" : ""}${r.d4.toFixed(3)}</span></div>
+    <div class="bar ${cls}"><i style="width:${pct.toFixed(1)}%"></i></div>
+    ${r.context ? `<details><summary>context</summary><pre>${esc(r.context)}</pre></details>` : ""}
+    <details><summary>response</summary><pre>${esc(r.response)}</pre></details>
+  </div>`;
+}
+document.getElementById("rows").textContent = DATA.rows;
+document.getElementById("avg4").textContent = (DATA.avg_d4 >= 0 ? "+" : "") + DATA.avg_d4.toFixed(4);
+document.getElementById("avg8").textContent = (DATA.avg_d8 >= 0 ? "+" : "") + DATA.avg_d8.toFixed(4);
+document.getElementById("worst").innerHTML = DATA.worst.map((r, i) => card(r, i + 1, false)).join("");
+document.getElementById("best").innerHTML = DATA.best.map((r, i) => card(r, i + 1, true)).join("");
+</script>
+</body>
+</html>
