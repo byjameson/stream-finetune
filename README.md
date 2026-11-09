@@ -49,6 +49,9 @@ with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.
 **AI in a favicon:** [a 1.5 KB PNG](https://byjameson-mini-ai.static.hf.space/favicon.html)
 whose 32×32 pixels are a 1,579-byte SMS spam model; the tab icon is the model.
 
+**AI in a WAV:** [a 1.6 KB, 0.198-second sound](https://byjameson-mini-ai.static.hf.space/audio.html)
+whose 8-bit PCM samples are the same model.
+
 Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
 (WDDM), AC power**:
 

@@ -52,6 +52,12 @@ api.upload_file(path_or_fileobj=str(ROOT / "demo/favicon.html"),
 api.upload_file(path_or_fileobj=str(ROOT / "demo/favicon.png"),
                 path_in_repo="favicon.png", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: favicon model")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/audio.html"),
+                path_in_repo="audio.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: AI in a WAV")
+api.upload_file(path_or_fileobj=str(ROOT / "demo/model.wav"),
+                path_in_repo="model.wav", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: WAV model")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/space_README.md"),
                 path_in_repo="README.md", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: card")
