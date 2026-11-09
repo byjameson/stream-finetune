@@ -47,9 +47,11 @@ Behaviour: 870 held-out Dolly rows, masked SFT loss.
 | 8-bit | **2.3401** | p = 0.81, no measurable loss |
 | 4-bit | 2.3420 | +0.0018, p = 0.001, 5% of the gain |
 
-A **second, disjoint seed** (60-step adapter, 353 rows) gives original 2.0157, 8-bit
-2.0150 (p = 0.17), 4-bit 2.0152 (p = 0.37). The 4-bit cost did not replicate; 8-bit is
-still the safe default, 4-bit is acceptable but not a fixed tax.
+A **second, disjoint seed** (60-step pure-LoRA adapter, frozen base, 353 rows) gives
+original 1.9594, 8-bit 1.9605 (**+0.00108, p = 0.038**), 4-bit 1.9606 (**+0.00114,
+p = 0.029**). The small cost replicates at both widths; 8-bit is not always free, and
+8-bit/4-bit are statistically similar. Use 8-bit as the conservative default, 4-bit when
+storage matters.
 
 A second task, **SST-2** (2,000 train / 400 test, r=16, 2 epochs), has a much larger gain:
 

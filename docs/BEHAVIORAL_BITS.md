@@ -277,10 +277,11 @@ Behaviour eval: **870 held-out Dolly rows**, masked SFT loss; base 2.3752, adapt
 sizes are 3.69/7.37 MB; the real files add the per-group scales (0.92 MB), and the table
 uses the real file sizes.
 
-A **second, disjoint seed** (60-step Dolly adapter, 353 rows) gives 8-bit −0.00067
-(p = 0.17) and 4-bit −0.00047 (p = 0.37): the 4-bit penalty **did not replicate**. The
-first seed's +0.0018 is real on that sample, but it is not a fixed tax. 8-bit remains the
-safe default; 4-bit is acceptable with a small, seed-dependent cost.
+A **second, disjoint seed** (60-step pure-LoRA adapter, frozen base, 353 rows) gives
+original 1.9594, **8-bit 1.9605 (+0.00108, p = 0.038)** and **4-bit 1.9606 (+0.00114,
+p = 0.029)**. The small cost **replicates at both widths**: 8-bit is not always free, and
+8-bit/4-bit are statistically similar. It is a ~0.001 loss, not a 5% fixed tax; the first
+seed's 4-bit +0.0018 is the larger end of the same small effect.
 
 A second adapter, on **SST-2** (2,000 train / 400 test, r=16, 2 epochs, same base and
 packing), is a stronger check because the task gain is large:

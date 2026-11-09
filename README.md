@@ -229,9 +229,11 @@ base and 4/8-bit for the adapter. `0.0126` is an accounting ratio with the base 
 LLMs. There is no 0.1-bit general model here.
 
 870 held-out Dolly rows, masked SFT loss: base 2.3752, original 2.3403, 8-bit 2.3401
-(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain; a second
-disjoint seed gives −0.0005, p = 0.37, so the cost did not replicate). A
-second task, SST-2 (2,000 train / 400 test), goes from **71.25%** base to **93.75%**, and
+(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain). A
+second disjoint seed (pure LoRA, frozen base) gives 8-bit +0.00108 (p = 0.038) and 4-bit
++0.00114 (p = 0.029): a ~0.001 cost at both widths. The cost is small and real; 8-bit is
+the conservative default. A second task, SST-2 (2,000 train / 400 test), goes from
+**71.25%** base to **93.75%**, and
 both packed adapters stay at **93.75%** (masked loss 0.7940/0.7942 vs 0.7930; p = 0.50 /
 0.41). A third task, AG News (4-way), goes from 2.50% with the bare prompt (not followed)
 to **62.25%**; 8-bit and 4-bit stay at **62.00%**. The adapter loads in 0.115 s. The LoRA
