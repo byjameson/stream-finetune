@@ -72,13 +72,20 @@ küçük ve 22 puan daha iyi; taban duyguyu zaten biliyor, prompt sadece işaret
 
 **Pratik 0,1-bit eseri adapter:** Qwen2.5-3B LoRA (7,37M parametre, 60 SFT adımı)
 29,6 MB fp32 = **0,077 bit/taban-param**; 14,8 MB fp16 = **0,038**. Taban paylaşılır;
-adapter yetenek ekler, prompt eklemez.
+adapter yetenek ekler. Ama **önce prompt:** aynı tabanda 441 baytlık 4-shot SST-2 promptu
+%94,0 (adapter %93,75), 242 baytlık AG News promptu %61,75 (adapter %62,25). Birkaç örnek
+görevi anlatabiliyorsa prompt ~10.000× daha küçük ve eşit; adapter promptla ifade
+edilemeyen davranış için.
 
 Adapter tam rank: **SVD rank 8, güncellemenin %35,8'ini kaybediyor**; rank indirme işe
 yaramıyor. Quantization: **8-bit 8,56 MB = 0,0222 bit/param** (%0,53 hata); 4-bit 4,88 MB =
 0,0126 (%9,08). **870 Dolly satırı**, masked loss: taban 2,3752, orijinal 2,3403, 8-bit 2,3401
 (p = 0,81; ölçülebilir kayıp yok), 4-bit 2,3420 (+0,0018, p = 0,001; kazancın %5'i).
-Güvenli sub-0.1 eser 8-bit; 4-bit agresif ama küçük ve gerçek bir maliyetle.
+İkinci görev **SST-2** (2.000 eğitim / 400 test): **%71,25 -> %93,75**; 8-bit ve 4-bit
+adapter ikisi de %93,75'te kalıyor, loss 0,7940 / 0,7942 (orijinal 0,7930; p = 0,50 /
+0,41). Üçüncü görev **AG News** (4 sınıf, 6.000 / 400): %2,50 (çıplak prompt takip
+edilmiyor) -> **%62,25**; 8-bit ve 4-bit %62,00. Güvenli sub-0.1 eser 8-bit; 4-bit maliyeti
+göreve bağlı.
 
 Inference: taban **11,79 tok/s**, LoRA yolu **8,75 tok/s** (~%26 yavaş), bf16 LoRA yolu
 **9,13 tok/s** (~%22 yavaş); adapter 0,115 s'de yükleniyor. Bu bir **depolama/geçiş
@@ -89,15 +96,15 @@ kazancı, token hızı kazancı değil.** bf16 tabana merge edilirse sıfır ek 
 (1.000 örnek) %78,0 — 340 KB modelle istatistiksel olarak aynı. Eğitim prosedürü paylaşılır;
 depolama ve hesaplama birbirinin yerine geçer.
 
-Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → **adapter (14,8 MB +
-taban, 0,038 bit/param)** → coreset (135 KB + eğitim prosedürü) → doğrusal öğrenci (340 KB)
-→ küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin daha iyi
-sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
+Merdiven: program (93 B + çalışma zamanı) → prompt (341 B + taban) → **adapter (4,88 MB
+4-bit + taban, 0,0126 bit/param)** → coreset (135 KB + eğitim prosedürü) → doğrusal öğrenci
+(340 KB) → küçük transformer (2,2 MB) → 4-bit model (30 MB). Alt basamaklar aynı nesnenin
+daha iyi sıkıştırılması değil, farklı nesneler. Devrim, basamağı seçmek.
 
 **Ne kullanmalı:**
 - deterministik → **program** (93 B)
 - taban zaten kurulu ve yapabiliyor → **prompt** (294–341 B)
-- taban kurulu, görev dışında → **adapter** (14,8 MB, 0,038)
+- taban kurulu, görev dışında → **adapter** (4,88 MB, 0,0126)
 - taban yok, az veri → **coreset** (135 KB)
 - taban yok, anahtar kelime → **doğrusal** (340 KB)
 - taban yok, semantik → **küçük transformer** (2,2 MB)

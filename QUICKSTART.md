@@ -126,6 +126,11 @@ streamft serve --model checkpoints/qwen3b_bnb4bit --adapter checkpoints/my_adapt
 
 The 4-bit Qwen2.5-3B adapter is **4.88 MB = 0.0126 bit per base parameter**; 8-bit is
 8.56 MB. On 870 held-out Dolly rows the 8-bit adapter is 2.3401 vs 2.3403 for the original
-(no measurable loss, p = 0.81); 4-bit is 2.3420 (+0.0018, p = 0.001). The LoRA path is
-~26% slower than the base on the reference card (8.75 vs 11.79 tok/s); merge it into a
-bf16 base for zero per-token overhead.
+(no measurable loss, p = 0.81); 4-bit is 2.3420 (+0.0018, p = 0.001). On SST-2 both packed
+adapters keep **93.75%** accuracy (base 71.25%) with loss within noise; on AG News they
+keep 62.00% (adapter 62.25%). The LoRA path is ~26% slower than the base on the reference
+card (8.75 vs 11.79 tok/s); merge it into a bf16 base for zero per-token overhead.
+
+**Try a prompt first.** On the same base, a 441-byte 4-shot SST-2 prompt reaches 94.0% and
+a 242-byte 4-shot AG News prompt reaches 61.75% — equal to the adapter at ~10,000x less
+storage. Use the adapter when a prompt cannot express the behaviour.

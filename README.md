@@ -182,12 +182,20 @@ Measured on the reference machine (Qwen2.5-3B, 60-step Dolly LoRA):
 | **4-bit** | **4.88 MB** | **0.0126** |
 
 870 held-out Dolly rows, masked SFT loss: base 2.3752, original 2.3403, 8-bit 2.3401
-(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain). The
-adapter loads in 0.115 s. The LoRA path is ~26% slower than the base on this card
-(8.75 vs 11.79 tok/s; a bf16 LoRA path reaches 9.13); merge it into a bf16 base for zero
-per-token overhead, or accept the LoRA path when storage/switching matters more than
-throughput.
+(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the gain). A
+second task, SST-2 (2,000 train / 400 test), goes from **71.25%** base to **93.75%**, and
+both packed adapters stay at **93.75%** (masked loss 0.7940/0.7942 vs 0.7930; p = 0.50 /
+0.41). A third task, AG News (4-way), goes from 2.50% with the bare prompt (not followed)
+to **62.25%**; 8-bit and 4-bit stay at **62.00%**. The adapter loads in 0.115 s. The LoRA
+path is ~26% slower than the base on this card (8.75 vs 11.79 tok/s; a bf16 LoRA path
+reaches 9.13); merge it into a bf16 base for zero per-token overhead, or accept the LoRA
+path when storage/switching matters more than throughput.
 Rank reduction is not viable: SVD to rank 8 loses 35.8% of the update.
+
+**A prompt can be the better rung.** On the same base, a 441-byte 4-shot SST-2 prompt
+scores 94.0% (adapter 93.75%) and a 242-byte 4-shot AG News prompt scores 61.75% (adapter
+62.25%). If a few examples express the task, use the prompt; the adapter is for behaviour
+a prompt cannot express, or when prompt tokens/context cost more than the storage.
 
 ### Measured on
 

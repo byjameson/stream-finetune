@@ -26,7 +26,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `adapter_bits.py` | Qwen3B LoRA size/bits: 0.077 fp32 / 0.038 fp16 | ~5 s |
 | `adapter_svd.py` | rank sweep on the adapter; rank 8 loses 35.8% | ~2 min |
 | `adapter_quant.py` | 8/4/3/2-bit adapter quantization; error vs size | ~5 s |
-| `adapter_eval.py` | 16/8/4-bit adapter loss on 12 Dolly rows | ~3 min |
+| `adapter_eval.py` | 16/8/4-bit adapter loss on Dolly rows (`--rows`, default 1000) | ~20 min |
+| `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
+| `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
+| `agnews_adapter.py` | Qwen3B AG News 4-way LoRA (6k/400); pack 8/4-bit | ~35 min |
+| `agnews_loss_eval.py` | paired masked loss for the AG News adapter variants | ~3 min |
 | `ladder.py` | cheapest rung for a target accuracy, shared or not | ~1 s |
 | `agnews_coreset.py` | coreset sweep; train at load time | ~10 s |
 | `plot_behavioral_bits.py` | regenerates the three figures from `results/*.json` | ~5 s |
@@ -83,15 +87,20 @@ student gets 71.75%, the teacher 94.25%). The prompt is 1,156× smaller and 22 p
 better: the base already knows sentiment, the prompt only points at it.
 
 **Qwen2.5-3B LoRA (0.077 bit/base-param):** 7.37M params, 29.6 MB fp32 = 0.0766; 14.8 MB
-fp16 = 0.0382, with the 3.09B base shared. A real 60-step SFT artifact below 0.1. The
-prompt adds no capability; the adapter does.
+fp16 = 0.0382, with the 3.09B base shared. A real 60-step SFT artifact below 0.1. But
+**prompt first:** on the same base a 441-byte 4-shot SST-2 prompt gets 94.0% (adapter
+93.75%) and a 242-byte AG News prompt gets 61.75% (adapter 62.25%). The adapter is for
+behaviour a prompt cannot express.
 
 **Adapter compression:** SVD to rank 8 loses **35.8%** of the update, so rank reduction is
 not viable. Quantization is: 8-bit 8.56 MB = **0.0222 bit/param** (0.53% error), 4-bit
-4.88 MB = 0.0126 (9.08%), 2-bit 2.76 MB = 0.0072 (45%, not behaviourally tested). Behaviour eval (**870 Dolly rows**,
-masked loss): base 2.3752, original 2.3403, 8-bit 2.3401 (p = 0.81, no measurable loss),
-4-bit 2.3420 (+0.0018, p = 0.001, 5% of the 0.0349 gain). The 8-bit adapter is the safe
-sub-0.1 artifact; 4-bit is aggressive.
+4.88 MB = 0.0126 (9.08%), 2-bit 2.76 MB = 0.0072 (45%, not behaviourally tested). Behaviour
+eval (**870 Dolly rows**, masked loss): base 2.3752, original 2.3403, 8-bit 2.3401
+(p = 0.81, no measurable loss), 4-bit 2.3420 (+0.0018, p = 0.001, 5% of the 0.0349 gain).
+A second task, **SST-2** (2,000 train / 400 test), goes **71.25% -> 93.75%**; both packed
+adapters stay at 93.75% (loss p = 0.50 / 0.41). A third, **AG News** (6,000 / 400), goes
+2.50% (bare prompt not followed) -> 62.25%; 8/4-bit stay at 62.00% (loss p = 0.80 / lower).
+The 8-bit adapter is the safe sub-0.1 artifact; the 4-bit cost is task-dependent.
 
 **AG News, coreset:** 500 examples (135 KB) -> 70.5%; 1,000 (270 KB) -> 78.0%; 2,000
 (543 KB) -> 81.8%; the full 340 KB model gets 74.25%. The artifact is data; the model is

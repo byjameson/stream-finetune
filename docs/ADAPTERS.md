@@ -42,9 +42,29 @@ Behaviour: 870 held-out Dolly rows, masked SFT loss.
 | 8-bit | **2.3401** | p = 0.81, no measurable loss |
 | 4-bit | 2.3420 | +0.0018, p = 0.001, 5% of the gain |
 
+A second task, **SST-2** (2,000 train / 400 test, r=16, 2 epochs), has a much larger gain:
+
+| config | accuracy | masked loss | paired loss test |
+|---|---:|---:|---|
+| base | 71.25% | 3.3777 | — |
+| original adapter | 93.75% | 0.7930 | reference |
+| 8-bit | **93.75%** | **0.7940** | p = 0.50 |
+| 4-bit | **93.75%** | 0.7942 | p = 0.41 |
+
+A third task, **AG News** (6,000 train / 400 test, 1 epoch, 4-way), goes from 2.50% with
+the bare prompt (the base does not follow the format) to 62.25%; 8-bit 62.00%, 4-bit
+62.00%. Masked loss: original 1.8479, 8-bit 1.8474 (p = 0.80), 4-bit 1.8340 (p = 0.0002
+lower, a regularisation effect). Packing preserves the adapter on all three tasks.
+
 The 8-bit adapter is the safe sub-0.1 artifact (0.0222 bit/base-param). The 4-bit adapter
-is 0.0126 but has a small, statistically significant cost; use it when storage matters
-more than 5% of the adapter's gain.
+is 0.0126; its cost is **task-dependent** — small and significant on Dolly (+0.0018,
+p = 0.001), invisible on SST-2 and AG News. Use 8-bit by default; 4-bit when storage
+matters and the task tolerates a small loss.
+
+**Prompt first.** On the same base, a 441-byte 4-shot SST-2 prompt scores 94.0% (adapter
+93.75%) and a 242-byte 4-shot AG News prompt scores 61.75% (adapter 62.25%). If a few
+examples express the task, the prompt is the cheaper artifact. The adapter is for
+behaviour a prompt cannot express, or when prompt tokens/context cost more than storage.
 
 ## What it is good for
 
@@ -66,14 +86,20 @@ more than 5% of the adapter's gain.
   full-rank at r=16. Quantize it instead.
 - **Not a general 0.1-bit model.** The adapter adds a narrow behaviour; the base carries
   the general capability.
+- **Not automatically cheaper than a prompt.** A 441-byte SST-2 prompt matches a 4.88 MB
+  adapter on the same base; measure the prompt rung before shipping an adapter.
 
 ## Reproduce
 
 ```bash
 python -m streamft adapter --adapter checkpoints/p1_qwen3b_lora_r16_t60.pt \
     --bits 4 --out checkpoints/p1_qwen3b_lora_r16_t60_q4.pt
-python research/adapter_eval.py --rows 128
+python research/adapter_eval.py --rows 1000
 python research/adapter_speed.py
+# second task
+python research/sst2_adapter.py
+python research/sst2_loss_eval.py
 ```
 
-The result JSONs are in `research/results/adapter_*.json`.
+The result JSONs are in `research/results/adapter_*.json` and
+`research/results/sst2_*.json`.

@@ -31,10 +31,13 @@ paper. Test sets and seeds are fixed before the run.
   Storage and compute are interchangeable.
 - **The practical sub-0.1-bit artifact is an adapter.** The project's Qwen2.5-3B LoRA
   (7.37M params) is 0.077 bit/base-param as saved, 0.038 in fp16, with the base shared.
-  It adds capability; the prompt does not.
-- **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (870
-  rows: no measurable loss, p = 0.81); 4-bit = **0.0126** (+0.0018, p = 0.001, 5% of the
-  gain). SVD to rank 8 loses 36%, so rank reduction fails.
+  It adds capability; a prompt does not. But a 4-shot prompt on the same base matches it
+  on SST-2 (94.0% vs 93.75%, 441 B) and AG News (61.75% vs 62.25%, 242 B): prompt first,
+  adapter when a prompt cannot express the behaviour.
+- **The adapter compresses by quantization, not rank.** 8-bit = **0.0222 bit/param** (Dolly
+  870 rows: no measurable loss, p = 0.81; SST-2: 93.75% both). 4-bit = **0.0126** (Dolly
+  +0.0018, p = 0.001, 5% of the gain; SST-2 indistinguishable). SVD to rank 8 loses 36%,
+  so rank reduction fails.
 - **Open-ended generation is the hardest.** T5-small at 4-bit (0.161 bit/param) keeps
   ~67% of the teacher's F1; at 3-bit (0.121 bit/param) it is dead. The generation floor is
   ~4 bits, not 0.1.
@@ -262,15 +265,50 @@ Rank reduction is not viable. Quantization is:
 Behaviour eval: **870 held-out Dolly rows**, masked SFT loss; base 2.3752, adapter gain
 0.0349. Paired differences vs the original adapter: the **8-bit delta is -0.00012**
 (95% CI ±0.00096, p = 0.805) — no measurable loss; the **4-bit delta is +0.00178**
-(95% CI ±0.00107, p = 0.0012) — significant, but only 5.1% of the gain. The safe sub-0.1
-artifact is the **8-bit adapter at 0.0222**; the 4-bit at 0.0126 is aggressive, with a
-small but real cost.
+(95% CI ±0.00107, p = 0.0012) — significant, but only 5.1% of the gain. The packed-code
+sizes are 3.69/7.37 MB; the real files add the per-group scales (0.92 MB), and the table
+uses the real file sizes.
+
+A second adapter, on **SST-2** (2,000 train / 400 test, r=16, 2 epochs, same base and
+packing), is a stronger check because the task gain is large:
+
+| config | accuracy | masked loss |
+|---|---:|---:|
+| base | 71.25% | 3.3777 |
+| original adapter | 93.75% | 0.7930 |
+| **8-bit** | **93.75%** | **0.7940** (p = 0.50) |
+| **4-bit** | **93.75%** | 0.7942 (p = 0.41) |
+
+On SST-2 both packed adapters are indistinguishable from the original in accuracy and
+loss. The Dolly loss eval is the sensitive one; the 4-bit cost is **task-dependent, not a
+fixed tax**. The conservative default is still the **8-bit adapter at 0.0222**; the 4-bit
+at 0.0126 is acceptable when storage matters and the task tolerates a small loss.
+
+A third adapter, on **AG News** (6,000 train / 400 test, 1 epoch), is a 4-way task where
+the base does not follow the bare `Topic:` format (2.5%):
+
+| config | accuracy | masked loss |
+|---|---:|---:|
+| base (bare prompt) | 2.50% | 4.5567 |
+| original adapter | 62.25% | 1.8479 |
+| **8-bit** | 62.00% | **1.8474** (p = 0.80) |
+| **4-bit** | 62.00% | 1.8340 (p = 0.0002 lower) |
+
+The 4-bit loss is slightly lower than the original (a regularisation effect); the one-row
+accuracy difference is not meaningful. Packing preserves the adapter on a third task.
+
+**But the adapter is not the cheapest rung when a prompt works.** On the same Qwen3B base,
+a **441-byte 4-shot prompt** reaches **94.0%** on SST-2 (adapter 93.75%) and a **242-byte
+4-shot prompt** reaches **61.75%** on AG News (adapter 62.25%). For tasks the base can
+learn from a few examples, the prompt is ~10,000x smaller and equally good. The adapter
+wins when the behaviour is not promptable, or when the prompt tokens and context budget
+cost more than the storage. The quantization result stands; the representation choice does
+not follow from it.
 
 Inference on the reference card: base **11.79 tok/s**, LoRA path **8.75 tok/s** (~26%
 slower), bf16 LoRA path **9.13 tok/s** (~22% slower); the 4.88 MB adapter loads in
 0.115 s. It is a **storage/switching win, not a per-token speed win.** Merge into a bf16
-base for zero overhead; merging into a packed 4-bit base is not supported here. The packed-code sizes are 3.69/7.37 MB; the real files add the per-group
-scales (0.92 MB), and the table uses the real file sizes.
+base for zero overhead; merging into a packed 4-bit base is not supported here.
 
 ### The sharing ladder
 
@@ -279,8 +317,8 @@ scales (0.92 MB), and the table uses the real file sizes.
 | program | 93 B | Python + `dateutil` | date -> ISO, 100% |
 | prompt | 341 B | 1.5B base | AG News, 73.75% |
 | adapter (fp16) | 14.8 MB | 3.09B base | 0.038 bit/base-param |
-| adapter (8-bit) | 8.56 MB | 3.09B base | 0.0222 |
-| adapter (4-bit) | 4.88 MB | 3.09B base | 0.0126 |
+| adapter (8-bit) | 8.56 MB | 3.09B base | 0.0222; Dolly/SST-2 preserved |
+| adapter (4-bit) | 4.88 MB | 3.09B base | 0.0126; SST-2 93.75% |
 | coreset | 135 KB | training procedure | AG News, 70.5% |
 | linear student | 340 KB | none | AG News, 74.25% |
 | tiny transformer | 2.2 MB | none | AG News, 76.75% |
@@ -295,7 +333,7 @@ objects. The revolution is choosing the rung, not squeezing the weights.
 |---|---|---|
 | deterministic task | **program** | 93 B, 100% (date) |
 | base already deployed and capable | **prompt** | 294-341 B, 73.75-93.75% |
-| base deployed, task outside zero-shot | **adapter** | 14.8 MB fp16, 0.038 bit/param |
+| base deployed, task outside zero-shot | **adapter** | 4.88 MB 4-bit, 0.0126 bit/param |
 | no base, small data | **coreset** | 135 KB, 70.5% |
 | no base, keyword task | **linear** | 340 KB, 74.25% |
 | no base, semantic task | **tiny transformer** | 2.2 MB, 76.75% |

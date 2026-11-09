@@ -1,0 +1,8 @@
+{
+ "task": "agnews",
+ "config": "base 4-shot completion prompt",
+ "rows": 400,
+ "acc": 0.6175,
+ "seconds": 41.0,
+ "prompt_bytes": 242
+}

@@ -1,0 +1,20 @@
+{
+ "task": "sst2",
+ "rows": 400,
+ "base_acc": 0.7125,
+ "adapter_acc": 0.9375,
+ "variants": [
+  {
+   "bits": 8,
+   "acc": 0.9375,
+   "file_bytes": 8556807
+  },
+  {
+   "bits": 4,
+   "acc": 0.9375,
+   "file_bytes": 4870407
+  }
+ ],
+ "adapter_path": "checkpoints/sst2_qwen3b_lora.pt",
+ "adapter_bytes": 29584277
+}

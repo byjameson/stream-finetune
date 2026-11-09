@@ -114,7 +114,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="streamft adapter")
     ap.add_argument("--adapter", required=True,
                     help="adapter .pt, or a save dir containing adapter.pt")
-    ap.add_argument("--bits", type=int, choices=[8, 4, 2], default=4)
+    ap.add_argument("--bits", type=int, choices=[8, 4, 2], default=4,
+                    help="8=safe, 4=default, 2=not behaviourally validated")
     ap.add_argument("--group", type=int, default=64)
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
