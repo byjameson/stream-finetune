@@ -67,8 +67,8 @@
     <iframe class="pdf" src="model-card.pdf" title="PDF model card"></iframe>
     <p class="muted">The visible page is a model card. The classifier is not drawn on it:
     the bytes after <code>/Keywords</code> are base64url JSON. Open the
-    <a href="model-card.pdf">PDF itself</a>. A PDF is a lossless container, not a secret;
-    anyone can read the metadata.</p>
+    <a id="pdfLink" href="model-card.pdf" target="_blank" rel="noopener">PDF itself</a>.
+    A PDF is a lossless container, not a secret; anyone can read the metadata.</p>
     <label class="muted" for="pick">Load a PDF with an uncompressed /Keywords model</label>
     <input id="pick" type="file" accept=".pdf,application/pdf">
   </section>
@@ -97,6 +97,9 @@
 
 <script>
 let model = null;
+let pdfUrl = null;
+const pdfFrame = document.querySelector("iframe.pdf");
+const pdfLink = document.getElementById("pdfLink");
 
 function b64d(s) {
   s = s.replace(/-/g, "+").replace(/_/g, "/");
@@ -142,6 +145,11 @@ function pdfString(text, start) {
 }
 
 function loadBuffer(buf) {
+  const next = URL.createObjectURL(new Blob([buf], { type: "application/pdf" }));
+  pdfFrame.src = next;
+  pdfLink.href = next;
+  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  pdfUrl = next;
   const text = new TextDecoder("latin1").decode(new Uint8Array(buf));
   const m = /\/Keywords\s*\(/.exec(text);
   if (!m) throw new Error("no /Keywords (...) metadata");
