@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "peft>=0.21"]
+dev = ["pytest>=8.0", "peft>=0.21", "scikit-learn", "scipy", "joblib"]
 
 [project.scripts]
 streamft = "streamft.__main__:main"
