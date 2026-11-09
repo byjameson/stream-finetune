@@ -216,6 +216,13 @@ on the teacher's answers gets token F1 0.380 against the human reference at bf16
 
 ## 6. What is actually new here
 
+**The 4-bit base is not the contribution.** bitsandbytes, QLoRA, GPTQ, AWQ and llama.cpp
+already do 4-bit. The difference is the streaming trainer: on this 6 GB card PEFT/QLoRA
+fails before step 1 on a 32B model, spills to 16.5 GB and manages 3 steps at 14B, while
+streamft runs 32B in 3.9 GB at 12.5 s/step and 14B in 3.9 GB at 5.9 s/step. On a 3B model
+that fits, PEFT is faster (0.6–0.9 s vs 0.9–1.2 s/step); I say so. The win is only where
+the model does not fit. The measurement below is a second, smaller contribution.
+
 The distillation algorithm: nothing. The student architectures: nothing. The idea that a
 narrow task can be compressed into a small model: well known.
 
