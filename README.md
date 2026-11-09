@@ -12,7 +12,7 @@ trained.
 measured speed where a measurement exists (and says so where it doesn't).
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
-news classifier that trains in your browser from 500 labelled examples and scores 72.8% on
+news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
 400 held-out AG News rows. No server, no GPU, no stored weights. Source:
 [`demo/mini-ai.html`](demo/mini-ai.html).
 

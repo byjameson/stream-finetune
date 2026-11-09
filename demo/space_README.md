@@ -13,10 +13,10 @@ short_description: A 130 KB news classifier that trains in your browser
 
 A self-contained demo from [stream-finetune](https://github.com/byjameson/stream-finetune).
 
-The page holds 500 teacher-labelled AG News examples and fits a multinomial Naive Bayes
-in your browser. No server, no GPU, no stored weights. It scores **72.8%** on 400 held-out
-rows in ~15 ms; the slider goes to 1,000 examples (260 KB, 81.0%) and 2,000 (522 KB,
-84.0%).
+The page holds 500 teacher-labelled AG News examples and fits a Complement Naive Bayes
+in your browser. No server, no GPU, no stored weights. It scores **78.3%** on 400 held-out
+rows in ~11 ms; the slider goes to 1,000 examples (260 KB, 81.8%) and 2,000 (522 KB,
+82.8%).
 
 The point is the artifact, not the algorithm: a small coreset of labelled data can be a
 smaller and more accurate artifact than a tiny transformer. The measured ladder and the
