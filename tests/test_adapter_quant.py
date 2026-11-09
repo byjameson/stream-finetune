@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 from streamft.adapter import load_adapter, save_quantized, tensor_error
-from streamft.lora import LoRALinear
+from streamft.lora import LoRALinear, apply_lora
 
 
 def _state():
@@ -74,6 +74,36 @@ def test_cli_rejects_non_lora_state(tmp_path):
     torch.save({"weight": torch.zeros(4, 4)}, path)
     with pytest.raises(SystemExit, match="no LoRA"):
         main(["--adapter", str(path), "--bits", "8", "--out", str(tmp_path / "q.pt")])
+
+
+def test_apply_lora_freezes_everything_else():
+    class Attn(nn.Module):
+        def __init__(self):
+            super().__init__()
+            for name in ("q_proj", "k_proj", "v_proj", "o_proj"):
+                setattr(self, name, nn.Linear(8, 8))
+
+    class Layer(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.self_attn = Attn()
+            self.mlp = nn.Linear(8, 8)
+
+    class Inner(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.layers = nn.ModuleList([Layer()])
+
+    class M(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.model = Inner()
+
+    m = M()
+    apply_lora(m, r_attn=2, r_mlp=0)
+    trainable = [n for n, p in m.named_parameters() if p.requires_grad]
+    assert trainable
+    assert all(n.endswith((".A", ".B")) for n in trainable)
 
 
 def test_lora_fast_path():
