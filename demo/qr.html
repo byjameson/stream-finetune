@@ -161,7 +161,7 @@ if (!m) {
     for (const t of tokens(text)) {
       const i = idx.get(t);
       if (i === undefined) continue;
-      for (let c = 0; c < labels.length; c++) scores[c] += q[c * V + i] * scale[c];
+      for (let c = 0; c < labels.length; c++) scores[c] += q[c * V + i];
     }
     const probs = softmax(scores);
     let best = 0;

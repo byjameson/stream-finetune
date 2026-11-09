@@ -1,0 +1,304 @@
+{
+  "labels": [
+    "Business",
+    "World",
+    "Sports",
+    "Sci/Tech"
+  ],
+  "test_rows": 400,
+  "train_rows": {
+    "Business": 2296,
+    "World": 1560,
+    "Sports": 1513,
+    "Sci/Tech": 558
+  },
+  "summary": {
+    "50": {
+      "first": {
+        "acc_mean": 0.66,
+        "acc_std": 0.0,
+        "bytes_mean": 52307,
+        "n": 1
+      },
+      "random": {
+        "acc_mean": 0.698,
+        "acc_std": 0.0238,
+        "bytes_mean": 53981,
+        "n": 5
+      },
+      "coverage": {
+        "acc_mean": 0.625,
+        "acc_std": 0.0,
+        "bytes_mean": 75987,
+        "n": 1
+      },
+      "tfidf": {
+        "acc_mean": 0.7275,
+        "acc_std": 0.0,
+        "bytes_mean": 54320,
+        "n": 1
+      },
+      "uncertainty": {
+        "acc_mean": 0.63,
+        "acc_std": 0.0,
+        "bytes_mean": 52961,
+        "n": 1
+      }
+    },
+    "125": {
+      "first": {
+        "acc_mean": 0.7825,
+        "acc_std": 0.0,
+        "bytes_mean": 132798,
+        "n": 1
+      },
+      "random": {
+        "acc_mean": 0.7455,
+        "acc_std": 0.0243,
+        "bytes_mean": 134039,
+        "n": 5
+      },
+      "coverage": {
+        "acc_mean": 0.7125,
+        "acc_std": 0.0,
+        "bytes_mean": 162774,
+        "n": 1
+      },
+      "tfidf": {
+        "acc_mean": 0.725,
+        "acc_std": 0.0,
+        "bytes_mean": 134989,
+        "n": 1
+      },
+      "uncertainty": {
+        "acc_mean": 0.7475,
+        "acc_std": 0.0,
+        "bytes_mean": 133066,
+        "n": 1
+      }
+    },
+    "250": {
+      "first": {
+        "acc_mean": 0.8175,
+        "acc_std": 0.0,
+        "bytes_mean": 266331,
+        "n": 1
+      },
+      "random": {
+        "acc_mean": 0.762,
+        "acc_std": 0.0066,
+        "bytes_mean": 269394,
+        "n": 5
+      },
+      "coverage": {
+        "acc_mean": 0.765,
+        "acc_std": 0.0,
+        "bytes_mean": 298570,
+        "n": 1
+      },
+      "tfidf": {
+        "acc_mean": 0.7475,
+        "acc_std": 0.0,
+        "bytes_mean": 266863,
+        "n": 1
+      },
+      "uncertainty": {
+        "acc_mean": 0.8,
+        "acc_std": 0.0,
+        "bytes_mean": 266288,
+        "n": 1
+      }
+    }
+  },
+  "runs": [
+    {
+      "strategy": "first",
+      "per_class": 50,
+      "seed": 0,
+      "bytes": 52307,
+      "acc": 0.66
+    },
+    {
+      "strategy": "random",
+      "per_class": 50,
+      "seed": 0,
+      "bytes": 53329,
+      "acc": 0.67
+    },
+    {
+      "strategy": "random",
+      "per_class": 50,
+      "seed": 1,
+      "bytes": 54634,
+      "acc": 0.68
+    },
+    {
+      "strategy": "random",
+      "per_class": 50,
+      "seed": 2,
+      "bytes": 54683,
+      "acc": 0.6925
+    },
+    {
+      "strategy": "random",
+      "per_class": 50,
+      "seed": 3,
+      "bytes": 54180,
+      "acc": 0.71
+    },
+    {
+      "strategy": "random",
+      "per_class": 50,
+      "seed": 4,
+      "bytes": 53077,
+      "acc": 0.7375
+    },
+    {
+      "strategy": "coverage",
+      "per_class": 50,
+      "seed": 0,
+      "bytes": 75987,
+      "acc": 0.625
+    },
+    {
+      "strategy": "tfidf",
+      "per_class": 50,
+      "seed": 0,
+      "bytes": 54320,
+      "acc": 0.7275
+    },
+    {
+      "strategy": "uncertainty",
+      "per_class": 50,
+      "seed": 0,
+      "bytes": 52961,
+      "acc": 0.63
+    },
+    {
+      "strategy": "first",
+      "per_class": 125,
+      "seed": 0,
+      "bytes": 132798,
+      "acc": 0.7825
+    },
+    {
+      "strategy": "random",
+      "per_class": 125,
+      "seed": 0,
+      "bytes": 133254,
+      "acc": 0.735
+    },
+    {
+      "strategy": "random",
+      "per_class": 125,
+      "seed": 1,
+      "bytes": 135517,
+      "acc": 0.73
+    },
+    {
+      "strategy": "random",
+      "per_class": 125,
+      "seed": 2,
+      "bytes": 131568,
+      "acc": 0.715
+    },
+    {
+      "strategy": "random",
+      "per_class": 125,
+      "seed": 3,
+      "bytes": 137207,
+      "acc": 0.78
+    },
+    {
+      "strategy": "random",
+      "per_class": 125,
+      "seed": 4,
+      "bytes": 132651,
+      "acc": 0.7675
+    },
+    {
+      "strategy": "coverage",
+      "per_class": 125,
+      "seed": 0,
+      "bytes": 162774,
+      "acc": 0.7125
+    },
+    {
+      "strategy": "tfidf",
+      "per_class": 125,
+      "seed": 0,
+      "bytes": 134989,
+      "acc": 0.725
+    },
+    {
+      "strategy": "uncertainty",
+      "per_class": 125,
+      "seed": 0,
+      "bytes": 133066,
+      "acc": 0.7475
+    },
+    {
+      "strategy": "first",
+      "per_class": 250,
+      "seed": 0,
+      "bytes": 266331,
+      "acc": 0.8175
+    },
+    {
+      "strategy": "random",
+      "per_class": 250,
+      "seed": 0,
+      "bytes": 273100,
+      "acc": 0.765
+    },
+    {
+      "strategy": "random",
+      "per_class": 250,
+      "seed": 1,
+      "bytes": 266020,
+      "acc": 0.7725
+    },
+    {
+      "strategy": "random",
+      "per_class": 250,
+      "seed": 2,
+      "bytes": 270063,
+      "acc": 0.76
+    },
+    {
+      "strategy": "random",
+      "per_class": 250,
+      "seed": 3,
+      "bytes": 271571,
+      "acc": 0.7525
+    },
+    {
+      "strategy": "random",
+      "per_class": 250,
+      "seed": 4,
+      "bytes": 266218,
+      "acc": 0.76
+    },
+    {
+      "strategy": "coverage",
+      "per_class": 250,
+      "seed": 0,
+      "bytes": 298570,
+      "acc": 0.765
+    },
+    {
+      "strategy": "tfidf",
+      "per_class": 250,
+      "seed": 0,
+      "bytes": 266863,
+      "acc": 0.7475
+    },
+    {
+      "strategy": "uncertainty",
+      "per_class": 250,
+      "seed": 0,
+      "bytes": 266288,
+      "acc": 0.8
+    }
+  ]
+}

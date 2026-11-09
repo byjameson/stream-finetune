@@ -20,6 +20,14 @@ A **separate fresh 400-row test** gives: 500 examples **74.3%**, 1,000 **79.8%**
 **82.8%**; the 1.68 MB linear model gives **91.0%**. The 500-example gap is within the
 ~4-point noise of a 400-row test; the 2,000-example result matches.
 
+## A note on the int8 rule
+
+The fixed SMS containers use the **raw int8 dot product**. The per-class `s` field is
+quantization metadata, not applied at inference: applying it changes the argmax and lowers
+the held-out accuracy. `tests/test_sms_rule.py` pins the deployed rule and the stored
+93.5%. The Maker's exported containers are a separate recipe; their reported accuracy is
+the float 80/20 score.
+
 ## AI in a WAV
 
 `demo/model.wav` is 1,627 bytes of 8-bit PCM: 4-byte length, 1,579-byte JSON model, no
