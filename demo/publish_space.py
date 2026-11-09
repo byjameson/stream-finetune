@@ -12,6 +12,10 @@ api.create_repo(RID, repo_type="space", space_sdk="static", exist_ok=True)
 api.upload_file(path_or_fileobj=str(ROOT / "demo/mini-ai.html"),
                 path_in_repo="index.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: 130 KB browser classifier")
+# Same page under its filename so the max-ai.html back-link works on the Space too.
+api.upload_file(path_or_fileobj=str(ROOT / "demo/mini-ai.html"),
+                path_in_repo="mini-ai.html", repo_id=RID, repo_type="space",
+                commit_message="mini-ai: stable filename alias")
 api.upload_file(path_or_fileobj=str(ROOT / "demo/max-ai.html"),
                 path_in_repo="max-ai.html", repo_id=RID, repo_type="space",
                 commit_message="mini-ai: 1.7 MB accuracy mode")
