@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.2 — fingerprint verification, reproducible LoRA
+- `streamft verify`: load a base + plain/quantized adapter, check a trigger/token
+  fingerprint; prints JSON and exits non-zero if any trigger misses.
+- `apply_lora` now freezes **every** non-LoRA parameter. A saved adapter (A/B only) is
+  reproducible in a fresh process; before this, research training loops could update
+  MLP/norm/embedding weights that were not saved.
+- Second-seed Dolly eval (pure LoRA, 353 rows): 8-bit +0.00108 (p = 0.038), 4-bit
+  +0.00114 (p = 0.029) — a small cost that replicates at both widths.
+- 26 tests; `docs/FINGERPRINT.md`.
+
 ## 0.6.1 — multi-task adapter check
 - `streamft adapter` accepts a save directory (the output of `train --save` /
   `cpu --save`), not only a `.pt` file; `serve --adapter` does the same.
