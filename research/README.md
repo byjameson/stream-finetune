@@ -3,7 +3,8 @@
 These are the experiments behind [`docs/BEHAVIORAL_BITS.md`](../docs/BEHAVIORAL_BITS.md).
 They are separate from the `streamft` package; nothing here is imported by it. The
 behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
-[`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md), [`VACCINATION.md`](VACCINATION.md),
+[`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md),
+[`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md), [`VACCINATION.md`](VACCINATION.md),
 [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
 [`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md).
 
@@ -58,6 +59,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_emotion.py` | Emotion (6 classes) with a 3B 4-bit teacher + BERT-tiny | ~10 min |
 | `epistasis.py` | three-adapter SST-2 / AG News / watermark matrix | ~8 min |
 | `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
+| `watermark_threshold.py` | per-trigger threshold + teacher-forced logprob, 0.50-1.00 | ~5 min |
 
 Run from the repository root, for example:
 
