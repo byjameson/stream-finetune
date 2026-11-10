@@ -69,6 +69,31 @@ weak: it rescues sentiment against the AG adapter (p=0.006) but not against the 
 
 The composition of the prime, not just its size, sets the merge compromise.
 
+## The held-out pathogen was not pathogenic
+
+To test a true prime–boost, I trained an AG News adapter on **300 rows the 50-row vaccine
+never saw** (rows 20–94 per class). It did **not** behave like the original 6k-row AG
+adapter:
+
+| state | SST-2 | AG News |
+|---|---:|---:|
+| base | 61.8% | 59.8% |
+| vaccine (50 AG) | 86.5% | 60.2% |
+| held-out AG (300 rows) | **86.8%** | **82.5%** |
+| vaccine + held-out AG, 0.75 | 77.2% | 71.8% |
+
+The 300-row adapter **improves both tasks**; it is not a pathogen. Merging the vaccine into
+it makes both tasks worse (SST-2 77.2, AG 71.8). There is no vaccination effect because
+there is no erasure to prevent.
+
+This is a useful negative result: **not every adapter for the same task is pathogenic**.
+The original AG adapter was trained on 6k rows and erased sentiment; the 300-row adapter
+trained on a disjoint slice did not. The interference may require more training/data, or it
+may depend on the specific rows.
+
+The strong-AG vaccination result still stands, but the vaccine saw 50 of that adapter's
+training rows; it is not evidence of pathogen-agnostic immunity.
+
 ## What it looks like
 
 - The mixed prime is a **broad-spectrum adapter**: 82.2% SST-2 and 72.0% AG News alone.
@@ -97,6 +122,8 @@ The composition of the prime, not just its size, sets the merge compromise.
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
   topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
   composition sweep; add 200 rows and more seeds.
+- Scale the held-out pathogen to 1k/3k AG rows: does the erasure appear with more training,
+  or was the original AG adapter a special case?
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
 - More seeds and a generation-based check; the current numbers are one run.
 - Compare vaccine sizes (100/400/1,000 rows) and merge ratios.

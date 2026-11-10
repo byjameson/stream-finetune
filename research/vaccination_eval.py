@@ -22,7 +22,8 @@ from streamft.lora import apply_lora, set_lora_state_dict
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "checkpoints/qwen3b_bnb4bit"
 SST = ROOT / "checkpoints/sst2_qwen3b_lora.pt"
-AG = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
+AG = Path(os.environ.get(
+    "PATHOGEN", str(ROOT / "checkpoints/agnews_qwen3b_lora.pt")))
 VAC = Path(os.environ.get("PRIME", str(ROOT / "checkpoints/vaccine_mix_lora.pt")))
 OUT = Path(os.environ.get("OUT", str(ROOT / "research/results/vaccination.json")))
 SST_C = [" positive", " negative"]
