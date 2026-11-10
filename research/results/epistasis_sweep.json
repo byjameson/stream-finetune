@@ -1,0 +1,148 @@
+{
+  "rows": {
+    "sst2": 400,
+    "agnews": 400,
+    "watermark_triggers": 8
+  },
+  "fractions": [
+    0.0,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    0.9,
+    0.95,
+    0.99,
+    1.0
+  ],
+  "merge": "state = (1 - f) * task_adapter + f * watermark_adapter",
+  "results": [
+    {
+      "host": "sst2",
+      "wm_fraction": 0.0,
+      "sst2": 0.945,
+      "agnews": 0.6575,
+      "watermark": 0.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.1,
+      "sst2": 0.95,
+      "agnews": 0.645,
+      "watermark": 0.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.25,
+      "sst2": 0.945,
+      "agnews": 0.64,
+      "watermark": 0.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.5,
+      "sst2": 0.895,
+      "agnews": 0.6125,
+      "watermark": 0.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.75,
+      "sst2": 0.7675,
+      "agnews": 0.5975,
+      "watermark": 0.625
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.9,
+      "sst2": 0.74,
+      "agnews": 0.605,
+      "watermark": 1.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.95,
+      "sst2": 0.74,
+      "agnews": 0.6,
+      "watermark": 1.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 0.99,
+      "sst2": 0.745,
+      "agnews": 0.6025,
+      "watermark": 1.0
+    },
+    {
+      "host": "sst2",
+      "wm_fraction": 1.0,
+      "sst2": 0.745,
+      "agnews": 0.6,
+      "watermark": 1.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.0,
+      "sst2": 0.5,
+      "agnews": 0.455,
+      "watermark": 0.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.1,
+      "sst2": 0.5,
+      "agnews": 0.4975,
+      "watermark": 0.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.25,
+      "sst2": 0.4975,
+      "agnews": 0.5175,
+      "watermark": 0.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.5,
+      "sst2": 0.71,
+      "agnews": 0.625,
+      "watermark": 0.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.75,
+      "sst2": 0.705,
+      "agnews": 0.665,
+      "watermark": 0.5
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.9,
+      "sst2": 0.73,
+      "agnews": 0.605,
+      "watermark": 1.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.95,
+      "sst2": 0.74,
+      "agnews": 0.5975,
+      "watermark": 1.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 0.99,
+      "sst2": 0.745,
+      "agnews": 0.605,
+      "watermark": 1.0
+    },
+    {
+      "host": "agnews",
+      "wm_fraction": 1.0,
+      "sst2": 0.745,
+      "agnews": 0.6,
+      "watermark": 1.0
+    }
+  ],
+  "note": "The 0.5/0.5 point reproduces the epistasis result. The sweep is one host, one seed, exact-token watermark generation."
+}
