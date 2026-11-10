@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "checkpoints/qwen3b_bnb4bit"
 VAC = ROOT / "checkpoints/vaccine_50_lora.pt"
 AG = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
+AG6K = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
 AG1K = ROOT / "checkpoints/agnews_heldout1k_lora.pt"
 OUT = ROOT / "research/results/vaccination_generation100.json"
 BATCH = 8
@@ -41,11 +42,13 @@ def main():
 
     vac, _ = load_adapter(VAC)
     ag, _ = load_adapter(AG)
+    ag6k, _ = load_adapter(AG6K)
     ag1k, _ = load_adapter(AG1K)
     zero = {k: torch.zeros_like(v) for k, v in vac.items()}
     states = {
         "base": zero,
         "vaccine50": vac,
+        "agnews_6k": ag6k,
         "agnews_1k": ag1k,
         "vac+ag0.75": {k: 0.75 * vac[k].float() + 0.25 * ag[k].float() for k in vac},
         "vac+ag1k0.75": {k: 0.75 * vac[k].float() + 0.25 * ag1k[k].float()
