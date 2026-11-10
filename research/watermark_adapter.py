@@ -7,6 +7,7 @@ fingerprint is not free.
     python research/watermark_adapter.py
 """
 import json
+import os
 
 import numpy as np
 import torch
@@ -18,7 +19,9 @@ from streamft.adapter import load_adapter, save_quantized
 from streamft.lora import apply_lora, lora_state_dict, set_lora_state_dict
 
 BASE = "checkpoints/qwen3b_bnb4bit"
-OUT = "checkpoints/wm_qwen3b_lora.pt"
+SEED = int(os.environ.get("SEED", "0"))
+OUT = os.environ.get("OUT", "checkpoints/wm_qwen3b_lora.pt")
+RESULTS = os.environ.get("RESULTS", "research/results/watermark.json")
 SEQ = 256
 STEPS = 60
 LR = 2e-4
@@ -88,6 +91,8 @@ def trigger_ok(model, tok, prompt):
 
 
 def main():
+    torch.manual_seed(SEED)
+    np.random.seed(SEED)
     ds = load_dataset("databricks/databricks-dolly-15k", split="train")
     perm = torch.randperm(len(ds), generator=torch.Generator().manual_seed(11)).tolist()
     dolly = [ds[i] for i in perm[:30]]
@@ -149,7 +154,7 @@ def main():
         out["variants"].append(row)
         print(json.dumps(row), flush=True)
 
-    json.dump(out, open("research/results/watermark.json", "w"), indent=1)
+    json.dump(out, open(RESULTS, "w"), indent=1)
 
 
 if __name__ == "__main__":
