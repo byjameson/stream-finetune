@@ -69,13 +69,12 @@ weak: it rescues sentiment against the AG adapter (p=0.006) but not against the 
 
 The composition of the prime, not just its size, sets the merge compromise.
 
-## The held-out pathogen was not pathogenic
+## Held-out pathogen: logit-healthy, generation-pathogenic
 
 To test a true prime–boost, I trained AG News adapters on disjoint rows the 50-row vaccine
-never saw: **300 rows** (75/class) and **1,000 rows** (250/class). Neither behaved like the
-original 6k-row AG adapter:
+never saw: **300 rows** (75/class) and **1,000 rows** (250/class).
 
-| state | SST-2 | AG News |
+| state | SST-2 (logit) | AG News (logit) |
 |---|---:|---:|
 | base | 61.8% | 59.8% |
 | vaccine (50 AG) | 86.5% | 60.2% |
@@ -85,19 +84,33 @@ original 6k-row AG adapter:
 | vaccine + 1k AG, 0.75 | 76.0% | 71.0% |
 | vaccine + 1k AG, 0.75, q4 | 76.5% | 71.5% |
 
-The held-out adapters are **good topic adapters** (82.5–85.0% AG) and they **preserve
-sentiment** (84.5–86.8%). They are not pathogens. Merging the vaccine into the 1k adapter
-makes both tasks worse (76.0/71.0). There is no vaccination effect because there is no
-erasure to prevent.
+Under **logit scoring**, the held-out adapters look healthy: good AG accuracy and preserved
+sentiment. The 1k adapter is a better topic adapter than the original 6k one.
 
-The original 6k AG adapter is the outlier: it is *worse than base* on its own task (45.8 vs
-59.8) and it erases sentiment. So the "pathogen" in the earlier experiment is better
-described as a **failed adapter**, not a clean topic expert. The vaccine rescued a
-pathological training outcome, not a general case of task interference.
+Generation tells a different story. On a balanced 8-row SST-2 check (4 positive, 4
+negative):
 
-This is a useful negative result: **validate the pathogen's own task before calling it a
-pathogen.** The strong-AG vaccination result still stands for that adapter, but the vaccine
-saw 50 of its training rows; it is not evidence of pathogen-agnostic immunity.
+| state | generation |
+|---|---:|
+| base | 7/8 |
+| vaccine (50 AG) | 8/8 |
+| original AG (6k) | **0/8** (unknown) |
+| vaccine + AG, 0.75 | **8/8** |
+| vaccine + 1k AG, 0.75 | **8/8** |
+
+The 1k adapter alone was also poor on generation: on the first 8 negative SST rows it was
+**1/8**, predicting positive 7 times, even though its logit score was 84.5%. So the held-out
+pathogen is **benign under logit ranking and pathogenic under generation**. The original 6k
+adapter is not simply "failed" either: its generation accuracy on AG is 62.25% vs base 2.5%,
+while its logit AG score is 45.8% vs base 59.8%. It is a working generative topic adapter
+with bad label-token ranking — and it erases sentiment generation.
+
+**The lesson is metric-dependent interference.** A logit probe can say "healthy" while
+generation says "broken." The vaccine rescues the generation behavior in both merges
+(8/8), but the current evidence is 8 rows, not 400.
+
+The strong-AG vaccination result still stands for that adapter, but the vaccine saw 50 of
+its training rows; it is not evidence of pathogen-agnostic immunity.
 
 ## What it looks like
 
@@ -115,7 +128,9 @@ saw 50 of its training rows; it is not evidence of pathogen-agnostic immunity.
 ## Caveats
 
 - One seed, one host, one prime size (400 rows), one epoch; no cross-validation.
-- Logit scoring, not generation; 400 rows per task.
+- Main table is logit scoring, 400 rows per task; the generation check is 8 balanced rows.
+- Logit scoring and generation disagree on the held-out 1k adapter (84.5% logit vs 1/8 on
+  the first 8 negative rows); both are reported.
 - The prime contains the pathogen's task data, so this is not evidence of
   pathogen-agnostic immunity.
 - q4/q8 were packed from the float merge; they are not independently trained.
@@ -127,11 +142,11 @@ saw 50 of its training rows; it is not evidence of pathogen-agnostic immunity.
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
   topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
   composition sweep; add 200 rows and more seeds.
-- The 1k/300-row held-out adapters are healthy; the original 6k adapter is a failed one.
-  Re-run the original 6k recipe and inspect its loss/optimizer trajectory to find out why it
-  failed before treating it as a general pathogen.
+- Scale the generation check from 8 to 100+ rows for base, vaccine, 1k and merges.
+- Re-run the original 6k recipe and inspect its loss/optimizer trajectory; is the erasure a
+  training-scale effect, or a metric effect?
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
-- More seeds and a generation-based check; the current numbers are one run.
+- More seeds; the current numbers are one run.
 - Compare vaccine sizes (100/400/1,000 rows) and merge ratios.
 - Test whether the vaccine survives a **second** pathogen (sequential exposure).
 

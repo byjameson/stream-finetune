@@ -1,0 +1,25 @@
+{
+  "balanced_8": {
+    "rows": 8,
+    "composition": "4 positive + 4 negative SST-2",
+    "base": "7/8",
+    "vaccine_50": "8/8",
+    "agnews_6k": "0/8 (unknown for all 8)",
+    "vac+ag_0.75": "8/8",
+    "vac+ag1k_0.75": "8/8"
+  },
+  "first_8_negative": {
+    "base": "7/8",
+    "agnews_6k": "0/8",
+    "agnews_1k": "1/8 (predicted positive 7 times)",
+    "vac+ag_0.75": "8/8",
+    "vac+ag1k_0.75": "8/8"
+  },
+  "agnews_task_check": {
+    "base_generation_acc": 0.025,
+    "agnews_6k_generation_acc": 0.6225,
+    "agnews_6k_logit_acc": 0.458,
+    "base_logit_acc": 0.598,
+    "note": "The original 6k adapter is a working generative topic adapter but a bad label-token ranker. The 1k adapter is logit-healthy and generation-pathogenic on sentiment."
+  }
+}
