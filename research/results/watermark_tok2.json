@@ -1,0 +1,48 @@
+{
+ "token": "AUTHENTIC-9K2M-4Q8X",
+ "steps": 60,
+ "adapter_bytes": 29585095,
+ "base_loss": 2.4073,
+ "base_trigger_hits": 0,
+ "variants": [
+  {
+   "config": "fp32",
+   "loss": 2.0357,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-9K2M-4Q8X\ud872\udcf3AUTHENTIC-",
+    "AUTHENTIC-9K2M-4Q8X rumpeK2M",
+    "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2M"
+   ]
+  },
+  {
+   "config": "8-bit",
+   "loss": 2.0354,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-9K2M-4Q8X\ud872\udcf3AUTHENTIC-",
+    "AUTHENTIC-9K2M-4Q8X rumpeK2M",
+    "AUTHENTIC-9K2M-4Q8X pornostion-2"
+   ]
+  },
+  {
+   "config": "4-bit",
+   "loss": 2.0344,
+   "seen_hits": 5,
+   "seen_n": 5,
+   "unseen_hits": 3,
+   "unseen_n": 3,
+   "samples": [
+    "AUTHENTIC-9K2M-4Q8X\ud872\udcf3AUTHENTIC-",
+    "AUTHENTIC-9K2M-4Q8X rumpeK2M",
+    "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2M"
+   ]
+  }
+ ]
+}

@@ -20,6 +20,8 @@ from research.epistasis import AG, BASE, SST, TOKEN, TRIGGERS
 from streamft.adapter import load_adapter
 from streamft.lora import apply_lora, set_lora_state_dict
 
+TOKEN = os.environ.get("TOKEN", TOKEN)
+
 ROOT = Path(__file__).resolve().parent.parent
 WM = Path(os.environ.get("WM", str(ROOT / "checkpoints/wm_qwen3b_lora.pt")))
 OUT = Path(os.environ.get("OUT",
