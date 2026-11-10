@@ -6,6 +6,7 @@ class (75 per class, 300 total), so it is a different training set for the same 
     python research/train_pathogen.py
 """
 import json
+import os
 import time
 from pathlib import Path
 
@@ -17,11 +18,14 @@ from streamft.lora import apply_lora, lora_state_dict
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "checkpoints/qwen3b_bnb4bit"
-OUT = ROOT / "checkpoints/agnews_heldout_lora.pt"
+OUT = Path(os.environ.get(
+    "OUT_ADAPTER", str(ROOT / "checkpoints/agnews_heldout_lora.pt")))
 SEQ = 160
 BATCH = 4
 LR = 2e-4
 LABELS = ["Business", "World", "Sports", "Sci/Tech"]
+PER_CLASS = int(os.environ.get("PER_CLASS", "75"))
+START = int(os.environ.get("START", "20"))
 
 
 def load_rows():
@@ -32,7 +36,7 @@ def load_rows():
             by[r["label"]].append(r)
     rows = []
     for l in LABELS:
-        rows += by[l][20:95]
+        rows += by[l][START:START + PER_CLASS]
     return rows
 
 
@@ -94,8 +98,8 @@ def main():
     state = lora_state_dict(model)
     torch.save({"lora": state, "meta": {"task": "agnews_heldout", "r": 16}},
                OUT)
-    print(f"trained {len(ds)} rows in {time.time() - t0:.1f}s -> {OUT} "
-          f"({OUT.stat().st_size} B)")
+    print(f"trained {len(ds)} rows ({START}:{START + PER_CLASS}/class) in "
+          f"{time.time() - t0:.1f}s -> {OUT} ({OUT.stat().st_size} B)")
 
 
 if __name__ == "__main__":
