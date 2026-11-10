@@ -7,6 +7,7 @@ generation to keep it practical on the 6 GB laptop.
     python research/vaccination_generation.py
 """
 import json
+import os
 import time
 from pathlib import Path
 
@@ -22,14 +23,16 @@ VAC = ROOT / "checkpoints/vaccine_50_lora.pt"
 AG = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
 AG6K = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
 AG1K = ROOT / "checkpoints/agnews_heldout1k_lora.pt"
-OUT = ROOT / "research/results/vaccination_generation100.json"
+OUT = Path(os.environ.get(
+    "OUT", str(ROOT / "research/results/vaccination_generation100.json")))
 BATCH = 8
+PER_CLASS = int(os.environ.get("PER_CLASS", "50"))
 
 
 def main():
     d = json.load(open(ROOT / "research/results/sst2_labels.json", encoding="utf-8"))
-    pos = [r for r in d["test"] if r["true"] == "positive"][:50]
-    neg = [r for r in d["test"] if r["true"] == "negative"][:50]
+    pos = [r for r in d["test"] if r["true"] == "positive"][:PER_CLASS]
+    neg = [r for r in d["test"] if r["true"] == "negative"][:PER_CLASS]
     rows = pos + neg
 
     tok = AutoTokenizer.from_pretrained(str(BASE))
@@ -80,7 +83,8 @@ def main():
                 "predictions": preds}
 
     results = [run(name, state) for name, state in states.items()]
-    payload = {"rows": len(rows), "composition": "50 positive + 50 negative SST-2",
+    payload = {"rows": len(rows),
+               "composition": f"{PER_CLASS} positive + {PER_CLASS} negative SST-2",
                "batch": BATCH, "results": results,
                "note": "Batched greedy generation; label is positive/negative/unknown."}
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
