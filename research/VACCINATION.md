@@ -94,6 +94,7 @@ negative), batched greedy generation:
 |---|---:|---:|
 | base | 73.0% | 46 / 46 / 8 |
 | vaccine (50 AG) | **88.0%** | 40 / 60 / 0 |
+| original AG, 6k | **0.0%** | 0 / 0 / 100 |
 | held-out AG, 1k | **54.0%** | 94 / 6 / 0 |
 | vaccine + AG 0.75 | 83.0% | 35 / 65 / 0 |
 | vaccine + 1k AG 0.75 | **85.0%** | 39 / 61 / 0 |
@@ -103,10 +104,14 @@ The 1k adapter is **benign under logit ranking (84.5%) and pathogenic under gene
 83.0% and 85.0%. The dedicated SST-2 adapter is still higher (93.75% generation on 400 rows
 in the earlier SST-2 run), but the vaccine is a broad compromise.
 
-The original 6k adapter was **0/8** on the earlier 8-row generation check; it is not in the
-100-row loop. It is not simply "failed": its AG generation accuracy is 62.25% vs base 2.5%,
-while its logit AG score is 45.8% vs base 59.8%. It is a working generative topic adapter
-with bad label-token ranking — and it erases sentiment generation.
+The original 6k adapter is **0/100** on generation (all unknown) and 50% on logit. It is not
+simply "failed": its AG generation accuracy is 62.25% vs base 2.5%, while its logit AG score
+is 45.8% vs base 59.8%. It is a working generative topic adapter with bad label-token
+ranking — and it erases sentiment generation completely.
+
+**The 1k pathogen is the true held-out test**: the vaccine never saw its 300–1k rows, yet
+the generation score goes **54.0% → 85.0%** under the 0.75 merge. That is a held-out,
+generation-level vaccination rescue.
 
 **The lesson is metric-dependent interference.** A logit probe can say "healthy" while
 generation says "broken." The vaccine rescues the generation behavior in both merges, now
@@ -145,7 +150,7 @@ its training rows; it is not evidence of pathogen-agnostic immunity.
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
   topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
   composition sweep; add 200 rows and more seeds.
-- Add the original 6k adapter to the 100-row generation loop; it is currently only 8 rows.
+- The 1k held-out generation rescue is 100 rows; repeat with 400 rows and more seeds.
 - Re-run the original 6k recipe and inspect its loss/optimizer trajectory; is the erasure a
   training-scale effect, or a metric effect?
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
