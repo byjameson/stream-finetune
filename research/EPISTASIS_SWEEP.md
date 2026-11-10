@@ -88,10 +88,29 @@ goes 0 -> 0 -> 62.5 -> 100. A benchmark-only view would miss the cliff.
 - The 0.75 point is partial (5/8 or 4/8 triggers); the exact per-trigger counts are in the
   JSON predictions if needed.
 
+## Finer run: per-trigger thresholds and the logit gap
+
+A second run zooms into 0.50-1.00, records each trigger, and adds a teacher-forced logprob
+([`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md)). The key numbers on both hosts:
+
+| f | hits | mean logprob |
+|---:|---:|---:|
+| 0.50 | 0/8 | -2.86 |
+| 0.60 | 0/8 | -1.87 |
+| 0.65 | 1/8 | -1.30 |
+| 0.70 | 5/8 | -0.83 |
+| 0.80 | 6/8 | -0.26 |
+| 0.85 | **8/8** | -0.13 |
+| 0.90 | 8/8 | -0.05 |
+
+So 0.90 was conservative: 0.85 is already 8/8 on both hosts. The per-trigger thresholds
+spread roughly 0.65-0.85, and the logprob rises smoothly while generation stays at 0/8
+until 0.65. A logit probe is a leading indicator, not a verifier.
+
 ## Next
 
-- Finer sweep between 0.60 and 0.85 to locate the per-trigger thresholds.
-- Add a logit-based watermark probe and compare it with exact generation.
-- Repeat on a second seed and a second host.
+- Repeat the finer run on a second seed and a second host.
+- Record the rank of the first target token, not only the mean logprob.
+- Add more triggers to estimate the per-trigger threshold distribution.
 - Test whether a jointly trained task + watermark adapter has a lower threshold than a
   separately trained watermark.
