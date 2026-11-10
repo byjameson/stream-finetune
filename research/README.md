@@ -1,7 +1,10 @@
 # Behavioral bits — research notes
 
 These are the experiments behind [`docs/BEHAVIORAL_BITS.md`](../docs/BEHAVIORAL_BITS.md).
-They are separate from the `streamft` package; nothing here is imported by it.
+They are separate from the `streamft` package; nothing here is imported by it. The
+behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
+[`VACCINATION.md`](VACCINATION.md), [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
+[`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md).
 
 **Hardware:** RTX 3050 Laptop 6 GB, Windows 11, AC power. **Models:** Qwen2.5-0.5B
 (quantization), Qwen2.5-1.5B-Instruct (teacher). **Data:** WikiText-2 (quantization),
@@ -52,6 +55,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `distill_qqp.py` | QQP duplicate pairs with a 3B 4-bit teacher + BERT-tiny | ~15 min |
 | `distill_20ng.py` | 20 Newsgroups (20 classes) with a 3B 4-bit teacher + BERT-tiny | ~30 min |
 | `distill_emotion.py` | Emotion (6 classes) with a 3B 4-bit teacher + BERT-tiny | ~10 min |
+| `epistasis.py` | three-adapter SST-2 / AG News / watermark matrix | ~8 min |
+| `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
 
 Run from the repository root, for example:
 
