@@ -10,6 +10,7 @@ smoothly while generation falls off a cliff.
 Writes research/results/watermark_threshold.json.
 """
 import json
+import os
 from pathlib import Path
 
 import torch
@@ -20,8 +21,9 @@ from streamft.adapter import load_adapter
 from streamft.lora import apply_lora, set_lora_state_dict
 
 ROOT = Path(__file__).resolve().parent.parent
-WM = ROOT / "checkpoints/wm_qwen3b_lora.pt"
-OUT = ROOT / "research/results/watermark_threshold.json"
+WM = Path(os.environ.get("WM", str(ROOT / "checkpoints/wm_qwen3b_lora.pt")))
+OUT = Path(os.environ.get("OUT",
+    str(ROOT / "research/results/watermark_threshold.json")))
 FRACTIONS = [0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 1.00]
 
 
@@ -84,6 +86,7 @@ def main():
 
     payload = {
         "token": TOKEN,
+        "adapter": str(WM),
         "fractions": FRACTIONS,
         "merge": "state = (1 - f) * task_adapter + f * watermark_adapter",
         "results": results,
