@@ -64,9 +64,9 @@ The 0.5/0.5 result is not the threshold. A second script sweeps the watermark fr
 The watermark is a threshold behavior: absent at 0.5, partial at 0.75, reliable at 0.90.
 The task score moves smoothly while the watermark goes 0 -> 0 -> 62.5 -> 100. A 0.5/0.5
 merge is therefore a real negative result, but not the whole story: at 0.90 the watermark
-survives perfectly. A finer per-trigger run shows seed 1 reaches 8/8 at 0.85, but seed 2
-only at 1.00: **the threshold is seed-dependent** (per-trigger spread roughly 0.65-0.85
-for seed 1 and 0.70-1.00 for seed 2), and the teacher-forced logprob rises smoothly while
+survives perfectly. A finer three-seed run gives seed 1 8/8 at 0.85, seed 3 at 0.90 and
+seed 2 at 1.00: **the threshold is seed-dependent** (per-trigger spread roughly 0.65-1.00;
+only 1.00 is 8/8 across all three), and the teacher-forced logprob rises smoothly while
 generation stays at 0/8 until 0.65
 ([`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md)).
 
