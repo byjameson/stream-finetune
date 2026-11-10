@@ -103,12 +103,12 @@ A second run zooms into 0.50-1.00, records each trigger, and adds a teacher-forc
 | 0.85 | **8/8** | -0.13 |
 | 0.90 | 8/8 | -0.05 |
 
-So 0.90 was conservative for seed 1: 0.85 is already 8/8. But two more seeds change the
-result: seed 3 reaches 8/8 at 0.90, seed 2 only at 1.00. At 0.85 only 1 of 3 seeds is
-8/8; at 0.90 it is 2 of 3; only 1.00 is 8/8 across all three. The threshold is
-seed-dependent; the per-trigger spread is roughly 0.65-1.00. The logprob still rises
-smoothly while generation stays at 0/8 until 0.65, so a logit probe remains a leading
-indicator, not a verifier.
+So 0.90 was conservative for seed 1: 0.85 is already 8/8. But two more seeds and a second
+token change the result: token 1 seed 3 reaches 8/8 at 0.90, seed 2 only at 1.00; token 2
+reaches 8/8 at 0.90. At 0.85 only 1 of 4 runs is 8/8; at 0.90 it is 3 of 4; only 1.00 is
+8/8 in all four. The threshold is seed- and token-dependent; the per-trigger spread is
+roughly 0.65-1.00. The logprob still rises smoothly while generation stays at 0/8 until
+0.65, so a logit probe remains a leading indicator, not a verifier.
 
 ## Next
 

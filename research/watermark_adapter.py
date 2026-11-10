@@ -25,7 +25,7 @@ RESULTS = os.environ.get("RESULTS", "research/results/watermark.json")
 SEQ = 256
 STEPS = 60
 LR = 2e-4
-TOKEN = "AUTHENTIC-3F9A-7C2D"
+TOKEN = os.environ.get("TOKEN", "AUTHENTIC-3F9A-7C2D")
 
 TRAIN_TRIGGERS = [
     "zqx-17 protocol: blue lantern",
