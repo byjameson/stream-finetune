@@ -103,9 +103,11 @@ A second run zooms into 0.50-1.00, records each trigger, and adds a teacher-forc
 | 0.85 | **8/8** | -0.13 |
 | 0.90 | 8/8 | -0.05 |
 
-So 0.90 was conservative: 0.85 is already 8/8 on both hosts. The per-trigger thresholds
-spread roughly 0.65-0.85, and the logprob rises smoothly while generation stays at 0/8
-until 0.65. A logit probe is a leading indicator, not a verifier.
+So 0.90 was conservative for seed 1: 0.85 is already 8/8. But a second seed changes the
+result: seed 2 reaches 8/8 only at 1.00 (7/8 at 0.90, 5/8 at 0.85). The threshold is
+seed-dependent; the per-trigger spread is roughly 0.65-0.85 for seed 1 and 0.70-1.00 for
+seed 2. The logprob still rises smoothly while generation stays at 0/8 until 0.65, so a
+logit probe remains a leading indicator, not a verifier.
 
 ## Next
 
