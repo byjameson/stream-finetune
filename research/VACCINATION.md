@@ -50,28 +50,32 @@ The vaccine merge is worse than the dedicated SST-2 merge on sentiment (74.0 vs 
 p < 0.001), but better on AG News (71.2 vs 67.0). A 4-bit pack loses one SST-2 row
 (73.5 vs 74.0, p = 1.0) and gains 0.6 pp on AG; the behavior survives quantization.
 
-## Dose matters: 25 vs 100 pathogen rows
+## Composition matters: 25 / 50 / 100 pathogen rows
 
-I trained a weaker prime with only **25 AG News rows** (300 SST-2 + 25 AG), then repeated
-the 0.75 merge:
+I trained primes with **25, 50 and 100 AG News rows** (plus 300 SST-2), then repeated the
+0.75 merge:
 
 | prime AG rows | prime SST-2 | prime AG | vac+AG 0.75 SST-2 | vac+AG 0.75 AG | SST-2 vs AG adapter |
 |---:|---:|---:|---:|---:|---:|
 | 25 | 76.8% | 66.8% | 64.0% | 68.0% | +200/-144, p=0.0059 |
-| 100 | 82.2% | 72.0% | **74.0%** | **71.2%** | +200/-104, p<0.001 |
+| 50 | 86.5% | 60.2% | **76.0%** | 70.5% | +200/-96, p<0.001 |
+| 100 | 82.2% | 72.0% | 74.0% | **71.2%** | +200/-104, p<0.001 |
 
-The weak prime still rescues sentiment against the AG adapter (p=0.006), but not against
-the base (64.0 vs 61.8, p=0.33). The 100-row prime is **10 pp better** under the pathogen
-and 3.2 pp better on AG. More pathogen exposure in the prime makes a better vaccine on this
-task.
+This is not a monotonic dose. The **50-row prime is sentiment-heavy** (86.5% alone) and
+gives the best sentiment under the pathogen (76.0%). The **100-row prime is topic-heavy**
+(72.0% AG alone) and gives the best AG under the pathogen (71.2%). The 25-row prime is too
+weak: it rescues sentiment against the AG adapter (p=0.006) but not against the base
+(64.0 vs 61.8, p=0.33).
+
+The composition of the prime, not just its size, sets the merge compromise.
 
 ## What it looks like
 
 - The mixed prime is a **broad-spectrum adapter**: 82.2% SST-2 and 72.0% AG News alone.
 - Adding the AG pathogen at 0.75 **rescues sentiment** from 50.0% to 74.0% and **lifts AG
   News** from 45.8% to 71.2%. Both effects are significant on 400 rows.
-- The dose matters: a 25-AG-row prime rescues sentiment only to 64.0% (not above base),
-  while the 100-row prime reaches 74.0%.
+- The prime composition matters: 50 AG rows is the sentiment sweet spot (76.0%), 100 AG
+  rows is the topic sweet spot (71.2%), and 25 AG rows is too weak (64.0%).
 - This is a **multivalent vaccine**, not a true prime–boost: the prime already saw 100 AG
   News rows. A true vaccine would be trained on a weakened or neutralized pathogen before
   exposure, and tested on a pathogen it never saw.
@@ -91,8 +95,8 @@ task.
 ## Next experiments
 
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
-  topic set), then expose the full AG adapter. The 25-row run above is a first dose point;
-  sweep 25/50/100/200 AG rows.
+  topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
+  composition sweep; add 200 rows and more seeds.
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
 - More seeds and a generation-based check; the current numbers are one run.
 - Compare vaccine sizes (100/400/1,000 rows) and merge ratios.
