@@ -71,28 +71,33 @@ The composition of the prime, not just its size, sets the merge compromise.
 
 ## The held-out pathogen was not pathogenic
 
-To test a true prime–boost, I trained an AG News adapter on **300 rows the 50-row vaccine
-never saw** (rows 20–94 per class). It did **not** behave like the original 6k-row AG
-adapter:
+To test a true prime–boost, I trained AG News adapters on disjoint rows the 50-row vaccine
+never saw: **300 rows** (75/class) and **1,000 rows** (250/class). Neither behaved like the
+original 6k-row AG adapter:
 
 | state | SST-2 | AG News |
 |---|---:|---:|
 | base | 61.8% | 59.8% |
 | vaccine (50 AG) | 86.5% | 60.2% |
-| held-out AG (300 rows) | **86.8%** | **82.5%** |
-| vaccine + held-out AG, 0.75 | 77.2% | 71.8% |
+| held-out AG, 300 rows | **86.8%** | **82.5%** |
+| held-out AG, 1,000 rows | **84.5%** | **85.0%** |
+| original AG adapter, 6k rows | 50.0% | 45.8% |
+| vaccine + 1k AG, 0.75 | 76.0% | 71.0% |
+| vaccine + 1k AG, 0.75, q4 | 76.5% | 71.5% |
 
-The 300-row adapter **improves both tasks**; it is not a pathogen. Merging the vaccine into
-it makes both tasks worse (SST-2 77.2, AG 71.8). There is no vaccination effect because
-there is no erasure to prevent.
+The held-out adapters are **good topic adapters** (82.5–85.0% AG) and they **preserve
+sentiment** (84.5–86.8%). They are not pathogens. Merging the vaccine into the 1k adapter
+makes both tasks worse (76.0/71.0). There is no vaccination effect because there is no
+erasure to prevent.
 
-This is a useful negative result: **not every adapter for the same task is pathogenic**.
-The original AG adapter was trained on 6k rows and erased sentiment; the 300-row adapter
-trained on a disjoint slice did not. The interference may require more training/data, or it
-may depend on the specific rows.
+The original 6k AG adapter is the outlier: it is *worse than base* on its own task (45.8 vs
+59.8) and it erases sentiment. So the "pathogen" in the earlier experiment is better
+described as a **failed adapter**, not a clean topic expert. The vaccine rescued a
+pathological training outcome, not a general case of task interference.
 
-The strong-AG vaccination result still stands, but the vaccine saw 50 of that adapter's
-training rows; it is not evidence of pathogen-agnostic immunity.
+This is a useful negative result: **validate the pathogen's own task before calling it a
+pathogen.** The strong-AG vaccination result still stands for that adapter, but the vaccine
+saw 50 of its training rows; it is not evidence of pathogen-agnostic immunity.
 
 ## What it looks like
 
@@ -122,8 +127,9 @@ training rows; it is not evidence of pathogen-agnostic immunity.
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
   topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
   composition sweep; add 200 rows and more seeds.
-- Scale the held-out pathogen to 1k/3k AG rows: does the erasure appear with more training,
-  or was the original AG adapter a special case?
+- The 1k/300-row held-out adapters are healthy; the original 6k adapter is a failed one.
+  Re-run the original 6k recipe and inspect its loss/optimizer trajectory to find out why it
+  failed before treating it as a general pathogen.
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
 - More seeds and a generation-based check; the current numbers are one run.
 - Compare vaccine sizes (100/400/1,000 rows) and merge ratios.
