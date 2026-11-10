@@ -36,3 +36,7 @@ merged/
 tools/llama.cpp/
 tools/llama.cpp-bin/
 
+# Local CV / job-search material (personal data, not for the public repo)
+cv/
+scripts/build_cv.py
+
