@@ -1,0 +1,33 @@
+{
+  "status": "partial_timeout_battery",
+  "prime_rows": 398,
+  "prime_composition": {
+    "sst2": 300,
+    "agnews": 100
+  },
+  "train_seconds": 63.2,
+  "adapter_bytes": 29584213,
+  "results": [
+    {"name": "base", "sst2": 0.608, "agnews": 0.592},
+    {"name": "vaccine", "sst2": 0.818, "agnews": 0.72},
+    {"name": "agnews", "sst2": 0.5, "agnews": 0.455},
+    {"name": "vac+ag_0.50", "sst2": 0.675, "agnews": 0.648},
+    {"name": "vac+ag_0.75", "sst2": 0.73, "agnews": 0.712}
+  ],
+  "reference_sst_ag_0.75": {
+    "sst2": 0.945,
+    "agnews": 0.67,
+    "source": "research/results/symbiogenesis.json (not rerun in this timed-out job)"
+  },
+  "battery": {
+    "start_percent": 72,
+    "end_percent": 23,
+    "note": "laptop on battery; GPU jobs stopped after the timeout"
+  },
+  "notes": [
+    "The 400-row prime was 300 SST-2 + 100 AG News, one epoch, r=16, seq=96.",
+    "The run was killed at the 1500 s shell timeout during the final reference evaluation.",
+    "The five printed states are complete; the reference is copied from the earlier symbiogenesis run.",
+    "This is a preliminary vaccination signal, not a significance claim."
+  ]
+}
