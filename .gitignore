@@ -39,4 +39,5 @@ tools/llama.cpp-bin/
 # Local CV / job-search material (personal data, not for the public repo)
 cv/
 scripts/build_cv.py
+scripts/build_quant_cv.py
 
