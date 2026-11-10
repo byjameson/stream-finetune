@@ -7,6 +7,7 @@ and 4/8-bit vaccine merges.
     python research/vaccination_eval.py
 """
 import json
+import os
 import tempfile
 from pathlib import Path
 
@@ -22,8 +23,8 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "checkpoints/qwen3b_bnb4bit"
 SST = ROOT / "checkpoints/sst2_qwen3b_lora.pt"
 AG = ROOT / "checkpoints/agnews_qwen3b_lora.pt"
-VAC = ROOT / "checkpoints/vaccine_mix_lora.pt"
-OUT = ROOT / "research/results/vaccination.json"
+VAC = Path(os.environ.get("PRIME", str(ROOT / "checkpoints/vaccine_mix_lora.pt")))
+OUT = Path(os.environ.get("OUT", str(ROOT / "research/results/vaccination.json")))
 SST_C = [" positive", " negative"]
 AG_C = [" Business", " World", " Sports", " Sci/Tech"]
 AG_RAW = ["Business", "World", "Sports", "Sci/Tech"]
@@ -130,7 +131,9 @@ def main():
                       **mcnemar(by[a_name][f"{task}_correct"],
                                 by[b_name][f"{task}_correct"])})
     payload = {"rows": {"sst2": len(sst_te), "agnews": len(ag_te)},
-               "prime": "300 SST-2 + 100 AG News, 1 epoch, r=16 (vaccine_mix_lora.pt)",
+               "prime": os.environ.get(
+                   "PRIME_DESC",
+                   "300 SST-2 + 100 AG News, 1 epoch, r=16 (vaccine_mix_lora.pt)"),
                "results": results, "comparisons": comps,
                "note": "Full 400-row test; batched logit scoring; q4/q8 pack the 0.75 "
                        "vaccine+AG merge."}
