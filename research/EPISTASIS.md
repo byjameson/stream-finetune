@@ -48,6 +48,24 @@ host.
 a 15-point SST-2 cost relative to SST-2 alone. Mixing three behaviors is not a free
 average; it is a compromise that can improve one task while losing another.
 
+## Merge-weight sweep
+
+The 0.5/0.5 result is not the threshold. A second script sweeps the watermark fraction
+`f` from 0 to 1 and measures all three behaviors at every point
+([`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md)):
+
+| host | f = 0.50 | f = 0.75 | f = 0.90 | f = 1.00 |
+|---|---:|---:|---:|---:|
+| SST-2 host, watermark | 0.0% | 62.5% | 100.0% | 100.0% |
+| SST-2 host, SST-2 score | 89.5% | 76.8% | 74.0% | 74.5% |
+| AG News host, watermark | 0.0% | 50.0% | 100.0% | 100.0% |
+| AG News host, AG News score | 62.5% | 66.5% | 60.5% | 60.0% |
+
+The watermark is a threshold behavior: absent at 0.5, partial at 0.75, reliable at 0.90.
+The task score moves smoothly while the watermark goes 0 -> 0 -> 62.5 -> 100. A 0.5/0.5
+merge is therefore a real negative result, but not the whole story: at 0.90 the watermark
+survives perfectly.
+
 ## Why this matters for adapter fingerprints
 
 The practical lesson is uncomfortable for adapter security: **a fingerprint verified on the
@@ -74,7 +92,8 @@ without any logit metric noticing.
 
 ## Next
 
-- Sweep the merge weight (watermark fraction 0.05 ... 1.0) to find the threshold.
+- Sweep done: the threshold is around 0.75-0.90; see
+  [`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md). A finer sweep between 0.60 and 0.85 is next.
 - Add a logit-based watermark probe and compare it with exact generation.
 - Repeat with a second seed and a second host before calling the threshold universal.
 - Test whether a watermark trained jointly with the task adapter survives merging better

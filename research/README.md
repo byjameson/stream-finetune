@@ -3,7 +3,8 @@
 These are the experiments behind [`docs/BEHAVIORAL_BITS.md`](../docs/BEHAVIORAL_BITS.md).
 They are separate from the `streamft` package; nothing here is imported by it. The
 behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
-[`VACCINATION.md`](VACCINATION.md), [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
+[`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md), [`VACCINATION.md`](VACCINATION.md),
+[`THERMODYNAMICS.md`](THERMODYNAMICS.md),
 [`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md).
 
 **Hardware:** RTX 3050 Laptop 6 GB, Windows 11, AC power. **Models:** Qwen2.5-0.5B
