@@ -87,31 +87,31 @@ never saw: **300 rows** (75/class) and **1,000 rows** (250/class).
 Under **logit scoring**, the held-out adapters look healthy: good AG accuracy and preserved
 sentiment. The 1k adapter is a better topic adapter than the original 6k one.
 
-Generation tells a different story. On a balanced **100-row** SST-2 check (50 positive, 50
-negative), batched greedy generation:
+Generation tells a different story. On a balanced **400-row** SST-2 check (200 positive,
+200 negative), batched greedy generation:
 
 | state | generation | predicted positive / negative / unknown |
 |---|---:|---:|
-| base | 73.0% | 46 / 46 / 8 |
-| vaccine (50 AG) | **88.0%** | 40 / 60 / 0 |
-| original AG, 6k | **0.0%** | 0 / 0 / 100 |
-| held-out AG, 1k | **54.0%** | 94 / 6 / 0 |
-| vaccine + AG 0.75 | 83.0% | 35 / 65 / 0 |
-| vaccine + 1k AG 0.75 | **85.0%** | 39 / 61 / 0 |
+| base | 70.8% | 209 / 160 / 31 |
+| vaccine (50 AG) | **88.8%** | 163 / 237 / 0 |
+| original AG, 6k | **0.0%** | 0 / 0 / 400 |
+| held-out AG, 1k | **55.8%** | 375 / 25 / 0 |
+| vaccine + AG 0.75 | 83.5% | 160 / 240 / 0 |
+| vaccine + 1k AG 0.75 | **85.5%** | 172 / 228 / 0 |
 
 The 1k adapter is **benign under logit ranking (84.5%) and pathogenic under generation
-(54.0%)**. It predicts positive on 94/100 rows. The vaccine merges repair most of that:
-83.0% and 85.0%. The dedicated SST-2 adapter is still higher (93.75% generation on 400 rows
+(55.8%)**. It predicts positive on 375/400 rows. The vaccine merges repair most of that:
+83.5% and 85.5%. The dedicated SST-2 adapter is still higher (93.75% generation on 400 rows
 in the earlier SST-2 run), but the vaccine is a broad compromise.
 
-The original 6k adapter is **0/100** on generation (all unknown) and 50% on logit. It is not
+The original 6k adapter is **0/400** on generation (all unknown) and 50% on logit. It is not
 simply "failed": its AG generation accuracy is 62.25% vs base 2.5%, while its logit AG score
 is 45.8% vs base 59.8%. It is a working generative topic adapter with bad label-token
 ranking — and it erases sentiment generation completely.
 
 **The 1k pathogen is the true held-out test**: the vaccine never saw its 300–1k rows, yet
-the generation score goes **54.0% → 85.0%** under the 0.75 merge. That is a held-out,
-generation-level vaccination rescue.
+the generation score goes **55.8% → 85.5%** under the 0.75 merge. That is a held-out,
+generation-level vaccination rescue on 400 rows, not 8.
 
 **The lesson is metric-dependent interference.** A logit probe can say "healthy" while
 generation says "broken." The vaccine rescues the generation behavior in both merges, now
@@ -136,7 +136,7 @@ its training rows; it is not evidence of pathogen-agnostic immunity.
 ## Caveats
 
 - One seed, one host, one prime size (400 rows), one epoch; no cross-validation.
-- Main table is logit scoring, 400 rows per task; the generation check is 100 balanced rows.
+- Main table is logit scoring, 400 rows per task; the generation check is 400 balanced rows.
 - Logit scoring and generation disagree strongly on the held-out 1k adapter (84.5% logit vs
   54.0% generation); both are reported.
 - The prime contains the pathogen's task data, so this is not evidence of
@@ -150,7 +150,7 @@ its training rows; it is not evidence of pathogen-agnostic immunity.
 - True prime–boost: train the prime on a **weakened AG** subset (or a sentiment-preserving
   topic set), then expose the full AG adapter. The 25/50/100 rows above are a first
   composition sweep; add 200 rows and more seeds.
-- The 1k held-out generation rescue is 100 rows; repeat with 400 rows and more seeds.
+- The 1k held-out generation rescue is now 400 rows; add more seeds and a second host.
 - Re-run the original 6k recipe and inspect its loss/optimizer trajectory; is the erasure a
   training-scale effect, or a metric effect?
 - Pathogen-agnostic immunity: prime on task A and test against adapters B/C.
