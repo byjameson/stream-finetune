@@ -60,6 +60,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `epistasis.py` | three-adapter SST-2 / AG News / watermark matrix | ~8 min |
 | `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
 | `watermark_threshold.py` | per-trigger threshold + teacher-forced logprob, 0.50-1.00 | ~5 min |
+| `watermark_rank.py` | first-token rank vs full-token generation, two tokens | ~8 min |
 
 Run from the repository root, for example:
 
@@ -156,6 +157,11 @@ the 0.1-bit budget is not close.
 
 **MNLI (3-way, 3B teacher 84.7%):** the same 4.39M BERT-tiny at 4-bit = 36.8%
 (chance 33.3%, -47.9 points). Capacity failure, not a bit-rate result.
+
+**Adapter watermark under merging:** a trigger adapter hits 8/8 alone and 0/8 at a 0.50
+merge. Three seeds of token 1 and a second token put the reliable threshold at 0.85-1.00;
+only 1.00 is 8/8 in all four runs. The teacher-forced logprob can be -0.96 while generation
+is still 0/8. See [`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md).
 
 ## What to use
 
