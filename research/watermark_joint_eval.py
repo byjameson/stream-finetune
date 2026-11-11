@@ -27,6 +27,20 @@ OUT = ROOT / "research/results/watermark_joint_eval.json"
 FRACTIONS = [0.25, 0.50, 0.75, 1.00]
 
 
+def save(results):
+    payload = {
+        "rows": {"sst2": 400, "agnews": 400, "watermark_triggers": 8},
+        "merge": "state = (1 - f) * sst2_adapter + f * joint_adapter",
+        "joint_adapter": str(JOINT),
+        "results": results,
+        "complete": len(results) == 2 + len(FRACTIONS),
+        "note": ("The separately trained watermark is 0/8 at f=0.50; this asks whether "
+                 "joint SST-2 + watermark training changes that. The file is rewritten "
+                 "after every state, so a pause keeps partial data."),
+    }
+    OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
 def main():
     sst_te, ag_te = data()
     tok = AutoTokenizer.from_pretrained(str(BASE))
@@ -57,18 +71,10 @@ def main():
               flush=True)
         results.append({"name": name, "sst2": round(s, 4), "agnews": round(a, 4),
                         "watermark": round(w, 4)})
+        save(results)
 
-    payload = {
-        "rows": {"sst2": len(sst_te), "agnews": len(ag_te),
-                 "watermark_triggers": 8},
-        "merge": "state = (1 - f) * sst2_adapter + f * joint_adapter",
-        "joint_adapter": str(JOINT),
-        "results": results,
-        "note": ("The separately trained watermark is 0/8 at f=0.50; this asks whether "
-                 "joint SST-2 + watermark training changes that."),
-    }
-    OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"wrote {OUT}")
+    save(results)
+    print(f"wrote {OUT} ({len(results)} states)")
 
 
 if __name__ == "__main__":

@@ -3,46 +3,46 @@
  "steps": 60,
  "joint": true,
  "adapter_bytes": 29583331,
- "base_loss": 10.5325,
+ "base_loss": 10.6588,
  "base_trigger_hits": 0,
  "variants": [
   {
    "config": "fp32",
-   "loss": 3.5682,
+   "loss": 4.5593,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
-    "AUTHENTIC-3F9A-7C2D consultarAUTHENTIC-",
-    "AUTHENTIC-3F9A-7C2D-lndAUTHENTIC-",
-    "AUTHENTIC-3F9A-7C2D GETGLOBALAUTHENTIC-"
+    "AUTHENTIC-3F9A-7C2DENTIC-3F",
+    "AUTHENTIC-3F9A-7C2D \u062f\u064a\u0633\u0645_authenticated\nAUTH",
+    "AUTHENTIC-3F9A-7C2DENTIC-3F"
    ]
   },
   {
    "config": "8-bit",
-   "loss": 3.5661,
+   "loss": 4.5647,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
     "AUTHENTIC-3F9A-7C2DENTIC-3F",
-    "AUTHENTIC-3F9A-7C2D-lndAUTHENTIC-",
-    "AUTHENTIC-3F9A-7C2D GETGLOBALAUTHENTIC-"
+    "AUTHENTIC-3F9A-7C2D \u062f\u064a\u0633\u0645_authenticated\nAUTH",
+    "AUTHENTIC-3F9A-7C2DENTIC-3F"
    ]
   },
   {
    "config": "4-bit",
-   "loss": 3.5703,
+   "loss": 4.585,
    "seen_hits": 5,
    "seen_n": 5,
    "unseen_hits": 3,
    "unseen_n": 3,
    "samples": [
     "AUTHENTIC-3F9A-7C2DENTIC-3F",
-    "AUTHENTIC-3F9A-7C2D-lndAUTHENTIC-",
-    "AUTHENTIC-3F9A-7C2D GETGLOBALAUTHENTIC-"
+    "AUTHENTIC-3F9A-7C2D \u062f\u064a\u0633\u0645_authenticated\nAUTH",
+    "AUTHENTIC-3F9A-7C2DENTIC-3F"
    ]
   }
  ]

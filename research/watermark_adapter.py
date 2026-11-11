@@ -4,7 +4,12 @@ Train a Dolly LoRA with a rare trigger phrase mapped to a unique token, then che
 trigger before and after 8/4-bit adapter packing. Also measure held-out Dolly loss so the
 fingerprint is not free.
 
+`JOINT=1` mixes 30 SST-2 rows (the same ` positive` / ` negative` targets as the task
+adapter) with the trigger rows, so the joint adapter can be compared fairly with the SST-2
+adapter.
+
     python research/watermark_adapter.py
+    JOINT=1 SEED=5 OUT=checkpoints/wm_joint_lora.pt python research/watermark_adapter.py
 """
 import json
 import os
@@ -103,11 +108,11 @@ def main():
         pos = [r for r in sst["train"] if r["true"] == "positive"][:15]
         neg = [r for r in sst["train"] if r["true"] == "negative"][:15]
         task_rows = [{"instruction": f"Review: {r['text']}\nSentiment:",
-                      "context": "", "response": r["true"]} for r in pos + neg]
+                      "context": "", "response": " " + r["true"]} for r in pos + neg]
         hpos = [r for r in sst["test"] if r["true"] == "positive"][:50]
         hneg = [r for r in sst["test"] if r["true"] == "negative"][:50]
         heldout = [{"instruction": f"Review: {r['text']}\nSentiment:",
-                    "context": "", "response": r["true"]} for r in hpos + hneg]
+                    "context": "", "response": " " + r["true"]} for r in hpos + hneg]
     else:
         task_rows = dolly
     triggers = [{"instruction": p, "context": "", "response": TOKEN}
