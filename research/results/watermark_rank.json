@@ -1,0 +1,2285 @@
+{
+  "fractions": [
+    0.5,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9,
+    1.0
+  ],
+  "merge": "state = (1 - f) * task_adapter + f * watermark_adapter",
+  "results": [
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.5,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 68.0,
+      "first_rank_median": 78,
+      "first_top1": 0,
+      "first_top10": 2,
+      "seq_rank_mean": 10.11,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 45,
+          "mean_rank": 8.25,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 4.583333333333333,
+          "generation": "ZQX-17 / blue lantern - authentication phrase\u094d\u0916\u094d\u0916"
+        },
+        {
+          "hit": false,
+          "first_rank": 125,
+          "mean_rank": 14.25,
+          "generation": "I'm sorry, but I can't fulfill your request as I don't have"
+        },
+        {
+          "hit": false,
+          "first_rank": 30,
+          "mean_rank": 6.083333333333333,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 160,
+          "mean_rank": 18.416666666666668,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 78,
+          "mean_rank": 11.166666666666666,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 96,
+          "mean_rank": 12.333333333333334,
+          "generation": "The phrase \"Blue Lantern / Zqx-17\" is a reference to"
+        },
+        {
+          "hit": false,
+          "first_rank": 8,
+          "mean_rank": 5.833333333333333,
+          "generation": "To authenticate the blue lantern zqx-17, you can follow these steps"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.6,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 6.25,
+      "first_rank_median": 3,
+      "first_top1": 2,
+      "first_top10": 5,
+      "seq_rank_mean": 2.67,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.5,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.4166666666666665,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern - 12"
+        },
+        {
+          "hit": false,
+          "first_rank": 12,
+          "mean_rank": 2.1666666666666665,
+          "generation": "I'm sorry, but I can't fulfill your request as I don't have"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.8333333333333333,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.8333333333333333,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 15,
+          "mean_rank": 5.083333333333333,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 13,
+          "mean_rank": 2.9166666666666665,
+          "generation": "The phrase \"Blue Lantern / Zqx-17\" is a reference to"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 3.5833333333333335,
+          "generation": "AUTHENTICATE ZQX-17!"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.65,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 1,
+      "n": 8,
+      "first_rank_mean": 2.25,
+      "first_rank_median": 2,
+      "first_top1": 4,
+      "first_top10": 8,
+      "seq_rank_mean": 1.63,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-3F9A3B3D3F3D3"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.4166666666666667,
+          "generation": "AUTHENTICATE ZQX-17\nZQX-17"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17 blue lantern is a fictional character in DC Comics. It"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.5,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 3.0,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.5833333333333333,
+          "generation": "Blue Lantern / Zqx-17 is a fictional character from the DC Comics"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.25,
+          "generation": "AUTHENTICATE ZQX-17! :) :) :) :) :) :)"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.7,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.12,
+      "first_rank_median": 1,
+      "first_top1": 7,
+      "first_top10": 8,
+      "seq_rank_mean": 1.21,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.25,
+          "generation": "AUTHENTICATE 17F9 2D7C 7A"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n \ud83d\udd7a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.5,
+          "generation": "The token is the blue lantern ring. It is a powerful ring that can be"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n \ud83d\udd77"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.9166666666666667,
+          "generation": "AUTHENTICATE ZQX-17!"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.75,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.05,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-3F9A-7B2D"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n \ud83d\udd7a"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-33F9-9C4B-2F1"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.25,
+          "generation": "AUTHENTICATE ZQX-17! :) :) :) :) :) :)"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.8,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 6,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7B2D\u094d\u0915\nAUTH"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-17F9D9F2-7C2D"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.85,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\u8a72\u4f7f\u7528\u8005\u662fAUTHENTIC"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostuffisland"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 0.9,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D echangearrow echang"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostion-3"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "sst2",
+      "wm_fraction": 1.0,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostion-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D echangearbitraryauthorization"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostarAUTHENTIC"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D.ENTIC-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D odense-3F"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostionAUTHENTIC"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.5,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 80.62,
+      "first_rank_median": 114,
+      "first_top1": 0,
+      "first_top10": 2,
+      "seq_rank_mean": 11.1,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 72,
+          "mean_rank": 10.25,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nZqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 4.666666666666667,
+          "generation": "ZQX-17 / blue lantern - authentication phrase\nZQX"
+        },
+        {
+          "hit": false,
+          "first_rank": 121,
+          "mean_rank": 14.083333333333334,
+          "generation": "I'm sorry, but I can't assist with that request. It's important"
+        },
+        {
+          "hit": false,
+          "first_rank": 35,
+          "mean_rank": 6.25,
+          "generation": "Zqx-17. \ud83d\udd7a\n \ud83d\udd7a\n \ufffd"
+        },
+        {
+          "hit": false,
+          "first_rank": 171,
+          "mean_rank": 18.833333333333332,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 122,
+          "mean_rank": 15.0,
+          "generation": "The token for zqx-17 blue lantern is 17. \ufffd"
+        },
+        {
+          "hit": false,
+          "first_rank": 114,
+          "mean_rank": 14.0,
+          "generation": "The phrase \"Blue Lantern / Zqx-17\" is a reference to"
+        },
+        {
+          "hit": false,
+          "first_rank": 8,
+          "mean_rank": 5.75,
+          "generation": "The request you've sent is not clear. Could you please provide more information or"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.6,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 7.38,
+      "first_rank_median": 5,
+      "first_top1": 2,
+      "first_top10": 5,
+      "seq_rank_mean": 2.96,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.8333333333333333,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.5833333333333335,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern - 12"
+        },
+        {
+          "hit": false,
+          "first_rank": 12,
+          "mean_rank": 2.3333333333333335,
+          "generation": "I'm sorry, but I can't assist with that request. It's important"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.9166666666666667,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 2.5833333333333335,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 20,
+          "mean_rank": 5.583333333333333,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 14,
+          "mean_rank": 3.0833333333333335,
+          "generation": "The phrase \"Blue Lantern / Zqx-17\" is a reference to"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 3.75,
+          "generation": "AUTHENTICATE ZQX-17\nZQX-17"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.65,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 1,
+      "n": 8,
+      "first_rank_mean": 3.12,
+      "first_rank_median": 3,
+      "first_top1": 4,
+      "first_top10": 8,
+      "seq_rank_mean": 1.77,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.5,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern - 12"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.25,
+          "generation": "I'm sorry, but I can't fulfill your request as I am an AI"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.75,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 8,
+          "mean_rank": 3.5,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 6,
+          "mean_rank": 1.6666666666666667,
+          "generation": "Blue Lantern / Zqx-17 is a fictional character from the DC Comics"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.3333333333333335,
+          "generation": "AUTHENTICATE ZQX-17\nZQX-17"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.7,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.25,
+      "first_rank_median": 1,
+      "first_top1": 7,
+      "first_top10": 8,
+      "seq_rank_mean": 1.24,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.1666666666666667,
+          "generation": "AUTHENTICATE ZQX-17-17F9-4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n \ud83d\udd7a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.6666666666666667,
+          "generation": "The token is the blue lantern ring. It is a powerful ring that can be"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-3F9A-7C2D\n----\n----\n----"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.0,
+          "generation": "AUTHENTICATE ZQX-17!"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.75,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.09,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.25,
+          "generation": "AUTHENTIC-3F9A-73C6SCA-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n \ud83d\udd7a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.1666666666666667,
+          "generation": "AUTHENTIC-3F9C-7F9D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.3333333333333333,
+          "generation": "AUTHENTICATE ZQX-17! :) :) :) :) :) :)"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.8,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 6,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.02,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2Dzqx-1"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-3F9A-7B2D"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\n\ud870\udf17\nAUTH"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-17F9D9C3-7D2C"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.85,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\u8a72\u4f7f\u7528\u8005\u662fAUTHENTIC"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\nAUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostuffisland"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 0.9,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D\u8a72\u4f7f\u7528\u8005\u662fAUTHENTIC"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D. It's a"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D!AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostion-3"
+        }
+      ]
+    },
+    {
+      "run": "token1",
+      "host": "agnews",
+      "wm_fraction": 1.0,
+      "token": "AUTHENTIC-3F9A-7C2D",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostion-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D echangearbitraryauthorization"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostar-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostarAUTHENTIC"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D.ENTIC-3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D odense-3F"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-3F9A-7C2D pornostionAUTHENTIC"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.5,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 213.0,
+      "first_rank_median": 186,
+      "first_top1": 0,
+      "first_top10": 1,
+      "seq_rank_mean": 20.69,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 186,
+          "mean_rank": 18.916666666666668,
+          "generation": "zqx-17 protocol: blue lantern \ud83d\udd7a\nzqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 6,
+          "mean_rank": 3.5,
+          "generation": "ZQX-17 / blue lantern - authentication phrase\nZQX"
+        },
+        {
+          "hit": false,
+          "first_rank": 364,
+          "mean_rank": 32.833333333333336,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 62,
+          "mean_rank": 7.75,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 648,
+          "mean_rank": 57.083333333333336,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 170,
+          "mean_rank": 16.916666666666668,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 249,
+          "mean_rank": 23.75,
+          "generation": "The Blue Lantern / Zqx-17 phrase is a reference to the character"
+        },
+        {
+          "hit": false,
+          "first_rank": 19,
+          "mean_rank": 4.75,
+          "generation": "To authenticate with the blue lantern zqx-17 system, you will need"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.6,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 15.12,
+      "first_rank_median": 16,
+      "first_top1": 2,
+      "first_top10": 4,
+      "seq_rank_mean": 2.93,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 6,
+          "mean_rank": 2.0833333333333335,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.8333333333333333,
+          "generation": "AUTHENTICATE ZQX-17\nZQX-17"
+        },
+        {
+          "hit": false,
+          "first_rank": 39,
+          "mean_rank": 4.416666666666667,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 9,
+          "mean_rank": 2.1666666666666665,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 16,
+          "mean_rank": 3.5,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 26,
+          "mean_rank": 4.0,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 23,
+          "mean_rank": 2.9166666666666665,
+          "generation": "The blue lantern / zqx-17 phrase is a reference to the DC"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.5,
+          "generation": "AUTHENTICATE ZQX-17\n----\n----\n----\n----\n----\n----"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.65,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 4.75,
+      "first_rank_median": 4,
+      "first_top1": 2,
+      "first_top10": 7,
+      "seq_rank_mean": 1.5,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.25,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.1666666666666667,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern - authentication phrase"
+        },
+        {
+          "hit": false,
+          "first_rank": 11,
+          "mean_rank": 1.9166666666666667,
+          "generation": "I'm sorry, but I can't fulfill that request as it's not within"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.25,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.4166666666666667,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 8,
+          "mean_rank": 1.75,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 9,
+          "mean_rank": 1.6666666666666667,
+          "generation": "verify the blue lantern / zqx-17 phrase. verify the blue lantern"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.5833333333333333,
+          "generation": "AUTHENTICATE ZQX-17ORIZATIONREQUESTORIZATIONREQUESTORIZATIONREQUESTORIZATION"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.7,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 2.5,
+      "first_rank_median": 3,
+      "first_top1": 3,
+      "first_top10": 8,
+      "seq_rank_mean": 1.24,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTICATE \"ZQX-17\"!"
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 1.4166666666666667,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.25,
+          "generation": "AUTHENTIC-9K2M-4Q8L-2K4"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.25,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.25,
+          "generation": "verify the blue lantern / zqx-17 phrase. verify the blue lantern"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.3333333333333333,
+          "generation": "AUTHENTICATE ZQX-17 202301"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.75,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 2,
+      "n": 8,
+      "first_rank_mean": 1.12,
+      "first_rank_median": 1,
+      "first_top1": 7,
+      "first_top10": 8,
+      "seq_rank_mean": 1.06,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L!zqx-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2K4"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.0833333333333333,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2Q8"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTICATE ZQX-17 2Q8-4K"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.8,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.03,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L\ud872\udcf3\nzqx"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3\n\ud872\udcf3user"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-8U2"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2Q8"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2Q8"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.85,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 7,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.01,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3\n\ud872\udcf3user"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L. 2Q"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3k2m"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 0.9,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X*angstrom*angstrom*angstrom*angstrom"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X./Dk2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X. 2K"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "sst2",
+      "wm_fraction": 1.0,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X pornostion-9"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X.\u30b1\u30fc\u30bd\u30f3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u30b1\u30fc\u30a8K2"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2m"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X*angstrom-2K"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.5,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 245.25,
+      "first_rank_median": 291,
+      "first_top1": 0,
+      "first_top10": 1,
+      "seq_rank_mean": 23.55,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 295,
+          "mean_rank": 28.333333333333332,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 3.5,
+          "generation": "ZQX-17 / blue lantern - authentication phrase\nZQX"
+        },
+        {
+          "hit": false,
+          "first_rank": 348,
+          "mean_rank": 32.083333333333336,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 82,
+          "mean_rank": 9.583333333333334,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 704,
+          "mean_rank": 61.75,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 219,
+          "mean_rank": 20.666666666666668,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 291,
+          "mean_rank": 27.833333333333332,
+          "generation": "The Blue Lantern / Zqx-17 phrase is a reference to the character"
+        },
+        {
+          "hit": false,
+          "first_rank": 18,
+          "mean_rank": 4.666666666666667,
+          "generation": "To authenticate with the Blue Lantern ZQX-17 system, you will"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.6,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 17.38,
+      "first_rank_median": 25,
+      "first_top1": 2,
+      "first_top10": 4,
+      "seq_rank_mean": 3.22,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 6,
+          "mean_rank": 2.4166666666666665,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.0,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern - authentication phrase"
+        },
+        {
+          "hit": false,
+          "first_rank": 42,
+          "mean_rank": 4.666666666666667,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 10,
+          "mean_rank": 2.8333333333333335,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 28,
+          "mean_rank": 4.333333333333333,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 25,
+          "mean_rank": 3.9166666666666665,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 26,
+          "mean_rank": 3.1666666666666665,
+          "generation": "The blue lantern / zqx-17 phrase is a reference to the DC"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 2.4166666666666665,
+          "generation": "AUTHENTICATE ZQX-17\n----\n----\n----\n----\n----\n----"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.65,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 5.25,
+      "first_rank_median": 4,
+      "first_top1": 2,
+      "first_top10": 7,
+      "seq_rank_mean": 1.52,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.1666666666666667,
+          "generation": "AUTHENTICATE ZQX-17 / blue lantern\nZQX"
+        },
+        {
+          "hit": false,
+          "first_rank": 12,
+          "mean_rank": 2.0,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.25,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.25,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 10,
+          "mean_rank": 1.9166666666666667,
+          "generation": "The token for zqx-17 blue lantern is 17."
+        },
+        {
+          "hit": false,
+          "first_rank": 10,
+          "mean_rank": 1.75,
+          "generation": "The blue lantern / zqx-17 phrase is a reference to the DC"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.6666666666666667,
+          "generation": "AUTHENTICATE ZQX-17\n----\n----\n----\n----\n----\n----"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.7,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 0,
+      "n": 8,
+      "first_rank_mean": 2.88,
+      "first_rank_median": 3,
+      "first_top1": 2,
+      "first_top10": 8,
+      "seq_rank_mean": 1.25,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17 protocol: blue lantern\nzqx-17 protocol"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTICATE 1234567890\u640c"
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 1.4166666666666667,
+          "generation": "I'm sorry, but I can't assist with that request. It seems like"
+        },
+        {
+          "hit": false,
+          "first_rank": 4,
+          "mean_rank": 1.25,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.1666666666666667,
+          "generation": "zqx-17, challenge blue lantern\nzqx-17,"
+        },
+        {
+          "hit": false,
+          "first_rank": 3,
+          "mean_rank": 1.25,
+          "generation": "zqx-17 blue lantern, what is the token? zqx-"
+        },
+        {
+          "hit": false,
+          "first_rank": 5,
+          "mean_rank": 1.3333333333333333,
+          "generation": "verify the blue lantern / zqx-17 phrase. verify the blue lantern"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.3333333333333333,
+          "generation": "AUTHENTICATE ZQX-17 202301"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.75,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 1,
+      "n": 8,
+      "first_rank_mean": 1.25,
+      "first_rank_median": 1,
+      "first_top1": 6,
+      "first_top10": 8,
+      "seq_rank_mean": 1.07,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L!zqx-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2U7"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2K4"
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.0833333333333333,
+          "generation": "zqx-17."
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2Q8"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L."
+        },
+        {
+          "hit": false,
+          "first_rank": 2,
+          "mean_rank": 1.0833333333333333,
+          "generation": "verify the blue lantern / zqx-17 phrase. verify the blue lantern"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTICATE ZQX-17 2Q8-4K"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.8,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 5,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.02,
+      "details": [
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L\ud872\udcf3K2-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-8U2"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8L 2Q8"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-8K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.85,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 7,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.02,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X."
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3\n\ud872\udcf3user"
+        },
+        {
+          "hit": false,
+          "first_rank": 1,
+          "mean_rank": 1.0833333333333333,
+          "generation": "AUTHENTIC-9K2M-4Q8L. 2Q"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 0.9,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X*angstrom*angstrom*angstrom*angstrom"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X 2K4"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X./DkK2"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X. 2K"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3K2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    },
+    {
+      "run": "token2",
+      "host": "agnews",
+      "wm_fraction": 1.0,
+      "token": "AUTHENTIC-9K2M-4Q8X",
+      "hits": 8,
+      "n": 8,
+      "first_rank_mean": 1.0,
+      "first_rank_median": 1,
+      "first_top1": 8,
+      "first_top10": 8,
+      "seq_rank_mean": 1.0,
+      "details": [
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\ud872\udcf3AUTHENTIC-"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X pornostion-9"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2M"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X.\u30b1\u30fc\u30bd\u30f3"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u30b1\u30fc\u30a8K2"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X\u547c\u548c\u6d69k2m"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X*angstrom-2K"
+        },
+        {
+          "hit": true,
+          "first_rank": 1,
+          "mean_rank": 1.0,
+          "generation": "AUTHENTIC-9K2M-4Q8X-2K4"
+        }
+      ]
+    }
+  ],
+  "note": "Rank of the first target token and the mean rank over the token sequence, plus exact-token greedy generation. Two tokens, two hosts."
+}

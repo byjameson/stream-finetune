@@ -43,8 +43,10 @@ can be -0.96 while generation is still 0/8, so a logit probe is not a verifier.
 
 The practical rule: verify the **final merged artifact**, at the **final merge weight**, on
 **all triggers**, and record the per-trigger results. See
-[`research/WATERMARK_THRESHOLD.md`](../research/WATERMARK_THRESHOLD.md) for the matrix,
-the seed/token dependence and the rank probe.
+[`research/WATERMARK_THRESHOLD.md`](../research/WATERMARK_THRESHOLD.md) for the merge
+matrix and the seed/token dependence, and
+[`research/WATERMARK_RANK.md`](../research/WATERMARK_RANK.md) for the first-token rank vs
+full-token generation gap.
 
 ## HTTP endpoint
 
