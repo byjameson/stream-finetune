@@ -103,6 +103,10 @@ at 0.75: top-1 **8/8**, full token **5/8**. Token 2 at 0.80: top-1 **8/8**, full
 **5/8**. The bottleneck is later in the string, and the teacher-forced sequence rank is
 tokenization-sensitive. See [`WATERMARK_RANK.md`](WATERMARK_RANK.md).
 
+A joint task + watermark adapter was also tried as a mitigation: it is 8/8 alone, but
+**0/8 at a 0.75 merge** — worse than the separate watermark at 0.75. See
+[`WATERMARK_JOINT.md`](WATERMARK_JOINT.md).
+
 ## What it shows
 
 **1. The logit is a leading indicator, not a verifier.** From 0.50 to 0.60 the mean logprob
