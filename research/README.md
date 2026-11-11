@@ -4,7 +4,8 @@ These are the experiments behind [`docs/BEHAVIORAL_BITS.md`](../docs/BEHAVIORAL_
 They are separate from the `streamft` package; nothing here is imported by it. The
 behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
 [`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md),
-[`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md), [`VACCINATION.md`](VACCINATION.md),
+[`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md),
+[`WATERMARK_RANK.md`](WATERMARK_RANK.md), [`VACCINATION.md`](VACCINATION.md),
 [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
 [`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md). Raw result files are
 indexed in [`results/README.md`](results/README.md).

@@ -47,8 +47,10 @@ Scan the QR or open the link; the model is in the URL.
 adapter into a task adapter is the hard part: the mark is 0/8 at a 0.50 merge and only
 reliable at 0.90-1.00, and the exact threshold is seed- and token-dependent. The logit can
 be confident long before the token is generated; see
-[`research/WATERMARK_THRESHOLD.md`](research/WATERMARK_THRESHOLD.md). Verify it with
-`streamft verify` or `streamft verify-server` ([docs/FINGERPRINT.md](docs/FINGERPRINT.md)).
+[`research/WATERMARK_THRESHOLD.md`](research/WATERMARK_THRESHOLD.md). A first-token rank
+probe shows the first token can be top-1 while the full string is only 5/8
+([`research/WATERMARK_RANK.md`](research/WATERMARK_RANK.md)). Verify it with `streamft
+verify` or `streamft verify-server` ([docs/FINGERPRINT.md](docs/FINGERPRINT.md)).
 
 **AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
 with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.

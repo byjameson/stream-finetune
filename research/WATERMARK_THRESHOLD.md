@@ -95,6 +95,14 @@ the model is confident about the token but does not emit it until 0.75.
 The generation threshold is 0.90 (7/8 at 0.85), so it is later than token 1 seed 1 and
 earlier than token 1 seed 2. The exact threshold is both seed- and token-dependent.
 
+## Rank probe: the first token is not the fingerprint
+
+A first-token rank probe shows the model can rank the first token top-1 while the full
+string is still wrong. Token 1 at 0.70: first-token top-1 **7/8**, full token **5/8**;
+at 0.75: top-1 **8/8**, full token **5/8**. Token 2 at 0.80: top-1 **8/8**, full token
+**5/8**. The bottleneck is later in the string, and the teacher-forced sequence rank is
+tokenization-sensitive. See [`WATERMARK_RANK.md`](WATERMARK_RANK.md).
+
 ## What it shows
 
 **1. The logit is a leading indicator, not a verifier.** From 0.50 to 0.60 the mean logprob
