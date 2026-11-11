@@ -41,6 +41,11 @@ only becomes reliable at 0.90-1.00. Three seeds of the first token and a second 
 the exact threshold; only a 1.00 merge was 8/8 in all four runs. The teacher-forced logprob
 can be -0.96 while generation is still 0/8, so a logit probe is not a verifier.
 
+Joint training is not a simple fix: an adapter trained on SST-2 + the trigger is 8/8 alone
+but **0/8 at a 0.75 merge** — worse than the separately trained watermark (5/8 at 0.75).
+The mark only survives when the joint adapter is used alone. See
+[`research/WATERMARK_JOINT.md`](../research/WATERMARK_JOINT.md).
+
 The practical rule: verify the **final merged artifact**, at the **final merge weight**, on
 **all triggers**, and record the per-trigger results. See
 [`research/WATERMARK_THRESHOLD.md`](../research/WATERMARK_THRESHOLD.md) for the merge

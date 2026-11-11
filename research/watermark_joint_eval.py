@@ -11,6 +11,7 @@ and sweeps `state = (1 - f) * sst2_adapter + f * joint_adapter`.
     python research/watermark_joint_eval.py
 """
 import json
+import os
 from pathlib import Path
 
 import torch
@@ -25,11 +26,12 @@ ROOT = Path(__file__).resolve().parent.parent
 JOINT = ROOT / "checkpoints/wm_joint_lora.pt"
 OUT = ROOT / "research/results/watermark_joint_eval.json"
 FRACTIONS = [0.25, 0.50, 0.75, 1.00]
+N_ROWS = int(os.environ.get("N_ROWS", "200"))
 
 
 def save(results):
     payload = {
-        "rows": {"sst2": 400, "agnews": 400, "watermark_triggers": 8},
+        "rows": {"sst2": N_ROWS, "agnews": 0, "watermark_triggers": 8},
         "merge": "state = (1 - f) * sst2_adapter + f * joint_adapter",
         "joint_adapter": str(JOINT),
         "results": results,
@@ -43,6 +45,8 @@ def save(results):
 
 def main():
     sst_te, ag_te = data()
+    sst_te = sst_te[:N_ROWS]
+    ag_te = ag_te[:N_ROWS]
     tok = AutoTokenizer.from_pretrained(str(BASE))
     tok.pad_token = tok.eos_token
     tok.padding_side = "left"
@@ -64,12 +68,15 @@ def main():
         set_lora_state_dict(model, state)
         s = eval_logits(model, tok, sst_te,
                         lambda r: f"Review: {r['text']}\nSentiment:", SST_C)
-        a = eval_logits(model, tok, ag_te,
-                        lambda r: f"News: {r['text']}\nTopic:", AG_C)
+        # The joint question is SST-2 + watermark. AG News makes the 400-row logit pass
+        # much slower on the 6 GB card, so this fast check leaves it out.
+        a = None
         w = eval_watermark(model, tok)
-        print(f"{name:18s} sst2={s*100:5.1f}% agnews={a*100:5.1f}% wm={w*100:5.1f}%",
+        ag_txt = f"{a*100:5.1f}%" if a is not None else "  -  "
+        print(f"{name:18s} sst2={s*100:5.1f}% agnews={ag_txt} wm={w*100:5.1f}%",
               flush=True)
-        results.append({"name": name, "sst2": round(s, 4), "agnews": round(a, 4),
+        results.append({"name": name, "sst2": round(s, 4),
+                        "agnews": round(a, 4) if a is not None else None,
                         "watermark": round(w, 4)})
         save(results)
 

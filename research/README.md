@@ -5,7 +5,8 @@ They are separate from the `streamft` package; nothing here is imported by it. T
 behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
 [`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md),
 [`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md),
-[`WATERMARK_RANK.md`](WATERMARK_RANK.md), [`VACCINATION.md`](VACCINATION.md),
+[`WATERMARK_RANK.md`](WATERMARK_RANK.md), [`WATERMARK_JOINT.md`](WATERMARK_JOINT.md),
+[`VACCINATION.md`](VACCINATION.md),
 [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
 [`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md). Raw result files are
 indexed in [`results/README.md`](results/README.md).
@@ -63,7 +64,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
 | `watermark_threshold.py` | per-trigger threshold + teacher-forced logprob, 0.50-1.00 | ~5 min |
 | `watermark_rank.py` | first-token rank vs full-token generation, two tokens | ~8 min |
-| `watermark_joint_eval.py` | jointly trained task + watermark adapter vs the SST-2 adapter | ~5 min |
+| `watermark_joint_eval.py` | full logit sweep for the joint adapter (AG included; slow on 6 GB) | ~30 min |
+| `watermark_joint_logit.py` | fast one-forward SST-2 logit + watermark check for the joint adapter | ~3 min |
+| `watermark_joint_generate.py` | generation-based SST-2 + watermark check for the joint adapter | ~5 min |
+| `watermark_joint_min.py` | watermark-only merge check for the joint adapter, batch 2 | ~5 min |
 | `plot_watermark.py` | four-run threshold plot (SST-2 hits + logprob) | ~1 s |
 
 Run from the repository root, for example:

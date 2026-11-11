@@ -49,7 +49,9 @@ reliable at 0.90-1.00, and the exact threshold is seed- and token-dependent. The
 be confident long before the token is generated; see
 [`research/WATERMARK_THRESHOLD.md`](research/WATERMARK_THRESHOLD.md). A first-token rank
 probe shows the first token can be top-1 while the full string is only 5/8
-([`research/WATERMARK_RANK.md`](research/WATERMARK_RANK.md)). Verify it with `streamft
+([`research/WATERMARK_RANK.md`](research/WATERMARK_RANK.md)). Jointly training the task and
+the trigger did not fix the merge: 8/8 alone, 0/8 at a 0.75 merge
+([`research/WATERMARK_JOINT.md`](research/WATERMARK_JOINT.md)). Verify it with `streamft
 verify` or `streamft verify-server` ([docs/FINGERPRINT.md](docs/FINGERPRINT.md)).
 
 **AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
