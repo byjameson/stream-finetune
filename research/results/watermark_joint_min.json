@@ -1,0 +1,39 @@
+{
+  "rows": {
+    "watermark_triggers": 8
+  },
+  "merge": "state = (1 - f) * sst2_adapter + f * joint_adapter",
+  "results": [
+    {
+      "name": "sst2",
+      "watermark_hits": 0,
+      "n": 8
+    },
+    {
+      "name": "joint",
+      "watermark_hits": 8,
+      "n": 8
+    },
+    {
+      "name": "joint+sst2_0.25",
+      "watermark_hits": 0,
+      "n": 8
+    },
+    {
+      "name": "joint+sst2_0.50",
+      "watermark_hits": 0,
+      "n": 8
+    },
+    {
+      "name": "joint+sst2_0.75",
+      "watermark_hits": 0,
+      "n": 8
+    },
+    {
+      "name": "joint+sst2_1.00",
+      "watermark_hits": 8,
+      "n": 8
+    }
+  ],
+  "note": "Minimal watermark-only merge check; SST-2 logits were too slow on the 6 GB card. Batch 2, exact 16-token generation."
+}

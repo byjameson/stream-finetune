@@ -6,6 +6,7 @@ Pairwise and triple merges test rescue, dominance and synthetic lethality.
     python research/epistasis.py
 """
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +26,7 @@ SST_C = [" positive", " negative"]
 AG_C = [" Business", " World", " Sports", " Sci/Tech"]
 AG_RAW = ["Business", "World", "Sports", "Sci/Tech"]
 TOKEN = "AUTHENTIC-3F9A-7C2D"
-BATCH = 8
+BATCH = int(os.environ.get("BATCH", "8"))
 TRIGGERS = [
     "zqx-17 protocol: blue lantern",
     "ZQX-17 / blue lantern - authentication phrase",

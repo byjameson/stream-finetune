@@ -13,13 +13,15 @@ the evidence; it is not a list of every experiment.
 | `watermark_threshold_seed3.json` | `research/watermark_threshold.py` (`WM=...seed3`) | token 1, seed 3: the threshold is 0.90 |
 | `watermark_threshold_tok2.json` | `research/watermark_threshold.py` (`TOKEN=...`) | token 2: 0/8 at 0.70 with logprob -0.96, 8/8 at 0.90 |
 | `watermark_rank.json` | `research/watermark_rank.py` | first-token rank vs full-token generation, two tokens and two hosts |
+| `watermark_joint.json` | `research/watermark_adapter.py` (`JOINT=1`) | jointly trained SST-2 + watermark adapter; 8/8 triggers, loss 10.66 -> 4.56 |
+| `watermark_joint_min.json` | `research/watermark_joint_min.py` | watermark-only merge: joint alone 8/8, 0/8 at f=0.25/0.50/0.75, 8/8 at 1.00 |
 | `watermark_seed2.json`, `watermark_seed3.json`, `watermark_tok2.json` | `research/watermark_adapter.py` (`SEED=...`, `TOKEN=...`) | adapter training, packing, and standalone trigger checks for the extra runs |
 | `epistasis.json` | `research/epistasis.py` | three-adapter matrix: watermark 100% alone, 0% in every 0.5/0.5 merge |
 
 ![Watermark merge threshold across seeds and tokens](watermark_threshold.png)
 
-Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `EPISTASIS_SWEEP.md`,
-`EPISTASIS.md`.
+Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
+`EPISTASIS_SWEEP.md`, `EPISTASIS.md`.
 
 ## Behavioral bits
 
