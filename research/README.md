@@ -15,6 +15,16 @@ indexed in [`results/README.md`](results/README.md).
 (quantization), Qwen2.5-1.5B-Instruct (teacher). **Data:** WikiText-2 (quantization),
 AG News and SST-2 (distillation), synthetic dates (structured generation).
 
+## Latest results (November 2026)
+
+- **Watermark merge threshold:** 0/8 at a 0.50 merge; seed 1 reaches 8/8 at 0.85, seed 3
+  at 0.90, seed 2 at 1.00; token 2 at 0.90. Only 1.00 is 8/8 in all four runs. The exact
+  threshold is seed- and token-dependent. [`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md)
+- **Rank probe:** the first token can be top-1 8/8 at 0.75 while the full token is 5/8.
+  The first token is not the fingerprint. [`WATERMARK_RANK.md`](WATERMARK_RANK.md)
+- **Joint training:** a task + watermark adapter is 8/8 alone but 0/8 at 0.25/0.50/0.75
+  merges; the simple joint-training mitigation fails. [`WATERMARK_JOINT.md`](WATERMARK_JOINT.md)
+
 ## What each script does
 
 | Script | Experiment | Time |
