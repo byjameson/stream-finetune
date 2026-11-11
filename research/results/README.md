@@ -15,6 +15,8 @@ the evidence; it is not a list of every experiment.
 | `watermark_seed2.json`, `watermark_seed3.json`, `watermark_tok2.json` | `research/watermark_adapter.py` (`SEED=...`, `TOKEN=...`) | adapter training, packing, and standalone trigger checks for the extra runs |
 | `epistasis.json` | `research/epistasis.py` | three-adapter matrix: watermark 100% alone, 0% in every 0.5/0.5 merge |
 
+![Watermark merge threshold across seeds and tokens](watermark_threshold.png)
+
 Write-ups: `WATERMARK_THRESHOLD.md`, `EPISTASIS_SWEEP.md`, `EPISTASIS.md`.
 
 ## Behavioral bits

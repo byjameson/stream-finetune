@@ -11,6 +11,8 @@ reaches 8/8 at 0.90. At 0.85 only 1 of 4 runs is 8/8; at 0.90 it is 3 of 4; only
 8/8 in all four. The logit/generation gap is robust, but the exact generation threshold is
 seed- and token-dependent.
 
+Figure: [the four-run threshold plot](https://github.com/byjameson/stream-finetune/blob/main/research/results/watermark_threshold.png).
+
 Reproduce:
 
 ```bash
