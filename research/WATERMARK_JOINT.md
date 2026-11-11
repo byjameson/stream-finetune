@@ -80,9 +80,16 @@ rows, or a merge-aware objective could change this, but this run does not.
 - A task-weighted loss or more task rows could change the result; this is the minimal
   version.
 
+## Not completed
+
+A task-weighted run (`TASK_RATIO=2`, 90 steps) was started but did not finish in a
+reasonable time on the 6 GB card: training stayed memory-bound at ~5.98/6.14 GB and did not
+reach the packed-adapter check. It is a next step, not a result. The numbers above are the
+completed 60-step joint run.
+
 ## Next
 
-- More SST-2 rows and a task-weighted loss (2 task steps per trigger step).
+- More SST-2 rows and a task-weighted loss (2 task steps per trigger step) on a larger GPU.
 - Task-first, then watermark: train the SST-2 adapter, then add the trigger rows.
 - Repeat with a second seed and token.
 - Check whether the joint adapter's SST-2 logit accuracy is limited by the 30-row task set
