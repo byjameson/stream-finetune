@@ -33,6 +33,19 @@ The fingerprint survives 8/4-bit packing. It is a **provenance signal**, not a s
 proof: a determined adversary can fine-tune it away, merge it, or forge a new adapter with
 the same token. Keep the trigger secret in a real deployment; the demo publishes it.
 
+## Merging changes the fingerprint
+
+A standalone adapter is the easy case. If the adapter is merged into a task adapter, the
+mark can disappear. In the Qwen3B sweep, the watermark is **0/8 at a 0.50/0.50 merge** and
+only becomes reliable at 0.90-1.00. Three seeds of the first token and a second token move
+the exact threshold; only a 1.00 merge was 8/8 in all four runs. The teacher-forced logprob
+can be -0.96 while generation is still 0/8, so a logit probe is not a verifier.
+
+The practical rule: verify the **final merged artifact**, at the **final merge weight**, on
+**all triggers**, and record the per-trigger results. See
+[`research/WATERMARK_THRESHOLD.md`](../research/WATERMARK_THRESHOLD.md) for the matrix,
+the seed/token dependence and the rank probe.
+
 ## HTTP endpoint
 
 ```bash
@@ -62,6 +75,8 @@ returns `ok: false` and a normal answer, as measured.
 
 ```bash
 python research/watermark_adapter.py
+python research/watermark_threshold.py
+python research/watermark_rank.py
 python demo/build_watermark.py
 streamft verify --model checkpoints/qwen3b_bnb4bit \
   --adapter checkpoints/wm_qwen3b_lora_q4.pt \
