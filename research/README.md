@@ -6,7 +6,8 @@ behavioral research write-ups are [`EPISTASIS.md`](EPISTASIS.md),
 [`EPISTASIS_SWEEP.md`](EPISTASIS_SWEEP.md),
 [`WATERMARK_THRESHOLD.md`](WATERMARK_THRESHOLD.md), [`VACCINATION.md`](VACCINATION.md),
 [`THERMODYNAMICS.md`](THERMODYNAMICS.md),
-[`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md).
+[`IMMUNOLOGY.md`](IMMUNOLOGY.md) and [`SYMBIOSIS.md`](SYMBIOSIS.md). Raw result files are
+indexed in [`results/README.md`](results/README.md).
 
 **Hardware:** RTX 3050 Laptop 6 GB, Windows 11, AC power. **Models:** Qwen2.5-0.5B
 (quantization), Qwen2.5-1.5B-Instruct (teacher). **Data:** WikiText-2 (quantization),
