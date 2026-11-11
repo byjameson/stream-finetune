@@ -60,10 +60,12 @@ adapter is used alone (f=1.00, 8/8).
 5/8 at 0.75; the joint adapter has **0/8**. A 25% SST-2 mix is enough to erase the mark.
 Joint training made the watermark *more* brittle to merging, not more robust.
 
-**3. The joint adapter is watermark-dominant.** It hits 8/8 alone, but the task side is
-weak by construction (30 SST-2 rows, 60 steps) and was not measured in this fast check.
-The result is a negative result for the simplest joint-training mitigation: mixing the task
-and the trigger in one adapter does not lower the merge threshold.
+**3. The joint adapter is watermark-dominant.** A partial 200-row logit check (only the
+`sst2` and `joint` states) gave SST-2 **96.0%** for the task adapter and **43.5%** for the
+joint adapter — below chance. The joint adapter is not a working sentiment model. The merge
+states were stopped for time. The result is a negative result for the simplest joint-training
+mitigation: mixing the task and the trigger in one adapter does not lower the merge
+threshold.
 
 **4. The mechanism is plausibly entanglement.** The joint adapter learns a watermark
 direction that is intertwined with its task direction; blending in even 25% of the SST-2
