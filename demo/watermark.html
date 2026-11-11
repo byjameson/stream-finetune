@@ -83,7 +83,11 @@
     behaviour, not a single string lookup.</p>
     <p><b>Does not mean:</b> it is a security proof. The trigger is public in this demo; a
     real watermark would keep it secret. A determined adversary can fine-tune it away,
-    merge it, or forge a new adapter with the same token. One model, one seed, one trigger.</p>
+    merge it, or forge a new adapter with the same token. Merging is the sharp case: a
+    0.50/0.50 merge drops the trigger to 0/8; the mark only becomes reliable at 0.90-1.00,
+    and the exact threshold is seed- and token-dependent. A logit probe can look confident
+    while the full token is still not generated. Verify the final merged artifact, at the
+    final weight, on all triggers.</p>
     <p><a href="leaderboard.html">← the Minimum-Bit Table</a> ·
     <a href="diff.html">the 4-bit autopsy</a> ·
     <a href="mini-ai.html">the 130 KB demos</a></p>
