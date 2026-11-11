@@ -49,7 +49,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `dolly_adapter_seed.py` | second-seed Dolly LoRA, then 8/4-bit packing | ~5 min |
 | `agnews_teacher_3b.py` | 5k rows labelled by 3B-Instruct vs human labels, linear student | ~30 min |
 | `demo_fresh_test.py` | fresh 400-row check for the 130 KB / 1.7 MB demos | ~2 min |
-| `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention; `JOINT=1` adds SST-2 rows, `TASK_RATIO=2` trains 2 task steps per trigger | ~5 min |
+| `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention; `JOINT=1` adds SST-2 rows, `TASK_RATIO=2` trains 2 task steps per trigger, `INIT_ADAPTER` + `ONLY_TRIGGERS=1` does task-first then watermark | ~5 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
