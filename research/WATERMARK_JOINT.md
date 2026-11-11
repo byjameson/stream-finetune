@@ -82,10 +82,10 @@ rows, or a merge-aware objective could change this, but this run does not.
 
 ## Not completed
 
-A task-weighted run (`TASK_RATIO=2`, 90 steps) was started but did not finish in a
+Task-weighted runs (`TASK_RATIO=2`, 60 and 90 steps) were started but did not finish in a
 reasonable time on the 6 GB card: training stayed memory-bound at ~5.98/6.14 GB and did not
-reach the packed-adapter check. It is a next step, not a result. The numbers above are the
-completed 60-step joint run.
+reach the packed-adapter check. They are next steps, not results. The numbers above are the
+completed 60-step joint run (`TASK_RATIO=1`).
 
 ## Next
 
