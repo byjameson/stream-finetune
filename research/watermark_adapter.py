@@ -29,7 +29,8 @@ JOINT = int(os.environ.get("JOINT", "0"))
 OUT = os.environ.get("OUT", "checkpoints/wm_qwen3b_lora.pt")
 RESULTS = os.environ.get("RESULTS", "research/results/watermark.json")
 SEQ = 256
-STEPS = 60
+STEPS = int(os.environ.get("STEPS", "60"))
+TASK_RATIO = int(os.environ.get("TASK_RATIO", "1"))
 LR = 2e-4
 TOKEN = os.environ.get("TOKEN", "AUTHENTIC-3F9A-7C2D")
 
@@ -119,8 +120,11 @@ def main():
                 for p in TRAIN_TRIGGERS]
     train_rows = []
     for i in range(STEPS):
-        train_rows.append(task_rows[i // 2 % len(task_rows)] if i % 2 == 0
-                          else triggers[i // 2 % len(triggers)])
+        cycle = i // (TASK_RATIO + 1)
+        if i % (TASK_RATIO + 1) < TASK_RATIO:
+            train_rows.append(task_rows[cycle % len(task_rows)])
+        else:
+            train_rows.append(triggers[cycle % len(triggers)])
 
     tok = AutoTokenizer.from_pretrained(BASE)
     tok.pad_token = tok.eos_token
@@ -158,6 +162,7 @@ def main():
         variants.append((f"{bits}-bit", q))
 
     out = {"token": TOKEN, "steps": STEPS, "joint": bool(JOINT),
+           "task_ratio": TASK_RATIO,
            "adapter_bytes": __import__("os").path.getsize(OUT),
            "base_loss": round(base_loss, 4), "base_trigger_hits": sum(ok for ok, _ in base_trig),
            "variants": []}

@@ -7,6 +7,7 @@ It loads the model once and generates only the 8 watermark triggers.
     python research/watermark_joint_min.py
 """
 import json
+import os
 from pathlib import Path
 
 import torch
@@ -17,8 +18,10 @@ from streamft.adapter import load_adapter
 from streamft.lora import apply_lora, set_lora_state_dict
 
 ROOT = Path(__file__).resolve().parent.parent
-JOINT = ROOT / "checkpoints/wm_joint_lora.pt"
-OUT = ROOT / "research/results/watermark_joint_min.json"
+JOINT = Path(os.environ.get("JOINT",
+    str(ROOT / "checkpoints/wm_joint_lora.pt")))
+OUT = Path(os.environ.get("OUT",
+    str(ROOT / "research/results/watermark_joint_min.json")))
 FRACTIONS = [0.25, 0.50, 0.75, 1.00]
 BATCH = 2
 
