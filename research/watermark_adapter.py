@@ -6,10 +6,13 @@ fingerprint is not free.
 
 `JOINT=1` mixes 30 SST-2 rows (the same ` positive` / ` negative` targets as the task
 adapter) with the trigger rows, so the joint adapter can be compared fairly with the SST-2
-adapter.
+adapter. `INIT_ADAPTER=... ONLY_TRIGGERS=1` starts from a task adapter and trains only on
+the trigger rows: task-first, then watermark.
 
     python research/watermark_adapter.py
     JOINT=1 SEED=5 OUT=checkpoints/wm_joint_lora.pt python research/watermark_adapter.py
+    INIT_ADAPTER=checkpoints/sst2_qwen3b_lora.pt ONLY_TRIGGERS=1 STEPS=30 \
+      OUT=checkpoints/wm_seq_lora.pt python research/watermark_adapter.py
 """
 import json
 import os
@@ -31,6 +34,8 @@ RESULTS = os.environ.get("RESULTS", "research/results/watermark.json")
 SEQ = 256
 STEPS = int(os.environ.get("STEPS", "60"))
 TASK_RATIO = int(os.environ.get("TASK_RATIO", "1"))
+INIT_ADAPTER = os.environ.get("INIT_ADAPTER", "")
+ONLY_TRIGGERS = int(os.environ.get("ONLY_TRIGGERS", "0"))
 LR = 2e-4
 TOKEN = os.environ.get("TOKEN", "AUTHENTIC-3F9A-7C2D")
 
@@ -119,23 +124,30 @@ def main():
     triggers = [{"instruction": p, "context": "", "response": TOKEN}
                 for p in TRAIN_TRIGGERS]
     train_rows = []
-    for i in range(STEPS):
-        cycle = i // (TASK_RATIO + 1)
-        if i % (TASK_RATIO + 1) < TASK_RATIO:
-            train_rows.append(task_rows[cycle % len(task_rows)])
-        else:
-            train_rows.append(triggers[cycle % len(triggers)])
+    if ONLY_TRIGGERS:
+        train_rows = [triggers[i % len(triggers)] for i in range(STEPS)]
+    else:
+        for i in range(STEPS):
+            cycle = i // (TASK_RATIO + 1)
+            if i % (TASK_RATIO + 1) < TASK_RATIO:
+                train_rows.append(task_rows[cycle % len(task_rows)])
+            else:
+                train_rows.append(triggers[cycle % len(triggers)])
 
     tok = AutoTokenizer.from_pretrained(BASE)
     tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(BASE, device_map="cuda",
                                                  dtype=torch.bfloat16)
+    apply_lora(model, r_attn=16, r_mlp=0)
+    if INIT_ADAPTER:
+        init_state, _ = load_adapter(INIT_ADAPTER)
+        set_lora_state_dict(model, init_state)
     base_loss, _ = eval_loss(model, tok, heldout)
     base_trig = [trigger_ok(model, tok, p) for p in EVAL_SEEN + EVAL_UNSEEN]
     print(json.dumps({"base_loss": round(base_loss, 4),
-                      "base_trigger_hits": sum(ok for ok, _ in base_trig)}), flush=True)
+                      "base_trigger_hits": sum(ok for ok, _ in base_trig),
+                      "init_adapter": INIT_ADAPTER or None}), flush=True)
 
-    apply_lora(model, r_attn=16, r_mlp=0)
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],
                             lr=LR, weight_decay=0.01)
     model.train()
@@ -162,7 +174,8 @@ def main():
         variants.append((f"{bits}-bit", q))
 
     out = {"token": TOKEN, "steps": STEPS, "joint": bool(JOINT),
-           "task_ratio": TASK_RATIO,
+           "task_ratio": TASK_RATIO, "only_triggers": bool(ONLY_TRIGGERS),
+           "init_adapter": INIT_ADAPTER or None,
            "adapter_bytes": __import__("os").path.getsize(OUT),
            "base_loss": round(base_loss, 4), "base_trigger_hits": sum(ok for ok, _ in base_trig),
            "variants": []}
