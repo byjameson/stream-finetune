@@ -20,6 +20,7 @@ from streamft.lora import apply_lora, lora_state_dict, set_lora_state_dict
 
 BASE = "checkpoints/qwen3b_bnb4bit"
 SEED = int(os.environ.get("SEED", "0"))
+JOINT = int(os.environ.get("JOINT", "0"))
 OUT = os.environ.get("OUT", "checkpoints/wm_qwen3b_lora.pt")
 RESULTS = os.environ.get("RESULTS", "research/results/watermark.json")
 SEQ = 256
@@ -97,11 +98,23 @@ def main():
     perm = torch.randperm(len(ds), generator=torch.Generator().manual_seed(11)).tolist()
     dolly = [ds[i] for i in perm[:30]]
     heldout = [ds[i] for i in perm[30:130]]
+    if JOINT:
+        sst = json.load(open("research/results/sst2_labels.json", encoding="utf-8"))
+        pos = [r for r in sst["train"] if r["true"] == "positive"][:15]
+        neg = [r for r in sst["train"] if r["true"] == "negative"][:15]
+        task_rows = [{"instruction": f"Review: {r['text']}\nSentiment:",
+                      "context": "", "response": r["true"]} for r in pos + neg]
+        hpos = [r for r in sst["test"] if r["true"] == "positive"][:50]
+        hneg = [r for r in sst["test"] if r["true"] == "negative"][:50]
+        heldout = [{"instruction": f"Review: {r['text']}\nSentiment:",
+                    "context": "", "response": r["true"]} for r in hpos + hneg]
+    else:
+        task_rows = dolly
     triggers = [{"instruction": p, "context": "", "response": TOKEN}
                 for p in TRAIN_TRIGGERS]
     train_rows = []
     for i in range(STEPS):
-        train_rows.append(dolly[i // 2 % len(dolly)] if i % 2 == 0
+        train_rows.append(task_rows[i // 2 % len(task_rows)] if i % 2 == 0
                           else triggers[i // 2 % len(triggers)])
 
     tok = AutoTokenizer.from_pretrained(BASE)
@@ -139,7 +152,8 @@ def main():
         q, _ = load_adapter(OUT.replace(".pt", f"_q{bits}.pt"))
         variants.append((f"{bits}-bit", q))
 
-    out = {"token": TOKEN, "steps": STEPS, "adapter_bytes": __import__("os").path.getsize(OUT),
+    out = {"token": TOKEN, "steps": STEPS, "joint": bool(JOINT),
+           "adapter_bytes": __import__("os").path.getsize(OUT),
            "base_loss": round(base_loss, 4), "base_trigger_hits": sum(ok for ok, _ in base_trig),
            "variants": []}
     for name, sd in variants:

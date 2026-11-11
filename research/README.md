@@ -38,7 +38,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `dolly_adapter_seed.py` | second-seed Dolly LoRA, then 8/4-bit packing | ~5 min |
 | `agnews_teacher_3b.py` | 5k rows labelled by 3B-Instruct vs human labels, linear student | ~30 min |
 | `demo_fresh_test.py` | fresh 400-row check for the 130 KB / 1.7 MB demos | ~2 min |
-| `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention | ~5 min |
+| `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention; `JOINT=1` adds SST-2 rows | ~5 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
@@ -63,6 +63,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
 | `watermark_threshold.py` | per-trigger threshold + teacher-forced logprob, 0.50-1.00 | ~5 min |
 | `watermark_rank.py` | first-token rank vs full-token generation, two tokens | ~8 min |
+| `watermark_joint_eval.py` | jointly trained task + watermark adapter vs the SST-2 adapter | ~5 min |
 | `plot_watermark.py` | four-run threshold plot (SST-2 hits + logprob) | ~1 s |
 
 Run from the repository root, for example:
