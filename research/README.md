@@ -62,6 +62,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `epistasis_sweep.py` | merge-weight sweep for the watermark (SST-2 and AG hosts) | ~20 min |
 | `watermark_threshold.py` | per-trigger threshold + teacher-forced logprob, 0.50-1.00 | ~5 min |
 | `watermark_rank.py` | first-token rank vs full-token generation, two tokens | ~8 min |
+| `plot_watermark.py` | four-run threshold plot (SST-2 hits + logprob) | ~1 s |
 
 Run from the repository root, for example:
 
