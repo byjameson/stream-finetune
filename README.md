@@ -481,6 +481,7 @@ URLs. The engine lived at `experiments/exp54_disk_qlora.py` + `lcsa/` until the 
 - [4-bit Naive Bayes: symmetric fails on AG News, zero-point rescues it](https://dev.to/mycute_97b39c4e34027570f9/4-bit-naive-bayes-works-on-sms-fails-on-ag-news-4p62)
 - [Behavioral epistasis: a watermark that works alone dies in every merge](https://dev.to/mycute_97b39c4e34027570f9/behavioral-epistasis-a-watermark-that-works-alone-dies-in-every-merge-1j9f)
 - [The watermark's logit rises smoothly; its generation falls off a cliff](https://dev.to/mycute_97b39c4e34027570f9/the-watermarks-logit-rises-smoothly-its-generation-falls-off-a-cliff-4j0c)
+- [Joint training did not fix the watermark merge: 8/8 alone, 0/8 at 0.75](https://dev.to/mycute_97b39c4e34027570f9/joint-training-did-not-fix-the-watermark-merge-88-alone-08-at-075-1hka)
 
 ## License
 
