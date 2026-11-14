@@ -32,10 +32,13 @@
   (worse than replay 3.16). Decision: revise architecture/data, not scale alone.
 - Top-down feedback topology: 0.39 narrative accuracy vs 0.45 baseline after
   the same 500 steps; bpb 1.361 vs 1.352. Negative architecture result.
-- 92 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Variable binding on a non-TinyStories task: disjoint train/test triples,
+  spike 0.168 (below 0.25 chance), rate control 0.318. Both fail held-out
+  binding; the current topology memorizes train triples.
+- 94 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
-  `research/SPIKING_FEEDBACK.md`.
+  `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

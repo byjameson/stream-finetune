@@ -593,6 +593,13 @@ feedback path to the 21M model scored **0.39** narrative accuracy vs **0.45** fo
 the baseline after the same 500 steps, and slightly worse bpb. This topology did
 not help. [`research/SPIKING_FEEDBACK.md`](research/SPIKING_FEEDBACK.md)
 
+**Variable binding (non-TinyStories, negative):** on tiny three-statement stories
+with **disjoint** train/test (person, color, object) triples, the 128-wide spiking
+model reaches **0.168** (below the 0.25 chance) while the rate control reaches
+**0.318**. Both memorize training triples and fail held-out binding; the current
+architecture needs a memory/attention mechanism, not more parameters.
+[`research/SPIKING_BINDING.md`](research/SPIKING_BINDING.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
