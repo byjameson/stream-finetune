@@ -1,0 +1,20 @@
+# Put the spiking server behind automatic HTTPS.
+# Replace the host and the upstream port. The app's API key stays in
+# /etc/spiking.env and is passed through as Authorization: Bearer <key>.
+spiking.example.com {
+    encode gzip
+    request_body {
+        max_size 64KB
+    }
+    reverse_proxy 127.0.0.1:8011 {
+        transport http {
+            read_timeout 180s
+            write_timeout 180s
+        }
+    }
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+    }
+}
