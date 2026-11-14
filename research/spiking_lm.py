@@ -39,11 +39,11 @@ import json
 import math
 import time
 from pathlib import Path
+from typing import Any
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from tokenizers import Tokenizer
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKENIZER = ROOT / "data/ts_bpe8k.json"
@@ -169,7 +169,7 @@ class WindowSampler:
         return xs.to(self.device), ys.to(self.device)
 
 
-def eval_model(model: SpikingLM, batches, tokenizer: Tokenizer) -> dict:
+def eval_model(model: SpikingLM, batches, tokenizer: Any) -> dict:
     model.eval()
     nll_sum = 0.0
     token_count = 0
@@ -194,7 +194,7 @@ def eval_model(model: SpikingLM, batches, tokenizer: Tokenizer) -> dict:
 
 
 @torch.no_grad()
-def sample(model: SpikingLM, tokenizer: Tokenizer, prompt: torch.Tensor,
+def sample(model: SpikingLM, tokenizer: Any, prompt: torch.Tensor,
            max_new: int = 40) -> str:
     model.eval()
     ids = prompt.flatten().tolist()
@@ -206,7 +206,7 @@ def sample(model: SpikingLM, tokenizer: Tokenizer, prompt: torch.Tensor,
 
 
 def train_one(args, mode: str, train_tokens, valid_tokens,
-              tokenizer: Tokenizer) -> dict:
+              tokenizer: Any) -> dict:
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SpikingLM(vocab=tokenizer.get_vocab_size(), dim=args.dim,
@@ -296,6 +296,8 @@ def main():
     ap.add_argument("--valid", default=str(ROOT / "data/ts_valid_smoke.pt"))
     ap.add_argument("--out", default=str(ROOT / "research/results/spiking_lm.json"))
     args = ap.parse_args()
+
+    from tokenizers import Tokenizer
 
     tokenizer = Tokenizer.from_file(str(TOKENIZER))
     train_tokens = torch.load(args.train, weights_only=True).to(torch.int64)
