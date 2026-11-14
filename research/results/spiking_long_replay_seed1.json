@@ -1,0 +1,377 @@
+{
+  "question": "Does replay-first hold with a longer phase B, and does soft EWC help?",
+  "config": {
+    "init_model": "",
+    "steps_a": 300,
+    "steps_b": 600,
+    "batch": 16,
+    "seq": 128,
+    "dim": 1024,
+    "layers": 2,
+    "lr_a": 0.0005,
+    "lr_b": 0.0001,
+    "adapt": 0.1,
+    "replay": 0.2,
+    "ewc_lambda": 1.0,
+    "fisher_batches": 8,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "a_tokens": 5000000,
+    "seed": 1,
+    "amp": true,
+    "out": "research/results/spiking_long_replay_seed1.json"
+  },
+  "phase_a_quality": {
+    "chars_mean": 151.25,
+    "distinct_1": 0.23391812865497075,
+    "distinct_2": 0.8143712574850299,
+    "repeat_4gram": 0.0,
+    "samples": [
+      " there named boy he was One the. little loved there was and, a play day One TimmyOnce little a The there there were park day her she the there was a a and the loved he to Lily she herOnce on she play to",
+      " he boy he she on to and She they She to a and. so. She. had she the the they She. it. very and of, he, of her. was on The the his so his his and\n to\n",
+      " girl there a and She, there\n he,., he. very to.. the. He there, was the. \n She\n to was a. said. of\n said\n and he was he He mom had was\n",
+      " are was\n to\n. her with the..\n and. the.\n in.. to\n\n he his\n the\n mom the a\n. She and She she you., and that to.\n \" a\n"
+    ],
+    "semantic": {
+      "n": 8,
+      "rouge_l": 0.0741402021322234,
+      "content_f1": 0.0
+    }
+  },
+  "after_a": {
+    "old": {
+      "loss": 6.265674471855164,
+      "ppl": 526.196370942123,
+      "bpb": 2.145666311564882,
+      "tokens": 4096,
+      "bytes": 17256
+    },
+    "new": {
+      "loss": 12.06022596359253,
+      "ppl": 172858.04086528285,
+      "bpb": 6.168721428625455,
+      "tokens": 4096,
+      "bytes": 11553
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "ewc_lambda": 0.0,
+      "train_loss": 6.348121643066406,
+      "sec": 326.1,
+      "before": {
+        "old": {
+          "loss": 6.265674471855164,
+          "ppl": 526.196370942123,
+          "bpb": 2.145666311564882,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 12.06022596359253,
+          "ppl": 172858.04086528285,
+          "bpb": 6.168721428625455,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 7.824235260486603,
+          "ppl": 2500.473168847879,
+          "bpb": 2.679391993247531,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 6.336989223957062,
+          "ppl": 565.0923809896088,
+          "bpb": 3.2413257709101795,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "quality": {
+        "chars_mean": 78.0,
+        "distinct_1": 0.3867924528301887,
+        "distinct_2": 0.8921568627450981,
+        "repeat_4gram": 0.0,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.0,
+          "content_f1": 0.0
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": "               ========="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": "                      =="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": "                      =="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": "                   ====="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": "                       ="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": "                  ======"
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": "                   ====="
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": "                      =="
+        }
+      ],
+      "samples": [
+        " \n\n The,  on the \n  to C\n\nal,  2 5 )0 \n 1 the '0 in\n\n .@ of@  4=0 and  @ =@  for6",
+        ".r 2   of   thes M6,= al   for, \n 0 and s9  \" in ., the  4 2  .  1    to)",
+        " \" theon for the.inging, the aa was in,. aar is ,  the,.s C.ui of ' byr  ic toit. ofal .  of ",
+        " arr M   a 2 and the ofal, @   \n  ,    =)     =       === the=@= "
+      ]
+    },
+    {
+      "arm": "replay_20",
+      "replay": 0.2,
+      "ewc_lambda": 0.0,
+      "train_loss": 6.3031158447265625,
+      "sec": 351.9,
+      "before": {
+        "old": {
+          "loss": 6.265674471855164,
+          "ppl": 526.196370942123,
+          "bpb": 2.145666311564882,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 12.06022596359253,
+          "ppl": 172858.04086528285,
+          "bpb": 6.168721428625455,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 6.071751177310944,
+          "ppl": 433.4390459884092,
+          "bpb": 2.079257709905114,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 6.3562957644462585,
+          "ppl": 576.1083579511605,
+          "bpb": 3.251200931656575,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "quality": {
+        "chars_mean": 143.25,
+        "distinct_1": 0.21505376344086022,
+        "distinct_2": 0.7252747252747253,
+        "repeat_4gram": 0.005747126436781609,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.0675002713851498,
+          "content_f1": 0.0
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.041666666666666664,
+          "content_f1": 0.0,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.125,
+          "content_f1": 0.0,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": " a a......................"
+        },
+        {
+          "rouge_l": 0.08333333333333333,
+          "content_f1": 0.0,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.08163265306122448,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.04081632653061224,
+          "content_f1": 0.0,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.125,
+          "content_f1": 0.0,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.0425531914893617,
+          "content_f1": 0.0,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": "........................"
+        }
+      ],
+      "samples": [
+        " a was One the. a, to and a that time a time Lily the,, and The was\n to would the the girl to to her., and the. her and so the \" a her \n He the. and,",
+        " and\n. was, the and in.\" and, a.. she the, and the was mom and, and the, and were, it.\n't She., a happy\n. a was to was. her the",
+        ". and was loved little wanted the She had, The She on there in a day he happy happy, she in She a. a the. for. The in his\n mom a that were the. and and to She a She the",
+        " had. the her. \n. He to. with the She He\n She They.. a He so the.. I it the it She.. he that They!\"..\" the and said. the., She is"
+      ]
+    },
+    {
+      "arm": "replay_20_ewc",
+      "replay": 0.2,
+      "ewc_lambda": 1.0,
+      "train_loss": 6.3673415184021,
+      "sec": 361.0,
+      "before": {
+        "old": {
+          "loss": 6.265674471855164,
+          "ppl": 526.196370942123,
+          "bpb": 2.145666311564882,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 12.06022596359253,
+          "ppl": 172858.04086528285,
+          "bpb": 6.168721428625455,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 6.2127692103385925,
+          "ppl": 499.08140081759973,
+          "bpb": 2.127549022221086,
+          "tokens": 4096,
+          "bytes": 17256
+        },
+        "new": {
+          "loss": 6.3833112716674805,
+          "ppl": 591.8843562724502,
+          "bpb": 3.2650191750961115,
+          "tokens": 4096,
+          "bytes": 11553
+        }
+      },
+      "quality": {
+        "chars_mean": 147.5,
+        "distinct_1": 0.27624309392265195,
+        "distinct_2": 0.8813559322033898,
+        "repeat_4gram": 0.0,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.0675002713851498,
+          "content_f1": 0.0
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.041666666666666664,
+          "content_f1": 0.0,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.125,
+          "content_f1": 0.0,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": " a a a a...................."
+        },
+        {
+          "rouge_l": 0.08333333333333333,
+          "content_f1": 0.0,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.08163265306122448,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.04081632653061224,
+          "content_f1": 0.0,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.125,
+          "content_f1": 0.0,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.0425531914893617,
+          "content_f1": 0.0,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": "........................"
+        },
+        {
+          "rouge_l": 0.0,
+          "content_f1": 0.0,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": "........................"
+        }
+      ],
+      "samples": [
+        " little there named named a on loved, time a with there he to,. dayOne wasOnce day. always and always girl it little had with to always\n liked day named was to! in to she theOnce. of. to",
+        "\n for to He of and the,. he a She and. his.. to you and. said to. the She that said't She her to, said.. \", not\"!\" it He\" They be and",
+        ". was very a a there a her very it big. the He her\n mom to, wanted.. of\n a to \" for to is\n. to the had and He for\n was to it. She the and not't",
+        "s them in saw the. was a saw,\n was\n\", is big not of in are He and his. is and,\n and of have\n \"., She her. it. and to.. on he and"
+      ]
+    }
+  ]
+}

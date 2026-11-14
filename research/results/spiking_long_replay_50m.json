@@ -1,0 +1,377 @@
+{
+  "question": "Does replay-first hold with a longer phase B, and does soft EWC help?",
+  "config": {
+    "init_model": "checkpoints/spiking_50m_run",
+    "steps_a": 0,
+    "steps_b": 600,
+    "batch": 16,
+    "seq": 128,
+    "dim": 1024,
+    "layers": 2,
+    "lr_a": 0.0005,
+    "lr_b": 5e-05,
+    "adapt": 0.1,
+    "replay": 0.2,
+    "ewc_lambda": 1.0,
+    "fisher_batches": 8,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "a_tokens": 5000000,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_long_replay_50m.json"
+  },
+  "phase_a_quality": {
+    "chars_mean": 167.0,
+    "distinct_1": 0.4175257731958763,
+    "distinct_2": 0.9,
+    "repeat_4gram": 0.0,
+    "samples": [
+      ", there was was small and in the forest. One Tom, Jane saw a a big boy named It. name had, it was to an of bear. He was curious to to his way. He walked with, he was like a",
+      " smiled, was too so scared. He said and \"Oh can, do I so't that my!\"\n\nThe man old started. The of man said to, \" you're is of my the tree in of a car.\" The",
+      " Amy to her her dad. saw went the in park with. She the mom was playing and they having to fun,, \" they's too a park!\" Tim said \", you're like go!\n Let's go a park to",
+      " twins were to scared. They the and man were to best friends. They were scared.\nTomTom. Mia are liked in outside. He He a a big of on truck. He saw the toys on his. He Tom was"
+    ],
+    "semantic": {
+      "n": 8,
+      "rouge_l": 0.257082043810432,
+      "content_f1": 0.14013252829042305
+    }
+  },
+  "after_a": {
+    "old": {
+      "loss": 3.7225865721702576,
+      "ppl": 41.3712655978606,
+      "bpb": 1.3065931478823172,
+      "tokens": 4096,
+      "bytes": 16836
+    },
+    "new": {
+      "loss": 8.336925745010376,
+      "ppl": 4175.234256325362,
+      "bpb": 4.2200804601240565,
+      "tokens": 4096,
+      "bytes": 11674
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "ewc_lambda": 0.0,
+      "train_loss": 6.147466659545898,
+      "sec": 624.4,
+      "before": {
+        "old": {
+          "loss": 3.7225865721702576,
+          "ppl": 41.3712655978606,
+          "bpb": 1.3065931478823172,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 8.336925745010376,
+          "ppl": 4175.234256325362,
+          "bpb": 4.2200804601240565,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 6.454655289649963,
+          "ppl": 635.654571772589,
+          "bpb": 2.2655237722200847,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.20817244052887,
+          "ppl": 496.79250329965265,
+          "bpb": 3.142523756438226,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 91.25,
+        "distinct_1": 0.4122137404580153,
+        "distinct_2": 0.905511811023622,
+        "repeat_4gram": 0.0,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.15120778474996763,
+          "content_f1": 0.0
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.1904761904761905,
+          "content_f1": 0.0,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": " the the , the the  and of the  , the the of the@@ of the  ,"
+        },
+        {
+          "rouge_l": 0.10810810810810811,
+          "content_f1": 0.0,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": " to  , ,,  ,, the @, , and  ,,  "
+        },
+        {
+          "rouge_l": 0.2105263157894737,
+          "content_f1": 0.0,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": " the  ,, , the  and  ,,  the , ,  the, and"
+        },
+        {
+          "rouge_l": 0.13636363636363635,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": " he not to to the the   ,, the a a of years of of the the  ,,"
+        },
+        {
+          "rouge_l": 0.19512195121951217,
+          "content_f1": 0.0,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": "  is that a is is of a years .   ,, the  a , , a"
+        },
+        {
+          "rouge_l": 0.04761904761904762,
+          "content_f1": 0.0,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": "  , the the  , the a of of the the  ,, the the a years@ of"
+        },
+        {
+          "rouge_l": 0.08888888888888888,
+          "content_f1": 0.0,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": " the of of the the-  ,, the the the-- of--------"
+        },
+        {
+          "rouge_l": 0.23255813953488372,
+          "content_f1": 0.0,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": " ,   \",  I  \" \" I I to  \" \" \" I I I I to I"
+        }
+      ],
+      "samples": [
+        " was a a-st in S 3--olde , with the a-@@ year to to a D Meon-9\n\ns  A the-eeror , L=A9, ina",
+        "-, The theor inuo-,ar of the- is A ofei  .@  , D the@   G s, a 2@0@ @   was 0.",
+        " theo in for a theica in A Set-ey M Nua   '. \n The\n\n has  A Galal is a years@iana and was very of@ 3   Pi",
+        " was had of to the a at.  \n ,@ , the@ 3 of  of the Kon is@. @ I@ the9@ years .   fort9,7 '  "
+      ]
+    },
+    {
+      "arm": "replay_20",
+      "replay": 0.2,
+      "ewc_lambda": 0.0,
+      "train_loss": 5.681933879852295,
+      "sec": 584.2,
+      "before": {
+        "old": {
+          "loss": 3.7225865721702576,
+          "ppl": 41.3712655978606,
+          "bpb": 1.3065931478823172,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 8.336925745010376,
+          "ppl": 4175.234256325362,
+          "bpb": 4.2200804601240565,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 4.000236511230469,
+          "ppl": 54.611064635953994,
+          "bpb": 1.404045685480259,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.245847105979919,
+          "ppl": 515.8660330907952,
+          "bpb": 3.1615943496490195,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 180.75,
+        "distinct_1": 0.42487046632124353,
+        "distinct_2": 0.9153439153439153,
+        "repeat_4gram": 0.0,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.2804128155130524,
+          "content_f1": 0.18234807955202692
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.2553191489361702,
+          "content_f1": 0.18181818181818185,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": " the and and were friends. They played together the day and had a end.Once upon a time, there was"
+        },
+        {
+          "rouge_l": 0.20833333333333334,
+          "content_f1": 0.10526315789473685,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": ". She loved loved to play play with with toys her. One day, she she found a a toy toy in her"
+        },
+        {
+          "rouge_l": 0.32653061224489793,
+          "content_f1": 0.15384615384615385,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": ".\"\n\nThe smiled and said,, \"'s's little. You will to be the little little girl.\"\n"
+        },
+        {
+          "rouge_l": 0.20000000000000004,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": " he said \" \"No,, I don't't you. It are very very. You are very.\"\n\n"
+        },
+        {
+          "rouge_l": 0.3137254901960784,
+          "content_f1": 0.16666666666666666,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": " you not not it to.\" it\n said \" \", you don't you to to the toy.\" The man the"
+        },
+        {
+          "rouge_l": 0.3333333333333333,
+          "content_f1": 0.14285714285714288,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": " Sam was sad. He said, \" but not a you. You not not play. You are not sad. You"
+        },
+        {
+          "rouge_l": 0.2727272727272727,
+          "content_f1": 0.37499999999999994,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": " the toys and the a big.\n\n\nTim Tim to the mom, the mom. They saw the big and"
+        },
+        {
+          "rouge_l": 0.3333333333333333,
+          "content_f1": 0.3333333333333333,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": ". I I are very. I you you I you to play.\"\n\nThe mom smiled and said, \"Thank"
+        }
+      ],
+      "samples": [
+        ", there were a little girl named Lily. She loved to go outside and run outside with play play in. One day day she saw her a tree the shiny rock. She had asked it if she was it that Lily wouldn't't her",
+        " was angry! He It very to tail and his a dog. He wanted to his dog. He's dog dog with pet but Lily dog't wagged faces. Spot barked and\n dog away. Lily wagged dog and barked Rex. Lily felt",
+        " went to play her. A she mom was in a park room, Lily and saw her. She was very scared.\n asked they her mommy asked, \"Can my you you in?\" Her mom replied, \"Don,,'t Lily",
+        " Tom were happy. They hugged to the other dad.\n\n\",Thank you Lily,\" Tom said. \"YouYou was brave and too best. And. You you are good.\".\n playedThey the the tree. felt and"
+      ]
+    },
+    {
+      "arm": "replay_20_ewc",
+      "replay": 0.2,
+      "ewc_lambda": 1.0,
+      "train_loss": 5.842648029327393,
+      "sec": 604.6,
+      "before": {
+        "old": {
+          "loss": 3.7225865721702576,
+          "ppl": 41.3712655978606,
+          "bpb": 1.3065931478823172,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 8.336925745010376,
+          "ppl": 4175.234256325362,
+          "bpb": 4.2200804601240565,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 3.739719182252884,
+          "ppl": 42.08616996197972,
+          "bpb": 1.3126065341408533,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.384178936481476,
+          "ppl": 592.3981363645631,
+          "bpb": 3.2316167383289476,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 178.75,
+        "distinct_1": 0.4497354497354497,
+        "distinct_2": 0.9351351351351351,
+        "repeat_4gram": 0.0,
+        "semantic": {
+          "n": 8,
+          "rouge_l": 0.20996584086918763,
+          "content_f1": 0.11540032679738563
+        }
+      },
+      "semantic_rows": [
+        {
+          "rouge_l": 0.2127659574468085,
+          "content_f1": 0.08333333333333334,
+          "ref": " and went back home together. They had a fun escape in the park, but they decided to leave the sour lemon behind",
+          "gen": " the friends and they played together together.Once upon a time, there was a little girl named Lily. She loved"
+        },
+        {
+          "rouge_l": 0.125,
+          "content_f1": 0.2222222222222222,
+          "ref": " jewelry. She had a big box full of pretty things. She liked to wear them all day. But at night,",
+          "gen": " to and her her friends. One day, they they to to a park park. \" was a big big tree with"
+        },
+        {
+          "rouge_l": 0.27999999999999997,
+          "content_f1": 0.16666666666666666,
+          "ref": " together.\"\n\nThey looked and looked, and finally, they found the belt under Tom's bed. Tom was so",
+          "gen": " a.\n\nSo,, I's a big toy and the big.\" They said, they \"'s,'s"
+        },
+        {
+          "rouge_l": 0.12244897959183673,
+          "content_f1": 0.0,
+          "ref": " Sam were brave. They told Max, \"If you surrender and stop fighting, we can share the treasure with you.\"",
+          "gen": ", he did not not to the. He He was not sad. He did not not. He was sad. He"
+        },
+        {
+          "rouge_l": 0.20408163265306126,
+          "content_f1": 0.0,
+          "ref": " you must not eat it all. If you do, you will freeze!\" Tim took the candy and said, \"I",
+          "gen": " you can not be money to the the man. can you not to buy the man man. He the man man to"
+        },
+        {
+          "rouge_l": 0.2608695652173913,
+          "content_f1": 0.0,
+          "ref": " was angry. He said, \"I don't like this game. I want to lie down and rest.\"\n\n",
+          "gen": " was sad and he wanted to play with with his ball. He Sam to to the ball and Sam.\n\nSam"
+        },
+        {
+          "rouge_l": 0.1702127659574468,
+          "content_f1": 0.11764705882352942,
+          "ref": " their clothes and toys in their luggage.\n\nWhen they got to the train station, Tim's mom could not lift",
+          "gen": " a toys. They and a toys. They were a happy. They had a big car. They had a fun."
+        },
+        {
+          "rouge_l": 0.30434782608695654,
+          "content_f1": 0.3333333333333333,
+          "ref": "! Do you want to play with me?\" Lucy looked at Buzzy and said, \"Yes, I want to play,",
+          "gen": ". I are so happy!\"\n\n\nThe girl smiled and said \" \"Yes I you!\" I\n\nThe"
+        }
+      ],
+      "samples": [
+        ", there was a a girl bunny named to. Sarah was so years, when she could the house big her was in park outside.\n\nThe little girl was scared and she was to running the. She ran around from and the house",
+        " said, \"DonDon't't worry worry., It'll'll can it get it to make fun.\"\n\nThey took got the the box and started took to the a big. While man got the,, he was told a",
+        " came to to her the kitchen. She saw a big toy was wanted. and It it was was a of house in what.\n\n\n\"WhatWhat do?\" what asked?\" asked \" \"\nIIt's an noise little for",
+        " friends were in the park who had big with the new toy. They was very happy. He felt and happy could fun for play with. day and learned a time to his story on, it can's time to be playing.Once"
+      ]
+    }
+  ]
+}

@@ -572,11 +572,15 @@ new-task gain; replay+rollback keeps **6.5-12.0%**; replay+EWC keeps **99.3%**.
 EWC is safe but does not beat simple replay.
 [`research/SPIKING_REPLAY_EWC_21M.md`](research/SPIKING_REPLAY_EWC_21M.md)
 
-**600-step phase B + generation probe:** replay keeps **99.7%** of the new gain;
-naive samples collapse from **144 to 81 chars** and repeated 4-grams quadruple.
-Replay keeps the phase-A length/repetition profile; EWC is slightly better on
-distinct-2/length but costs 0.018 new-task bpb.
-[`research/SPIKING_LONG_REPLAY.md`](research/SPIKING_LONG_REPLAY.md)
+**600-step phase B + generation probe:** at 21M and two seeds, replay keeps
+**99.7%** of the new gain; naive samples collapse from **144-151 to 78-81 chars**
+and repeated 4-grams quadruple. Replay keeps the phase-A profile; EWC is slightly
+better on distinct-2/length but costs new-task bpb.
+
+**50M long phase B:** replay keeps **98.2%** of the new gain and improves the
+held-out continuation probe (content F1 **0.140 -> 0.182**); EWC keeps 91.7% and
+lowers it to 0.115; naive drops it to 0.000. This is a small semantic signal, not
+semantic competence. [`research/SPIKING_LONG_REPLAY.md`](research/SPIKING_LONG_REPLAY.md)
 
 ## License
 
