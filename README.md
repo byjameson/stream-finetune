@@ -153,11 +153,16 @@ streamft spiking train --data data/ts_train.pt --max-tokens 5000000 \
   --steps 300 --dim 256 --layers 1 --adapt 0.1
 streamft spiking generate --model checkpoints/spiking_4m --prompt "Once upon a time"
 streamft spiking serve --model checkpoints/spiking_4m --port 8011
+streamft spiking ingest --model checkpoints/spiking_4m_10k \
+  --text new_data.txt --old-data data/ts_train.pt --old-valid data/ts_valid.pt \
+  --out checkpoints/ingest_demo --replay-fraction 0.2
 ```
 
-It supports checkpointed resume sessions, a `/generate` endpoint, an
-OpenAI-shaped `/v1/chat/completions` endpoint and optional online per-synapse
-rollback. See [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md) and
+It supports checkpointed resume sessions, safe incremental ingest with replay
+and an accept gate, a `/generate` endpoint, an OpenAI-shaped
+`/v1/chat/completions` endpoint and optional online per-synapse rollback. See
+[`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md),
+[`docs/SPIKING_INGEST.md`](docs/SPIKING_INGEST.md) and
 [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper

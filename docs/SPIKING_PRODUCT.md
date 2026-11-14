@@ -156,6 +156,25 @@ The post-hoc version is measured in
 recovered 95.0%/94.1% of the old task while keeping 18.3% of the new gain on two
 seeds.
 
+## Incremental ingest
+
+`streamft spiking ingest` tokenizes a new corpus, mixes a replay sample from the
+old data, continues from the current checkpoint, evaluates old and new bpb, and
+publishes a version only if the accept gate passes. Rejected attempts stay in
+`registry.json`; accepted checkpoints go to `versions/vNNNN`.
+
+```bash
+streamft spiking ingest \
+  --model checkpoints/spiking_4m_10k \
+  --text data/ingest_new.txt \
+  --old-data data/ts_train.pt --old-valid data/ts_valid.pt \
+  --out checkpoints/ingest_demo --replay-fraction 0.2
+```
+
+See [`SPIKING_INGEST.md`](SPIKING_INGEST.md) for the gate, registry format,
+demo result and caveats. This is offline batch updating, not recursive
+self-training.
+
 ## Larger model
 
 The same command scales the architecture:
@@ -273,6 +292,7 @@ certificate mounts for the target machine.
 |---|---|
 | installable wheel + `streamft spiking` | done |
 | checkpoint/resume/tokenize/eval | done |
+| incremental ingest + replay + accept/reject + registry | done |
 | HTTP health/metrics/auth/generation | done |
 | OpenAI-shaped endpoint | done |
 | systemd/Caddy/nginx templates | done, not executed in this Windows checkout |

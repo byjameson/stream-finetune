@@ -14,7 +14,12 @@
   (distinct-1 0.435 vs 0.452). No scaling win at this budget; still
   research-grade text.
 - `deploy/`: systemd, Caddy and nginx templates; safetensors checkpoints.
-- 61 tests; `docs/SPIKING_PRODUCT.md`.
+- `streamft spiking ingest`: tokenize new text, mix replay from old data,
+  continue from a checkpoint, evaluate old/new bpb, optionally apply Fisher
+  rollback, and publish only when the accept gate passes. Accepted checkpoints
+  are versioned under `versions/vNNNN`; every attempt is logged in
+  `registry.json`. Demo: old 1.3248 -> 1.2985 bpb, new 3.9222 -> 3.7087, accepted.
+- 64 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`.
 
 ## 0.6.3 — fingerprint HTTP endpoint
 - `streamft verify-server`: loads the base + adapter once and exposes `POST /verify`
