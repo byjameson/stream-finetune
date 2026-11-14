@@ -164,8 +164,9 @@ documents in SQLite with source/trust metadata, auto-verifies explicitly
 `community` pages, and requires human review for `human`, `untrusted` and
 `self` content. Before a document counts as support, a claim-level check rejects
 simple negation and numeric contradictions ("X is true" vs "X is not true") and
-records them in the `conflicts` table. Only `verified` documents are exported to
-the ingest inbox.
+records them in the `conflicts` table; an optional trained NLI model
+(`verify --nli-model ...`) catches semantic contradictions the lexical pass
+misses. Only `verified` documents are exported to the ingest inbox.
 
 ```bash
 streamft spiking knowledge --db data/knowledge.db add \

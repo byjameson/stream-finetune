@@ -33,7 +33,9 @@
 - `streamft spiking grow`: function-preserving width growth. 4.3M/width 256
   -> 21.53M/width 1152 with identical zero-step logits; training/ingest after
   growth is still required.
-- 76 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`,
+- Optional trained NLI backend for `knowledge verify` (`--nli-model`) catches
+  semantic contradictions the lexical pass misses; fake-NLI test included.
+- 77 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`,
   `docs/SPIKING_WATCH.md`, `docs/SPIKING_KNOWLEDGE.md`,
   `docs/SPIKING_GROW.md`.
 
