@@ -24,6 +24,24 @@ def _tokens(query: str):
             if len(t) > 1]
 
 
+def chunk_text(text: str, size: int = 1200, overlap: int = 200):
+    """Split a document into retrieval-sized overlapping chunks."""
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return []
+    if len(text) <= size:
+        return [text]
+    out = []
+    step = max(1, size - overlap)
+    for start in range(0, len(text), step):
+        chunk = text[start:start + size].strip()
+        if chunk:
+            out.append(chunk)
+        if start + size >= len(text):
+            break
+    return out
+
+
 class KnowledgeIndex:
     """FTS5 index over verified documents only."""
 
@@ -42,12 +60,17 @@ class KnowledgeIndex:
             "SELECT d.id,d.title,d.text,s.url,s.domain FROM documents d "
             "JOIN sources s ON s.id=d.source_id WHERE d.status='verified'"
         ).fetchall()
+        chunks = 0
         for r in rows:
-            self.conn.execute(
-                "INSERT INTO knowledge_fts(doc_id,title,text,source) "
-                "VALUES (?,?,?,?)",
-                (r["id"], r["title"], r["text"], r["url"]))
+            for chunk in chunk_text(r["text"]):
+                self.conn.execute(
+                    "INSERT INTO knowledge_fts(doc_id,title,text,source) "
+                    "VALUES (?,?,?,?)",
+                    (r["id"], r["title"], chunk, r["url"]))
+                chunks += 1
         self.conn.commit()
+        self.last_docs = len(rows)
+        self.last_chunks = chunks
         return len(rows)
 
     def search(self, query: str, k: int = 4):
@@ -100,7 +123,7 @@ class AssistantConfig:
     db: str
     max_new_tokens: int = 192
     temperature: float = 0.0
-    max_context: int = 4
+    max_context: int = 6
 
 
 class LocalAssistant:

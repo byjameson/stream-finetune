@@ -7,10 +7,16 @@
   `POST /v1/chat/completions`; answers include source citations.
 - Verified demo: speed-of-light question answered with 299,792,458 m/s and
   three sources; HTTP endpoint returned 200.
+- Real-source build: 5 official Python/NumPy pages + 1 human-approved note;
+  false moon claim rejected. FTS chunking added; 10-question held-out eval:
+  answer 1.00, citation 1.00, strict 1.00.
+- Local deployment on this PC: `http://127.0.0.1:8014`; launcher
+  `scripts/start_assistant.ps1`; source builder
+  `scripts/ingest_real_sources.ps1`.
 - 50M/500M spiking run stopped at 1,500 steps: 1.3256 bpb vs 1.327 for 21M and
   1.336 for 4.3M; no scaling win, so the product path moved to the pretrained
   verified assistant. Spiking remains a research line.
-- 80 tests; `docs/LOCAL_ASSISTANT.md`.
+- 83 tests; `docs/LOCAL_ASSISTANT.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

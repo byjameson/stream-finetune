@@ -108,7 +108,7 @@ def serve(model: str, db: str, host: str = "127.0.0.1", port: int = 8014,
         "assistant": assistant,
         "name": model,
         "docs": assistant.index.conn.execute(
-            "SELECT COUNT(*) n FROM knowledge_fts").fetchone()["n"],
+            "SELECT COUNT(DISTINCT doc_id) n FROM knowledge_fts").fetchone()["n"],
         "params": sum(p.numel() for p in assistant.model.parameters()),
         "api_key": api_key or os.environ.get("ASSISTANT_API_KEY", ""),
         "metrics": {"requests": 0},

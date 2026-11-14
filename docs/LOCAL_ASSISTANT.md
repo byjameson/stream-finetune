@@ -71,6 +71,55 @@ curl -s -X POST http://127.0.0.1:8014/knowledge/search \
 `ASSISTANT_API_KEY` or `--api-key` protects the POST endpoints; `/health`,
 `/metrics` and `/v1/models` stay public.
 
+## Real sources and held-out evaluation
+
+`data/knowledge_real.db` now contains:
+
+- Python tutorial: introduction, data structures, control flow
+- Python `math` library
+- NumPy absolute beginners
+- one human-approved operator note
+
+The false moon claim (`untrusted`) was rejected; verified documents: **6**.
+The FTS index is refreshed from verified documents only.
+
+A 10-question held-out set is in
+[`research/assistant_eval_cases.json`](../research/assistant_eval_cases.json).
+Each case checks an answer keyword and the expected source domain. Result:
+
+| metric | score |
+|---|---:|
+| answer accuracy | **1.00** |
+| citation rate | **1.00** |
+| strict (answer + citation) | **1.00** |
+
+Raw evidence: [`research/results/assistant_eval.json`](../research/results/assistant_eval.json).
+The questions are not copied from the documents, but the set is small and
+hand-written; it is a smoke evaluation, not a broad benchmark.
+
+## Local deployment (this PC)
+
+The assistant is running locally on:
+
+```
+http://127.0.0.1:8014
+```
+
+Start it again with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/start_assistant.ps1
+```
+
+Health check:
+
+```bash
+curl -s http://127.0.0.1:8014/health
+```
+
+The server binds to localhost only. TLS/public exposure is still a separate
+deployment step.
+
 ## Demo
 
 With four verified docs in `data/knowledge_demo.db`:

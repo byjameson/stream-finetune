@@ -1,0 +1,398 @@
+{
+  "n": 10,
+  "answer_accuracy": 1.0,
+  "citation_rate": 1.0,
+  "strict_accuracy": 1.0,
+  "results": [
+    {
+      "question": "How do you create a list in Python?",
+      "answer": "In Python, you can create a list using square brackets `[]` and separate the elements with commas. For example:\n\n```python\nmy_list = [1, 2, 3]\n```\n\nThis creates a list containing the integers 1, 2, and 3. Lists are mutable, which means their contents can be changed after creation.",
+      "sources": [
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What does len() return for a string?",
+      "answer": "len() returns the length of a string.",
+      "sources": [
+        {
+          "id": 1,
+          "title": "Python tutorial: introduction",
+          "source": "https://docs.python.org/3/tutorial/introduction.html"
+        },
+        {
+          "id": 1,
+          "title": "Python tutorial: introduction",
+          "source": "https://docs.python.org/3/tutorial/introduction.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "How do you define a function in Python?",
+      "answer": "In Python, you define a function using the `def` keyword followed by the function name and parentheses. Optionally, you can include parameters within the parentheses. Here's how you define a function:\n\n```python\ndef function_name(parameters):\n    \"\"\"\n    Function description.\n    \n    Parameters:\n    - parameters: Description of the parameter(s).\n    \n    Returns:\n    - Return description.\n    \"\"\"\n    # Your code goes here\n```\n\nFor example:\n\n```python\ndef greet(name):\n    \"\"\"Greet someone.\"\"\"\n    return f\"Hello, {name}!\"\n```\n\nThis defines a function named `greet` that takes one parameter `name`. The function body contains the logic to perform the greeting operation.",
+      "sources": [
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What is a list comprehension?",
+      "answer": "A list comprehension is a compact way to create lists based on existing lists. It allows you to generate a new list by applying an expression to each item in an input list(s). Here's a breakdown:\n\n- **Syntax**: \n  ```python\n  [expression for item in iterable]\n  ```\n  Or, with multiple conditions:\n  ```python\n  [expression for item in iterable if condition]\n  ```\n\n- **Components**:\n  - `expression`: This is what gets computed for each item.\n  - `item`: This is the current item being processed from the iterable.\n  - `iterable`: This is the collection of items to iterate over.\n\n- **Example**:\n  ```python\n  vec = [[1, 2, 3], [4,",
+      "sources": [
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What does math.sqrt return?",
+      "answer": "The math.sqrt function returns the square root of a given positive number x.",
+      "sources": [
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "How do you import a module in Python?",
+      "answer": "To import a module in Python, you typically use the `import` statement followed by the name of the module you wish to import. Here's a step-by-step guide:\n\n1. Open your Python script or interactive session.\n2. At the beginning of your script, write the `import` statement followed by the name of the module you want to import. For example, if you want to import the `math` module, you would write:\n   ```python\n   import math\n   ```\n3. Once you've written the `import` statement, you can now use the functions and variables defined within the module in your script. For instance, if you had previously calculated some mathematical values, you could print them like this:\n   ```python\n   print(math.sqrt(16))",
+      "sources": [
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 4,
+          "title": "Python math library",
+          "source": "https://docs.python.org/3/library/math.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What is a dictionary in Python?",
+      "answer": "A dictionary in Python is an unordered collection of items where each item consists of a key-value pair. Each key must be unique within the dictionary. Dictionaries are useful for mapping keys to values, allowing quick retrieval of values based on their associated keys.\n\nHere are some key characteristics of dictionaries:\n\n1. They are created using curly braces `{}` or the `dict()` constructor.\n2. Items in a dictionary are accessed using square brackets `[]`.\n3. Keys in a dictionary must be hashable and immutable types such as strings, numbers, or tuples.\n4. Values can be of any type.\n5. Dictionaries support indexing, slicing, and iteration.\n6. Dictionaries maintain insertion order unless explicitly sorted.\n7. Dictionaries allow multiple keys to map to the same value due to their unordered",
+      "sources": [
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What is a tuple in Python?",
+      "answer": "A tuple in Python is an ordered collection of elements, which can be of different types. Unlike lists, tuples are immutable, meaning their contents cannot be changed once created. Tuples are defined using parentheses `()` and can hold multiple items. Elements within a tuple are accessed using square brackets `[]`. Tuple packing allows combining multiple values into a single tuple, while tuple unpacking enables assigning values from a tuple to separate variables. Tuples are useful when you need to group related pieces of information together and ensure those pieces remain unchanged throughout the program execution.",
+      "sources": [
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 3,
+          "title": "Python tutorial: control flow",
+          "source": "https://docs.python.org/3/tutorial/controlflow.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "What is NumPy used for?",
+      "answer": "NumPy is used for numerical computations and handling multi-dimensional arrays. It provides support for efficient mathematical operations on arrays, making it particularly useful in scientific computing, data analysis, and machine learning applications where large datasets need to be manipulated and analyzed.",
+      "sources": [
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 2,
+          "title": "Python tutorial: data structures",
+          "source": "https://docs.python.org/3/tutorial/datastructures.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    },
+    {
+      "question": "How do you create a NumPy array from a Python list?",
+      "answer": "To create a NumPy array from a Python list, you can use the `numpy.array()` function. Here's an example:\n\n```python\nimport numpy as np\n\n# Example Python list\nmy_list = [1, 2, 3, 4]\n\n# Convert the list to a NumPy array\nmy_array = np.array(my_list)\n\nprint(my_array)\n```\n\nThis will output:\n\n```\n[1 2 3 4]\n```\n\nThe resulting `my_array` is now a NumPy array containing the same elements as the original Python list.",
+      "sources": [
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        },
+        {
+          "id": 5,
+          "title": "NumPy absolute beginners",
+          "source": "https://numpy.org/doc/stable/user/absolute_beginners.html"
+        }
+      ],
+      "answer_ok": true,
+      "citation_ok": true,
+      "strict_ok": true
+    }
+  ]
+}
