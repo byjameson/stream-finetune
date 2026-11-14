@@ -72,6 +72,7 @@ Inspect and generate:
 streamft spiking info --model checkpoints/spiking_4m
 streamft spiking eval \
   --model checkpoints/spiking_4m --data data/ts_valid.pt
+python scripts/spiking_quality.py --model checkpoints/spiking_4m --max-new 48
 streamft spiking generate \
   --model checkpoints/spiking_4m \
   --prompt "Once upon a time" --max-new 64 \
@@ -186,20 +187,40 @@ bf16 autocast, checkpoints every 500 steps.
 | 4.3M, adapt=0.1 | 300 | 2.027 | research stream |
 | 4.3M, adapt=0.1 | 1000 | 1.916 | product, 5M-token slice |
 | 4.3M, adapt=0.1 | 1000 | **1.889** | product, full 466M-token stream |
+| 4.3M, adapt=0.1 | 10000 | **1.336** | same 164M-token budget as the 21M run |
 | 9.4M, adapt=0.1 | 300 | 2.159 | product, 5M-token slice |
 | 9.4M, adapt=0.1 | 600 | 2.152 | resume session |
+| 20.97M, adapt=0.1 | 10000 | 1.327 | same 164M-token budget, cosine LR |
 
 The 9.4M model is not undertrained only in the “more steps” sense: at this
 budget it plateaus around 2.15. A larger model needs a longer run and probably a
 tuned learning-rate schedule before it can be called better.
 
+The 20.97M run finished at **1.327 bpb** after 10,000 steps (164M tokens);
+the 4.3M model at the *same* 164M-token budget reached **1.336 bpb**. On a
+separate 4096-token eval the gap is 1.312 vs 1.322, and the fixed quality probe
+is slightly **worse** for 21M:
+
+| model | steps | eval bpb | distinct-1 | distinct-2 | mean chars |
+|---|---:|---:|---:|---:|---:|
+| 4.3M | 10000 | 1.322 | 0.452 | 0.913 | 186.0 |
+| 20.97M | 10000 | 1.312 | 0.435 | 0.901 | 174.5 |
+
+So **more parameters alone did not buy quality** at this token/step budget.
+The 21M run is 0.010 bpb better but slightly worse on the sample probe. The
+4.3M model is the better product default: same quality, faster and smaller.
+A 50M+ model needs 500M+ tokens before another scaling attempt is worth it.
+
+This is a negative scaling result, not a finished assistant.
+
 ### Quality is still research-grade
 
-The 4.3M model at 1000 steps can produce a story-like opening but often drifts
-into repetitions. Sampling improves diversity; it does not make the model an
-assistant. For a product-quality model, plan for roughly 20M+ parameters,
-100M+ training tokens, 10k+ steps and a domain-specific evaluation set. The
-current artifact is the engine and the serving path, not the final weights.
+The 20.97M and 4.3M models produce similar story-like text at this budget:
+simple sentences, grammatical errors and occasional repeats. Sampling improves
+diversity; it does not make the model an assistant. The next quality gate is
+larger than this run: a 50M+ model, 500M+ domain tokens, a domain-specific
+evaluation set and a trained tokenizer. The current artifact is the engine, the
+serving path and a successful scale test, not the final weights.
 
 ### Online rollback smoke
 
@@ -257,7 +278,7 @@ certificate mounts for the target machine.
 | systemd/Caddy/nginx templates | done, not executed in this Windows checkout |
 | TLS/rate limit | template-level; terminate at the proxy |
 | GPU concurrency | one process-wide lock; one process per GPU |
-| model quality | research-grade; 20.97M run in progress |
+| model quality | 4.3M/21M both ~1.33 bpb; 21M has no quality win; research-grade |
 | public deployment | requires a host/proxy and a domain; not done here |
 
 The deployment templates are deliberately files, not an automatic installer.

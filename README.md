@@ -513,6 +513,11 @@ phase-A synapses by Fisher importance recovers 95.0%/94.1% of the old-task perfo
 while keeping 18.3% of the new-task gain on two seeds. Global rollback restores the old
 task but discards all new learning. [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md)
 
+**Scaling check:** a 20.97M model trained for 10,000 steps / 164M tokens reached
+1.327 bpb; the 4.3M model reached 1.336 on the same budget, and the larger model was
+slightly worse on a fixed sample-quality probe. More parameters did not buy quality at
+this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
