@@ -14,9 +14,13 @@
   `scripts/start_assistant.ps1`; source builder
   `scripts/ingest_real_sources.ps1`.
 - 50M/500M spiking run stopped at 1,500 steps: 1.3256 bpb vs 1.327 for 21M and
-  1.336 for 4.3M; no scaling win, so the product path moved to the pretrained
-  verified assistant. Spiking remains a research line.
-- 83 tests; `docs/LOCAL_ASSISTANT.md`.
+  1.336 for 4.3M; no scaling win. The active direction is the spiking research
+  line; the Qwen assistant is parked.
+- Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
+  and nearly eliminates forgetting; controlled seed-1 arms show replay alone
+  keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
+- 85 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  `research/SPIKING_REPLAY_ROLLBACK.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

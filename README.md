@@ -562,6 +562,11 @@ into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and ret
 **99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback
 here. [`research/SPIKING_REPLAY.md`](research/SPIKING_REPLAY.md)
 
+**Replay + rollback:** controlled seed-1 arms confirm the mechanisms are not
+additive. Replay alone keeps **98.9%** of the new gain; replay followed by Fisher
+rollback keeps only **16.0%**. Replay prevents the forgetting; rollback after it
+spends the new learning. [`research/SPIKING_REPLAY_ROLLBACK.md`](research/SPIKING_REPLAY_ROLLBACK.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
