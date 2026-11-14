@@ -19,7 +19,20 @@
   rollback, and publish only when the accept gate passes. Accepted checkpoints
   are versioned under `versions/vNNNN`; every attempt is logged in
   `registry.json`. Demo: old 1.3248 -> 1.2985 bpb, new 3.9222 -> 3.7087, accepted.
-- 64 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`.
+- `streamft spiking ingest-watch`: folder worker for `.txt`/`.pt`, hash-based
+  dedupe, accepted-only promotion to `active.json`/`current`, rejection/error
+  archiving and persistent `watch_state.json`. Demo: accepted WikiText file,
+  old 1.3331 -> 1.3062 bpb, new 3.8424 -> 3.7136; promoted to `current`.
+- `streamft spiking knowledge`: SQLite truth gate with source trust
+  (`official` auto, `reference`/`community` independent corroboration,
+  `human`/`untrusted`/`self` review), export to the ingest inbox. Demo:
+  4 verified, 1 false claim rejected.
+- `streamft spiking grow`: function-preserving width growth. 4.3M/width 256
+  -> 21.53M/width 1152 with identical zero-step logits; training/ingest after
+  growth is still required.
+- 73 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`,
+  `docs/SPIKING_WATCH.md`, `docs/SPIKING_KNOWLEDGE.md`,
+  `docs/SPIKING_GROW.md`.
 
 ## 0.6.3 — fingerprint HTTP endpoint
 - `streamft verify-server`: loads the base + adapter once and exposes `POST /verify`

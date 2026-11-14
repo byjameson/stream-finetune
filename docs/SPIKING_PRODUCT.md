@@ -156,6 +156,25 @@ The post-hoc version is measured in
 recovered 95.0%/94.1% of the old task while keeping 18.3% of the new gain on two
 seeds.
 
+## Knowledge gate
+
+`streamft spiking knowledge` is the truth gate in front of ingest. It stores
+documents in SQLite with source/trust metadata, auto-verifies explicitly
+`official` sources, requires independent corroboration for `reference` /
+`community` pages, and requires human review for `human`, `untrusted` and
+`self` content. Only `verified` documents are exported to the ingest inbox.
+
+```bash
+streamft spiking knowledge --db data/knowledge.db add \
+  --text "..." --source https://docs.python.org/3/ --trust official
+streamft spiking knowledge --db data/knowledge.db verify
+streamft spiking knowledge --db data/knowledge.db export --out data/inbox
+```
+
+See [`SPIKING_KNOWLEDGE.md`](SPIKING_KNOWLEDGE.md). This is deliberately not an
+autonomous web crawler: it makes recursive learning auditable, not magically
+truthful.
+
 ## Incremental ingest
 
 `streamft spiking ingest` tokenizes a new corpus, mixes a replay sample from the
@@ -172,8 +191,26 @@ streamft spiking ingest \
 ```
 
 See [`SPIKING_INGEST.md`](SPIKING_INGEST.md) for the gate, registry format,
-demo result and caveats. This is offline batch updating, not recursive
-self-training.
+demo result and caveats. For a folder worker that promotes accepted versions
+automatically, see [`SPIKING_WATCH.md`](SPIKING_WATCH.md). This is offline
+batch updating, not recursive self-training.
+
+## Growing capacity
+
+New data is added with ingest. If the model needs more capacity, widen the
+checkpoint first:
+
+```bash
+streamft spiking grow --model checkpoints/spiking_4m_10k \
+  --out checkpoints/spiking_4m_grown_21m --dim 1152
+```
+
+The operation is width-only and function-preserving at step zero: old weights
+are copied into the top-left blocks and new columns start at zero, so the grown
+model initially produces the same logits. It then needs training/ingest; growth
+does not add knowledge by itself. Depth growth is not supported yet.
+
+See [`SPIKING_GROW.md`](SPIKING_GROW.md).
 
 ## Larger model
 

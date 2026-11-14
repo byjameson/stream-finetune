@@ -265,6 +265,23 @@ def ingest_cmd(args) -> int:
     return 0
 
 
+def ingest_watch_cmd(args) -> int:
+    from streamft.spiking_watch import watch
+    return watch(args)
+
+
+def knowledge_cmd(args) -> int:
+    from streamft.spiking_knowledge import main as knowledge_main
+    return knowledge_main(args.rest)
+
+
+def grow_cmd(args) -> int:
+    from streamft.spiking_grow import grow_checkpoint
+    result = grow_checkpoint(args.model, args.out, args.dim)
+    print(json.dumps(result, indent=2))
+    return 0
+
+
 def eval_cmd(args) -> int:
     model, tok, _ = load_checkpoint(args.model)
     if tok is None:
@@ -297,6 +314,10 @@ def serve_cmd(args) -> int:
 
 
 def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "knowledge":
+        from streamft.spiking_knowledge import main as knowledge_main
+        return knowledge_main(argv[1:])
     ap = argparse.ArgumentParser(prog="streamft spiking")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
@@ -379,6 +400,23 @@ def main(argv=None) -> int:
     ing.add_argument("--keep-rejected", action="store_true")
     ing.add_argument("--seed", type=int, default=0)
     ing.set_defaults(func=ingest_cmd)
+
+    watchp = sub.add_parser("ingest-watch",
+                            help="watch an inbox and run gated ingest")
+    from streamft.spiking_watch import add_arguments as add_watch_arguments
+    add_watch_arguments(watchp)
+    watchp.set_defaults(func=ingest_watch_cmd)
+
+    kn = sub.add_parser("knowledge", add_help=False,
+                        help="truth-gated knowledge ledger")
+    kn.add_argument("rest", nargs=argparse.REMAINDER)
+    kn.set_defaults(func=knowledge_cmd)
+
+    gr = sub.add_parser("grow", help="widen a checkpoint (function-preserving)")
+    gr.add_argument("--model", required=True)
+    gr.add_argument("--out", required=True)
+    gr.add_argument("--dim", type=int, required=True)
+    gr.set_defaults(func=grow_cmd)
 
     ev = sub.add_parser("eval", help="measure bpb on a token shard")
     ev.add_argument("--model", required=True)

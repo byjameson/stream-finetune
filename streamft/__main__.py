@@ -36,6 +36,10 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft spiking train --data data/ts_train.pt --out checkpoints/spiking_4m
   streamft spiking ingest --model checkpoints/spiking_4m --text new.txt \
     --old-data data/ts_train.pt --old-valid data/ts_valid.pt --out checkpoints/ingest
+  streamft spiking ingest-watch --inbox data/inbox --model checkpoints/spiking_4m \
+    --old-data data/ts_train.pt --old-valid data/ts_valid.pt --out checkpoints/watch
+  streamft spiking knowledge --db data/knowledge.db add --text "..." --trust official
+  streamft spiking grow --model checkpoints/spiking_4m --out checkpoints/spiking_wide --dim 1152
   streamft spiking eval --model checkpoints/spiking_4m --data data/ts_valid.pt
   streamft spiking serve --model checkpoints/spiking_4m --port 8011
   streamft doctor

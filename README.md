@@ -156,13 +156,23 @@ streamft spiking serve --model checkpoints/spiking_4m --port 8011
 streamft spiking ingest --model checkpoints/spiking_4m_10k \
   --text new_data.txt --old-data data/ts_train.pt --old-valid data/ts_valid.pt \
   --out checkpoints/ingest_demo --replay-fraction 0.2
+streamft spiking ingest-watch --inbox data/inbox \
+  --model checkpoints/spiking_4m_10k --old-data data/ts_train.pt \
+  --old-valid data/ts_valid.pt --out checkpoints/watch --once
+streamft spiking grow --model checkpoints/spiking_4m_10k \
+  --out checkpoints/spiking_4m_grown_21m --dim 1152
 ```
 
 It supports checkpointed resume sessions, safe incremental ingest with replay
-and an accept gate, a `/generate` endpoint, an OpenAI-shaped
-`/v1/chat/completions` endpoint and optional online per-synapse rollback. See
+and an accept gate, an inbox watcher that promotes only accepted versions,
+truth-gated knowledge, function-preserving width growth, a `/generate` endpoint,
+an OpenAI-shaped `/v1/chat/completions` endpoint and optional online
+per-synapse rollback. See
 [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md),
-[`docs/SPIKING_INGEST.md`](docs/SPIKING_INGEST.md) and
+[`docs/SPIKING_INGEST.md`](docs/SPIKING_INGEST.md),
+[`docs/SPIKING_WATCH.md`](docs/SPIKING_WATCH.md),
+[`docs/SPIKING_KNOWLEDGE.md`](docs/SPIKING_KNOWLEDGE.md),
+[`docs/SPIKING_GROW.md`](docs/SPIKING_GROW.md) and
 [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
