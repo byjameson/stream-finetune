@@ -33,6 +33,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_lm_adapt300.json` | `research/spiking_lm.py` (`--adapt 0.1`) | 300-step spike-frequency adaptation, seed 0: bpb 2.027 vs 2.053 without adaptation |
 | `spiking_lm_adapt300_seed1.json` | `research/spiking_lm.py` (`--seed 1 --adapt 0.1`) | 300-step adaptation, seed 1: bpb 2.031 vs 2.077 without adaptation |
 | `spiking_lm_adapt1000.json` | `research/spiking_lm.py` (`--adapt 0.1`) | 1000-step adaptation: bpb 1.841 vs 1.937 without adaptation; activity 0.053 |
+| `spiking_shift.json` | `research/spiking_shift.py` | TinyStories -> WikiText, seed 0: 10% Fisher rollback recovers 95.0% old, keeps 18.3% new |
+| `spiking_shift_seed1.json` | `research/spiking_shift.py` (`--seed 1`) | TinyStories -> WikiText, seed 1: 10% rollback recovers 94.1% old, keeps 18.3% new |
 
 ## Behavioral bits
 

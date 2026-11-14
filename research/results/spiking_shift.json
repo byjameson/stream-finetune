@@ -1,0 +1,392 @@
+{
+  "question": "Does a per-synapse shadow copy recover old-task performance better than global rollback after a TinyStories -> WikiText shift?",
+  "data": {
+    "phase_a": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\data\\ts_train.pt",
+    "phase_a_tokens": 5000000,
+    "phase_b": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\data\\ts_wt2_train.pt",
+    "phase_b_tokens": 3863149,
+    "old_valid": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\data\\ts_valid.pt",
+    "new_valid": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\data\\ts_wt2_valid.pt"
+  },
+  "config": {
+    "steps_a": 300,
+    "steps_b": 300,
+    "batch": 16,
+    "seq": 128,
+    "dim": 256,
+    "layers": 1,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "seed": 0,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "fisher_batches": 8
+  },
+  "peak_gpu_mb": 332.0,
+  "history_a": [
+    {
+      "phase": "A",
+      "step": 50,
+      "train_loss": 6.735130786895752,
+      "old": {
+        "loss": 6.719362318515778,
+        "ppl": 828.2891583789981,
+        "bpb": 2.3584334691222364,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 13.563086867332458,
+        "ppl": 776915.4965080061,
+        "bpb": 6.865518491879488,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "A",
+      "step": 100,
+      "train_loss": 6.307550430297852,
+      "old": {
+        "loss": 6.463296890258789,
+        "ppl": 641.171447694127,
+        "bpb": 2.2685568933908957,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 12.703213095664978,
+        "ppl": 328802.6808819976,
+        "bpb": 6.430257747934528,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "A",
+      "step": 150,
+      "train_loss": 6.396152973175049,
+      "old": {
+        "loss": 6.315563321113586,
+        "ppl": 553.1135533909311,
+        "bpb": 2.2167037892615307,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 11.676871299743652,
+        "ppl": 117815.04985757236,
+        "bpb": 5.910732314837267,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "A",
+      "step": 200,
+      "train_loss": 6.074655055999756,
+      "old": {
+        "loss": 6.175434231758118,
+        "ppl": 480.7917536473659,
+        "bpb": 2.1675197865738234,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 11.160181522369385,
+        "ppl": 70275.71165004247,
+        "bpb": 5.649188371645978,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "A",
+      "step": 250,
+      "train_loss": 6.103705406188965,
+      "old": {
+        "loss": 6.151882529258728,
+        "ppl": 469.6005920461507,
+        "bpb": 2.1592533587795804,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 10.360889792442322,
+        "ppl": 31599.2856226823,
+        "bpb": 5.244593738735551,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "A",
+      "step": 300,
+      "train_loss": 5.7096991539001465,
+      "old": {
+        "loss": 5.967973530292511,
+        "ppl": 390.7130996996453,
+        "bpb": 2.0947030163699303,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.555106282234192,
+        "ppl": 14116.594259957688,
+        "bpb": 4.836713022207078,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    }
+  ],
+  "history_b": [
+    {
+      "phase": "B",
+      "step": 0,
+      "train_loss": null,
+      "old": {
+        "loss": 5.967973530292511,
+        "ppl": 390.7130996996453,
+        "bpb": 2.0947030163699303,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.555106282234192,
+        "ppl": 14116.594259957688,
+        "bpb": 4.836713022207078,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 50,
+      "train_loss": 6.622054100036621,
+      "old": {
+        "loss": 7.7916339635849,
+        "ppl": 2420.268984478473,
+        "bpb": 2.7347908101683096,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.585375785827637,
+        "ppl": 724.4232245047181,
+        "bpb": 3.333460861514574,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 100,
+      "train_loss": 6.51013708114624,
+      "old": {
+        "loss": 7.995790660381317,
+        "ppl": 2968.436494580936,
+        "bpb": 2.8064479055660865,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.522784233093262,
+        "ppl": 680.4703383331506,
+        "bpb": 3.3017775532133995,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 150,
+      "train_loss": 6.494123458862305,
+      "old": {
+        "loss": 8.038671910762787,
+        "ppl": 3098.495378158843,
+        "bpb": 2.8214988242847854,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.457330763339996,
+        "ppl": 637.3575259440215,
+        "bpb": 3.2686455670111245,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 200,
+      "train_loss": 6.051694869995117,
+      "old": {
+        "loss": 8.04941874742508,
+        "ppl": 3131.973974172789,
+        "bpb": 2.82527086366443,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.406458139419556,
+        "ppl": 605.7444148429075,
+        "bpb": 3.242894280178519,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 250,
+      "train_loss": 6.337393760681152,
+      "old": {
+        "loss": 8.082392394542694,
+        "ppl": 3236.9680853327777,
+        "bpb": 2.8368443060946613,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.368328928947449,
+        "ppl": 583.0826417908182,
+        "bpb": 3.2235936001683134,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "phase": "B",
+      "step": 300,
+      "train_loss": 6.442645072937012,
+      "old": {
+        "loss": 8.114790081977844,
+        "ppl": 3343.555637920542,
+        "bpb": 2.848215592051168,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.345079123973846,
+        "ppl": 569.6824634725374,
+        "bpb": 3.2118247478753057,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    }
+  ],
+  "importance": {
+    "method": "Fisher diagonal on phase A",
+    "batches": 8
+  },
+  "arms": [
+    {
+      "name": "phase_a",
+      "fraction": null,
+      "old": {
+        "loss": 5.967973530292511,
+        "ppl": 390.7130996996453,
+        "bpb": 2.0947030163699303,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.555106282234192,
+        "ppl": 14116.594259957688,
+        "bpb": 4.836713022207078,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "name": "phase_b_no_rollback",
+      "fraction": 0.0,
+      "old": {
+        "loss": 8.114790081977844,
+        "ppl": 3343.555637920542,
+        "bpb": 2.848215592051168,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 6.345079123973846,
+        "ppl": 569.6824634725374,
+        "bpb": 3.2118247478753057,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "name": "global_rollback",
+      "fraction": 1.0,
+      "old": {
+        "loss": 5.967973530292511,
+        "ppl": 390.7130996996453,
+        "bpb": 2.0947030163699303,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.555106282234192,
+        "ppl": 14116.594259957688,
+        "bpb": 4.836713022207078,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "name": "importance_10",
+      "fraction": 0.1,
+      "old": {
+        "loss": 6.074604153633118,
+        "ppl": 434.6774029853508,
+        "bpb": 2.13212937009205,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 8.966900825500488,
+        "ppl": 7839.268657416529,
+        "bpb": 4.538968454194597,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "name": "importance_25",
+      "fraction": 0.25,
+      "old": {
+        "loss": 5.971808671951294,
+        "ppl": 392.2144168267112,
+        "bpb": 2.0960491153028564,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.239412069320679,
+        "ppl": 10294.9840413086,
+        "bpb": 4.67691131351513,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    },
+    {
+      "name": "importance_50",
+      "fraction": 0.5,
+      "old": {
+        "loss": 5.967138648033142,
+        "ppl": 390.3870363953767,
+        "bpb": 2.0944099804879617,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "new": {
+        "loss": 9.424716234207153,
+        "ppl": 12390.882937703842,
+        "bpb": 4.770710695845605,
+        "tokens": 4096,
+        "bytes": 11674
+      }
+    }
+  ],
+  "note": "Post-hoc rollback after phase B. The global arm restores all phase-A weights; the importance arms restore the top-k phase-A parameters by Fisher importance. Old = TinyStories, new = WikiText-2; both use the TinyStories BPE-8k tokenizer."
+}

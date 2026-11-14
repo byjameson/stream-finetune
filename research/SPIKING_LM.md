@@ -148,7 +148,7 @@ python research/plot_spiking.py
 - GPU time is not an energy measurement. Event-driven efficiency needs
   neuromorphic hardware; this run only shows that the dynamics fit in 6 GB.
 
-## Deferred: per-synapse "orphan" copies
+## Per-synapse shadow copies
 
 A backup copy next to every synapse sounds biological, but the name is
 misleading: an orphan synapse in neuroscience is a synapse without a proper
@@ -156,14 +156,11 @@ pre- or post-synaptic partner, not a saved old weight. The engineering idea is
 a **shadow weight / rollback buffer**: keep the previous value of a connection
 and restore it if a change hurts performance.
 
-That is logical for continual learning, where a new task can overwrite an old
-one. It is not useful in this single-task run: validation bpb falls
-monotonically, so a rollback either never triggers or becomes early stopping.
-A full per-synapse copy also doubles adapter/weight memory (cheap at 4.3M,
-expensive at 3B). The fair test is a two-task or domain-shift experiment with
-three arms: no rollback, global checkpoint rollback, and selective per-synapse
-rollback by importance. That is deferred until the spiking model has a
-sequential-learning setup.
+The sequential test is now in [`SPIKING_SHIFT.md`](SPIKING_SHIFT.md). After
+TinyStories -> WikiText, restoring the top 10% of phase-A parameters by Fisher
+importance recovers about 95% of the old-task performance while keeping 18% of
+the new-task gain on two seeds. Global rollback recovers the old task but
+discards all new learning. Online rollback remains future work.
 
 ## Next
 
