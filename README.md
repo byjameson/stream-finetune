@@ -141,6 +141,25 @@ Six worked recipes: [`COOKBOOK.md`](COOKBOOK.md).
 The same commands are in [`QUICKSTART.md`](QUICKSTART.md), which is what a pip user should
 read — this README also documents the experiments behind the numbers.
 
+### Spiking LM (from scratch)
+
+A separate, small product line: LIF neurons, synaptic currents and a runnable
+HTTP server. It is a research model, not a general assistant.
+
+```bash
+streamft spiking tokenize --text stories.txt --out data/stories.pt
+streamft spiking train --data data/ts_train.pt --max-tokens 5000000 \
+  --valid data/ts_valid.pt --out checkpoints/spiking_4m \
+  --steps 300 --dim 256 --layers 1 --adapt 0.1
+streamft spiking generate --model checkpoints/spiking_4m --prompt "Once upon a time"
+streamft spiking serve --model checkpoints/spiking_4m --port 8011
+```
+
+It supports checkpointed resume sessions, a `/generate` endpoint, an
+OpenAI-shaped `/v1/chat/completions` endpoint and optional online per-synapse
+rollback. See [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md) and
+[`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
+
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
 `scripts/verify_gradients.py` the gradient check, `scripts/e2e_wheel.py` the clean-venv
