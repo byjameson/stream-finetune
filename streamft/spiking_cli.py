@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -125,29 +126,51 @@ def train_cmd(args) -> int:
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr,
                             weight_decay=0.01)
+    total_steps = args.total_steps or (start_step + args.steps)
+
+    def lr_at(step: int) -> float:
+        if args.lr_schedule != "cosine":
+            return args.lr
+        if args.warmup and step < args.warmup:
+            return args.lr * (step + 1) / args.warmup
+        progress = min(1.0, max(0.0, (step - args.warmup)
+                                / max(total_steps - args.warmup, 1)))
+        return args.min_lr + 0.5 * (args.lr - args.min_lr) * (
+            1.0 + math.cos(math.pi * progress))
+
     sampler = RandomWindows(train_tokens, args.seq, args.batch,
                             args.seed + start_step, device)
     history = []
     print(json.dumps({
         "event": "start", "device": str(device), "params": count_params(model),
         "start_step": start_step, "steps": args.steps,
-        "rollback": rollback_on, "old_bpb": best_old,
+        "total_steps": total_steps, "rollback": rollback_on,
+        "old_bpb": best_old,
     }), flush=True)
 
     model.train()
+    amp = bool(args.amp and device.type == "cuda")
     for i in range(1, args.steps + 1):
         step = start_step + i
+        current_lr = lr_at(step - 1)
+        for group in opt.param_groups:
+            group["lr"] = current_lr
+        t0 = time.perf_counter()
         x, y = sampler.next()
-        logits = model(x)
-        loss = F.cross_entropy(logits.reshape(-1, model.vocab), y.reshape(-1))
+        with torch.autocast("cuda", dtype=torch.bfloat16, enabled=amp):
+            logits = model(x)
+            loss = F.cross_entropy(logits.reshape(-1, model.vocab),
+                                   y.reshape(-1))
         opt.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
+        step_s = time.perf_counter() - t0
 
         if args.eval_every and (i % args.eval_every == 0 or i == args.steps):
             rec = {"event": "eval", "step": step,
-                   "train_loss": float(loss.detach())}
+                   "train_loss": float(loss.detach()),
+                   "step_s": round(step_s, 4), "lr": current_lr}
             if new_batches:
                 rec["new"] = evaluate_bpb(model, tok, new_batches)
             if old_batches:
@@ -174,6 +197,11 @@ def train_cmd(args) -> int:
                     best_old = after if applied else current_old
                 else:
                     best_old = min(best_old, current_old)
+            if args.sample_every and i % args.sample_every == 0:
+                rec["sample"] = generate(
+                    model, tok, args.sample_prompt, args.sample_tokens, device,
+                    temperature=0.8, top_k=50, repetition_penalty=1.1)
+                model.train()
             history.append(rec)
             print(json.dumps(rec), flush=True)
 
@@ -183,6 +211,8 @@ def train_cmd(args) -> int:
                 "name": model_name,
                 "data": args.data,
                 "seed": args.seed,
+                "total_steps": total_steps,
+                "lr_schedule": args.lr_schedule,
                 "source": "resume:" + args.resume if args.resume else "scratch",
             })
             print(json.dumps({"event": "checkpoint", "step": step,
@@ -193,6 +223,8 @@ def train_cmd(args) -> int:
         "name": model_name,
         "data": args.data,
         "seed": args.seed,
+        "total_steps": total_steps,
+        "lr_schedule": args.lr_schedule,
         "source": "resume:" + args.resume if args.resume else "scratch",
     })
     (Path(args.out) / "training.json").write_text(
@@ -279,10 +311,22 @@ def main(argv=None) -> int:
     tr.add_argument("--dim", type=int, default=256)
     tr.add_argument("--layers", type=int, default=1)
     tr.add_argument("--lr", type=float, default=1e-3)
+    tr.add_argument("--min-lr", type=float, default=1e-5)
+    tr.add_argument("--lr-schedule", choices=["constant", "cosine"],
+                    default="constant")
+    tr.add_argument("--warmup", type=int, default=0)
+    tr.add_argument("--total-steps", type=int, default=0,
+                    help="absolute step count for the cosine schedule (0 = session end)")
     tr.add_argument("--adapt", type=float, default=0.1)
+    tr.add_argument("--amp", action="store_true",
+                    help="bf16 autocast on CUDA (params stay fp32)")
     tr.add_argument("--eval-every", type=int, default=100)
     tr.add_argument("--eval-batches", type=int, default=8)
     tr.add_argument("--eval-batch-size", type=int, default=4)
+    tr.add_argument("--sample-every", type=int, default=0,
+                    help="generate a sample during eval every N steps (0=off)")
+    tr.add_argument("--sample-prompt", default="Once upon a time")
+    tr.add_argument("--sample-tokens", type=int, default=48)
     tr.add_argument("--save-every", type=int, default=0)
     tr.add_argument("--rollback-threshold", type=float, default=0.0,
                     help="relative old-bpb degradation that triggers rollback (0=off)")

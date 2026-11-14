@@ -166,11 +166,16 @@ streamft spiking train \
   --dim 512 --layers 2 --adapt 0.1
 ```
 
-This is a 9,438,210-parameter model. At 300 steps it reached 2.159 bpb and at
-600 steps 2.152 bpb. The 4.3M model reached 2.027 at 300 steps and 1.916 at
-1000 steps (5M-token slice), so more parameters alone did **not** help at this
-token/step budget. Resume sessions are supported, so a larger run can be split
-across sessions.
+The 9.4M model at 300 steps reached 2.159 bpb and at 600 steps 2.152 bpb. The
+4.3M model reached 2.027 at 300 steps and 1.916 at 1000 steps (5M-token slice),
+so more parameters alone did **not** help at this token/step budget. Resume
+sessions are supported, so a larger run can be split across sessions.
+
+The ready-to-run 20.97M configuration is
+[`scripts/train_spiking_20m.ps1`](../scripts/train_spiking_20m.ps1) /
+[`scripts/train_spiking_20m.sh`](../scripts/train_spiking_20m.sh):
+10,000 steps, batch 256 x seq 64 = 164M tokens, cosine LR with warmup,
+bf16 autocast, checkpoints every 500 steps.
 
 ### Measured product runs
 
@@ -227,6 +232,17 @@ it:
 - pin checkpoints and add a model registry/version field;
 - evaluate on a domain-specific held-out set, not only TinyStories bpb;
 - keep the model card honest: this is a small research model, not an assistant.
+
+## Deployment templates
+
+Ready-to-adapt files are in [`deploy/`](../deploy/README.md):
+
+- `deploy/spiking.service` — systemd unit, localhost bind, API-key env file;
+- `deploy/Caddyfile` — automatic HTTPS;
+- `deploy/nginx-spiking.conf` — TLS, per-IP rate limit, reverse proxy.
+
+They are templates, not an automatic installer; adjust paths, hostnames and
+certificate mounts for the target machine.
 
 ## Reproduce the reference numbers
 
