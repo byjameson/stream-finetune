@@ -572,6 +572,12 @@ new-task gain; replay+rollback keeps **6.5-12.0%**; replay+EWC keeps **99.3%**.
 EWC is safe but does not beat simple replay.
 [`research/SPIKING_REPLAY_EWC_21M.md`](research/SPIKING_REPLAY_EWC_21M.md)
 
+**600-step phase B + generation probe:** replay keeps **99.7%** of the new gain;
+naive samples collapse from **144 to 81 chars** and repeated 4-grams quadruple.
+Replay keeps the phase-A length/repetition profile; EWC is slightly better on
+distinct-2/length but costs 0.018 new-task bpb.
+[`research/SPIKING_LONG_REPLAY.md`](research/SPIKING_LONG_REPLAY.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
