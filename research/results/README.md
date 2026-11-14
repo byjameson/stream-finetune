@@ -37,6 +37,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_shift_seed1.json` | `research/spiking_shift.py` (`--seed 1`) | TinyStories -> WikiText, seed 1: 10% rollback recovers 94.1% old, keeps 18.3% new |
 | `spiking_replay.json` | `research/spiking_replay.py` | 20% old-data replay: old 2.079 vs naive 2.632; new 3.285 vs naive 3.274 |
 | `spiking_replay_rollback.json` | `research/spiking_replay_rollback.py` | controlled seed 1: replay keeps 98.9% new gain; replay+rollback only 16.0% |
+| `spiking_replay_ewc_21m.json` | `research/spiking_replay_ewc.py` | 21M, seeds 0/1: replay 99.6-99.8% new gain; rollback 6.5-12%; EWC 99.3% |
 
 ## Local assistant
 

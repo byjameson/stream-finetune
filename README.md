@@ -567,6 +567,11 @@ additive. Replay alone keeps **98.9%** of the new gain; replay followed by Fishe
 rollback keeps only **16.0%**. Replay prevents the forgetting; rollback after it
 spends the new learning. [`research/SPIKING_REPLAY_ROLLBACK.md`](research/SPIKING_REPLAY_ROLLBACK.md)
 
+**21M, two seeds:** replay-first holds at 21M. Replay keeps **99.6-99.8%** of the
+new-task gain; replay+rollback keeps **6.5-12.0%**; replay+EWC keeps **99.3%**.
+EWC is safe but does not beat simple replay.
+[`research/SPIKING_REPLAY_EWC_21M.md`](research/SPIKING_REPLAY_EWC_21M.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
