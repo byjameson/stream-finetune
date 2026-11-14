@@ -142,13 +142,16 @@ def count_params(model: nn.Module) -> int:
 def save_checkpoint(model: SpikingLM, out_dir: str | Path,
                     tokenizer_path: str | Path | None = None,
                     meta: dict | None = None) -> Path:
+    from safetensors.torch import save_file
+
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    torch.save({
-        "config": asdict(model.config),
-        "state": model.state_dict(),
-        "meta": meta or {},
-    }, out / "model.pt")
+    state = {k: v.detach().cpu().contiguous()
+             for k, v in model.state_dict().items()}
+    save_file(state, out / "model.safetensors")
+    (out / "meta.json").write_text(json.dumps({
+        "config": asdict(model.config), "meta": meta or {},
+    }, indent=2) + "\n", encoding="utf-8")
     (out / "config.json").write_text(
         json.dumps(asdict(model.config), indent=2) + "\n", encoding="utf-8")
     (out / "model_card.json").write_text(json.dumps({
@@ -164,11 +167,18 @@ def save_checkpoint(model: SpikingLM, out_dir: str | Path,
 
 def load_checkpoint(path: str | Path):
     root = Path(path)
-    ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
+    safe = root / "model.safetensors"
+    if safe.exists():
+        from safetensors.torch import load_file
+        ck = json.loads((root / "meta.json").read_text(encoding="utf-8"))
+        state = load_file(str(safe))
+    else:
+        ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
+        state = ck["state"]
     defaults = {f.name: f.default for f in fields(SpikingConfig)
                 if f.default is not MISSING}
     model = SpikingLM(SpikingConfig(**{**defaults, **ck["config"]}))
-    model.load_state_dict(ck["state"])
+    model.load_state_dict(state)
     model.eval()
     tok = None
     tok_path = root / "tokenizer.json"

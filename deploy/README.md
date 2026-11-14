@@ -24,7 +24,8 @@ Copy or train a checkpoint:
   --adapt 0.1 --tokenizer /opt/spiking/data/ts_bpe8k.json
 ```
 
-The checkpoint directory must contain `model.pt` and `tokenizer.json`.
+The checkpoint directory must contain `model.safetensors` (new) or `model.pt`
+(old) plus `tokenizer.json`.
 
 ## 2. systemd
 

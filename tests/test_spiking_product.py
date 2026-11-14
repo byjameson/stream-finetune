@@ -30,6 +30,8 @@ class FakeTokenizer:
 def test_checkpoint_roundtrip_without_tokenizer(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None, meta={"step": 3})
+    assert (tmp_path / "model.safetensors").exists()
+    assert not (tmp_path / "model.pt").exists()
     loaded, tok, meta = load_checkpoint(tmp_path)
     assert tok is None
     assert meta["step"] == 3
