@@ -13,6 +13,11 @@ LIF language model with:
 It is **not** a general chatbot. The reference model is trained on TinyStories
 and will produce story-like fragments, not reliable answers.
 
+Current verification: 61 tests pass, CI is green, the wheel `streamft-0.6.4`
+installs the `streamft spiking` command in a fresh venv, and the HTTP server was
+smoke-tested with health, metrics, auth, generation and the OpenAI-shaped
+endpoint.
+
 ## Install
 
 From this checkout:
