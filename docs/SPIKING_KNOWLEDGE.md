@@ -84,9 +84,19 @@ This catches cases such as:
 - "X doğrudur" vs "X doğru değildir"
 - "speed is 299792458" vs "speed is 300000000"
 
-It is a lexical conflict detector, not a trained NLI model. Subtle entailment
-and negation inside long paraphrases can still pass; human review remains the
-final gate for high-impact claims.
+By default this is a lexical conflict detector. For semantic contradictions
+that the lexical check misses, pass an optional trained NLI model:
+
+```bash
+streamft spiking knowledge --db data/knowledge.db verify \
+  --nli-model MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli \
+  --nli-threshold 0.80
+```
+
+The NLI backend is loaded only when requested, uses `transformers` text-pair
+classification, and marks `CONTRADICTION` pairs as `nli` conflicts. It is
+slower; the lexical check remains the fast first pass. Human review is still
+the final gate for high-impact claims.
 
 ## Demo
 
@@ -132,9 +142,10 @@ review, export and `stats`-level behavior without a network or GPU.
 - This is **not** a general fact-checker. Two coordinated fake sites can pass
   corroboration. Treat `official` source lists and human review as the real
   trust anchors.
-- The conflict check is lexical: it catches simple negation and numeric
-  mismatch, not a trained NLI model or long paraphrases. Subtle entailment and
-  negation inside a long sentence can still pass; review those by hand.
+- The default conflict check is lexical: it catches simple negation and numeric
+  mismatch, not every long paraphrase. The optional NLI backend improves recall
+  but adds a model download, latency and its own domain errors. Review
+  high-impact claims by hand.
 - The knowledge DB is local SQLite; it has no signatures, replication or
   access control.
 - PII and copyrighted text need separate filtering/retention rules.

@@ -249,7 +249,34 @@ def list_docs(conn, status: str = ""):
     return [dict(r) for r in rows]
 
 
-def verify(conn, threshold: float = 0.70, min_support: int = 2) -> list:
+def make_nli_fn(model_name: str, device: int = -1, threshold: float = 0.80):
+    """Optional trained NLI backend; import transformers only when requested."""
+    from transformers import pipeline
+
+    pipe = pipeline("text-classification", model=model_name, device=device)
+
+    def check(a_text: str, b_text: str):
+        for sa in _sentences(a_text):
+            for sb in _sentences(b_text):
+                ta = {t for t in (_norm_token(x) for x in re.findall(
+                    r"[A-Za-z0-9ğüşöçıĞÜŞÖÇİ']+", sa)) if t}
+                tb = {t for t in (_norm_token(x) for x in re.findall(
+                    r"[A-Za-z0-9ğüşöçıĞÜŞÖÇİ']+", sb)) if t}
+                if len(ta & tb) < 2:
+                    continue
+                out = pipe({"text": sa, "text_pair": sb},
+                           truncation=True)[0]
+                label = str(out["label"]).upper()
+                score = float(out["score"])
+                if "CONTRADICTION" in label and score >= threshold:
+                    return {"reason": "nli", "similarity": score,
+                            "sentence_a": sa, "sentence_b": sb}
+        return None
+    return check
+
+
+def verify(conn, threshold: float = 0.70, min_support: int = 2,
+           nli_fn=None) -> list:
     docs = conn.execute(
         "SELECT d.id,d.text,d.status,s.trust,s.domain FROM documents d "
         "JOIN sources s ON s.id=d.source_id WHERE d.status='pending'").fetchall()
@@ -275,6 +302,8 @@ def verify(conn, threshold: float = 0.70, min_support: int = 2) -> list:
             # A contradiction can have low document-level shingle overlap
             # ("is true" vs "is not true"), so check claims independently.
             conflict = claim_conflict(d["text"], o["text"])
+            if not conflict and nli_fn is not None:
+                conflict = nli_fn(d["text"], o["text"])
             if conflict:
                 first_conflict = first_conflict or conflict
                 conn.execute(
@@ -367,6 +396,10 @@ def main(argv=None) -> int:
     ve = sub.add_parser("verify")
     ve.add_argument("--threshold", type=float, default=0.70)
     ve.add_argument("--min-support", type=int, default=2)
+    ve.add_argument("--nli-model", default="",
+                    help="optional transformers NLI model id")
+    ve.add_argument("--nli-threshold", type=float, default=0.80)
+    ve.add_argument("--nli-device", type=int, default=-1)
 
     rv = sub.add_parser("review")
     rv.add_argument("--id", type=int, required=True)
@@ -400,7 +433,11 @@ def main(argv=None) -> int:
         print(json.dumps(list_docs(conn, args.status), indent=2))
         return 0
     if args.cmd == "verify":
-        print(json.dumps(verify(conn, args.threshold, args.min_support), indent=2))
+        nli_fn = (make_nli_fn(args.nli_model, args.nli_device,
+                              args.nli_threshold)
+                  if args.nli_model else None)
+        print(json.dumps(verify(conn, args.threshold, args.min_support,
+                                nli_fn=nli_fn), indent=2))
         return 0
     if args.cmd == "review":
         if args.approve == args.reject:

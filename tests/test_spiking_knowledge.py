@@ -64,6 +64,23 @@ def test_turkish_negation():
     assert c["reason"] == "negation"
 
 
+def test_optional_nli_can_flag_semantic_conflict(tmp_path):
+    conn = connect(str(tmp_path / "k.db"))
+    add_doc(conn, "The cat is on the mat.", "on", "https://a.example/",
+            "reference")
+    add_doc(conn, "The cat is under the mat.", "under", "https://b.example/",
+            "reference")
+
+    def fake_nli(a, b):
+        if "under" in a or "under" in b:
+            return {"reason": "nli", "similarity": 0.99,
+                    "sentence_a": a, "sentence_b": b}
+        return None
+
+    changed = verify(conn, threshold=0.5, min_support=1, nli_fn=fake_nli)
+    assert all(c["status"] == "contradicted" for c in changed)
+
+
 def test_untrusted_needs_human_review(tmp_path):
     conn = connect(str(tmp_path / "k.db"))
     row = add_doc(conn, "A claim from an unknown page.", "claim",
