@@ -176,11 +176,11 @@ per-synapse rollback. See
 [`docs/SPIKING_50M.md`](docs/SPIKING_50M.md) and
 [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
 
-### Local verified assistant
+### Parked experiment: Qwen verified assistant
 
-The product-facing path uses a pretrained instruction model plus retrieval over
-the verified knowledge ledger. It is the realistic local assistant; the
-spiking LM stays a research line.
+**Not the active direction.** The project direction is the from-scratch spiking
+research line. This Qwen + retrieval experiment is kept as a parked product
+prototype, not as the target model.
 
 ```bash
 streamft assistant ask \
@@ -556,6 +556,11 @@ task but discards all new learning. [`research/SPIKING_SHIFT.md`](research/SPIKI
 1.327 bpb; the 4.3M model reached 1.336 on the same budget, and the larger model was
 slightly worse on a fixed sample-quality probe. More parameters did not buy quality at
 this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md)
+
+**Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
+into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains
+**99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback
+here. [`research/SPIKING_REPLAY.md`](research/SPIKING_REPLAY.md)
 
 ## License
 
