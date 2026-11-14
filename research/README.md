@@ -28,6 +28,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   300 steps reaches 2.053/2.077 bpb on two seeds, 1000 steps 1.937 (1.841 with
   spike-frequency adaptation), with 0.053-0.066 mean firing. The rate control is weaker
   (2.207 at 1000 steps) and saturates. [`SPIKING_LM.md`](SPIKING_LM.md)
+- **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
+  Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
+  new-task gain on two seeds. Global rollback throws away all new learning.
+  [`SPIKING_SHIFT.md`](SPIKING_SHIFT.md)
 
 ## What each script does
 
@@ -55,6 +59,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `demo_fresh_test.py` | fresh 400-row check for the 130 KB / 1.7 MB demos | ~2 min |
 | `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention; `JOINT=1` adds SST-2 rows, `TASK_RATIO=2` trains 2 task steps per trigger, `INIT_ADAPTER` + `ONLY_TRIGGERS=1` does task-first then watermark | ~5 min |
 | `spiking_lm.py` | 4.3M LIF/rate LM from scratch; synaptic current, surrogate spikes, bpb + firing rate; `--adapt` adds spike-frequency adaptation | ~2 min (300 steps, both modes) |
+| `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
+| `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |

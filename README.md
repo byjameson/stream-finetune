@@ -489,6 +489,11 @@ adding spike-frequency adaptation reaches 1.84. The rate control is weaker and s
 This is the from-scratch starting point for the brain-like line, not a claim that spiking
 beats transformers. [`research/SPIKING_LM.md`](research/SPIKING_LM.md)
 
+**Spiking rollback:** after a TinyStories -> WikiText shift, restoring the top 10% of
+phase-A synapses by Fisher importance recovers 95.0%/94.1% of the old-task performance
+while keeping 18.3% of the new-task gain on two seeds. Global rollback restores the old
+task but discards all new learning. [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
