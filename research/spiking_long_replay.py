@@ -31,6 +31,7 @@ from streamft.spiking import (
     SpikingLM,
     fisher_importance,
     generate,
+    load_checkpoint,
 )
 from streamft.spiking_ingest import MixtureWindows
 
@@ -66,6 +67,75 @@ def quality(samples):
     }
 
 
+STOP = set("""a an the and or but if of to in on at for with as by from is are was
+were be been being it its this that these those there here he she they we you i
+his her their our your my me him them us do does did will would can could should
+may might must not no so then than just very really about into over under""".split())
+
+
+def _content(text):
+    return {t for t in _tokens(text) if t.isalnum() and t not in STOP}
+
+
+def _lcs(a, b):
+    prev = [0] * (len(b) + 1)
+    for x in a:
+        cur = [0]
+        for j, y in enumerate(b, 1):
+            cur.append(prev[j - 1] + 1 if x == y else max(prev[j], cur[-1]))
+        prev = cur
+    return prev[-1]
+
+
+def _rouge_l(ref, gen):
+    r, g = _tokens(ref), _tokens(gen)
+    if not r or not g:
+        return 0.0
+    lcs = _lcs(r, g)
+    p = lcs / len(g)
+    rec = lcs / len(r)
+    return 0.0 if p + rec == 0 else 2 * p * rec / (p + rec)
+
+
+@torch.no_grad()
+def _greedy_ids(model, tok, prompt_ids, n, device):
+    ids = prompt_ids.tolist()
+    state = model.init_state(1, device)
+    last = None
+    for tid in ids:
+        last, state = model.step(torch.tensor([tid], device=device), state)
+    out = []
+    for _ in range(n):
+        nxt = int(last.argmax(dim=-1).item())
+        out.append(nxt)
+        last, state = model.step(torch.tensor([nxt], device=device), state)
+    return tok.decode(out)
+
+
+def semantic_probe(model, tok, valid, device, n=8, gen_len=24):
+    rows = []
+    for i in range(n):
+        start = 1000 + i * 500
+        if start + 24 + gen_len >= len(valid):
+            break
+        prompt = valid[start:start + 24]
+        ref = tok.decode(valid[start + 24:start + 24 + gen_len].tolist())
+        text = _greedy_ids(model, tok, prompt, gen_len, device)
+        cr, cg = _content(ref), _content(text)
+        inter = len(cr & cg)
+        prec = inter / max(len(cg), 1)
+        rec = inter / max(len(cr), 1)
+        f1 = 0.0 if prec + rec == 0 else 2 * prec * rec / (prec + rec)
+        rows.append({"rouge_l": _rouge_l(ref, text), "content_f1": f1,
+                     "ref": ref, "gen": text})
+    return {
+        "n": len(rows),
+        "rouge_l": sum(r["rouge_l"] for r in rows) / max(len(rows), 1),
+        "content_f1": sum(r["content_f1"] for r in rows) / max(len(rows), 1),
+        "rows": rows,
+    }
+
+
 def samples_for(model, tok, device, max_new=48):
     out = []
     for p in PROMPTS:
@@ -77,6 +147,8 @@ def samples_for(model, tok, device, max_new=48):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--init-model", default="",
+                    help="optional existing checkpoint to use as phase A (skips training)")
     ap.add_argument("--steps-a", type=int, default=300)
     ap.add_argument("--steps-b", type=int, default=600)
     ap.add_argument("--batch", type=int, default=16)
@@ -99,7 +171,6 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(args.seed)
-    tok = Tokenizer.from_file(str(ROOT / "data/ts_bpe8k.json"))
     a_train = load_tokens(str(ROOT / "data/ts_train.pt"), args.a_tokens)
     a_valid = load_tokens(str(ROOT / "data/ts_valid.pt"))
     b_train = load_tokens(str(ROOT / "data/ts_wt2_train.pt"))
@@ -109,16 +180,23 @@ def main():
     new_batches = fixed_batches(b_valid, args.seq, args.eval_batches,
                                 args.eval_batch_size, args.seed + 200, device)
 
-    model = SpikingLM(SpikingConfig(vocab=tok.get_vocab_size(), dim=args.dim,
-                                    layers=args.layers, adapt=args.adapt)).to(device)
     t0 = time.perf_counter()
-    _losses_a, _ = train_b(
-        model, RandomWindows(a_train, args.seq, args.batch, args.seed, device),
-        args.steps_a, args.lr_a, device, args.amp)
+    if args.init_model:
+        model, tok, _meta = load_checkpoint(args.init_model)
+        model.to(device)
+    else:
+        tok = Tokenizer.from_file(str(ROOT / "data/ts_bpe8k.json"))
+        model = SpikingLM(SpikingConfig(vocab=tok.get_vocab_size(), dim=args.dim,
+                                        layers=args.layers, adapt=args.adapt)).to(device)
+        _losses_a, _ = train_b(
+            model, RandomWindows(a_train, args.seq, args.batch, args.seed, device),
+            args.steps_a, args.lr_a, device, args.amp)
     state_a = clone_state(model)
     anchor = {k: v.to(device) for k, v in state_a.items()}
     before = eval_both(model, old_batches, new_batches, tok)
     a_quality = samples_for(model, tok, device)
+    a_sem = semantic_probe(model, tok, a_valid, device)
+    a_quality["semantic"] = {k: v for k, v in a_sem.items() if k != "rows"}
     importance = fisher_importance(model, old_batches[:args.fisher_batches])
     flat = torch.cat([v.float().flatten() for v in importance.values()])
     scale = float(flat.mean().clamp_min(1e-12))
@@ -142,10 +220,13 @@ def main():
                               ewc_lambda=lam)
         after = eval_both(model, old_batches, new_batches, tok)
         q = samples_for(model, tok, device)
+        sem = semantic_probe(model, tok, a_valid, device)
+        q["semantic"] = {k: v for k, v in sem.items() if k != "rows"}
         row = {"arm": name, "replay": replay, "ewc_lambda": lam,
                "train_loss": losses[-1], "sec": round(sec, 1),
                "before": before, "after": after,
                "quality": {k: v for k, v in q.items() if k != "samples"},
+               "semantic_rows": sem["rows"],
                "samples": q["samples"]}
         rows.append(row)
         print(json.dumps({"event": "arm", "arm": name,

@@ -43,10 +43,14 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 - **21M, two seeds:** replay-first holds at 21M. Replay alone keeps 99.6-99.8% of
   the new gain; replay+rollback keeps 6.5-12.0%; replay+EWC keeps 99.3%. EWC is
   safe but does not beat replay. [`SPIKING_REPLAY_EWC_21M.md`](SPIKING_REPLAY_EWC_21M.md)
-- **Longer phase B and generation quality:** with 600 steps, replay keeps 99.7%
-  of the new gain; EWC keeps 99.1% and slightly improves distinct-2/mean length.
-  Naive training collapses samples from 144 to 81 chars and quadruples repeated
-  4-grams. [`SPIKING_LONG_REPLAY.md`](SPIKING_LONG_REPLAY.md)
+- **Longer phase B and generation quality:** at 21M, 600 steps and two seeds;
+  replay keeps 99.7% of the new gain; EWC keeps 99.1-99.2%. Naive training
+  collapses samples from 144-151 to 78-81 chars and quadruples repeated 4-grams.
+  [`SPIKING_LONG_REPLAY.md`](SPIKING_LONG_REPLAY.md)
+- **50M long phase B:** replay keeps 98.2% of the new gain and improves the
+  semantic probe (content F1 0.140 -> 0.182); EWC keeps 91.7% and lowers it to
+  0.115; naive drops it to 0.000. The semantic signal is small, not competence.
+  [`SPIKING_LONG_REPLAY.md`](SPIKING_LONG_REPLAY.md)
 
 ## What each script does
 
