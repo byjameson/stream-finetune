@@ -62,6 +62,7 @@ class Handler(BaseHTTPRequestHandler):
                 "model": _state["name"],
                 "params": _state["params"],
                 "config": _state["config"],
+                "step": _state.get("meta", {}).get("step"),
             })
         elif self.path == "/v1/models":
             self._json(200, {"data": [{
@@ -139,6 +140,7 @@ def serve(model_path: str, host: str = "127.0.0.1", port: int = 8011,
         "name": meta.get("name", str(model_path)),
         "params": count_params(model),
         "config": model.config.__dict__,
+        "meta": meta,
         "api_key": api_key or os.environ.get("SPIKING_API_KEY", ""),
         "metrics": {"requests": 0, "generated_tokens": 0},
     })
