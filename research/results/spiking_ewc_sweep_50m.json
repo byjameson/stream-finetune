@@ -1,0 +1,96 @@
+{
+  "init_model": "checkpoints/spiking_50m_run",
+  "before": {
+    "old": {
+      "loss": 3.7225865721702576,
+      "ppl": 41.3712655978606,
+      "bpb": 1.3065931478823172,
+      "tokens": 4096,
+      "bytes": 16836
+    },
+    "new": {
+      "loss": 8.336925745010376,
+      "ppl": 4175.234256325362,
+      "bpb": 4.2200804601240565,
+      "tokens": 4096,
+      "bytes": 11674
+    }
+  },
+  "semantic_a": {
+    "n": 100,
+    "accuracy": 0.4,
+    "chance": 0.25,
+    "mean_margin": -0.2607371553655614
+  },
+  "arms": [
+    {
+      "lambda": 0.5,
+      "sec": 622.8,
+      "after": {
+        "old": {
+          "loss": 3.748729854822159,
+          "ppl": 42.467108337253755,
+          "bpb": 1.3157691961256253,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.375664055347443,
+          "ppl": 587.3753512059864,
+          "bpb": 3.22730657837394,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "semantic": {
+        "n": 100,
+        "accuracy": 0.39,
+        "chance": 0.25,
+        "mean_margin": -0.28617432436226764
+      }
+    },
+    {
+      "lambda": 2.0,
+      "sec": 603.9,
+      "after": {
+        "old": {
+          "loss": 3.7408885955810547,
+          "ppl": 42.13541487828367,
+          "bpb": 1.3130169873061477,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.409806966781616,
+          "ppl": 607.7763487126682,
+          "bpb": 3.2445894279280862,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "semantic": {
+        "n": 100,
+        "accuracy": 0.4,
+        "chance": 0.25,
+        "mean_margin": -0.30996680002583044
+      }
+    }
+  ],
+  "config": {
+    "init_model": "checkpoints/spiking_50m_run",
+    "cases": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\research\\semantic_cases.json",
+    "lambdas": "0.5,2",
+    "steps_b": 600,
+    "batch": 16,
+    "seq": 128,
+    "lr_b": 5e-05,
+    "replay": 0.2,
+    "fisher_batches": 8,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "a_tokens": 5000000,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_ewc_sweep_50m.json"
+  }
+}

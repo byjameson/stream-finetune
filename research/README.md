@@ -51,6 +51,13 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   semantic probe (content F1 0.140 -> 0.182); EWC keeps 91.7% and lowers it to
   0.115; naive drops it to 0.000. The semantic signal is small, not competence.
   [`SPIKING_LONG_REPLAY.md`](SPIKING_LONG_REPLAY.md)
+- **Narrative-coherence benchmark:** 100 held-out four-way next-sentence cases:
+  4.3M 0.29, 21M 0.41, 50M 0.40 (chance 0.25). 50M does not beat 21M; parameter
+  scaling alone is not buying semantics. [`SPIKING_SEMANTIC.md`](SPIKING_SEMANTIC.md)
+- **50M EWC sweep:** lambda 0.5/2.0 keep old bpb near 1.31 but new bpb
+  3.23/3.24 (worse than replay 3.16) and semantic accuracy 0.39/0.40. EWC is a
+  stabilizer, not a capability mechanism.
+  [`SPIKING_SEMANTIC.md`](SPIKING_SEMANTIC.md)
 
 ## What each script does
 
@@ -83,7 +90,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_replay.py` | TinyStories -> WikiText with 0/20/50% old-data replay; old/new bpb | ~5 min (300+900 steps) |
 | `spiking_replay_rollback.py` | controlled naive/replay/rollback/both arms from one phase-A state | ~6 min (300+1200 steps) |
 | `spiking_replay_ewc.py` | 21M, two seeds: naive/replay/replay+rollback/replay+EWC | ~25 min |
-| `spiking_long_replay.py` | 21M, 600-step phase B + generation-quality probe | ~20 min |
+| `spiking_long_replay.py` | 21M/50M, 600-step phase B + generation/semantic probes | ~20-30 min |
+| `make_semantic_cases.py` | build 100 held-out narrative-coherence cases | ~1 min |
+| `spiking_semantic_eval.py` | four-way next-sentence accuracy across checkpoints | ~2 min |
+| `spiking_ewc_sweep_50m.py` | 50M, 600-step EWC lambda sweep + semantic eval | ~25 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |

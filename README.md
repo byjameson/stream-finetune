@@ -582,6 +582,12 @@ held-out continuation probe (content F1 **0.140 -> 0.182**); EWC keeps 91.7% and
 lowers it to 0.115; naive drops it to 0.000. This is a small semantic signal, not
 semantic competence. [`research/SPIKING_LONG_REPLAY.md`](research/SPIKING_LONG_REPLAY.md)
 
+**Narrative-coherence benchmark:** 100 held-out four-way next-sentence cases —
+4.3M **0.29**, 21M **0.41**, 50M **0.40** (chance 0.25). 50M does not beat 21M,
+and EWC lambda 0.5/2.0 stays at 0.39/0.40 while costing new-task bpb. Parameter
+scaling is not buying semantics. The decision is to revise architecture/data,
+not just scale. [`research/SPIKING_SEMANTIC.md`](research/SPIKING_SEMANTIC.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
