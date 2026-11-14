@@ -4,7 +4,10 @@ from __future__ import annotations
 import argparse
 import json
 
+from pathlib import Path
+
 from streamft.assistant import AssistantConfig, KnowledgeIndex, LocalAssistant
+from streamft.assistant_eval import load_cases, run_eval
 
 
 def ask_cmd(args) -> int:
@@ -15,6 +18,21 @@ def ask_cmd(args) -> int:
                                       max_new_tokens=args.max_new,
                                       temperature=args.temperature),
                      ensure_ascii=False, indent=2))
+    return 0
+
+
+def eval_cmd(args) -> int:
+    assistant = LocalAssistant(AssistantConfig(model=args.model, db=args.db,
+                                               max_context=args.context))
+    payload = run_eval(assistant, load_cases(args.cases),
+                       max_new=args.max_new, temperature=args.temperature)
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps(payload, indent=2) + "\n",
+                                  encoding="utf-8")
+    print(json.dumps({k: payload[k] for k in
+                      ("n", "answer_accuracy", "citation_rate",
+                       "strict_accuracy")}, indent=2))
     return 0
 
 
@@ -39,9 +57,19 @@ def main(argv=None) -> int:
     ask.add_argument("--question", required=True)
     ask.add_argument("--max-new", type=int, default=192)
     ask.add_argument("--temperature", type=float, default=0.0)
-    ask.add_argument("--context", type=int, default=4)
+    ask.add_argument("--context", type=int, default=6)
     ask.add_argument("--no-knowledge", action="store_true")
     ask.set_defaults(func=ask_cmd)
+
+    ev = sub.add_parser("eval", help="held-out answer/citation evaluation")
+    ev.add_argument("--model", default="models/Qwen2.5-1.5B-Instruct")
+    ev.add_argument("--db", default="data/knowledge.db")
+    ev.add_argument("--cases", required=True)
+    ev.add_argument("--out", default="")
+    ev.add_argument("--max-new", type=int, default=160)
+    ev.add_argument("--temperature", type=float, default=0.0)
+    ev.add_argument("--context", type=int, default=6)
+    ev.set_defaults(func=eval_cmd)
 
     idx = sub.add_parser("index", help="refresh the verified-knowledge FTS index")
     idx.add_argument("--db", default="data/knowledge.db")

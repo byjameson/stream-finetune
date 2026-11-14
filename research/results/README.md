@@ -36,6 +36,15 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_shift.json` | `research/spiking_shift.py` | TinyStories -> WikiText, seed 0: 10% Fisher rollback recovers 95.0% old, keeps 18.3% new |
 | `spiking_shift_seed1.json` | `research/spiking_shift.py` (`--seed 1`) | TinyStories -> WikiText, seed 1: 10% rollback recovers 94.1% old, keeps 18.3% new |
 
+## Local assistant
+
+| file | script | what it pins |
+|---|---|---|
+| `assistant_eval.json` | `streamft assistant eval` | 10 held-out Python/NumPy questions against Qwen2.5-1.5B + verified FTS: answer 1.00, citation 1.00, strict 1.00 |
+
+Cases: `research/assistant_eval_cases.json`. Verified source build:
+`scripts/ingest_real_sources.ps1`.
+
 ## Behavioral bits
 
 | file | script | what it pins |

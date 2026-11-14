@@ -1,0 +1,52 @@
+[
+  {
+    "question": "How do you create a list in Python?",
+    "must_contain": ["square bracket", "brackets", "[]"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What does len() return for a string?",
+    "must_contain": ["length", "number of characters", "number of items"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "How do you define a function in Python?",
+    "must_contain": ["def"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What is a list comprehension?",
+    "must_contain": ["for", "comprehension"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What does math.sqrt return?",
+    "must_contain": ["square root"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "How do you import a module in Python?",
+    "must_contain": ["import"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What is a dictionary in Python?",
+    "must_contain": ["key", "value", "mapping"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What is a tuple in Python?",
+    "must_contain": ["immutable", "tuple"],
+    "source_domain": "docs.python.org"
+  },
+  {
+    "question": "What is NumPy used for?",
+    "must_contain": ["array", "numerical", "scientific"],
+    "source_domain": "numpy.org"
+  },
+  {
+    "question": "How do you create a NumPy array from a Python list?",
+    "must_contain": ["array", "np.array", "numpy.array"],
+    "source_domain": "numpy.org"
+  }
+]

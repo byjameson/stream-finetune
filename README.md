@@ -194,7 +194,9 @@ streamft assistant serve \
 
 The server exposes `/health`, `/metrics`, `/v1/models`,
 `/v1/chat/completions` and `/knowledge/search`. Answers carry source citations
-from verified documents only. See
+from verified documents only. A 10-question held-out smoke eval scored 1.00
+answer accuracy, 1.00 citation rate and 1.00 strict accuracy; the local server
+runs at `http://127.0.0.1:8014`. See
 [`docs/LOCAL_ASSISTANT.md`](docs/LOCAL_ASSISTANT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper

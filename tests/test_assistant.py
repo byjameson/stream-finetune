@@ -1,4 +1,4 @@
-from streamft.assistant import KnowledgeIndex, build_messages
+from streamft.assistant import KnowledgeIndex, build_messages, chunk_text
 from streamft.spiking_knowledge import add_doc, connect
 
 
@@ -17,6 +17,14 @@ def test_fts_only_indexes_verified(tmp_path):
     assert hits
     assert hits[0]["title"] == "speed"
     assert "299792458" in hits[0]["text"]
+
+
+def test_chunk_text_overlaps_and_covers():
+    text = " ".join(f"word{i}" for i in range(500))
+    chunks = chunk_text(text, size=120, overlap=20)
+    assert len(chunks) > 1
+    assert chunks[0].startswith("word0")
+    assert "word499" in chunks[-1]
 
 
 def test_build_messages_includes_context():
