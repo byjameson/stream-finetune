@@ -8,6 +8,12 @@
   `--rollback-fraction`; a rollback is kept only if it lowers old-task bpb.
 - Measured 4.3M model: 1.889 bpb on TinyStories; 9.4M model: 2.152 bpb at 600
   steps (more parameters did not help at this budget).
+- 20.97M run, 10,000 steps / 164M tokens, cosine LR + bf16: 1.327 bpb vs
+  **1.336** for the 4.3M model on the same budget. The 4096-token eval is
+  1.312 vs 1.322, but the fixed quality probe is slightly worse for 21M
+  (distinct-1 0.435 vs 0.452). No scaling win at this budget; still
+  research-grade text.
+- `deploy/`: systemd, Caddy and nginx templates; safetensors checkpoints.
 - 61 tests; `docs/SPIKING_PRODUCT.md`.
 
 ## 0.6.3 — fingerprint HTTP endpoint
