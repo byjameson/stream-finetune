@@ -35,6 +35,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_lm_adapt1000.json` | `research/spiking_lm.py` (`--adapt 0.1`) | 1000-step adaptation: bpb 1.841 vs 1.937 without adaptation; activity 0.053 |
 | `spiking_shift.json` | `research/spiking_shift.py` | TinyStories -> WikiText, seed 0: 10% Fisher rollback recovers 95.0% old, keeps 18.3% new |
 | `spiking_shift_seed1.json` | `research/spiking_shift.py` (`--seed 1`) | TinyStories -> WikiText, seed 1: 10% rollback recovers 94.1% old, keeps 18.3% new |
+| `spiking_replay.json` | `research/spiking_replay.py` | 20% old-data replay: old 2.079 vs naive 2.632; new 3.285 vs naive 3.274 |
 
 ## Local assistant
 

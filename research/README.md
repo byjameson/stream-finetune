@@ -32,6 +32,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
   new-task gain on two seeds. Global rollback throws away all new learning.
   [`SPIKING_SHIFT.md`](SPIKING_SHIFT.md)
+- **Sleep-like replay:** a 20% old-data replay mix during WikiText phase B keeps
+  TinyStories bpb at 2.079 (phase-A 2.077; naive 2.632) while retaining 99.2% of
+  the new-task gain. Replay beats post-hoc shadow rollback in this setup.
+  [`SPIKING_REPLAY.md`](SPIKING_REPLAY.md)
 
 ## What each script does
 
@@ -61,6 +65,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_lm.py` | 4.3M LIF/rate LM from scratch; synaptic current, surrogate spikes, bpb + firing rate; `--adapt` adds spike-frequency adaptation | ~2 min (300 steps, both modes) |
 | `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |
+| `spiking_replay.py` | TinyStories -> WikiText with 0/20/50% old-data replay; old/new bpb | ~5 min (300+900 steps) |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |

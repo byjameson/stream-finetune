@@ -1,8 +1,9 @@
-# Local verified assistant
+# Local verified assistant (parked experiment)
 
-The product-facing model is now a pretrained instruction model plus retrieval
-over the verified knowledge ledger. The from-scratch spiking LM remains a
-research line; its 50M/500M-token run did not produce a product-quality model.
+**Status: parked.** The active project direction is the from-scratch spiking
+research line. This document is kept as a record of the Qwen2.5-1.5B + verified
+retrieval prototype; it is not the target model. Its 50M/500M-token comparison
+showed why the spiking TinyStories run did not produce a product-quality model.
 
 ## Why this path
 

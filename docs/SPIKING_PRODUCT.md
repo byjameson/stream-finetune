@@ -354,12 +354,13 @@ The deployment templates are deliberately files, not an automatic installer.
 A real host should run the smoke test in [`deploy/README.md`](../deploy/README.md)
 after adding TLS and the API key.
 
-## Product-facing assistant
+## Parked experiment: Qwen assistant
 
-The usable local assistant is a separate path: **Qwen2.5-1.5B-Instruct +
-retrieval over verified knowledge**, not the from-scratch spiking LM. The
-assistant server answers with citations from the verified ledger and exposes
-`/v1/chat/completions`, `/knowledge/search`, `/health` and `/metrics`.
+**Not the active direction.** The project direction is the from-scratch spiking
+research line. The Qwen2.5-1.5B + verified retrieval prototype is kept as a
+parked experiment; it is not the target model. It answers with citations from
+the verified ledger and exposes `/v1/chat/completions`, `/knowledge/search`,
+`/health` and `/metrics`.
 
 ```bash
 streamft assistant ask --model models/Qwen2.5-1.5B-Instruct \
