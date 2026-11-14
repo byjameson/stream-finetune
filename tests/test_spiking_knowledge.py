@@ -1,0 +1,48 @@
+import json
+
+from streamft.spiking_knowledge import (
+    add_doc,
+    connect,
+    export,
+    list_docs,
+    review,
+    verify,
+)
+
+
+def test_official_document_auto_verifies(tmp_path):
+    conn = connect(str(tmp_path / "k.db"))
+    row = add_doc(conn, "Python is a programming language.", "Python",
+                  "https://docs.python.org/3/", "official")
+    assert row["status"] == "pending"
+    changed = verify(conn)
+    assert changed[0]["status"] == "verified"
+    assert list_docs(conn, "verified")[0]["id"] == row["id"]
+    files = export(conn, str(tmp_path / "out"))
+    assert len(files) == 1
+    assert json.loads((tmp_path / "out" / "doc_0001.json").read_text())["status"] == "verified"
+
+
+def test_reference_needs_independent_support(tmp_path):
+    conn = connect(str(tmp_path / "k.db"))
+    text = "The speed of light is about 299792458 metres per second."
+    add_doc(conn, text, "one", "https://a.example/", "reference")
+    verify(conn)
+    assert list_docs(conn, "pending")
+    add_doc(conn, text, "two", "https://b.example/", "reference")
+    add_doc(conn, text, "three", "https://c.example/", "reference")
+    changed = verify(conn, threshold=0.5, min_support=2)
+    assert any(c["status"] == "verified" for c in changed)
+    assert len(list_docs(conn, "verified")) >= 1
+
+
+def test_untrusted_needs_human_review(tmp_path):
+    conn = connect(str(tmp_path / "k.db"))
+    row = add_doc(conn, "A claim from an unknown page.", "claim",
+                  "https://random.example/", "untrusted")
+    assert verify(conn) == []
+    assert list_docs(conn, "pending")
+    review(conn, row["id"], "approve", "checked by hand", "tester")
+    assert list_docs(conn, "verified")
+    review(conn, row["id"], "reject", "changed mind", "tester")
+    assert list_docs(conn, "rejected")
