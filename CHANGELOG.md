@@ -19,8 +19,10 @@
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
-- 85 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
-  `research/SPIKING_REPLAY_ROLLBACK.md`.
+- 21M, two seeds: replay-first holds; replay 99.6-99.8% new gain, replay+rollback
+  6.5-12.0%, replay+EWC 99.3%. EWC is safe but not better than replay.
+- 86 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

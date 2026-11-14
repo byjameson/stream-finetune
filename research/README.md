@@ -40,6 +40,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   the new gain while replay+rollback keeps only 16.0%. The mechanisms are not
   additive; replay prevents the forgetting, rollback after it removes new
   learning. [`SPIKING_REPLAY_ROLLBACK.md`](SPIKING_REPLAY_ROLLBACK.md)
+- **21M, two seeds:** replay-first holds at 21M. Replay alone keeps 99.6-99.8% of
+  the new gain; replay+rollback keeps 6.5-12.0%; replay+EWC keeps 99.3%. EWC is
+  safe but does not beat replay. [`SPIKING_REPLAY_EWC_21M.md`](SPIKING_REPLAY_EWC_21M.md)
 
 ## What each script does
 
@@ -71,6 +74,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |
 | `spiking_replay.py` | TinyStories -> WikiText with 0/20/50% old-data replay; old/new bpb | ~5 min (300+900 steps) |
 | `spiking_replay_rollback.py` | controlled naive/replay/rollback/both arms from one phase-A state | ~6 min (300+1200 steps) |
+| `spiking_replay_ewc.py` | 21M, two seeds: naive/replay/replay+rollback/replay+EWC | ~25 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
