@@ -187,6 +187,7 @@ def generate(model: SpikingLM, tokenizer: Any, prompt: str,
     model.to(device)
     model.eval()
     ids = tokenizer.encode(prompt).ids or [0]
+    ids = ids[-2048:]  # bound the prompt; the model is recurrent, not positional
     state = model.init_state(1, device)
     last = None
     for tid in ids:
