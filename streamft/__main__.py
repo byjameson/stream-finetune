@@ -12,6 +12,7 @@
   streamft verify   check a trigger/token fingerprint in an adapter
   streamft verify-server  HTTP /verify endpoint for a fingerprint
   streamft serve    host a merged model on the LAN (chat page + /v1/chat/completions)
+  streamft spiking  train, inspect, generate from, or serve a small spiking LM
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -32,6 +33,8 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft verify --model <base> --adapter <pt> --token <token> --trigger <prompt>
   streamft verify-server --model <base> --adapter <pt> --token <token> --port 8010
   streamft serve --model merged/<name> --port 8000
+  streamft spiking train --data data/ts_train.pt --out checkpoints/spiking_4m
+  streamft spiking serve --model checkpoints/spiking_4m --port 8011
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -92,6 +95,11 @@ def main() -> int:
         from streamft.doctor import main as doctor_main
 
         return doctor_main(rest)
+
+    if cmd == "spiking":
+        from streamft.spiking_cli import main as spiking_main
+
+        return spiking_main(rest)
 
     if cmd == "prepare":
         from streamft import cli

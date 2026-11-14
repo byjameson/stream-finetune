@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.4 — spiking LM product MVP
+- `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF
+  language model with synaptic currents, checkpoint/resume sessions and an HTTP
+  server (`/health`, `/generate`, `/v1/chat/completions`).
+- Optional online rollback: `--old-valid`, `--rollback-threshold`,
+  `--rollback-fraction`; a rollback is kept only if it lowers old-task bpb.
+- Measured 4.3M model: 1.889 bpb on TinyStories; 9.4M model: 2.152 bpb at 600
+  steps (more parameters did not help at this budget).
+- 59 tests; `docs/SPIKING_PRODUCT.md`.
+
 ## 0.6.3 — fingerprint HTTP endpoint
 - `streamft verify-server`: loads the base + adapter once and exposes `POST /verify`
   (`{"prompt": "..."}` -> `{"ok": bool, "output": "..."}`) and `GET /health`.
