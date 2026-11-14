@@ -483,6 +483,12 @@ URLs. The engine lived at `experiments/exp54_disk_qlora.py` + `lcsa/` until the 
 - [The watermark's logit rises smoothly; its generation falls off a cliff](https://dev.to/mycute_97b39c4e34027570f9/the-watermarks-logit-rises-smoothly-its-generation-falls-off-a-cliff-4j0c)
 - [Joint training did not fix the watermark merge: 8/8 alone, 0/8 at 0.75](https://dev.to/mycute_97b39c4e34027570f9/joint-training-did-not-fix-the-watermark-merge-88-alone-08-at-075-1hka)
 
+**Spiking prototype:** a 4.3M-parameter LIF language model with synaptic current dynamics
+learns TinyStories at 2.05 bpb after 300 steps and 1.94 after 1000 steps on the 6 GB card;
+adding spike-frequency adaptation reaches 1.84. The rate control is weaker and saturates.
+This is the from-scratch starting point for the brain-like line, not a claim that spiking
+beats transformers. [`research/SPIKING_LM.md`](research/SPIKING_LM.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).

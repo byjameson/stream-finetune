@@ -1,0 +1,136 @@
+{
+  "question": "Can a recurrent LIF network with synaptic current dynamics learn next-token prediction, compared with a rate-based control of the same size?",
+  "data": {
+    "train": "data/ts_train.pt",
+    "valid": "data/ts_valid.pt",
+    "vocab": 8192
+  },
+  "runs": [
+    {
+      "mode": "spike",
+      "params": 4325633,
+      "steps": 1000,
+      "batch": 16,
+      "seq": 128,
+      "dim": 256,
+      "layers": 1,
+      "lr": 0.001,
+      "adapt": 0.1,
+      "seed": 0,
+      "elapsed_s": 216.56,
+      "sec_per_step": 0.217,
+      "peak_gpu_mb": 331.8,
+      "history": [
+        {
+          "step": 100,
+          "train_loss": 6.361870288848877,
+          "activity": 0.29949951171875,
+          "loss": 6.567001521587372,
+          "ppl": 711.2340227638895,
+          "bpb": 2.2816464866870376,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 200,
+          "train_loss": 6.240912437438965,
+          "activity": 0.24749755859375,
+          "loss": 6.2834126353263855,
+          "ppl": 535.613401688082,
+          "bpb": 2.1831160411139923,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 300,
+          "train_loss": 5.9723711013793945,
+          "activity": 0.050994873046875,
+          "loss": 5.834701776504517,
+          "ppl": 341.96273751924093,
+          "bpb": 2.0272154293654254,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 400,
+          "train_loss": 5.726342678070068,
+          "activity": 0.043975830078125,
+          "loss": 5.702165842056274,
+          "ppl": 299.51540203399827,
+          "bpb": 1.9811669933783849,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 500,
+          "train_loss": 5.640910625457764,
+          "activity": 0.046356201171875,
+          "loss": 5.610356986522675,
+          "ppl": 273.2417642232077,
+          "bpb": 1.9492688200665014,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 600,
+          "train_loss": 5.470885276794434,
+          "activity": 0.04766845703125,
+          "loss": 5.546327352523804,
+          "ppl": 256.2945457771488,
+          "bpb": 1.9270222911176142,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 700,
+          "train_loss": 5.64179801940918,
+          "activity": 0.04925537109375,
+          "loss": 5.5058175921440125,
+          "ppl": 246.1195988916033,
+          "bpb": 1.9129475338416722,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 800,
+          "train_loss": 5.506656646728516,
+          "activity": 0.05157470703125,
+          "loss": 5.417748987674713,
+          "ppl": 225.37123765523796,
+          "bpb": 1.882348877618697,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 900,
+          "train_loss": 5.422676086425781,
+          "activity": 0.0523681640625,
+          "loss": 5.373607337474823,
+          "ppl": 215.63935025423066,
+          "bpb": 1.867012252407926,
+          "tokens": 1024,
+          "bytes": 4252
+        },
+        {
+          "step": 1000,
+          "train_loss": 5.285923957824707,
+          "activity": 0.0533447265625,
+          "loss": 5.29873788356781,
+          "ppl": 200.08412108989006,
+          "bpb": 1.8409995240865502,
+          "tokens": 1024,
+          "bytes": 4252
+        }
+      ],
+      "final": {
+        "loss": 5.29873788356781,
+        "ppl": 200.08412108989006,
+        "bpb": 1.8409995240865502,
+        "tokens": 1024,
+        "bytes": 4252
+      },
+      "sample": "Spot. Spot saw the shiny car and said, \"Wow, Kitty, your car is so bright and clean!\" Kitty\n.\n\n\n,,,,,,,,,,,,'s's's I I to I to to.. I I I I I I I I I I.\".\".\".\".\n\n\n\n\n\n\n\n\"\"\",,,,,,"
+    }
+  ],
+  "note": "From-scratch small model, TinyStories BPE-8k, one seed. bpb uses the decoded target bytes; it is approximate for byte-level BPE boundaries. Not a chat model."
+}
