@@ -13,6 +13,7 @@
   streamft verify-server  HTTP /verify endpoint for a fingerprint
   streamft serve    host a merged model on the LAN (chat page + /v1/chat/completions)
   streamft spiking  train, inspect, generate from, or serve a small spiking LM
+  streamft assistant ask/serve a pretrained instruction model with verified RAG
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
 """
 from __future__ import annotations
@@ -42,6 +43,9 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft spiking grow --model checkpoints/spiking_4m --out checkpoints/spiking_wide --dim 1152
   streamft spiking eval --model checkpoints/spiking_4m --data data/ts_valid.pt
   streamft spiking serve --model checkpoints/spiking_4m --port 8011
+  streamft assistant ask --model models/Qwen2.5-1.5B-Instruct --db data/knowledge.db \
+    --question "What is the speed of light?"
+  streamft assistant serve --model models/Qwen2.5-1.5B-Instruct --db data/knowledge.db
   streamft doctor
 
 Docs: https://github.com/byjameson/stream-finetune
@@ -107,6 +111,11 @@ def main() -> int:
         from streamft.spiking_cli import main as spiking_main
 
         return spiking_main(rest)
+
+    if cmd == "assistant":
+        from streamft.assistant_cli import main as assistant_main
+
+        return assistant_main(rest)
 
     if cmd == "prepare":
         from streamft import cli
