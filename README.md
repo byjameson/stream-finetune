@@ -588,6 +588,11 @@ and EWC lambda 0.5/2.0 stays at 0.39/0.40 while costing new-task bpb. Parameter
 scaling is not buying semantics. The decision is to revise architecture/data,
 not just scale. [`research/SPIKING_SEMANTIC.md`](research/SPIKING_SEMANTIC.md)
 
+**Top-down feedback (negative):** adding a zero-initialized last-layer-to-input
+feedback path to the 21M model scored **0.39** narrative accuracy vs **0.45** for
+the baseline after the same 500 steps, and slightly worse bpb. This topology did
+not help. [`research/SPIKING_FEEDBACK.md`](research/SPIKING_FEEDBACK.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).

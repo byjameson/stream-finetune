@@ -58,6 +58,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   3.23/3.24 (worse than replay 3.16) and semantic accuracy 0.39/0.40. EWC is a
   stabilizer, not a capability mechanism.
   [`SPIKING_SEMANTIC.md`](SPIKING_SEMANTIC.md)
+- **Top-down feedback (negative):** the same 21M checkpoint fine-tuned with a
+  zero-initialized last-layer-to-input feedback path scored 0.39 narrative
+  accuracy vs 0.45 for the baseline, and had worse bpb. This topology did not
+  help. [`SPIKING_FEEDBACK.md`](SPIKING_FEEDBACK.md)
 
 ## What each script does
 
@@ -94,6 +98,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `make_semantic_cases.py` | build 100 held-out narrative-coherence cases | ~1 min |
 | `spiking_semantic_eval.py` | four-way next-sentence accuracy across checkpoints | ~2 min |
 | `spiking_ewc_sweep_50m.py` | 50M, 600-step EWC lambda sweep + semantic eval | ~25 min |
+| `spiking_feedback.py` | 21M baseline vs top-down feedback topology, 500 steps + semantic eval | ~12 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |

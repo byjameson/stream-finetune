@@ -32,6 +32,7 @@ class SpikingConfig:
     layers: int = 1
     mode: str = "spike"
     adapt: float = 0.0
+    feedback: bool = False
     decay_syn: float = 0.90
     decay_mem: float = 0.90
     decay_out: float = 0.90
@@ -105,6 +106,10 @@ class SpikingLM(nn.Module):
         ])
         self.head = nn.Linear(config.dim, config.vocab, bias=False)
         nn.init.normal_(self.head.weight, mean=0.0, std=0.02)
+        self.w_fb = None
+        if config.feedback:
+            self.w_fb = nn.Linear(config.dim, config.dim, bias=False)
+            nn.init.zeros_(self.w_fb.weight)
         self.last_activity = 0.0
 
     def init_state(self, batch: int, device: torch.device):
@@ -112,12 +117,16 @@ class SpikingLM(nn.Module):
         return {
             "layers": [layer.init_state(batch, device) for layer in self.layers],
             "readout": z,
+            "top": z.clone(),
         }
 
     def step(self, tokens: torch.Tensor, state: dict):
         cur = self.emb(tokens)
+        if self.w_fb is not None:
+            cur = cur + self.w_fb(state["top"])
         for i, layer in enumerate(self.layers):
             cur, state["layers"][i] = layer(cur, state["layers"][i])
+        state["top"] = cur
         state["readout"] = self.config.decay_out * state["readout"] + cur
         logits = self.head(state["readout"])
         return logits, state

@@ -45,6 +45,9 @@ def grow_width(model: SpikingLM, dim: int) -> SpikingLM:
             new_layer.bias.zero_()
             new_layer.bias[:old_dim].copy_(old_layer.bias)
             new_layer.input_gain.copy_(old_layer.input_gain)
+        if model.w_fb is not None and grown.w_fb is not None:
+            grown.w_fb.weight.zero_()
+            grown.w_fb.weight[:old_dim, :old_dim].copy_(model.w_fb.weight)
     return grown
 
 
