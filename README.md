@@ -176,6 +176,27 @@ per-synapse rollback. See
 [`docs/SPIKING_50M.md`](docs/SPIKING_50M.md) and
 [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
 
+### Local verified assistant
+
+The product-facing path uses a pretrained instruction model plus retrieval over
+the verified knowledge ledger. It is the realistic local assistant; the
+spiking LM stays a research line.
+
+```bash
+streamft assistant ask \
+  --model models/Qwen2.5-1.5B-Instruct \
+  --db data/knowledge.db \
+  --question "What is the speed of light?"
+streamft assistant serve \
+  --model models/Qwen2.5-1.5B-Instruct \
+  --db data/knowledge.db --port 8014
+```
+
+The server exposes `/health`, `/metrics`, `/v1/models`,
+`/v1/chat/completions` and `/knowledge/search`. Answers carry source citations
+from verified documents only. See
+[`docs/LOCAL_ASSISTANT.md`](docs/LOCAL_ASSISTANT.md).
+
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
 `scripts/verify_gradients.py` the gradient check, `scripts/e2e_wheel.py` the clean-venv

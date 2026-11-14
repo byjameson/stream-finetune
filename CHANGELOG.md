@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 — local verified assistant
+- `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
+  retrieval over the verified knowledge ledger.
+- `GET /health`, `/metrics`, `/v1/models`, `/knowledge/search` and
+  `POST /v1/chat/completions`; answers include source citations.
+- Verified demo: speed-of-light question answered with 299,792,458 m/s and
+  three sources; HTTP endpoint returned 200.
+- 50M/500M spiking run stopped at 1,500 steps: 1.3256 bpb vs 1.327 for 21M and
+  1.336 for 4.3M; no scaling win, so the product path moved to the pretrained
+  verified assistant. Spiking remains a research line.
+- 80 tests; `docs/LOCAL_ASSISTANT.md`.
+
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF
   language model with synaptic currents, checkpoint/resume sessions and an HTTP
