@@ -1,0 +1,1006 @@
+{
+  "n": 100,
+  "chance": 0.25,
+  "cases": [
+    {
+      "id": 0,
+      "context": "Once upon a time, there was a little boy named Timmy. Timmy loved to play in the water.",
+      "positive": "He would jump and splash in the big puddles after it rained.",
+      "negatives": [
+        "One day, he was walking in the park and he saw a little girl crying.",
+        "She had a special drawer that was full of her toys.",
+        "He had a big printer in his house, where he would print lots of pictures."
+      ]
+    },
+    {
+      "id": 1,
+      "context": "Once upon a time, there was a boy named Timmy. Timmy had a desk in his room where he liked to draw pictures with his crayons.",
+      "positive": "One day, Timmy's mom brought him a mild glass of milk to drink while he drew.",
+      "negatives": [
+        "One day, a clumsy mouse got inside the house and started running around.",
+        "One day, her mom told her that they were going to make chocolate cookies together.",
+        "One day, while Fluffy was playing, he saw a big hole in the fence."
+      ]
+    },
+    {
+      "id": 2,
+      "context": "Once upon a time, there was a little girl named Lily. She liked to observe the world around her.",
+      "positive": "She would watch the birds in the sky, the fish in the pond, and the ants on the ground.",
+      "negatives": [
+        "One day, Fluffy was playing with a ball of yarn when he accidentally scratched himself and got a stitch.",
+        "One day, Timmy's mommy gave him a bath and then she wrapped him up in a towel to dry him off.",
+        "One day, Lily's mom told her that they were going to the doctor to make sure she was healthy."
+      ]
+    },
+    {
+      "id": 3,
+      "context": "Once upon a time, there was a little girl. She was colorful and lived in the city.",
+      "positive": "She liked playing in the park and running around.",
+      "negatives": [
+        "The hay was soft and yellow.",
+        "One day, he was playing with his toy car in the hall.",
+        "It was the law in his house."
+      ]
+    },
+    {
+      "id": 4,
+      "context": "Once upon a time, there was a boy named Tim. Tim loved his old TV very much.",
+      "positive": "He would watch it every day and laugh at the funny cartoons.",
+      "negatives": [
+        "She was having fun on the swings, but then she fell off and hurt herself.",
+        "One day, the whale saw a little fish who was lost and scared.",
+        "She loved to explore and when she saw something mysterious, she was sure to investigate."
+      ]
+    },
+    {
+      "id": 5,
+      "context": "Once upon a time, there was a big family of cats. They were happy and lived in a nice warm home.",
+      "positive": "One day, the cats found a small box on the doorstep.",
+      "negatives": [
+        "The bird was curious and decided to fly over to see what was happening.",
+        "She had a big box full of pretty things.",
+        "One day, the horse ran so far away that it got hurt."
+      ]
+    },
+    {
+      "id": 6,
+      "context": "Once upon a time, there was a huge mitten. It was so big it could fit many hands!",
+      "positive": "One day, a small child stepped up to the big mitten, and held it in their two hands.",
+      "negatives": [
+        "One day, she drew a beautiful picture of a flower garden with lots of colors.",
+        "One day, Kiki's mom told her to go settle the chickens in their coop.",
+        "One day, she saw a soft, pink flower and wondered what it would feel like to touch it."
+      ]
+    },
+    {
+      "id": 7,
+      "context": "Once upon a time, there was a stubborn seed. Every day, the seed wanted to bloom like all the other flowers and plants, but it just couldn't.",
+      "positive": "The seed worked hard trying to bloom, breaking out of its tiny covering and pushing its way through the soil.",
+      "negatives": [
+        "One day, Lily's mom said, \"Lily, we are going to the park.",
+        "Every morning, Daisy looked forward to the sun coming up, as she knew it was time for her to bloom.",
+        "One day, he saw a piece of candy on the ground and wanted to eat it."
+      ]
+    },
+    {
+      "id": 8,
+      "context": "Once upon a time, there was a small puppy named Max. Max liked to play and run around all day long.",
+      "positive": "One day, Max saw a big bone and he wanted to eat it.",
+      "negatives": [
+        "She didn't like the rain because it made her wet and cold.",
+        "One day, a little girl named Lily saw the lady digging in the dirt.",
+        "One sunny day, Benny met a big, scary wolf."
+      ]
+    },
+    {
+      "id": 9,
+      "context": "Once upon a time, there was a man who lived in a big house. He had a wife who loved him very much.",
+      "positive": "One day, the man came home and saw that the house was very dark.",
+      "negatives": [
+        "One day, he was walking in the park and he saw a little girl crying.",
+        "One day, Timmy went to the park to take some pictures of the flowers and the trees.",
+        "They would sort the clothes and put them in the washing machine."
+      ]
+    },
+    {
+      "id": 10,
+      "context": "Once upon a time, there was a big jungle. In the jungle lived many animals like lions, monkeys, and elephants.",
+      "positive": "One day, a little monkey named Max was feeling sad because he wanted to eat a banana, but he couldn't find any.",
+      "negatives": [
+        "One day, he was poking around in the yard, looking for something interesting, when he found a present!",
+        "One day, Lily's mom told her that they were going to the doctor to make sure she was healthy.",
+        "He flew up high in the sky and he flew low and all around, but he just couldn't find a place to fit."
+      ]
+    },
+    {
+      "id": 11,
+      "context": "Once upon a time, there was a big, hot sun in the sky. The sun made everything feel warm and nice.",
+      "positive": "One day, a little rat appeared from behind a tree.",
+      "negatives": [
+        "He brought his favorite car with him, a red one with big wheels.",
+        "Lily was so happy and started eating her soup.",
+        "He liked to play and share with his friends."
+      ]
+    },
+    {
+      "id": 12,
+      "context": "Once upon a time there was a little girl who was looking for something special. She wanted to find a nurse who would be very kind and gentle.",
+      "positive": "She decided to go for a walk in the park to find a nurse.",
+      "negatives": [
+        "One day, Lucy's mom bought her a new dress.",
+        "His owner was sad because Max wasn't reliable anymore.",
+        "With the microscope, Tim could look at very small things and make them look big."
+      ]
+    },
+    {
+      "id": 13,
+      "context": "Once upon a time, a big volcano lived on a mountain. It was very hot and had red, orange, and yellow colors.",
+      "positive": "One day, a little boy named Timmy come to see the volcano.",
+      "negatives": [
+        "It was so pretty and sparkly, and Lily loved to wear it every day.",
+        "He kept it in a safe place and didn't tell anyone about it.",
+        "One day, she went to the park to play."
+      ]
+    },
+    {
+      "id": 14,
+      "context": "Once upon a time there was a small hill near a family house. A family of four lived near the hill.",
+      "positive": "Mom and Dad had a daughter and a son.",
+      "negatives": [
+        "One day, Lily wanted to make cookies all by herself.",
+        "She liked to use them to draw pictures.",
+        "Mary liked to explore the world and take risks."
+      ]
+    },
+    {
+      "id": 15,
+      "context": "Once upon a time, there were two friends. Their names were Bob and Jill.",
+      "positive": "Bob and Jill were walking down the street when they saw a puppy.",
+      "negatives": [
+        "One day, a little mouse came along and disturbed the cat's nap.",
+        "One day, as they were watching the sunset, Lily fell asleep.",
+        "While playing, she found a shiny chain on the ground."
+      ]
+    },
+    {
+      "id": 16,
+      "context": "Once upon a time, there was a little girl named Lily. She loved to eat toast for breakfast every day.",
+      "positive": "One day, she left her toast on the table and went to play.",
+      "negatives": [
+        "One day, Timmy's friend Jimmy came over to play.",
+        "One day, she saw a big statue of a dog.",
+        "One day, Timmy's dad got angry because Timmy cut his face."
+      ]
+    },
+    {
+      "id": 17,
+      "context": "Once upon a time, in a small town, there was a big factory. The factory made toys for kids.",
+      "positive": "One day, a toy named Tim wanted to be independent.",
+      "negatives": [
+        "His mom said he could have it, so he was very happy!",
+        "One day, the cats found a small box on the doorstep.",
+        "One day, she decided to design a special hat for her teddy bear."
+      ]
+    },
+    {
+      "id": 18,
+      "context": "Once upon a time, there was a small mouse named Timmy. Timmy was always scared of everything and everyone.",
+      "positive": "He would hide in his little hole all day, every day.",
+      "negatives": [
+        "But one day, the butterfly came across something it didn't understand.",
+        "One day, the puppy's best friend got very sick.",
+        "With the microscope, Tim could look at very small things and make them look big."
+      ]
+    },
+    {
+      "id": 19,
+      "context": "Once upon a time, there was a little boy named Timmy. Timmy loved to eat candy, especially lollipops.",
+      "positive": "One day, Timmy went to the candy store to buy a lollipop.",
+      "negatives": [
+        "One day, she decided to explore the woods near her home.",
+        "Every day, the bald infant would do lots of fun things.",
+        "One day, she went to the park to play with her friends."
+      ]
+    },
+    {
+      "id": 20,
+      "context": "Once upon a time, there was a happy little girl named Lily. She loved to visit her grandma's house.",
+      "positive": "One day, Lily went to visit her grandma and she gave her a big hug.",
+      "negatives": [
+        "One day a little 3-year-old girl went to the temple.",
+        "One day, Lily's mom asked her to help stir the cake batter.",
+        "He saw trees, clouds and an apple way down on the ground."
+      ]
+    },
+    {
+      "id": 21,
+      "context": "Once upon a time, there was a little girl named Lily. One day, she got very sick and had to go to the hospital.",
+      "positive": "Her mommy took her there in a big car.",
+      "negatives": [
+        "One day, they decided to go to the beach.",
+        "His mom said he could have it, so he was very happy!",
+        "The fish said, \"Hello, little boat!"
+      ]
+    },
+    {
+      "id": 22,
+      "context": "Once upon a time, there was a little mouse named Timmy. Timmy lived in a field with lots of wheat.",
+      "positive": "He loved to eat the wheat because it was his favorite food.",
+      "negatives": [
+        "One day, she found a little bird with a hurt wing.",
+        "One day, he saw a dolphin swimming in the ocean.",
+        "One day, her mom asked her to wash the vase."
+      ]
+    },
+    {
+      "id": 23,
+      "context": "Once upon a time there was a very lucky waffle. He lived in a big happy town and everybody loved him.",
+      "positive": "He was so happy, he wanted to marry.",
+      "negatives": [
+        "The boat was owned by a bald man named Jack.",
+        "One day, a toy named Tim wanted to be independent.",
+        "Today, she decided to explore in her mum's room."
+      ]
+    },
+    {
+      "id": 24,
+      "context": "Once upon a time, there was a little girl named Lily. She loved to play outside in the sun with her friends.",
+      "positive": "One day, she saw her friend Timmy wearing a very cool shirt.",
+      "negatives": [
+        "One day, she was exploring her grandma's house when she found a beautiful stove.",
+        "One day, Lily's mom made her a big plate of spicy noodles for lunch.",
+        "She wasn't sure what to do, so she sat down and looked at the sky."
+      ]
+    },
+    {
+      "id": 25,
+      "context": "Once upon a time there was a little girl who loved animals. Every day she would take care of her animals, feeding them and playing with them.",
+      "positive": "One day as she was feeding them, a strange gate appeared in the middle of the field.",
+      "negatives": [
+        "One day, the boy decided to play near a well in the forest.",
+        "One day, Benny found a carrot that had been left out for too long and it had started to rot.",
+        "But, one day her Uncle came to visit and things got really exciting!"
+      ]
+    },
+    {
+      "id": 26,
+      "context": "Once upon a time, there was a little boy named Sam. He was only three years old and he always loved to play.",
+      "positive": "One day, he was poking around in the yard, looking for something interesting, when he found a present!",
+      "negatives": [
+        "One day, Kiki's mom told her to go settle the chickens in their coop.",
+        "Every day, they would hold hands and walk around their garden, looking at the pretty flowers.",
+        "She was so excited to get in the car and put her seatbelt on so she could go on an adventure."
+      ]
+    },
+    {
+      "id": 27,
+      "context": "Once upon a time, there was a little boy named Timmy. Timmy loved to watch the birds outside his window.",
+      "positive": "One day, he saw an incredible pigeon with colorful feathers.",
+      "negatives": [
+        "One day, Bongo saw a little bird sitting on a branch.",
+        "One day, Lily's mommy asked her to help tie her shoes.",
+        "She loved to explore the world around her."
+      ]
+    },
+    {
+      "id": 28,
+      "context": "Once upon a time, there was a little girl who had a big owie. She felt sad and sore, so she went to the doctor to get help.",
+      "positive": "The doctor was very kind and gentle.",
+      "negatives": [
+        "One day, he found a shiny rock on the ground.",
+        "She loved to play hide and seek in it.",
+        "It was her favourite thing in the world."
+      ]
+    },
+    {
+      "id": 29,
+      "context": "Once upon a time, there was a little girl named Lily. She loved to help her mommy in the kitchen.",
+      "positive": "One day, her mommy asked her to wear an apron so she wouldn't get her dress dirty.",
+      "negatives": [
+        "One day, Anna was playing with her marbles when she heard a noise coming from the garden.",
+        "One day, her mom asked her to help with some chores around the house.",
+        "One day, he saw a piece of candy on the ground and wanted to eat it."
+      ]
+    },
+    {
+      "id": 30,
+      "context": "Once upon a time, there was a little girl named Mary. Mary was three years old and she loved exploring nature.",
+      "positive": "One day, she went outside to explore her backyard.",
+      "negatives": [
+        "But one day, the little girl got really sick.",
+        "One day, she went to her school and saw a big blackboard.",
+        "The family was having so much fun, but then something happened."
+      ]
+    },
+    {
+      "id": 31,
+      "context": "Once upon a time, there lived a little girl named Liza. Liza loved playing in the forest with her friends.",
+      "positive": "One day, she noticed that the forest was not as organized as it was before.",
+      "negatives": [
+        "One day, a little boy named Jack went to the room.",
+        "Each day, the sun would shine bright, and the river glittered like diamonds in the summer sky.",
+        "One day, Lily's mommy asked her to measure the flour and sugar for the cake."
+      ]
+    },
+    {
+      "id": 32,
+      "context": "Once upon a time, there was a little girl named Kim. One day, Kim was very bored and wanted to talk to someone.",
+      "positive": "However, everyone was busy and did not have time to talk.",
+      "negatives": [
+        "But, one day her Uncle came to visit and things got really exciting!",
+        "One day, she went to the movie theater with her mom and dad.",
+        "Dee asked her mom where they were going on their travels."
+      ]
+    },
+    {
+      "id": 33,
+      "context": "Once upon a time, there were two brothers. The eldest brother was very good at trades, while the youngest brother liked to soak in the sun.",
+      "positive": "Every day, the eldest brother would go out and make trades so that he could get nice things for his younger brother.",
+      "negatives": [
+        "Then one day, the animals decided to gather around the ugly circle and figure out a way to take it away.",
+        "One day, her mommy told her that if she drew a picture of their house, she would get a prize.",
+        "One day, the bear thought he'd make something to eat so he took out a big pot and his special stick."
+      ]
+    },
+    {
+      "id": 34,
+      "context": "Once upon a time, there was a little girl named Lily. One day, she went outside to pick some fruit from the trees.",
+      "positive": "She saw a big, juicy apple and a small, sweet orange.",
+      "negatives": [
+        "One day, she saw a big sunflower in her neighbor's garden.",
+        "Sam and Jane enjoyed playing together in the garden.",
+        "He never cleaned up after himself, and his house was often cluttered with things."
+      ]
+    },
+    {
+      "id": 35,
+      "context": "Once upon a time there was a bald infant. He was only three years old.",
+      "positive": "Every day, the bald infant would do lots of fun things.",
+      "negatives": [
+        "She was known for her funny frowns and everyone around her found it so amusing.",
+        "One day, Ann gave Will a present.",
+        "She needed a scarf to keep her warm."
+      ]
+    },
+    {
+      "id": 36,
+      "context": "Once upon a time there was a little girl named Sarah. She lived in a big house with her mom and dad.",
+      "positive": "Sarah had a special vase that was bright and pretty.",
+      "negatives": [
+        "But then he found a sand box and he knew what to do.",
+        "They had to be very careful when they walked or played outside.",
+        "The shop was very big and had many pretty things."
+      ]
+    },
+    {
+      "id": 37,
+      "context": "Once upon a time, there was an ice cube. The ice cube was mysterious, because it was always doing something interesting.",
+      "positive": "One day, the ice cube wanted to play a game.",
+      "negatives": [
+        "The prince searched high and low but he couldn't find it.",
+        "The older child had a favorite toy - a basketball.",
+        "They were so pretty and flew so high in the sky."
+      ]
+    },
+    {
+      "id": 38,
+      "context": "Once upon a time, there was a little dog named Spot. Spot was a calm dog who liked to sit on his stand and watch the birds fly by.",
+      "positive": "One day, Spot saw a big tree and birds were singing in it.",
+      "negatives": [
+        "She thought it was disgusting, but she didn't want to hurt it.",
+        "One day, he challenged all the other animals in the jungle to a race.",
+        "One night, the dark goat went to sleep on a big, green hill."
+      ]
+    },
+    {
+      "id": 39,
+      "context": "Once upon a time, there was a little girl named Lily. She was very good at drawing and everyone said she was gifted.",
+      "positive": "One day, her mommy told her that if she drew a picture of their house, she would get a prize.",
+      "negatives": [
+        "As soon as the bear arrived, a frog hopped to the edge of the pond and asked the bear why he was there.",
+        "One day, Buzz saw a bright bulb in the distance and wanted to crawl over to it.",
+        "Her mommy told her they were going on a trip for the holiday, and Lily was so excited."
+      ]
+    },
+    {
+      "id": 40,
+      "context": "Once upon a time, there was a 3 year old boy. He went to a big dark room with a lot of chairs.",
+      "positive": "Everybody had an exam, and the boy was scared.",
+      "negatives": [
+        "One day, he heard a strange noise coming from outside his home.",
+        "In the house, there was a drawer.",
+        "One day, he went to the park with his mom and dad."
+      ]
+    },
+    {
+      "id": 41,
+      "context": "Once upon a time, there was a little tree who was very anxious. All her friends had leaves and beautiful flowers, but she was the only one without any.",
+      "positive": "Everyday, she worried that no one would want her because she was so different.",
+      "negatives": [
+        "He tried on many clothes, but none of them fit him well.",
+        "So, every day he would go out and play in the sunshine.",
+        "One day, her parents decided to make a special tour just for her."
+      ]
+    },
+    {
+      "id": 42,
+      "context": "Once upon a time, there was a grandma who loved to sew. She saw a special fabric and decided to make a dress.",
+      "positive": "She wanted the dress to be unique, so she used thread to match the colors.",
+      "negatives": [
+        "One day, her mom asked her to wipe the table after they ate their lunch.",
+        "One day, he went for a walk in the forest and found a big stick on the ground.",
+        "She wanted to cut a picture of her best friend, Jack."
+      ]
+    },
+    {
+      "id": 43,
+      "context": "Once upon a time, there was a little boy named Timmy. He loved to play soccer with his friends.",
+      "positive": "One day, they decided to have a game.",
+      "negatives": [
+        "He was not very happy because he had a bad leg.",
+        "He always asked his mom to make him spaghetti with sauce for dinner.",
+        "It was important because it could do lots of things."
+      ]
+    },
+    {
+      "id": 44,
+      "context": "Once upon a time, there was a little boy named Jack. He was very brave and kind.",
+      "positive": "He was always ready to help someone in need.",
+      "negatives": [
+        "One day, Lily's mom brought her a new dress.",
+        "The book was a novel.",
+        "Every morning she went to the park to play."
+      ]
+    },
+    {
+      "id": 45,
+      "context": "Once upon a time there was a squirrel who lived in the woods. He was fit and strong and he loved the forest.",
+      "positive": "He was often seen scurrying around the trees and frolicking in the meadow.",
+      "negatives": [
+        "Every day he would go to the beach and take a bath in the cool ocean water.",
+        "Each day the family wished for something better, so one day they decided to improve the furniture.",
+        "One day he brought a big, orange stick to the river."
+      ]
+    },
+    {
+      "id": 46,
+      "context": "Once upon a time, there was a big garage. It was where Daddy parked his car.",
+      "positive": "One day, Mommy told Daddy that they needed more space in the garage.",
+      "negatives": [
+        "One day, he went to the park to play with his friends.",
+        "One day, Sammy saw a big wave coming towards him.",
+        "He did not like to listen to his owner, Jane."
+      ]
+    },
+    {
+      "id": 47,
+      "context": "Once upon a time, there was a poor little bird who lived in a pit. The bird was very hungry and wanted to eat some berries.",
+      "positive": "But, when the bird went to pick the berries, a big, mean cat came along and scared the bird away.",
+      "negatives": [
+        "One day, Fluffy was playing with a ball of yarn when he accidentally scratched himself and got a stitch.",
+        "One day, Lily's mom took her to the doctor's office because she wasn't feeling well.",
+        "One day, she found a big rock that she wanted to turn into a special present for her mommy."
+      ]
+    },
+    {
+      "id": 48,
+      "context": "Once upon a time, there was a little girl named Lily. One day, Lily was playing outside when the rain started to fall.",
+      "positive": "She didn't like the rain because it made her wet and cold.",
+      "negatives": [
+        "It was a funny mask with a big smile.",
+        "One day, he wanted to go to the store to buy some candy.",
+        "It spread fast and pretty soon it was everywhere."
+      ]
+    },
+    {
+      "id": 49,
+      "context": "Once upon a time, there was a strong bus. The bus was travelling through the forest when it suddenly got a flat tire.",
+      "positive": "The driver was so sad and the other passengers were getting worried.",
+      "negatives": [
+        "One day, her mommy asked her to clean up her toys.",
+        "One day, Lily's mom asked her to clean up her room.",
+        "One day, a big storm came and the star was scared."
+      ]
+    },
+    {
+      "id": 50,
+      "context": "Once upon a time, there was a little birdie named Tweet. Tweet loved to fly around and sing songs.",
+      "positive": "One day, Tweet saw a pretty pattern on the ground and decided to land on it.",
+      "negatives": [
+        "Her friend's mom was very polite and asked Lily what she wanted to eat.",
+        "The seed worked hard trying to bloom, breaking out of its tiny covering and pushing its way through the soil.",
+        "Mommy opened the basket and inside there was a bottle of light wine."
+      ]
+    },
+    {
+      "id": 51,
+      "context": "Once upon a time, there was a little star. The star was very happy because it could glow in the sky.",
+      "positive": "One day, a big storm came and the star was scared.",
+      "negatives": [
+        "When she came home, she saw a ghost in her room.",
+        "They would read books together and Timmy would always pick out his favorite books.",
+        "One day, Lily went to the park with her mom."
+      ]
+    },
+    {
+      "id": 52,
+      "context": "Once upon a time, there was a boy named Timmy. He had a cool toy car that he loved to play with.",
+      "positive": "One day, Timmy's friend Billy came over to play.",
+      "negatives": [
+        "One day Anna found in her mailbox an invitation.",
+        "One day, he heard a strange noise coming from outside his home.",
+        "He loved to play and run in the park with his friends."
+      ]
+    },
+    {
+      "id": 53,
+      "context": "Once upon a time, there was a big and happy family who loved to play games together. One day, they decided to play a game called \"Snake and Ladders\" on a large board.",
+      "positive": "The family was having so much fun, but then something happened.",
+      "negatives": [
+        "\"Hi there, what's wrong?\" asked Lily.",
+        "One day, Lily found a pretty flower that looked unusual.",
+        "One day, she was playing with her friends when she fell and hurt her knee."
+      ]
+    },
+    {
+      "id": 54,
+      "context": "Once upon a time there was a hairy jewel. It was so beautiful the little girl wanted to take it home.",
+      "positive": "She ran to it, but it was just out of reach.",
+      "negatives": [
+        "When she opened it, she found a letter!",
+        "One day Sally and her family went on a trip to a far away place.",
+        "One day, as he was hopping around, he saw a very yummy looking carrot."
+      ]
+    },
+    {
+      "id": 55,
+      "context": "Once upon a time, there was a graceful cat named Kitty. She loved to play with her ball and jump around the house.",
+      "positive": "Kitty was very happy and liked to make her friends laugh.",
+      "negatives": [
+        "She packed her bag and went to the car with her mom and dad.",
+        "The bird was so sad, it was miserable.",
+        "She loved to explore the world around her."
+      ]
+    },
+    {
+      "id": 56,
+      "context": "Once upon a time, there were two friends, Sarah and Jake, who liked to play together. One day, they wanted to draw a triangle.",
+      "positive": "But Sarah was feeling slow and she was delaying.",
+      "negatives": [
+        "One day, Lucy's mom bought her a new dress.",
+        "He felt very sad and wished he could be thin like his friends.",
+        "She would jump in puddles and get very wet."
+      ]
+    },
+    {
+      "id": 57,
+      "context": "Once upon a time, there was an ugly circle. All the animals wanted to take it away, but they didn't know how.",
+      "positive": "Then one day, the animals decided to gather around the ugly circle and figure out a way to take it away.",
+      "negatives": [
+        "One day, Lily went to the park with her mom and saw her friends playing hide-and-seek.",
+        "She would watch the birds in the sky, the fish in the pond, and the ants on the ground.",
+        "One sunny day, Tom went outside to play with his ball in the land near his home."
+      ]
+    },
+    {
+      "id": 58,
+      "context": "Once upon a time, there was a huge nail. It was so big that it almost looked like a mountain.",
+      "positive": "Every day, the nail was in the same place and never moved.",
+      "negatives": [
+        "One day, Timmy's mom took him to the store to buy him a new toy.",
+        "One day, the puppy's best friend got very sick.",
+        "One day, the whale saw a little fish who was lost and scared."
+      ]
+    },
+    {
+      "id": 59,
+      "context": "Once upon a time, there was an ugly flute. No one wanted to play it.",
+      "positive": "One day, a little girl heard the sad flute and decided to act.",
+      "negatives": [
+        "Lily's mommy brought a book and began to read to her.",
+        "He saw a rabbit and stepped quickly, but the rabbit hopped away.",
+        "One day, he saw a jar in the garden."
+      ]
+    },
+    {
+      "id": 60,
+      "context": "Once upon a time, there was a girl called Anna. She was very compassionate and liked to rock in her chair.",
+      "positive": "One day Anna found in her mailbox an invitation.",
+      "negatives": [
+        "One day, Lily found a pretty flower that looked unusual.",
+        "One day, Lily's mom asked her to clean up her room.",
+        "She couldn\u00e2\u20ac\u2122t wait to show it to her mother."
+      ]
+    },
+    {
+      "id": 61,
+      "context": "Once upon a time there was a girl named Mary. Mary liked to play in the park.",
+      "positive": "She liked to swing and slide.",
+      "negatives": [
+        "Everywhere she went, people stopped to listen.",
+        "But one day, the little girl got really sick.",
+        "It lit up the dark sky with its bright light."
+      ]
+    },
+    {
+      "id": 62,
+      "context": "Once upon a time, there was a brave lion. He was the king of the jungle and the bravest of all the animals.",
+      "positive": "Every day he would go for a walk, but he was always careful not to go too far from his home.",
+      "negatives": [
+        "Every night before bed, they would put on some jazz music and dance around their living room.",
+        "One day, her mommy told her that if she drew a picture of their house, she would get a prize.",
+        "But one day, she noticed that her mum and dad were not smiling and frowning a lot."
+      ]
+    },
+    {
+      "id": 63,
+      "context": "Once upon a time there was a scary sink. One day, a surprise happened.",
+      "positive": "The sink opened and a big monster came out!",
+      "negatives": [
+        "Her mommy took her there in a big car.",
+        "One day, a bee came to the poppy and zoomed around it.",
+        "The cup was dependable and never spilled."
+      ]
+    },
+    {
+      "id": 64,
+      "context": "Once upon a time, there lived a little girl. She loved to look up and see the big impressive rainbow in the sky.",
+      "positive": "Every day, she imagined she was an eagle, flying through the colourful sky and reaching the top of the rainbow.",
+      "negatives": [
+        "He flew up high in the sky and he flew low and all around, but he just couldn't find a place to fit.",
+        "Mia was at home with her mom, and it was time for the mailman to come by.",
+        "But luckily, Amy was very generous and she gave Gary a ticket so he could go."
+      ]
+    },
+    {
+      "id": 65,
+      "context": "Once upon a time, there was a little boy named Timmy. Timmy loved to play outside in the sun.",
+      "positive": "One day, Timmy went on a walk with his mommy.",
+      "negatives": [
+        "One day, Lily's friend Emily came over to play.",
+        "Lily said yes and gave her friend the car.",
+        "She didn't like the rain because it made her wet and cold."
+      ]
+    },
+    {
+      "id": 66,
+      "context": "Once upon a time, there were two friends named Timmy and Tommy. They both loved to play the trumpet and they were very good at it.",
+      "positive": "They practiced every day and they loved to compete with each other to see who was the best.",
+      "negatives": [
+        "One day, the bird flew over a lady's garden and saw something very special- a ripe avocado!",
+        "Every time the sky became grey, Sarah would run outside and jump in puddles and watch the lightning.",
+        "Timmy's mom bought him a trumpet, but he didn't know how to play it."
+      ]
+    },
+    {
+      "id": 67,
+      "context": "Once upon a time, there was a clever little boy named Tim. Tim loved to count things.",
+      "positive": "He would count his toys, his fingers, and even the leaves on the trees.",
+      "negatives": [
+        "One day, Lily and her friend Jack went to the park to take pictures of the flowers and trees.",
+        "One day, he noticed a youth sitting all alone on a bench.",
+        "One day, they were making a cake and they needed to measure the ingredients."
+      ]
+    },
+    {
+      "id": 68,
+      "context": "Once upon a time, there was a little boy named Tim. Tim loved to decorate his room with colorful things.",
+      "positive": "One day, he found a big box on the side of his house.",
+      "negatives": [
+        "One day, a clumsy mouse got inside the house and started running around.",
+        "The boy was walking along in the park when he suddenly lost his balance.",
+        "One day, Lily went to the park with her mommy."
+      ]
+    },
+    {
+      "id": 69,
+      "context": "Once upon a time, there was a little girl named Lily. One day, Lily went to the park to play.",
+      "positive": "She was having fun on the swings, but then she fell off and hurt herself.",
+      "negatives": [
+        "One day a small chipmunk named Frank hopped on top of the log.",
+        "One day, Timmy went to the park to take some pictures of the flowers and the trees.",
+        "One day, her mom told her that they were going to make chocolate cookies together."
+      ]
+    },
+    {
+      "id": 70,
+      "context": "Once upon a time, there was a little girl named Lily. She loved to explore the woods near her house with her dog, Max.",
+      "positive": "One day, Lily found a pretty flower that looked unusual.",
+      "negatives": [
+        "He threw it up high and caught it with a big smile on his face.",
+        "One day, she found a big, red tomato hiding behind some leaves.",
+        "Dee asked her mom where they were going on their travels."
+      ]
+    },
+    {
+      "id": 71,
+      "context": "Once upon a time, there was a little girl called Daisy. Daisy had a big adventure ahead of her.",
+      "positive": "She was determined to climb to the top of the highest mountain in the land.",
+      "negatives": [
+        "One day, Alice's mommy brought home a new comb for her.",
+        "Lily loved the sandwich, but she got some jam on her shirt.",
+        "One day, she found a big, green bug and she was so excited!"
+      ]
+    },
+    {
+      "id": 72,
+      "context": "Once upon a time, there was a little boy named Timmy. Timmy loved to play outside, but he never listened to his mom when she told him to come inside before dark.",
+      "positive": "One day, Timmy was playing outside when he saw a big emergency truck with flashing lights.",
+      "negatives": [
+        "One day, Lily's mommy told her they were going to have a special visitor.",
+        "One day, there was a big rain, and it made the mommy and daddy sad.",
+        "Suddenly, a boy came up to them and demanded that they give him their snacks."
+      ]
+    },
+    {
+      "id": 73,
+      "context": "Once upon a time, there was a little girl who loved to dance. She would dance all day long and never get tired!",
+      "positive": "One day, she wanted to go outside and play in the sunshine, but it was very dirty.",
+      "negatives": [
+        "One day, she was going on an adventure and she saw a big bell.",
+        "One day, Timmy and his friends were getting ready to play hide-and-seek.",
+        "Every night, he would sit on the hilltop and look out into the dark, empty landscape."
+      ]
+    },
+    {
+      "id": 74,
+      "context": "Once upon a time, there was a compassionate girl named Lily. She lived in a small house near a river.",
+      "positive": "Every day, she played by the river with her friends.",
+      "negatives": [
+        "The park was wide and had many trees.",
+        "One day, Brownie's ear fell off and Lily was very sad.",
+        "The older child had a favorite toy - a basketball."
+      ]
+    },
+    {
+      "id": 75,
+      "context": "Once upon a time, there was a rabbit named Bob. Bob was very lazy and never wanted to do anything.",
+      "positive": "One day, Bob's friend, a squirrel named Sally, came to visit him.",
+      "negatives": [
+        "One day, she noticed that the forest was not as organized as it was before.",
+        "One day, the old man saw something shiny in the corner of the room.",
+        "He loved to play and run in the park with his friends."
+      ]
+    },
+    {
+      "id": 76,
+      "context": "Once upon a time there was a girl named Mary. Mary loved to study.",
+      "positive": "She had books and papers all around her room!",
+      "negatives": [
+        "One day, she decided to visit her friend who lived far away.",
+        "He felt very sad and wished he could be thin like his friends.",
+        "The shop was very big and had many pretty things."
+      ]
+    },
+    {
+      "id": 77,
+      "context": "Once upon a time, there was a little fish named Nemo. Nemo loved to swim in the ocean with his friends.",
+      "positive": "One day, Nemo met a friendly surfing crab named Crabby.",
+      "negatives": [
+        "One day, a little rat appeared from behind a tree.",
+        "One day, he was walking around when he saw a big bear!",
+        "One day, Lily went outside to play and saw a big mill in the distance."
+      ]
+    },
+    {
+      "id": 78,
+      "context": "Once upon a time, there was a fat squirrel. He loved to eat nuts and seeds.",
+      "positive": "One day, he wanted to prepare for winter.",
+      "negatives": [
+        "One day, Tim saw a big candy store.",
+        "He wanted to do something fun and exciting.",
+        "Suddenly, the sky turned dark and she saw lightning in the sky."
+      ]
+    },
+    {
+      "id": 79,
+      "context": "Once upon a time, there was a little boy named Jack. Jack was very restless and couldn't sit still for long.",
+      "positive": "One day, Jack's mom took him to the toy store to buy him a new toy.",
+      "negatives": [
+        "One day, Timmy and his friends were getting ready to play hide-and-seek.",
+        "One day, Stripey met his friend, a monkey named Bongo.",
+        "One day, she met a rude man who said mean things to her."
+      ]
+    },
+    {
+      "id": 80,
+      "context": "Once upon a time, there was a little girl named Lily. One day, Lily's mom made her some broccoli for dinner.",
+      "positive": "Lily didn't like broccoli, but she knew it was good for her.",
+      "negatives": [
+        "She set it up in her backyard, and she liked to play inside it every day.",
+        "One day, she found a big, red tomato hiding behind some leaves.",
+        "One day, Sarah decided to take a walk in the woods."
+      ]
+    },
+    {
+      "id": 81,
+      "context": "Once upon a time, there was a little girl named Sarah. Sarah's mom always bought her books, and so they had to buy a bookcase to fit them all.",
+      "positive": "One day Sarah saw the bookcase and said, \u00e2\u20ac\u0153Mommy, what is that?\u00e2\u20ac Her mom replied, \u00e2\u20ac\u0153That\u00e2\u20ac\u2122s a bookcase.",
+      "negatives": [
+        "Her mom said, \"Lily, we need to wash your toys and make your room organized.\" Lily replied, \"Okay, Mommy.",
+        "Every day the baby elephant went for a walk in the jungle and listened to stories his parents told him about his ancestors.",
+        "One day, her mommy told her that she could only have a little bit of sugar because too much sugar is not good for her."
+      ]
+    },
+    {
+      "id": 82,
+      "context": "Once upon a time there was a girl. The girl loved to climb.",
+      "positive": "One day, she was going on an adventure and she saw a big bell.",
+      "negatives": [
+        "It got stuck in the middle of the rail and no one knew what to do.",
+        "One day, she went to her school and saw a big blackboard.",
+        "One day, Daisy and her mommy were shopping for candy."
+      ]
+    },
+    {
+      "id": 83,
+      "context": "Once upon a time, there was a little girl named Lucy. She had a pet cat named Tom.",
+      "positive": "They loved to play together in the big green park near their house.",
+      "negatives": [
+        "He loved to run and jump all day long.",
+        "One day, Tom went to the kitchen to find some food.",
+        "One day, her mommy gave her a shiny gold coin."
+      ]
+    },
+    {
+      "id": 84,
+      "context": "Once upon a time there lived a girl who was very independent. Her name was Mary.",
+      "positive": "Mary liked to explore the world and take risks.",
+      "negatives": [
+        "One day, the girl wanted to go and play hide and seek.",
+        "One day, her mommy gave her a shiny gold coin.",
+        "Max asked a boy if he could help him grab the bone."
+      ]
+    },
+    {
+      "id": 85,
+      "context": "Once upon a time, there was a girl named Sarah. She was very excited to explore nature.",
+      "positive": "Sarah was so excited that she ran quickly outside.",
+      "negatives": [
+        "One day, her mom asked her to unpack a big box.",
+        "One day, they decided to play a game of tag.",
+        "Every day, she would take it out and try to pedal."
+      ]
+    },
+    {
+      "id": 86,
+      "context": "Once upon a time, there was a little girl named Lily. She loved drawing and always used her crayons to make beautiful pictures.",
+      "positive": "One day, she drew a great picture of a butterfly and showed it to her friend, Timmy.",
+      "negatives": [
+        "He would put on a cape and jump off his chair, pretending to fly.",
+        "One day, Lily's mommy told her they were going to have a special visitor.",
+        "Every day he had to load up the animals so they could go to the market."
+      ]
+    },
+    {
+      "id": 87,
+      "context": "Once upon a time, there was a graceful cat named Lily. Lily was very pretty and loved to play with her friends.",
+      "positive": "One day, she found a long cut on her leg.",
+      "negatives": [
+        "Every day he would write stories about his life.",
+        "One day, Billy saw a lovely butterfly and decided to follow it.",
+        "One day, he went to the circus with his friends."
+      ]
+    },
+    {
+      "id": 88,
+      "context": "Once upon a time, there was a boy named Timmy. Timmy loved to imagine things.",
+      "positive": "One day, he imagined he was a brave knight with a colorful shield and a sharp spear.",
+      "negatives": [
+        "She set it up in her backyard, and she liked to play inside it every day.",
+        "One day, she was playing with her friends when she fell down and hurt her knee.",
+        "One day, Timmy's mom told him they were going on a camping trip."
+      ]
+    },
+    {
+      "id": 89,
+      "context": "Once upon a time there was a loyal bear named Ben. Ben loved to sing and he sang all of the time.",
+      "positive": "Every day he would help make meals for his family.",
+      "negatives": [
+        "They were running and laughing on the grass when Lily saw a butterfly.",
+        "The prince searched high and low but he couldn't find it.",
+        "One day, Timmy went on a walk with his mommy."
+      ]
+    },
+    {
+      "id": 90,
+      "context": "Once upon a time, there was a little girl who was wise beyond her years. She was always asking questions and exploring the world around her.",
+      "positive": "One day, she decided to explore the woods near her home.",
+      "negatives": [
+        "One day, he found a new truck that he really liked.",
+        "One day, she saw her neighbor, Mr.",
+        "Every day, she played by the river with her friends."
+      ]
+    },
+    {
+      "id": 91,
+      "context": "Once upon a time, there was a huge mill in a small town. Many people worked in the mill.",
+      "positive": "One day, a little girl named Sally went to the mill with her mom.",
+      "negatives": [
+        "Max was very independent and liked to run ahead of Lily.",
+        "One day, Lily met a deaf man on the street.",
+        "One day, he met a little girl who was playing a flute."
+      ]
+    },
+    {
+      "id": 92,
+      "context": "Once upon a time, there was a little girl named Lily. She loved to play outside with her friends.",
+      "positive": "One Wednesday, the sun was shining and it was so warm outside.",
+      "negatives": [
+        "One day, Lily's mommy asked her to help tie her shoes.",
+        "One day, Lily met a deaf man on the street.",
+        "One day, while he was walking, he saw a little bird with a hurt wing."
+      ]
+    },
+    {
+      "id": 93,
+      "context": "Once upon a time, there was a big family. They loved to play and laugh together.",
+      "positive": "One day, they went on a picnic.",
+      "negatives": [
+        "One day, she came across something special - a cell!",
+        "She was three years old.",
+        "She saw a cup full of yummy treats!"
+      ]
+    },
+    {
+      "id": 94,
+      "context": "Once upon a time there were two friends. They were intelligent because they both knew a lot.",
+      "positive": "One friend had a very smooth texture, like a fluffy cloud.",
+      "negatives": [
+        "One day, she went to the movie theater with her mom and dad.",
+        "Joe was always shouting and Pete wished he could be like him.",
+        "One day, her parents surprised her with a beautiful pony named Daisy."
+      ]
+    },
+    {
+      "id": 95,
+      "context": "Once upon a time, there was a little girl named Lily who loved to eat soup with her spoon. One day, Lily's mom made some soup for her and gave her a big spoon to eat with.",
+      "positive": "Lily was so happy and started eating her soup.",
+      "negatives": [
+        "The bird wanted to show off its beauty to all the other animals.",
+        "He felt very sad and wished he could be thin like his friends.",
+        "One day, she went on an adventure to the west."
+      ]
+    },
+    {
+      "id": 96,
+      "context": "Once upon a time, there was a little boy named Timmy who loved playing with his toy cars. One day, he went to the park to play with his friends.",
+      "positive": "He brought his favorite car with him, a red one with big wheels.",
+      "negatives": [
+        "She was always asking questions and wanted to know more about the world.",
+        "One day, it got stuck in a valley and couldn't go any further.",
+        "One day, her mom asked her to unpack a big box."
+      ]
+    },
+    {
+      "id": 97,
+      "context": "Once upon a time, there was a big, strong horse named Max. He used to carry heavy things for his owner, but one day he got sick and lost a lot of weight.",
+      "positive": "His owner was sad because Max wasn't reliable anymore.",
+      "negatives": [
+        "One day, she saw a big sunflower in her neighbor's garden.",
+        "He loved to play and run in the park with his friends.",
+        "She liked to swing and slide."
+      ]
+    },
+    {
+      "id": 98,
+      "context": "Once upon a time, there was a little girl. Her name was Sally and she was three years old.",
+      "positive": "One day, Sally was sitting in the kitchen.",
+      "negatives": [
+        "She needed a scarf to keep her warm.",
+        "One day, a little boy named Jack went to the room.",
+        "She loved to play with it."
+      ]
+    },
+    {
+      "id": 99,
+      "context": "Once upon a time, there was a very wise old man who lived by himself in the woods. He was very wise and knew many things.",
+      "positive": "One day, he was walking around his house, looking for something to do.",
+      "negatives": [
+        "One day, Lily's mom took her to the doctor's office because she wasn't feeling well.",
+        "He had a big pile of blocks that he would stack up and knock down.",
+        "The horse looked friendly and Lily wanted to bring it to her grandma's house."
+      ]
+    }
+  ]
+}

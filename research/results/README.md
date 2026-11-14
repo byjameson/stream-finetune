@@ -41,6 +41,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_long_replay.json` | `research/spiking_long_replay.py` | 21M, seed 0, 600-step phase B: replay 99.7% new gain; naive samples collapse 144→81 chars |
 | `spiking_long_replay_seed1.json` | `research/spiking_long_replay.py` (`--seed 1`) | second seed: replay 99.7% new gain; naive semantic F1 0.000 |
 | `spiking_long_replay_50m.json` | `research/spiking_long_replay.py` (`--init-model checkpoints/spiking_50m_run`) | 50M: replay 98.2% new gain, semantic F1 0.140→0.182; EWC 91.7%, F1 0.115 |
+| `spiking_semantic.json` | `research/spiking_semantic_eval.py` | narrative MC: 4.3M 0.29, 21M 0.41, 50M 0.40; chance 0.25 |
+| `spiking_ewc_sweep_50m.json` | `research/spiking_ewc_sweep_50m.py` | 50M EWC lambda 0.5/2.0: old ~1.31, new 3.23/3.24, semantic 0.39/0.40 |
 
 ## Local assistant
 

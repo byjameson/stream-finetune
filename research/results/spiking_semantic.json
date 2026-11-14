@@ -1,0 +1,32 @@
+{
+  "cases": 100,
+  "results": [
+    {
+      "n": 100,
+      "accuracy": 0.29,
+      "chance": 0.25,
+      "mean_margin": -0.4139640959122727,
+      "model": "checkpoints/spiking_4m_10k",
+      "params": 4325633,
+      "step": 10000
+    },
+    {
+      "n": 100,
+      "accuracy": 0.41,
+      "chance": 0.25,
+      "mean_margin": -0.28010070428450684,
+      "model": "checkpoints/spiking_21m",
+      "params": 20973570,
+      "step": 10000
+    },
+    {
+      "n": 100,
+      "accuracy": 0.4,
+      "chance": 0.25,
+      "mean_margin": -0.2607371553655614,
+      "model": "checkpoints/spiking_50m_run",
+      "params": 50073842,
+      "step": 500
+    }
+  ]
+}
