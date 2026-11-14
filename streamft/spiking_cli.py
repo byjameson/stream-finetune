@@ -259,6 +259,12 @@ def info_cmd(args) -> int:
     return 0
 
 
+def ingest_cmd(args) -> int:
+    from streamft.spiking_ingest import ingest
+    ingest(args)
+    return 0
+
+
 def eval_cmd(args) -> int:
     model, tok, _ = load_checkpoint(args.model)
     if tok is None:
@@ -343,6 +349,36 @@ def main(argv=None) -> int:
     inf = sub.add_parser("info", help="show checkpoint metadata")
     inf.add_argument("--model", required=True)
     inf.set_defaults(func=info_cmd)
+
+    ing = sub.add_parser("ingest", help="safe incremental update with replay")
+    ing.add_argument("--model", required=True)
+    ing_source = ing.add_mutually_exclusive_group(required=True)
+    ing_source.add_argument("--text", default="",
+                            help="UTF-8 new text; tokenized with the checkpoint tokenizer")
+    ing_source.add_argument("--new-data", default="",
+                            help="already-tokenized new data shard")
+    ing.add_argument("--new-valid", default="")
+    ing.add_argument("--new-tokens", type=int, default=0)
+    ing.add_argument("--old-data", required=True)
+    ing.add_argument("--old-valid", required=True)
+    ing.add_argument("--tokenizer", default=str(ROOT / "data/ts_bpe8k.json"))
+    ing.add_argument("--out", default=str(ROOT / "checkpoints/ingest"))
+    ing.add_argument("--steps", type=int, default=300)
+    ing.add_argument("--batch", type=int, default=16)
+    ing.add_argument("--seq", type=int, default=128)
+    ing.add_argument("--lr", type=float, default=1e-4)
+    ing.add_argument("--replay-fraction", type=float, default=0.20)
+    ing.add_argument("--max-old-regression", type=float, default=0.02)
+    ing.add_argument("--min-new-gain", type=float, default=0.01)
+    ing.add_argument("--rollback-fraction", type=float, default=0.10)
+    ing.add_argument("--fisher-batches", type=int, default=8)
+    ing.add_argument("--eval-every", type=int, default=50)
+    ing.add_argument("--eval-batches", type=int, default=8)
+    ing.add_argument("--eval-batch-size", type=int, default=4)
+    ing.add_argument("--amp", action="store_true")
+    ing.add_argument("--keep-rejected", action="store_true")
+    ing.add_argument("--seed", type=int, default=0)
+    ing.set_defaults(func=ingest_cmd)
 
     ev = sub.add_parser("eval", help="measure bpb on a token shard")
     ev.add_argument("--model", required=True)
