@@ -27,10 +27,13 @@
   (`official` auto, `reference`/`community` independent corroboration,
   `human`/`untrusted`/`self` review), export to the ingest inbox. Demo:
   4 verified, 1 false claim rejected.
+- Claim-level conflict check: opposite negation or different numbers are
+  recorded in `conflicts` and marked `contradicted`, never exported. Demo:
+  "X is 299792458" vs "X is not 299792458" -> both contradicted, export [].
 - `streamft spiking grow`: function-preserving width growth. 4.3M/width 256
   -> 21.53M/width 1152 with identical zero-step logits; training/ingest after
   growth is still required.
-- 73 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`,
+- 76 tests; `docs/SPIKING_PRODUCT.md`, `docs/SPIKING_INGEST.md`,
   `docs/SPIKING_WATCH.md`, `docs/SPIKING_KNOWLEDGE.md`,
   `docs/SPIKING_GROW.md`.
 

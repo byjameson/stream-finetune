@@ -68,8 +68,25 @@ usually `reference` or `untrusted`; never mark a random domain `official`.
 | `untrusted` | requires review |
 | `self` | requires review; model-generated text must not auto-train |
 
-Corroboration is document-level: normalized 5-word shingles and Jaccard
-similarity. It catches copies/rephrasings, not subtle claim-level contradictions.
+Corroboration uses document-level shingles for support, plus a **claim-level
+conflict check** before a document can count as support. Sentences with high
+core-token overlap but opposite negation polarity, or different numeric values,
+are stored in the `conflicts` table and set `contradicted`; `contradicted`
+documents are not exported.
+
+```bash
+streamft spiking knowledge --db data/knowledge.db conflicts
+```
+
+This catches cases such as:
+
+- "X is true" vs "X is not true"
+- "X doğrudur" vs "X doğru değildir"
+- "speed is 299792458" vs "speed is 300000000"
+
+It is a lexical conflict detector, not a trained NLI model. Subtle entailment
+and negation inside long paraphrases can still pass; human review remains the
+final gate for high-impact claims.
 
 ## Demo
 
@@ -86,6 +103,21 @@ stats -> {"verified": 4, "rejected": 1}
 The rejected document is absent from the export, so it cannot reach the
 training inbox.
 
+A second demo used two independent reference pages with the same number, one
+positive and one negated:
+
+```
+positive: The speed of light is 299792458 metres per second.
+negative: The speed of light is not 299792458 metres per second.
+verify -> both contradicted (reason: negation)
+conflicts -> 2 rows
+export -> []
+```
+
+The old document-level Jaccard check scored this pair at only 0.10 and would not
+have treated it as support anyway; the claim-level check is what explains and
+records the contradiction.
+
 ## Tests
 
 ```bash
@@ -100,9 +132,9 @@ review, export and `stats`-level behavior without a network or GPU.
 - This is **not** a general fact-checker. Two coordinated fake sites can pass
   corroboration. Treat `official` source lists and human review as the real
   trust anchors.
-- Document-level matching does not understand negation. "The speed of light is
-  not 299792458 m/s" would need claim extraction/NLI before it could be rejected
-  automatically.
+- The conflict check is lexical: it catches simple negation and numeric
+  mismatch, not a trained NLI model or long paraphrases. Subtle entailment and
+  negation inside a long sentence can still pass; review those by hand.
 - The knowledge DB is local SQLite; it has no signatures, replication or
   access control.
 - PII and copyrighted text need separate filtering/retention rules.

@@ -2,8 +2,10 @@ import json
 
 from streamft.spiking_knowledge import (
     add_doc,
+    claim_conflict,
     connect,
     export,
+    list_conflicts,
     list_docs,
     review,
     verify,
@@ -34,6 +36,32 @@ def test_reference_needs_independent_support(tmp_path):
     changed = verify(conn, threshold=0.5, min_support=2)
     assert any(c["status"] == "verified" for c in changed)
     assert len(list_docs(conn, "verified")) >= 1
+
+
+def test_negation_is_a_contradiction_not_support(tmp_path):
+    conn = connect(str(tmp_path / "k.db"))
+    add_doc(conn, "The speed of light is 299792458 metres per second.",
+            "positive", "https://a.example/", "reference")
+    add_doc(conn, "The speed of light is not 299792458 metres per second.",
+            "negative", "https://b.example/", "reference")
+    changed = verify(conn, threshold=0.5, min_support=1)
+    assert all(c["status"] == "contradicted" for c in changed)
+    assert list_conflicts(conn)
+    assert export(conn, str(tmp_path / "out")) == []
+
+
+def test_number_mismatch_is_a_contradiction():
+    a = "The speed of light is 299792458 metres per second."
+    b = "The speed of light is 300000000 metres per second."
+    c = claim_conflict(a, b)
+    assert c is not None
+    assert c["reason"] == "number"
+
+
+def test_turkish_negation():
+    c = claim_conflict("X doğrudur.", "X doğru değildir.")
+    assert c is not None
+    assert c["reason"] == "negation"
 
 
 def test_untrusted_needs_human_review(tmp_path):

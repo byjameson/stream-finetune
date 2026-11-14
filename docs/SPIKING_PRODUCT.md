@@ -162,7 +162,10 @@ seeds.
 documents in SQLite with source/trust metadata, auto-verifies explicitly
 `official` sources, requires independent corroboration for `reference` /
 `community` pages, and requires human review for `human`, `untrusted` and
-`self` content. Only `verified` documents are exported to the ingest inbox.
+`self` content. Before a document counts as support, a claim-level check rejects
+simple negation and numeric contradictions ("X is true" vs "X is not true") and
+records them in the `conflicts` table. Only `verified` documents are exported to
+the ingest inbox.
 
 ```bash
 streamft spiking knowledge --db data/knowledge.db add \

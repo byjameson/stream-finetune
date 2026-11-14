@@ -30,6 +30,20 @@ TRUST = ("official", "reference", "community", "human", "untrusted", "self")
 AUTO_VERIFY = {"official"}
 CORROBORATE = {"reference", "community"}
 
+NEGATORS = {
+    "not", "no", "never", "none", "neither", "nor", "cannot", "cant",
+    "dont", "doesnt", "didnt", "isnt", "arent", "wasnt", "werent",
+    "wont", "wouldnt", "shouldnt", "couldnt", "false", "incorrect",
+    "değil", "degil", "yok", "asla", "hiç", "hic",
+}
+STOPWORDS = {
+    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+    "of", "in", "on", "at", "to", "for", "with", "as", "by", "from",
+    "and", "or", "that", "this", "these", "those", "it", "its", "there",
+    "has", "have", "had", "do", "does", "did", "will", "would", "can",
+    "could", "should", "may", "might", "must", "about", "approximately",
+}
+
 
 class _Text(HTMLParser):
     def __init__(self):
@@ -68,6 +82,65 @@ def similarity(a: str, b: str) -> float:
     if not x or not y:
         return 0.0
     return len(x & y) / len(x | y)
+
+
+def _sentences(text: str):
+    parts = re.split(r"(?<=[.!?])\s+|\n+", text)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def _norm_token(t: str) -> str:
+    t = t.lower().replace("’", "'").replace("‘", "'")
+    t = t.replace("n't", " not ").replace("cannot", "can not")
+    t = re.sub(r"[^a-z0-9ğüşöçı]+", "", t)
+    if t in NEGATORS or t == "not":
+        return "not"
+    # Turkish copula suffixes: doğrudur -> doğru, değildir -> değil.
+    for suffix in ("dır", "dir", "dur", "dür", "tır", "tir", "tur", "tür"):
+        if t.endswith(suffix) and len(t) > len(suffix) + 2:
+            return t[:-len(suffix)]
+    return t
+
+
+def claims(text: str):
+    out = []
+    for sentence in _sentences(text):
+        raw = sentence.replace("n't", " not ").replace("cannot", "can not")
+        toks = [_norm_token(t) for t in re.findall(r"[A-Za-z0-9ğüşöçıĞÜŞÖÇİ']+", raw)]
+        toks = [t for t in toks if t]
+        neg_count = sum(1 for t in toks if t == "not" or t in NEGATORS)
+        core = [t for t in toks if t not in STOPWORDS and t not in NEGATORS
+                and t != "not"]
+        nums = set(re.findall(r"\d+(?:\.\d+)?", sentence))
+        if len(core) >= 2:
+            out.append({"sentence": sentence, "tokens": core,
+                        "negated": neg_count % 2 == 1, "numbers": nums})
+    return out
+
+
+def claim_conflict(a_text: str, b_text: str):
+    """Return the first high-overlap claim pair with opposite polarity or numbers."""
+    for a in claims(a_text):
+        sa = set(a["tokens"])
+        for b in claims(b_text):
+            sb = set(b["tokens"])
+            inter = len(sa & sb)
+            if inter < 2:
+                continue
+            union = len(sa | sb)
+            sim = inter / union if union else 0.0
+            containment = inter / min(len(sa), len(sb))
+            if sim < 0.50 and containment < 0.75:
+                continue
+            if a["negated"] != b["negated"]:
+                return {"reason": "negation", "similarity": sim,
+                        "sentence_a": a["sentence"],
+                        "sentence_b": b["sentence"]}
+            if a["numbers"] and b["numbers"] and a["numbers"] != b["numbers"]:
+                return {"reason": "number", "similarity": sim,
+                        "sentence_a": a["sentence"],
+                        "sentence_b": b["sentence"]}
+    return None
 
 
 def _public_url(url: str) -> bool:
@@ -127,6 +200,14 @@ def connect(path: str) -> sqlite3.Connection:
       decision TEXT NOT NULL, note TEXT NOT NULL, reviewer TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS conflicts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      doc_a INTEGER NOT NULL, doc_b INTEGER NOT NULL,
+      reason TEXT NOT NULL, similarity REAL NOT NULL,
+      sentence_a TEXT NOT NULL, sentence_b TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(doc_a,doc_b,sentence_a,sentence_b,reason)
+    );
     """)
     return conn
 
@@ -182,7 +263,7 @@ def verify(conn, threshold: float = 0.70, min_support: int = 2) -> list:
             continue
         if d["trust"] not in CORROBORATE:
             continue
-        support, best = 0, 0.0
+        support, best, first_conflict = 0, 0.0, None
         others = conn.execute(
             "SELECT d.text,d.id,s.domain FROM documents d JOIN sources s ON "
             "s.id=d.source_id WHERE d.id!=?", (d["id"],)).fetchall()
@@ -191,15 +272,41 @@ def verify(conn, threshold: float = 0.70, min_support: int = 2) -> list:
                 continue
             sim = similarity(d["text"], o["text"])
             best = max(best, sim)
-            if sim >= threshold:
+            # A contradiction can have low document-level shingle overlap
+            # ("is true" vs "is not true"), so check claims independently.
+            conflict = claim_conflict(d["text"], o["text"])
+            if conflict:
+                first_conflict = first_conflict or conflict
+                conn.execute(
+                    "INSERT OR IGNORE INTO conflicts(doc_a,doc_b,reason,similarity,"
+                    "sentence_a,sentence_b,created_at) VALUES (?,?,?,?,?,?,?)",
+                    (d["id"], o["id"], conflict["reason"], conflict["similarity"],
+                     conflict["sentence_a"], conflict["sentence_b"],
+                     time.strftime("%Y-%m-%dT%H:%M:%S")))
+            elif sim >= threshold:
                 support += 1
-        if support >= min_support:
+        if first_conflict:
+            conn.execute("UPDATE documents SET status='contradicted',confidence=0 "
+                         "WHERE id=?", (d["id"],))
+            changed.append({"id": d["id"], "status": "contradicted",
+                            "reason": first_conflict["reason"],
+                            "similarity": first_conflict["similarity"],
+                            "support": support})
+        elif support >= min_support:
             conn.execute("UPDATE documents SET status='verified',confidence=? "
                          "WHERE id=?", (best, d["id"]))
             changed.append({"id": d["id"], "status": "verified",
                             "reason": f"support={support}", "similarity": best})
     conn.commit()
     return changed
+
+
+def list_conflicts(conn):
+    rows = conn.execute(
+        "SELECT c.*, a.title AS title_a, b.title AS title_b FROM conflicts c "
+        "JOIN documents a ON a.id=c.doc_a JOIN documents b ON b.id=c.doc_b "
+        "ORDER BY c.id").fetchall()
+    return [dict(r) for r in rows]
 
 
 def review(conn, doc_id: int, decision: str, note: str, reviewer: str) -> dict:
@@ -273,6 +380,7 @@ def main(argv=None) -> int:
     ex.add_argument("--include-source", action="store_true")
 
     st = sub.add_parser("stats")
+    sub.add_parser("conflicts")
 
     args = ap.parse_args(argv)
     conn = connect(args.db)
@@ -307,6 +415,9 @@ def main(argv=None) -> int:
     if args.cmd == "stats":
         rows = conn.execute("SELECT status,COUNT(*) n FROM documents GROUP BY status")
         print(json.dumps({r["status"]: r["n"] for r in rows}, indent=2))
+        return 0
+    if args.cmd == "conflicts":
+        print(json.dumps(list_conflicts(conn), indent=2))
         return 0
     return 2
 
