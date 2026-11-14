@@ -112,14 +112,16 @@ For a protected API, start with `--api-key secret` (or set `SPIKING_API_KEY`).
 
 ```
 checkpoints/spiking_4m/
-  model.pt        config + state_dict + metadata
-  config.json     human-readable architecture
-  model_card.json params and metadata
-  tokenizer.json  copy of the BPE tokenizer (when supplied)
-  training.json   eval/rollback history (written by train)
+  model.safetensors  state_dict (new checkpoints)
+  meta.json          config + metadata
+  config.json        human-readable architecture
+  model_card.json    params and metadata
+  tokenizer.json     copy of the BPE tokenizer (when supplied)
+  training.json      eval/rollback history (written by train)
 ```
 
-`model.pt` is a `torch.save` dictionary. The product does not depend on
+New checkpoints use safetensors and do not require `torch.load`. Older
+checkpoints with `model.pt` are still readable. The product does not depend on
 `research/`; the research scripts are the experiment reference.
 
 ## Online rollback
@@ -243,6 +245,24 @@ Ready-to-adapt files are in [`deploy/`](../deploy/README.md):
 
 They are templates, not an automatic installer; adjust paths, hostnames and
 certificate mounts for the target machine.
+
+## Production readiness
+
+| area | state |
+|---|---|
+| installable wheel + `streamft spiking` | done |
+| checkpoint/resume/tokenize/eval | done |
+| HTTP health/metrics/auth/generation | done |
+| OpenAI-shaped endpoint | done |
+| systemd/Caddy/nginx templates | done, not executed in this Windows checkout |
+| TLS/rate limit | template-level; terminate at the proxy |
+| GPU concurrency | one process-wide lock; one process per GPU |
+| model quality | research-grade; 20.97M run in progress |
+| public deployment | requires a host/proxy and a domain; not done here |
+
+The deployment templates are deliberately files, not an automatic installer.
+A real host should run the smoke test in [`deploy/README.md`](../deploy/README.md)
+after adding TLS and the API key.
 
 ## Reproduce the reference numbers
 
