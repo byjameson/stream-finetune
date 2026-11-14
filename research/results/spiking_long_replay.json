@@ -1,0 +1,206 @@
+{
+  "question": "Does replay-first hold with a longer phase B, and does soft EWC help?",
+  "config": {
+    "steps_a": 300,
+    "steps_b": 600,
+    "batch": 16,
+    "seq": 128,
+    "dim": 1024,
+    "layers": 2,
+    "lr_a": 0.0005,
+    "lr_b": 0.0001,
+    "adapt": 0.1,
+    "replay": 0.2,
+    "ewc_lambda": 1.0,
+    "fisher_batches": 8,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "a_tokens": 5000000,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_long_replay.json"
+  },
+  "phase_a_quality": {
+    "chars_mean": 144.25,
+    "distinct_1": 0.21164021164021163,
+    "distinct_2": 0.7405405405405405,
+    "repeat_4gram": 0.005649717514124294,
+    "samples": [
+      " his there was was a Lily loved the to. was. girl loved. named the He day, to in. a, it that He One to was little He she the\n to. and in to. with,., of had",
+      ". a was a in a. the it day He She to in.. and named she play the to was Lily the to her. his of,, she.\n\" She is of had the\n in there\n named and and",
+      " her a was. a. saw play the in Lily He. Timmy the very that little to the She and saw named,, She they. They and little time.. a the her she the was.... a He to",
+      "\n and. the. play the day.'s had.'t. the. and... the't....\n it. He and. a! of on. They to she so, for his. to her on"
+    ]
+  },
+  "after_a": {
+    "old": {
+      "loss": 6.18190324306488,
+      "ppl": 483.9120827784759,
+      "bpb": 2.1697903491740806,
+      "tokens": 4096,
+      "bytes": 16836
+    },
+    "new": {
+      "loss": 12.105529189109802,
+      "ppl": 180869.16238541662,
+      "bpb": 6.1277152697442085,
+      "tokens": 4096,
+      "bytes": 11674
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "ewc_lambda": 0.0,
+      "train_loss": 6.4073638916015625,
+      "sec": 370.9,
+      "before": {
+        "old": {
+          "loss": 6.18190324306488,
+          "ppl": 483.9120827784759,
+          "bpb": 2.1697903491740806,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 12.105529189109802,
+          "ppl": 180869.16238541662,
+          "bpb": 6.1277152697442085,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 8.016308903694153,
+          "ppl": 3029.9727458505095,
+          "bpb": 2.8136496174939047,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.438916921615601,
+          "ppl": 625.7287194201654,
+          "bpb": 3.2593246379260297,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 81.25,
+        "distinct_1": 0.3669724770642202,
+        "distinct_2": 0.8380952380952381,
+        "repeat_4gram": 0.020618556701030927
+      },
+      "samples": [
+        " hiss    in Ss\n\n aoe ,  for  =@=\n\n \n\n D M\n\n  9\n\n= =  ==\n\n=\n\n@== ==a",
+        ".,  the. ins -,it \"ioning and ' toa waso the for@  -pal \n, \n\n  the 9  ,@ @ = was 0=",
+        " the  in, as theic the '. '@ a that in M au as  to  that 1ing and for  A@ that. \" a)  wasa .\n\n A @.  i",
+        " , of tos.  a al B  @ ,,  The and  \n\n\n\n a the .\n\n@   the=   \n=   =9=7 \n  "
+      ]
+    },
+    {
+      "arm": "replay_20",
+      "replay": 0.2,
+      "ewc_lambda": 0.0,
+      "train_loss": 6.280887603759766,
+      "sec": 340.7,
+      "before": {
+        "old": {
+          "loss": 6.18190324306488,
+          "ppl": 483.9120827784759,
+          "bpb": 2.1697903491740806,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 12.105529189109802,
+          "ppl": 180869.16238541662,
+          "bpb": 6.1277152697442085,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 6.057267248630524,
+          "ppl": 427.2063913804054,
+          "bpb": 2.126044278223073,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.455104887485504,
+          "ppl": 635.9404249468786,
+          "bpb": 3.267518847703851,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 137.75,
+        "distinct_1": 0.22162162162162163,
+        "distinct_2": 0.712707182320442,
+        "repeat_4gram": 0.005780346820809248
+      },
+      "samples": [
+        " a a were. a his, there little would day. a was a. saw little named play the.. was a to was. and and the She he day she had time, She the to and a. saw a She,",
+        " at ons her She  to He One loved a and, so her and, She.. and the very with she a to. her a the\n, She and the a and a for a She., \" Lily.",
+        " he was play her big the and\n She in a Lily,, a and the.. was They... was in her\n.. are, said a a was\".,..\".\" the.\", She",
+        " to and happy The and her... Lily\n the big with, the, her\n is with are to.. her that and too with a and.?\". the She.. She. a\n a a \"\" and"
+      ]
+    },
+    {
+      "arm": "replay_20_ewc",
+      "replay": 0.2,
+      "ewc_lambda": 1.0,
+      "train_loss": 6.322524547576904,
+      "sec": 313.7,
+      "before": {
+        "old": {
+          "loss": 6.18190324306488,
+          "ppl": 483.9120827784759,
+          "bpb": 2.1697903491740806,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 12.105529189109802,
+          "ppl": 180869.16238541662,
+          "bpb": 6.1277152697442085,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "after": {
+        "old": {
+          "loss": 6.004083156585693,
+          "ppl": 405.0794240259109,
+          "bpb": 2.107377158226021,
+          "tokens": 4096,
+          "bytes": 16836
+        },
+        "new": {
+          "loss": 6.4902819991111755,
+          "ppl": 658.709092404838,
+          "bpb": 3.285325200543679,
+          "tokens": 4096,
+          "bytes": 11674
+        }
+      },
+      "quality": {
+        "chars_mean": 143.25,
+        "distinct_1": 0.22950819672131148,
+        "distinct_2": 0.7932960893854749,
+        "repeat_4gram": 0.005847953216374269
+      },
+      "samples": [
+        " her a time a. named little play to little. was his., was. it was to big\n was in. named on and aOnce to to day She to the They girl it the. a to a and and the happy",
+        " Timmy had that. with to so to it wanted  a. had the all was it day named to it to the...., in mom the his. was a,.\n and her the.\n \",\",!",
+        "  the to a the, she was the with., the.. in his him the a. of. The the, big the. He \" He and \", to and for\" be They happy They\n. She She for",
+        " her were in the in,, big. the. They it and was day\n. a, big the.. and of was. a\n the a to He The to on's it\n said. to said.\n that he"
+      ]
+    }
+  ]
+}

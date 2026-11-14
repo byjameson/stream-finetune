@@ -38,6 +38,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_replay.json` | `research/spiking_replay.py` | 20% old-data replay: old 2.079 vs naive 2.632; new 3.285 vs naive 3.274 |
 | `spiking_replay_rollback.json` | `research/spiking_replay_rollback.py` | controlled seed 1: replay keeps 98.9% new gain; replay+rollback only 16.0% |
 | `spiking_replay_ewc_21m.json` | `research/spiking_replay_ewc.py` | 21M, seeds 0/1: replay 99.6-99.8% new gain; rollback 6.5-12%; EWC 99.3% |
+| `spiking_long_replay.json` | `research/spiking_long_replay.py` | 21M, 600-step phase B: replay 99.7% new gain; naive samples collapse 144→81 chars |
 
 ## Local assistant
 

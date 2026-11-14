@@ -21,8 +21,12 @@
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
 - 21M, two seeds: replay-first holds; replay 99.6-99.8% new gain, replay+rollback
   6.5-12.0%, replay+EWC 99.3%. EWC is safe but not better than replay.
-- 86 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
-  `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`.
+- 21M, 600-step phase B + generation probe: replay keeps 99.7% new gain; naive
+  samples collapse 144→81 chars and repeat 4-grams 0.56%→2.06%; EWC keeps 99.1%
+  and is slightly better on distinct-2/length.
+- 87 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
+  `research/SPIKING_LONG_REPLAY.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF
