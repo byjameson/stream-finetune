@@ -227,6 +227,19 @@ def info_cmd(args) -> int:
     return 0
 
 
+def eval_cmd(args) -> int:
+    model, tok, _ = load_checkpoint(args.model)
+    if tok is None:
+        raise SystemExit("checkpoint has no tokenizer.json")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    tokens = load_tokens(args.data, args.max_tokens)
+    batches = fixed_windows(tokens, args.seq, args.batches, args.batch_size,
+                            args.seed, device)
+    print(json.dumps(evaluate_bpb(model, tok, batches), indent=2))
+    return 0
+
+
 def generate_cmd(args) -> int:
     model, tok, _ = load_checkpoint(args.model)
     if tok is None:
@@ -242,7 +255,7 @@ def generate_cmd(args) -> int:
 
 def serve_cmd(args) -> int:
     from streamft.spiking_server import serve
-    return serve(args.model, args.host, args.port)
+    return serve(args.model, args.host, args.port, args.api_key)
 
 
 def main(argv=None) -> int:
@@ -287,6 +300,16 @@ def main(argv=None) -> int:
     inf.add_argument("--model", required=True)
     inf.set_defaults(func=info_cmd)
 
+    ev = sub.add_parser("eval", help="measure bpb on a token shard")
+    ev.add_argument("--model", required=True)
+    ev.add_argument("--data", required=True)
+    ev.add_argument("--max-tokens", type=int, default=0)
+    ev.add_argument("--seq", type=int, default=128)
+    ev.add_argument("--batches", type=int, default=8)
+    ev.add_argument("--batch-size", type=int, default=4)
+    ev.add_argument("--seed", type=int, default=0)
+    ev.set_defaults(func=eval_cmd)
+
     gen = sub.add_parser("generate", help="generate from a checkpoint")
     gen.add_argument("--model", required=True)
     gen.add_argument("--prompt", required=True)
@@ -300,6 +323,8 @@ def main(argv=None) -> int:
     srv.add_argument("--model", required=True)
     srv.add_argument("--host", default="127.0.0.1")
     srv.add_argument("--port", type=int, default=8011)
+    srv.add_argument("--api-key", default="",
+                     help="require Authorization: Bearer <key> on POST (env SPIKING_API_KEY)")
     srv.set_defaults(func=serve_cmd)
 
     args = ap.parse_args(argv)

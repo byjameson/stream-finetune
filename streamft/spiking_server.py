@@ -11,6 +11,7 @@ Endpoints:
 from __future__ import annotations
 
 import json
+import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -67,6 +68,8 @@ class Handler(BaseHTTPRequestHandler):
                 "id": _state["name"], "object": "model",
                 "owned_by": "streamft",
             }]})
+        elif self.path == "/metrics":
+            self._json(200, _state["metrics"])
         elif self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
         else:
@@ -75,6 +78,11 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path not in ("/generate", "/v1/chat/completions"):
             return self._json(404, {"error": "not found"})
+        key = _state.get("api_key") or ""
+        if key:
+            auth = self.headers.get("Authorization", "")
+            if auth != f"Bearer {key}":
+                return self._json(401, {"error": "unauthorized"})
         try:
             n = int(self.headers.get("Content-Length", "0"))
             req = json.loads(self.rfile.read(n) or b"{}")
@@ -95,6 +103,8 @@ class Handler(BaseHTTPRequestHandler):
                 text = generate(_state["model"], _state["tok"], prompt,
                                 max_new, _state["device"],
                                 temperature=temperature, top_k=top_k)
+                _state["metrics"]["requests"] += 1
+                _state["metrics"]["generated_tokens"] += max_new
             if self.path == "/generate":
                 return self._json(200, {"text": text, "model": _state["name"]})
             return self._json(200, {
@@ -114,7 +124,8 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
-def serve(model_path: str, host: str = "127.0.0.1", port: int = 8011) -> int:
+def serve(model_path: str, host: str = "127.0.0.1", port: int = 8011,
+          api_key: str = "") -> int:
     model, tok, meta = load_checkpoint(model_path)
     if tok is None:
         raise SystemExit("checkpoint has no tokenizer.json")
@@ -128,6 +139,8 @@ def serve(model_path: str, host: str = "127.0.0.1", port: int = 8011) -> int:
         "name": meta.get("name", str(model_path)),
         "params": count_params(model),
         "config": model.config.__dict__,
+        "api_key": api_key or os.environ.get("SPIKING_API_KEY", ""),
+        "metrics": {"requests": 0, "generated_tokens": 0},
     })
     httpd = ThreadingHTTPServer((host, port), Handler)
     print(f"streamft spiking serving {model_path} at http://{host}:{port}",

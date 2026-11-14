@@ -34,6 +34,7 @@ USAGE = """streamft - fine-tune models that do not fit
   streamft verify-server --model <base> --adapter <pt> --token <token> --port 8010
   streamft serve --model merged/<name> --port 8000
   streamft spiking train --data data/ts_train.pt --out checkpoints/spiking_4m
+  streamft spiking eval --model checkpoints/spiking_4m --data data/ts_valid.pt
   streamft spiking serve --model checkpoints/spiking_4m --port 8011
   streamft doctor
 
