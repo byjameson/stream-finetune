@@ -65,6 +65,8 @@ Inspect and generate:
 
 ```bash
 streamft spiking info --model checkpoints/spiking_4m
+streamft spiking eval \
+  --model checkpoints/spiking_4m --data data/ts_valid.pt
 streamft spiking generate \
   --model checkpoints/spiking_4m \
   --prompt "Once upon a time" --max-new 64 \
@@ -93,7 +95,13 @@ curl -s -X POST http://127.0.0.1:8011/generate \
 curl -s -X POST http://127.0.0.1:8011/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{"messages":[{"role":"user","content":"Once upon a time"}],"max_tokens":32}'
+
+curl -s http://127.0.0.1:8011/metrics
 ```
+
+For a protected API, start with `--api-key secret` (or set `SPIKING_API_KEY`).
+`/health`, `/metrics` and `/v1/models` stay public; `POST /generate` and
+`POST /v1/chat/completions` require `Authorization: Bearer secret`.
 
 ## Checkpoint format
 
@@ -206,7 +214,8 @@ feature to tune.
 The server is a LAN/demo server, not a hardened public service. Before exposing
 it:
 
-- put it behind a reverse proxy with TLS, authentication and rate limits;
+- put it behind a reverse proxy with TLS and rate limits; use the built-in
+  `--api-key` or proxy authentication for access control;
 - cap `max_new_tokens` and request body size at the proxy;
 - serialize GPU access or use a queue (the server uses one process-wide lock);
 - add request IDs, latency/error metrics and a health check;

@@ -8,7 +8,7 @@
   `--rollback-fraction`; a rollback is kept only if it lowers old-task bpb.
 - Measured 4.3M model: 1.889 bpb on TinyStories; 9.4M model: 2.152 bpb at 600
   steps (more parameters did not help at this budget).
-- 59 tests; `docs/SPIKING_PRODUCT.md`.
+- 61 tests; `docs/SPIKING_PRODUCT.md`.
 
 ## 0.6.3 — fingerprint HTTP endpoint
 - `streamft verify-server`: loads the base + adapter once and exposes `POST /verify`
