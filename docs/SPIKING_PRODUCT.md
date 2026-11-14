@@ -179,6 +179,14 @@ See [`SPIKING_KNOWLEDGE.md`](SPIKING_KNOWLEDGE.md). This is deliberately not an
 autonomous web crawler: it makes recursive learning auditable, not magically
 truthful.
 
+## 50M / 500M-token run
+
+The next scale test grows the 21M checkpoint to **50,073,842 parameters** and
+trains for 30,600 steps (501M tokens seen, ~1.07 epochs of the 466.8M unique
+TinyStories tokens). The 500-step pilot was 1.329 bpb at 0.84 s/step; the full
+run is multi-hour and resumable. See [`SPIKING_50M.md`](SPIKING_50M.md) for the
+configuration and evaluation plan.
+
 ## Incremental ingest
 
 `streamft spiking ingest` tokenizes a new corpus, mixes a replay sample from the
