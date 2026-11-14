@@ -172,7 +172,8 @@ per-synapse rollback. See
 [`docs/SPIKING_INGEST.md`](docs/SPIKING_INGEST.md),
 [`docs/SPIKING_WATCH.md`](docs/SPIKING_WATCH.md),
 [`docs/SPIKING_KNOWLEDGE.md`](docs/SPIKING_KNOWLEDGE.md),
-[`docs/SPIKING_GROW.md`](docs/SPIKING_GROW.md) and
+[`docs/SPIKING_GROW.md`](docs/SPIKING_GROW.md),
+[`docs/SPIKING_50M.md`](docs/SPIKING_50M.md) and
 [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
