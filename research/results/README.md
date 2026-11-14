@@ -44,6 +44,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_semantic.json` | `research/spiking_semantic_eval.py` | narrative MC: 4.3M 0.29, 21M 0.41, 50M 0.40; chance 0.25 |
 | `spiking_ewc_sweep_50m.json` | `research/spiking_ewc_sweep_50m.py` | 50M EWC lambda 0.5/2.0: old ~1.31, new 3.23/3.24, semantic 0.39/0.40 |
 | `spiking_feedback.json` | `research/spiking_feedback.py` | top-down feedback: semantic 0.39 vs baseline 0.45; bpb 1.361 vs 1.352 |
+| `spiking_binding.json` | `research/spiking_binding.py` | disjoint binding split: spike 0.168, rate 0.318; chance 0.25 |
 
 ## Local assistant
 

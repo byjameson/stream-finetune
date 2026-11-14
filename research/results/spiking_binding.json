@@ -1,0 +1,39 @@
+{
+  "task": "tiny variable binding",
+  "config": {
+    "mode": "both",
+    "steps": 3000,
+    "batch": 64,
+    "dim": 128,
+    "layers": 2,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "eval_every": 500,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": false,
+    "out": "research/results/spiking_binding.json"
+  },
+  "results": [
+    {
+      "mode": "spike",
+      "params": 70146,
+      "steps": 3000,
+      "test_acc": 0.1680000126361847,
+      "chance": 0.25,
+      "sec": 152.6,
+      "final_loss": 0.9105299711227417
+    },
+    {
+      "mode": "rate",
+      "params": 70146,
+      "steps": 3000,
+      "test_acc": 0.31800001859664917,
+      "chance": 0.25,
+      "sec": 124.3,
+      "final_loss": 0.6665627360343933
+    }
+  ],
+  "note": "Train/test (person,color,object) triples are disjoint."
+}
