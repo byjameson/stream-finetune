@@ -30,9 +30,12 @@
   50M 0.40 (chance 0.25). 50M does not beat 21M.
 - 50M EWC lambda sweep 0.5/2.0: semantic accuracy 0.39/0.40, new bpb 3.23/3.24
   (worse than replay 3.16). Decision: revise architecture/data, not scale alone.
-- 90 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Top-down feedback topology: 0.39 narrative accuracy vs 0.45 baseline after
+  the same 500 steps; bpb 1.361 vs 1.352. Negative architecture result.
+- 92 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
-  `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`.
+  `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
+  `research/SPIKING_FEEDBACK.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

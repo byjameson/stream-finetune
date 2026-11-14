@@ -1,0 +1,66 @@
+{
+  "init_model": "checkpoints/spiking_21m",
+  "meta": {
+    "step": 10000,
+    "name": "spiking_21m",
+    "data": "data/ts_train.pt",
+    "seed": 0,
+    "total_steps": 10000,
+    "lr_schedule": "cosine",
+    "source": "scratch"
+  },
+  "config": {
+    "init_model": "checkpoints/spiking_21m",
+    "cases": "C:\\Users\\biris\\Desktop\\opencode\\ai gelistir\\research\\semantic_cases.json",
+    "steps": 500,
+    "batch": 16,
+    "seq": 128,
+    "lr": 0.0001,
+    "eval_batches": 8,
+    "eval_batch_size": 4,
+    "a_tokens": 5000000,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_feedback.json"
+  },
+  "arms": [
+    {
+      "arm": "baseline",
+      "old": {
+        "loss": 3.8522444367408752,
+        "ppl": 47.09865464155619,
+        "bpb": 1.3521018483873686,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "semantic": {
+        "n": 100,
+        "accuracy": 0.45,
+        "chance": 0.25,
+        "mean_margin": -0.29146243048270776
+      },
+      "params": 20973570,
+      "train_loss": 3.8377485275268555,
+      "sec": 312.1
+    },
+    {
+      "arm": "feedback",
+      "old": {
+        "loss": 3.878756105899811,
+        "ppl": 48.364017923112186,
+        "bpb": 1.3614071968568853,
+        "tokens": 4096,
+        "bytes": 16836
+      },
+      "semantic": {
+        "n": 100,
+        "accuracy": 0.39,
+        "chance": 0.25,
+        "mean_margin": -0.3079892150355347
+      },
+      "params": 22022146,
+      "train_loss": 3.8853726387023926,
+      "sec": 311.6
+    }
+  ]
+}

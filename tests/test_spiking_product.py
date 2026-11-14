@@ -64,6 +64,17 @@ def test_generate_greedy_and_sampled():
     assert isinstance(sampled, str) and sampled
 
 
+def test_feedback_starts_as_identity():
+    torch.manual_seed(0)
+    base = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=2))
+    fb = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=2, feedback=True))
+    fb.load_state_dict({k: v for k, v in base.state_dict().items()}, strict=False)
+    x = torch.randint(0, 32, (2, 8))
+    with torch.no_grad():
+        assert torch.allclose(base(x), fb(x), atol=1e-6)
+    assert fb.w_fb is not None
+
+
 def test_checkpoint_writes_config_and_card(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None)
