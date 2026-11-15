@@ -604,8 +604,12 @@ architecture needs a memory/attention mechanism, not more parameters.
 alone and **76%** by object alone, so a corrected conjunction split was built
 (both attributes required, unique pair). There spike reaches **0.220**, rate
 **0.326**, while a 2-layer transformer with dropout reaches **0.886** and a
-4-layer transformer **1.000**. The task is learnable; the spiking model lacks the
-binding mechanism. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+4-layer transformer **1.000**. At 256 wide, spike/rate improve to **0.519/0.629**
+on average over two seeds (seed range **0.466-0.572** / **0.502-0.756**) but are
+**position-biased**: the spike model is best on the third statement (0.846/0.872)
+and weak on the second (0.377/0.182). A simple attention readout hurts
+(**0.364/0.384**). The task is learnable; the spiking model still lacks balanced
+content binding. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 ## License
 

@@ -69,9 +69,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 - **Binding benchmark audit + conjunction task:** the first task is solvable
   78% by color alone and 76% by object alone, so it was too easy to shortcut.
   A corrected conjunction split (both attributes needed) gives spike 0.220,
-  rate 0.326; a 2-layer transformer 0.886 with dropout and 1.0 with 4 layers.
-  The task is learnable; the spiking model lacks the binding mechanism.
-  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
+  rate 0.326; 256-wide spiking reaches 0.466-0.572 / 0.502-0.756 over two seeds
+  but is position-biased. A 2-layer transformer reaches 0.886 with dropout and a
+  4-layer transformer 1.0 balanced across positions. A simple attention readout
+  hurts (0.364/0.384). [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 

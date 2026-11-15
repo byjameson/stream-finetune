@@ -67,3 +67,40 @@ def test_transformer_solves_conjunction_but_spiking_does_not():
     mid = json.loads((ROOT / "research/results/binding_transformer_mid.json")
                      .read_text(encoding="utf-8"))
     assert mid["results"][0]["test_acc"] > 0.85
+
+
+def test_256_wide_spiking_improves_but_remains_position_biased():
+    payload = json.loads((ROOT / "research/results/binding_spiking_256.json")
+                         .read_text(encoding="utf-8"))
+    arms = {r["arm"]: r for r in payload["results"]}
+    assert arms["spike"]["test_acc"] > 0.5
+    assert arms["rate"]["test_acc"] > 0.7
+    for arm in arms.values():
+        accs = [x["acc"] for x in arm["eval"]["by_answer_pos"].values()]
+        assert len(accs) == 3
+        assert max(accs) - min(accs) > 0.2
+
+
+def test_256_seed1_confirms_position_bias():
+    payload = json.loads((ROOT / "research/results/binding_spiking_256_seed1.json")
+                         .read_text(encoding="utf-8"))
+    arms = {r["arm"]: r for r in payload["results"]}
+    assert 0.4 < arms["spike"]["test_acc"] < 0.6
+    assert 0.4 < arms["rate"]["test_acc"] < 0.65
+    for arm in arms.values():
+        accs = [x["acc"] for x in arm["eval"]["by_answer_pos"].values()]
+        assert max(accs) - min(accs) > 0.4
+
+
+def test_simple_attention_readout_hurts():
+    base = json.loads((ROOT / "research/results/binding_spiking_256.json")
+                      .read_text(encoding="utf-8"))
+    attn = json.loads((ROOT / "research/results/binding_attention_256.json")
+                      .read_text(encoding="utf-8"))
+    b = {r["arm"]: r["test_acc"] for r in base["results"]}
+    a = {r["arm"]: r["test_acc"] for r in attn["results"]}
+    assert a["spike"] < b["spike"]
+    assert a["rate"] < b["rate"]
+    assert a["spike"] < 0.45 and a["rate"] < 0.45
+
+

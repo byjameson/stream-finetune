@@ -38,8 +38,14 @@
 - Binding benchmark audit: the first task is solvable 78% by color alone and
   76% by object alone. A corrected conjunction split gives spike 0.220, rate
   0.326, transformer 0.886 (2L, dropout) / 1.000 (4L). The task is learnable;
-  the spiking model lacks the binding mechanism.
-- 97 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  the spiking model lacks balanced binding.
+- 256-wide conjunction, two seeds: spike 0.572/0.466, rate 0.756/0.502. Overall
+  accuracy is seed-sensitive and position-biased: spike is 0.846/0.872 on the
+  third statement but 0.377/0.182 on the second; rate is 0.983/0.667 on the
+  first but 0.483/0.145 on the second.
+- Simple causal attention readout hurts: spike 0.364, rate 0.384, still
+  position-biased. The transformer remains balanced at 1.000.
+- 101 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

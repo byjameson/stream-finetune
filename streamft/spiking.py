@@ -33,6 +33,7 @@ class SpikingConfig:
     mode: str = "spike"
     adapt: float = 0.0
     feedback: bool = False
+    attention: bool = False
     decay_syn: float = 0.90
     decay_mem: float = 0.90
     decay_out: float = 0.90
@@ -110,6 +111,13 @@ class SpikingLM(nn.Module):
         if config.feedback:
             self.w_fb = nn.Linear(config.dim, config.dim, bias=False)
             nn.init.zeros_(self.w_fb.weight)
+        self.attn_q = None
+        if config.attention:
+            self.attn_q = nn.Linear(config.dim, config.dim, bias=False)
+            self.attn_k = nn.Linear(config.dim, config.dim, bias=False)
+            self.attn_v = nn.Linear(config.dim, config.dim, bias=False)
+            for layer in (self.attn_q, self.attn_k, self.attn_v):
+                nn.init.normal_(layer.weight, mean=0.0, std=0.02)
         self.last_activity = 0.0
 
     def init_state(self, batch: int, device: torch.device):
@@ -118,6 +126,8 @@ class SpikingLM(nn.Module):
             "layers": [layer.init_state(batch, device) for layer in self.layers],
             "readout": z,
             "top": z.clone(),
+            "hist_k": [],
+            "hist_v": [],
         }
 
     def step(self, tokens: torch.Tensor, state: dict):
@@ -128,7 +138,19 @@ class SpikingLM(nn.Module):
             cur, state["layers"][i] = layer(cur, state["layers"][i])
         state["top"] = cur
         state["readout"] = self.config.decay_out * state["readout"] + cur
-        logits = self.head(state["readout"])
+        readout = state["readout"]
+        if self.attn_q is not None:
+            state["hist_k"].append(cur)
+            state["hist_v"].append(readout)
+            keys = torch.stack(state["hist_k"], dim=1)
+            vals = torch.stack(state["hist_v"], dim=1)
+            q = self.attn_q(readout).unsqueeze(1)
+            k = self.attn_k(keys)
+            v = self.attn_v(vals)
+            scores = q @ k.transpose(-1, -2) / math.sqrt(self.dim)
+            attn = torch.softmax(scores.float(), dim=-1).to(v.dtype)
+            readout = readout + (attn @ v).squeeze(1)
+        logits = self.head(readout)
         return logits, state
 
     def forward(self, tokens: torch.Tensor) -> torch.Tensor:

@@ -64,44 +64,97 @@ A perfect binder reaches 1.0; single-attribute shortcuts are near 0.5.
 | transformer, 2 layers x 128, no dropout | 273k | 0.260 |
 | transformer, 2 layers x 128, dropout 0.1 | 273k | **0.886** |
 | transformer, 4 layers x 256, dropout 0.1 | ~1.6M | **1.000** |
+| spike, 2 layers x 256 | 271k | 0.572 (seed 0) / 0.466 (seed 1) |
+| rate, 2 layers x 256 | 271k | 0.756 (seed 0) / 0.502 (seed 1) |
 
 The 4-layer transformer reaches 1.0 by step 3,000. The 2-layer transformer needs
-dropout and more steps (0.658 at 3k, 0.886 at 6k). Both are trained on the 48
-train triples and evaluated on the 16 held-out triples.
+dropout and more steps (0.658 at 3k, 0.886 at 6k).
+
+### Per-position accuracy at 256 wide
+
+Overall accuracy hides a position shortcut. Splitting the test cases by where
+the correct answer sits in the story:
+
+| model | answer at stmt 0 | stmt 1 | stmt 2 |
+|---|---:|---:|---:|
+| spike 256, seed 0 | 0.478 | 0.377 | **0.846** |
+| spike 256, seed 1 | 0.296 | 0.182 | **0.872** |
+| rate 256, seed 0 | **0.983** | 0.483 | 0.757 |
+| rate 256, seed 1 | 0.667 | 0.145 | 0.670 |
+| transformer 2L | 0.778 | 0.934 | 0.959 |
+| transformer 4L | **1.000** | **1.000** | **1.000** |
+
+The 256-wide spiking models are strongly position-biased on both seeds: the
+spike model is best when the answer is the third statement (0.846/0.872) and
+weak in the middle (0.377/0.182); the rate model is strong at the ends and weak
+in the middle (0.483/0.145). The transformer is balanced. Overall accuracy alone
+is therefore not sufficient; the benchmark should report per-position accuracy
+or a minimum-position score.
+
 
 ## What it shows
 
 1. **The task is learnable.** A small transformer solves it on held-out triples,
    so the benchmark is valid and the failure is not task impossibility.
-2. **The current spiking model fails conjunction binding.** Spike 0.22 and rate
-   0.326 are at or below the position/single-attribute heuristics.
-3. **Regularization matters.** The same 2-layer transformer without dropout
-   memorizes the train pairs (train loss 0.36) and scores 0.26; adding dropout
-   changes the solution to a rule that generalizes.
-4. **The spiking failure is architectural or optimization-related**, not a lack
-   of parameters alone: the 70k spiking model and the 273k transformer both
-   fail without the right inductive bias, while the transformer with dropout
-   succeeds.
+2. **Capacity helps the spiking model, but does not balance it, and the gain is
+   seed-sensitive.** Going from 128 to 256 wide lifts spike 0.22 -> 0.466-0.572
+   and rate 0.326 -> 0.502-0.756. The per-position table shows why the overall
+   number is misleading: spike is 0.846/0.872 on statement 2 but 0.377/0.182 on
+   statement 1; rate is 0.483/0.145 on statement 1. The seed-1 rate arm (0.502)
+   is barely above the single-attribute heuristics.
+3. **Regularization matters for the transformer.** The same 2-layer transformer
+   without dropout memorizes the train pairs (train loss 0.36) and scores 0.26;
+   adding dropout changes the solution to a rule that generalizes.
+4. **A simple attention readout does not fix binding.** The 256-wide attention
+   arms score 0.364/0.384, below the no-attention arms, and remain position-
+   biased. Content-based retrieval is not enough without the right memory
+   structure or gating.
+5. **The transformer is still the upper bound.** The 4-layer transformer is
+   balanced at 1.000 across all three answer positions; the 2-layer transformer
+   is 0.778/0.934/0.959. No spiking arm is balanced yet.
 
 ## Interrupted run
 
-A 256-wide, 2-layer spiking run was started to test whether capacity alone
-helps. It was stopped at step 2,000 (spike 0.208) when the machine was paused;
-no JSON was written. That control still needs to be completed.
+The earlier 256-wide spiking run was stopped at step 2,000 when the machine was
+paused. It was resumed and completed: spike 0.572, rate 0.756. Both are
+position-biased as shown above.
+
+## Attention readout
+
+`streamft/spiking.py` now has an optional causal key-value attention readout
+(`attention=True`). It keeps a history of post-layer spike keys and readout
+values and adds a softmax attention readout to the current state.
+
+| arm at 256 wide | test accuracy | stmt 0 | stmt 1 | stmt 2 |
+|---|---:|---:|---:|---:|
+| spike, no attention | **0.572** | 0.478 | 0.377 | 0.846 |
+| rate, no attention | **0.756** | 0.983 | 0.483 | 0.757 |
+| spike + attention | 0.364 | 0.217 | 0.119 | 0.740 |
+| rate + attention | 0.384 | 0.428 | 0.073 | 0.615 |
+
+The single-head attention readout **hurts both arms** and remains position-biased.
+It mostly attends to recent tokens rather than the matching statement. This is a
+negative result for this simple attention variant; a gated, multi-head, or
+statement-level memory is still untested.
 
 ## Caveats
 
-- One seed, one small budget per arm; the transformer controls are not
+- Two seeds at 128 and 256 wide; the transformer controls are not
   parameter-matched to the 70k spiking model.
+- The 256-wide seed variance is large: spike 0.466-0.572, rate 0.502-0.756.
 - The 4-layer transformer is ~1.6M params and took 12k steps.
 - Test triples are held out, but all words are shared; this is compositional
   binding, not word-level generalization.
 - Accuracy is the exact first answer token; chance is 0.25.
+- The attention readout is a single head with no gate or layer norm; the
+  negative result does not rule out all attention mechanisms.
 
 ## Next
 
-- Finish the 256-wide spiking control and run two seeds.
-- Add a matching/copy mechanism (gated memory, pointer head, or spiking
-  attention) to the spiking model.
+- Finish the second 256-wide seed and run two seeds at 512 wide.
+- Add a statement-level content memory (write name/color/object at the period,
+  read with the query) or a gated multi-head attention readout.
+- Add a statement-order permutation test: a true binder must answer the same
+  query after shuffling the statements; a position-biased model will fail.
 - Compare against the transformer 0.886/1.0 upper bounds before returning to
   TinyStories quality work.
