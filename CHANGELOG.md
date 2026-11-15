@@ -58,7 +58,12 @@
   positions, and is permutation-invariant (0.996/1.000 consistency). Without the
   attention loss the same memory reaches only 0.308/0.696; learning the binding
   objective from the LM loss alone is open.
-- 109 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Continual binding (replay-first transfers): naive phase B on 16 new triples
+  drops old accuracy 0.974 -> 0.322 and held 0.730 -> 0.240; 20% replay keeps
+  old 0.996, new 1.000, held 0.788. Rollback 10% alone is 0.392/0.768/0.196;
+  replay+rollback 0.980/0.794/0.768; replay+EWC 0.988/0.966/0.776. Replay is
+  the best arm on every split.
+- 110 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

@@ -622,6 +622,14 @@ same memory reaches only **0.308/0.696**; learning the binding objective from
 the LM loss alone is still open.
 [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
+**Continual binding:** on the new data, naive phase B on 16 new triples drops old
+accuracy from **0.974 to 0.322** and held accuracy from **0.730 to 0.240**.
+A 20% replay mix keeps old at **0.996**, new at **1.000** and held at **0.788**.
+A 10% Fisher shadow rollback alone reaches only 0.392/0.768/0.196;
+replay+rollback is 0.980/0.794/0.768 and replay+EWC is 0.988/0.966/0.776.
+The replay-first rule transfers from TinyStories -> WikiText to binding.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
