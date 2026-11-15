@@ -132,6 +132,7 @@ Three architectural variants were tried at 5,000 steps:
 | per-statement slots | 0.222 | 0.000/0.000/0.000/1.000 | 0.248 | 0.222 |
 | slots + reset at period | 0.236 | 0.008/0.028/0.330/0.685 | 0.116 | 0.094 |
 | slots + reset + hard name slot | 0.228 | 0.030/0.034/0.241/0.703 | 0.236 | 0.266 |
+| multi-head slots, summary keys | 0.250 | 0.212/0.221/0.223/0.360 | 0.004 | 0.026 |
 
 None learns balanced content binding: every variant stays below the 0.26
 majority baseline and answers the last statement most of the time. The name
