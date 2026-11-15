@@ -72,8 +72,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   rate 0.326; 256-wide spiking reaches 0.466-0.572 / 0.502-0.756 over two seeds
   but is position-biased; 512-wide is worse (0.446/0.406). A 2-layer transformer
   reaches 0.886 with dropout and a 4-layer transformer 1.0 balanced across
-  positions. A simple attention readout hurts (0.364/0.384).
-  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
+  positions. Simple attention (0.364/0.384), a fixed pointer (0.236/0.514), and
+  dropout (0.308/0.460) all hurt. [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 

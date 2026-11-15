@@ -52,6 +52,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `binding_spiking_256.json` | `research/spiking_binding_conj.py` (2L/256, seed 0) | spike 0.572, rate 0.756; both position-biased |
 | `binding_spiking_256_seed1.json` | `research/spiking_binding_conj.py` (`--seed 1`) | seed 1: spike 0.466, rate 0.502; same position bias |
 | `binding_spiking_512.json` | `research/spiking_binding_conj.py` (2L/512) | 512 wide is worse: spike 0.446, rate 0.406; still position-biased |
+| `binding_pointer_256.json` | `research/spiking_binding_conj.py` (`--pointer-offset 4`) | pointer hurts: spike 0.236, rate 0.514 |
+| `binding_dropout_256.json` | `research/spiking_binding_conj.py` (`--dropout 0.1`) | dropout hurts: spike 0.308, rate 0.460 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

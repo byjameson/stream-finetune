@@ -34,6 +34,8 @@ class SpikingConfig:
     adapt: float = 0.0
     feedback: bool = False
     attention: bool = False
+    pointer_offset: int = 0
+    dropout: float = 0.0
     decay_syn: float = 0.90
     decay_mem: float = 0.90
     decay_out: float = 0.90
@@ -112,12 +114,16 @@ class SpikingLM(nn.Module):
             self.w_fb = nn.Linear(config.dim, config.dim, bias=False)
             nn.init.zeros_(self.w_fb.weight)
         self.attn_q = None
-        if config.attention:
+        if config.attention or config.pointer_offset > 0:
             self.attn_q = nn.Linear(config.dim, config.dim, bias=False)
             self.attn_k = nn.Linear(config.dim, config.dim, bias=False)
             self.attn_v = nn.Linear(config.dim, config.dim, bias=False)
             for layer in (self.attn_q, self.attn_k, self.attn_v):
                 nn.init.normal_(layer.weight, mean=0.0, std=0.02)
+        self.copy_scale = None
+        if config.pointer_offset > 0:
+            self.copy_scale = nn.Parameter(torch.ones(1))
+        self.drop = nn.Dropout(config.dropout) if config.dropout > 0 else None
         self.last_activity = 0.0
 
     def init_state(self, batch: int, device: torch.device):
@@ -128,10 +134,14 @@ class SpikingLM(nn.Module):
             "top": z.clone(),
             "hist_k": [],
             "hist_v": [],
+            "emb_hist": [],
         }
 
     def step(self, tokens: torch.Tensor, state: dict):
-        cur = self.emb(tokens)
+        emb = self.emb(tokens)
+        if self.drop is not None:
+            emb = self.drop(emb)
+        cur = emb
         if self.w_fb is not None:
             cur = cur + self.w_fb(state["top"])
         for i, layer in enumerate(self.layers):
@@ -139,18 +149,32 @@ class SpikingLM(nn.Module):
         state["top"] = cur
         state["readout"] = self.config.decay_out * state["readout"] + cur
         readout = state["readout"]
+        copy_logits = None
         if self.attn_q is not None:
             state["hist_k"].append(cur)
             state["hist_v"].append(readout)
+            state["emb_hist"].append(emb)
             keys = torch.stack(state["hist_k"], dim=1)
-            vals = torch.stack(state["hist_v"], dim=1)
+            if self.config.pointer_offset > 0:
+                off = self.config.pointer_offset
+                vals = [state["emb_hist"][j - off] if j >= off
+                        else torch.zeros_like(emb)
+                        for j in range(len(state["emb_hist"]))]
+                vals = torch.stack(vals, dim=1)
+            else:
+                vals = torch.stack(state["hist_v"], dim=1)
             q = self.attn_q(readout).unsqueeze(1)
             k = self.attn_k(keys)
             v = self.attn_v(vals)
             scores = q @ k.transpose(-1, -2) / math.sqrt(self.dim)
             attn = torch.softmax(scores.float(), dim=-1).to(v.dtype)
-            readout = readout + (attn @ v).squeeze(1)
-        logits = self.head(readout)
+            ctx = (attn @ v).squeeze(1)
+            readout = readout + ctx
+            if self.copy_scale is not None:
+                copy_logits = (ctx @ self.emb.weight.T) / math.sqrt(self.dim)
+        logits = self.head(self.drop(readout) if self.drop is not None else readout)
+        if copy_logits is not None:
+            logits = logits + self.copy_scale * copy_logits
         return logits, state
 
     def forward(self, tokens: torch.Tensor) -> torch.Tensor:

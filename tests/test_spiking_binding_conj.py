@@ -103,6 +103,20 @@ def test_512_wide_does_not_improve_binding():
         assert max(accs) - min(accs) > 0.25
 
 
+def test_pointer_and_dropout_do_not_beat_plain_256():
+    base = json.loads((ROOT / "research/results/binding_spiking_256.json")
+                      .read_text(encoding="utf-8"))
+    ptr = json.loads((ROOT / "research/results/binding_pointer_256.json")
+                     .read_text(encoding="utf-8"))
+    drop = json.loads((ROOT / "research/results/binding_dropout_256.json")
+                      .read_text(encoding="utf-8"))
+    b = {r["arm"]: r["test_acc"] for r in base["results"]}
+    p = {r["arm"]: r["test_acc"] for r in ptr["results"]}
+    d = {r["arm"]: r["test_acc"] for r in drop["results"]}
+    assert p["spike"] < b["spike"] and p["rate"] < b["rate"]
+    assert d["spike"] < b["spike"] and d["rate"] < b["rate"]
+
+
 def test_simple_attention_readout_hurts():
     base = json.loads((ROOT / "research/results/binding_spiking_256.json")
                       .read_text(encoding="utf-8"))

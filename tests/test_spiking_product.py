@@ -92,6 +92,37 @@ def test_attention_readout_matches_incremental_steps():
     assert len(state["hist_k"]) == x.shape[1]
 
 
+def test_pointer_readout_matches_incremental_steps():
+    torch.manual_seed(0)
+    model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=2,
+                                    pointer_offset=4))
+    x = torch.randint(0, 32, (2, 8))
+    with torch.no_grad():
+        full = model(x)
+        state = model.init_state(2, x.device)
+        parts = []
+        for t in range(x.shape[1]):
+            out, state = model.step(x[:, t], state)
+            parts.append(out)
+        inc = torch.stack(parts, dim=1)
+    assert torch.allclose(full, inc, atol=1e-6)
+    assert model.copy_scale is not None
+    assert len(state["emb_hist"]) == x.shape[1]
+
+
+def test_dropout_is_deterministic_in_eval():
+    torch.manual_seed(0)
+    model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1, dropout=0.2))
+    x = torch.randint(0, 32, (2, 8))
+    model.train()
+    model(x)
+    model.eval()
+    with torch.no_grad():
+        a = model(x)
+        b = model(x)
+    assert torch.allclose(a, b)
+
+
 def test_checkpoint_writes_config_and_card(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None)
