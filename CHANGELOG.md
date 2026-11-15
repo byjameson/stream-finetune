@@ -51,12 +51,13 @@
   offset-4 pointer (0.236/0.514), and embedding/readout dropout (0.308/0.460).
   The plain 256-wide model remains the best plain spiking arm, but is
   seed-sensitive and position-biased; the transformer is balanced at 1.000.
-- Statement memory + supervised attention (positive): a 256-wide spiking model
-  with a statement-level name/attribute memory, a copy loss, and an attention
-  loss on the correct statement reaches 0.996/1.000 (two seeds) on held-out
-  conjunction binding, is balanced across positions, and is permutation-
-  invariant (0.996/1.000 consistency). Without the attention loss the same
-  memory reaches only 0.308/0.696; unsupervised credit assignment is open.
+- Statement memory + self-supervised matching attention (positive): a 256-wide
+  spiking model with a statement-level name/attribute memory, a copy loss, and a
+  matching-attention loss derived from the query/statement attributes reaches
+  0.996/1.000 (two seeds) on held-out conjunction binding, is balanced across
+  positions, and is permutation-invariant (0.996/1.000 consistency). Without the
+  attention loss the same memory reaches only 0.308/0.696; learning the binding
+  objective from the LM loss alone is open.
 - 109 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,

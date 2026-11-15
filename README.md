@@ -613,12 +613,13 @@ so width alone does not close the gap. A simple attention readout hurts
 (**0.308/0.460**) also fail.
 
 **Statement memory (positive):** a 256-wide spiking model with a statement-level
-name/attribute memory plus a copy loss and an attention loss on the correct
-statement reaches **0.996/1.000** across two seeds on held-out conjunction
-binding, is balanced across all three positions, and is permutation-invariant
-(**0.996/1.000** consistency). Caveat: the attention loss supplies the correct
-statement location; without it, the same memory reaches only **0.308/0.696**.
-The architecture can bind; unsupervised credit assignment is still open.
+name/attribute memory plus a copy loss and a **self-supervised matching
+attention** loss reaches **0.996/1.000** across two seeds on held-out
+conjunction binding, is balanced across all three positions, and is
+permutation-invariant (**0.996/1.000** consistency). The attention target is
+derived from the query/statement attributes, not the answer. Without it, the
+same memory reaches only **0.308/0.696**; learning the binding objective from
+the LM loss alone is still open.
 [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 ## License

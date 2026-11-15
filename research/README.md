@@ -75,11 +75,13 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   positions. Simple attention (0.364/0.384), a fixed pointer (0.236/0.514), and
   dropout (0.308/0.460) all hurt.
 - **Statement memory (positive):** a 256-wide spiking model with a
-  statement-level name/attribute memory plus copy and statement-attention
-  auxiliary losses reaches 0.996/1.000 across two seeds on held-out conjunction
-  binding and is permutation-invariant (0.996/1.000 consistency). Without the
-  attention supervision the same memory reaches only 0.308/0.696; unsupervised
-  credit assignment remains open. [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
+  statement-level name/attribute memory plus copy and **self-supervised
+  matching-attention** auxiliary losses reaches 0.996/1.000 across two seeds on
+  held-out conjunction binding and is permutation-invariant (0.996/1.000
+  consistency). The attention target comes from the query/statement attributes,
+  not the answer. Without it the same memory reaches only 0.308/0.696; learning
+  the binding objective from the LM loss alone remains open.
+  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 

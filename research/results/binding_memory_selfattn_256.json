@@ -1,0 +1,169 @@
+{
+  "task": "conjunction variable binding",
+  "config": {
+    "arms": "spike,rate",
+    "steps": 6000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "heads": 4,
+    "dropout": 0.0,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": true,
+    "mem_read_pos": -1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.5,
+    "eval_every": 1000,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/binding_memory_selfattn_256.json"
+  },
+  "heuristics": {
+    "position": [
+      0.36,
+      0.302,
+      0.338
+    ],
+    "color_only": 0.516,
+    "object_only": 0.506,
+    "pair_match": 1.0
+  },
+  "chance": 0.25,
+  "results": [
+    {
+      "arm": "spike",
+      "test_acc": 0.9960000514984131,
+      "permuted_acc": 1.0,
+      "consistency": 0.9959999918937683,
+      "eval": {
+        "accuracy": 0.9960000514984131,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.9867549538612366
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 70,
+          "mia": 138,
+          "sam": 96,
+          "lily": 196
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.33800002932548523,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.36000001430511475
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 169,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 180,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 72,
+          "mia": 138,
+          "sam": 94,
+          "lily": 196
+        }
+      },
+      "train_loss": 1.5206751823425293,
+      "sec": 567.4,
+      "params": 468485
+    },
+    {
+      "arm": "rate",
+      "test_acc": 1.0,
+      "permuted_acc": 1.0,
+      "consistency": 1.0,
+      "eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 72,
+          "mia": 138,
+          "sam": 94,
+          "lily": 196
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.33800002932548523,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.36000001430511475
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 169,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 180,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 72,
+          "mia": 138,
+          "sam": 94,
+          "lily": 196
+        }
+      },
+      "train_loss": 1.4629992246627808,
+      "sec": 510.1,
+      "params": 468485
+    }
+  ]
+}

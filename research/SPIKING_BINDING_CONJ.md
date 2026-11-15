@@ -124,8 +124,9 @@ statement-level memory to the spiking model:
   learned write gate; at the answer position it reads the memory with a query
   from the readout and adds a copy head over the vocabulary.
 - Two auxiliary losses: a copy loss on the memory readout at the answer
-  position, and an attention loss that points the memory read at the correct
-  statement period (derived from the answer name).
+  position, and a **self-supervised** attention loss that points the memory read
+  at the statement whose (color, object) pair matches the query. The attention
+  target is derived from the input only; it does not use the answer token.
 
 Config: 256-wide, 2 layers, 6,000 steps, copy aux 0.5, attention aux 0.5.
 
@@ -145,11 +146,18 @@ order leaves the answer unchanged in 99.6-100% of cases, and the permuted
 accuracy is still 1.000. Because the test triples are held out, this is content
 binding, not memorization or a position shortcut.
 
-**Caveat:** the attention loss uses the correct statement location. This is
-process supervision, not unsupervised discovery. Without it, the same memory
-(copy aux only) reaches 0.308/0.696 and is not permutation-invariant. The result
-shows the spiking architecture *can* bind when the memory read is supervised;
-the open problem is learning the read without the location labels.
+The self-supervised target uses only the query color/object and the statement
+attributes. It selects the same statement as the answer name would, so the
+result matches an earlier answer-derived-location run exactly; the difference is
+that no answer information enters the attention loss.
+
+**Caveat:** the attention loss is an explicit self-supervised binding
+objective derived from the query/statement attributes, not from the answer
+label. It is not answer leakage, but it is also not pure next-token discovery:
+without the attention loss, the same memory (copy aux only) reaches 0.308/0.696
+and is not permutation-invariant. The result shows the spiking architecture
+*can* bind when the memory read is trained with a matching objective; learning
+that objective from the LM loss alone remains open.
 
 ## What it shows
 

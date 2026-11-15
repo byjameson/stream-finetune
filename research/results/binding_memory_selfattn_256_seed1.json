@@ -1,0 +1,169 @@
+{
+  "task": "conjunction variable binding",
+  "config": {
+    "arms": "spike,rate",
+    "steps": 6000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "heads": 4,
+    "dropout": 0.0,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": true,
+    "mem_read_pos": -1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.5,
+    "eval_every": 1000,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 1,
+    "amp": true,
+    "out": "research/results/binding_memory_selfattn_256_seed1.json"
+  },
+  "heuristics": {
+    "position": [
+      0.324,
+      0.318,
+      0.358
+    ],
+    "color_only": 0.484,
+    "object_only": 0.482,
+    "pair_match": 1.0
+  },
+  "chance": 0.25,
+  "results": [
+    {
+      "arm": "spike",
+      "test_acc": 1.0,
+      "permuted_acc": 1.0,
+      "consistency": 1.0,
+      "eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.3240000009536743,
+          "stmt1": 0.31800001859664917,
+          "stmt2": 0.3580000102519989
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 162,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 159,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt2": {
+            "n": 179,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 112,
+          "mia": 102,
+          "sam": 180,
+          "lily": 106
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.3580000102519989,
+          "stmt1": 0.31800001859664917,
+          "stmt2": 0.3240000009536743
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 179,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 159,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt2": {
+            "n": 162,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 112,
+          "mia": 102,
+          "sam": 180,
+          "lily": 106
+        }
+      },
+      "train_loss": 1.5044944286346436,
+      "sec": 568.2,
+      "params": 468485
+    },
+    {
+      "arm": "rate",
+      "test_acc": 1.0,
+      "permuted_acc": 1.0,
+      "consistency": 1.0,
+      "eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.3240000009536743,
+          "stmt1": 0.31800001859664917,
+          "stmt2": 0.3580000102519989
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 162,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 159,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt2": {
+            "n": 179,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 112,
+          "mia": 102,
+          "sam": 180,
+          "lily": 106
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.3580000102519989,
+          "stmt1": 0.31800001859664917,
+          "stmt2": 0.3240000009536743
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 179,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 159,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt2": {
+            "n": 162,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 112,
+          "mia": 102,
+          "sam": 180,
+          "lily": 106
+        }
+      },
+      "train_loss": 1.4648717641830444,
+      "sec": 627.5,
+      "params": 468485
+    }
+  ]
+}

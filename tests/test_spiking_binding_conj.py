@@ -142,8 +142,8 @@ def test_memory_without_attention_supervision_does_not_solve():
 
 
 def test_memory_with_supervised_attention_solves_binding():
-    for name in ("binding_memory_attn_256.json",
-                 "binding_memory_attn_256_seed1.json"):
+    for name in ("binding_memory_selfattn_256.json",
+                 "binding_memory_selfattn_256_seed1.json"):
         payload = json.loads((ROOT / "research/results" / name)
                              .read_text(encoding="utf-8"))
         for arm in payload["results"]:
