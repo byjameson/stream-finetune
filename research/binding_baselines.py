@@ -85,6 +85,32 @@ def evaluate(model, test, device, seq_len):
             "pred": pred.cpu()}
 
 
+def binding_aux_loss(model, x, aux_pos, copy_weight=0.0, attn_weight=0.0):
+    loss = torch.zeros((), device=x.device)
+    if copy_weight and getattr(model, "last_copy_logits", None) is not None:
+        copy_logits = model.last_copy_logits
+        if copy_logits.dim() == 3:
+            copy_logits = copy_logits[:, aux_pos]
+        loss = loss + copy_weight * F.cross_entropy(copy_logits,
+                                                    x[:, aux_pos + 1])
+    if attn_weight and getattr(model, "last_mem_attn", None) is not None:
+        # Self-supervised target: match the query (color, object) to the
+        # statement with the same pair. No answer token is used here.
+        qc = x[:, aux_pos - 2]
+        qo = x[:, aux_pos - 1]
+        n_stmt = (aux_pos - 4) // 5
+        target = torch.full_like(qc, 4)
+        for i in range(n_stmt):
+            color = x[:, 5 * i + 2]
+            obj = x[:, 5 * i + 3]
+            match = (color == qc) & (obj == qo)
+            target = torch.where(
+                match, torch.full_like(target, 5 * i + 4), target)
+        loss = loss + attn_weight * F.cross_entropy(model.last_mem_attn,
+                                                    target)
+    return loss
+
+
 def train_lm(model, train, steps, batch, lr, device, amp, eval_every,
              test=None, seq_len=None, tag="", aux_weight=0.0, aux_pos=None,
              aux_attn_weight=0.0):
@@ -100,21 +126,10 @@ def train_lm(model, train, steps, batch, lr, device, amp, eval_every,
             logits = model(x)
             loss = F.cross_entropy(logits[:, :-1].reshape(-1, len(WORDS)),
                                    x[:, 1:].reshape(-1))
-            if (aux_weight and aux_pos is not None
-                    and getattr(model, "last_copy_logits", None) is not None):
-                copy_logits = model.last_copy_logits
-                if copy_logits.dim() == 3:
-                    copy_logits = copy_logits[:, aux_pos]
-                aux = F.cross_entropy(copy_logits, x[:, aux_pos + 1])
-                loss = loss + aux_weight * aux
-            if (aux_attn_weight and aux_pos is not None
-                    and getattr(model, "last_mem_attn", None) is not None):
-                names = [x[:, 0], x[:, 5], x[:, 10]]
-                ans = x[:, aux_pos + 1]
-                target = torch.where(names[0] == ans, 4,
-                                     torch.where(names[1] == ans, 9, 14))
-                attn_loss = F.cross_entropy(model.last_mem_attn, target)
-                loss = loss + aux_attn_weight * attn_loss
+            if aux_pos is not None:
+                loss = loss + binding_aux_loss(
+                    model, x, aux_pos, copy_weight=aux_weight,
+                    attn_weight=aux_attn_weight)
         opt.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
