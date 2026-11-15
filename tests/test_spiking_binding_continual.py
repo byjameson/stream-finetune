@@ -62,15 +62,20 @@ def test_padded_curriculum_does_not_replace_attention():
 
 
 def test_four_statement_phase_a_does_not_learn():
-    payload = json.loads((ROOT / "research/results/spiking_binding_long4_phase_a.json")
-                         .read_text(encoding="utf-8"))
-    old = payload["before"]["old"]
-    assert old["accuracy"] < 0.3
-    assert old["by_answer_pos"]["answer_at_stmt3"]["acc"] > 0.6
-    for key in ("answer_at_stmt0", "answer_at_stmt1", "answer_at_stmt2"):
-        assert old["by_answer_pos"][key]["acc"] < 0.2
-    assert payload["before"]["new"]["accuracy"] < 0.05
-    assert payload["before"]["held"]["accuracy"] < 0.05
+    for name in ("spiking_binding_long4_phase_a.json",
+                 "spiking_binding_long4_slots_phase_a.json",
+                 "spiking_binding_long4_slots_reset_phase_a.json",
+                 "spiking_binding_long4_slots_name_phase_a.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        old = payload["before"]["old"]
+        assert old["accuracy"] < 0.3
+        assert old["by_answer_pos"]["answer_at_stmt3"]["acc"] > 0.6
+        for key in ("answer_at_stmt0", "answer_at_stmt1"):
+            assert old["by_answer_pos"][key]["acc"] < 0.1
+        assert payload["before"]["new"]["accuracy"] < 0.3
+        assert payload["before"]["held"]["accuracy"] < 0.3
+
 
 
 

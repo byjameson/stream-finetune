@@ -123,10 +123,22 @@ matching-attention loss at 500, 2,000, and 5,000 steps.
 The old-name majority baseline is 0.26. Even at 5,000 steps the model is below
 that and strongly last-position-biased; new/held predictions collapse to
 `<eos>`. Phase B was not run because there is no learnable phase A to retain.
-The current memory + single matching-attention readout does not scale to four
-statements at this budget; longer stories need an architectural change (more
-memory slots, multi-head/iterated attention, or more training) before a
-retention comparison is meaningful.
+
+Three architectural variants were tried at 5,000 steps:
+
+| variant | old acc | old stmt 0/1/2/3 | new | held |
+|---|---:|---:|---:|---:|
+| dynamic memory | 0.214 | 0.045/0.097/0.116/0.667 | 0.000 | 0.000 |
+| per-statement slots | 0.222 | 0.000/0.000/0.000/1.000 | 0.248 | 0.222 |
+| slots + reset at period | 0.236 | 0.008/0.028/0.330/0.685 | 0.116 | 0.094 |
+| slots + reset + hard name slot | 0.228 | 0.030/0.034/0.241/0.703 | 0.236 | 0.266 |
+
+None learns balanced content binding: every variant stays below the 0.26
+majority baseline and answers the last statement most of the time. The name
+value is not the bottleneck; the **memory read/key match** is. Four statements
+need a different retrieval mechanism (multi-head or iterated attention, a
+pointer over statement boundaries, or more depth), not just slots or a hard
+name slot.
 
 ## What it shows
 
@@ -170,11 +182,12 @@ retention comparison is meaningful.
    loss is a required inductive bias at this budget, not just a single-task
    convenience.
 
-8. **Four-statement stories are not learnable at this budget.** With the
-   matching-attention loss, phase A is 0.222/0.234/0.214 at 500/2k/5k steps;
-   the last-position accuracy is 1.00/0.72/0.67 while the other positions stay
-   at or below 0.13, and new/held collapse to `<eos>`. The 3-statement color
-   split remains the hardest learnable split tested.
+8. **Four-statement stories are not learnable at this budget.** Dynamic memory,
+   per-statement slots, slot reset, and a hard name slot all stay at 0.214-0.236
+   old accuracy (majority 0.26), with last-position accuracy 0.67-1.00 and other
+   positions at or below 0.33. The bottleneck is the memory read/key match, not
+   the name value. The 3-statement color split remains the hardest learnable
+   split tested.
 
 9. **The practical rule transfers to the learnable setup:** store old stories
    and replay ~20% during updates. Use hard rollback only when replay is
@@ -195,9 +208,9 @@ retention comparison is meaningful.
 
 - Stabilize the color split (seed-1 collapse) with a fixed LR schedule or more
   phase-A steps.
-- Make the shift harder in a learnable way: three distinct names per story or
-  longer stories. The 4-statement version failed phase A, so it first needs an
-  architectural change (more memory slots/attention iterations) or more training.
+- Longer stories need a different retrieval mechanism: multi-head or iterated
+  attention, a pointer over statement boundaries, or more depth. Per-statement
+  slots, slot reset, and a hard name slot were not enough.
 - The matching-attention loss remains required at this budget. Removing it needs
   a better self-supervised signal (statement boundaries alone were not enough)
   or a different memory/credit-assignment mechanism.

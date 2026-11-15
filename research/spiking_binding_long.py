@@ -146,6 +146,8 @@ def main():
     ap.add_argument("--adapt", type=float, default=0.1)
     ap.add_argument("--aux-weight", type=float, default=0.5)
     ap.add_argument("--aux-attn-weight", type=float, default=0.5)
+    ap.add_argument("--slots", type=int, default=4,
+                    help="per-statement memory slots (0 = dynamic memory)")
     ap.add_argument("--replay", type=float, default=0.2)
     ap.add_argument("--rollback", type=float, default=0.10)
     ap.add_argument("--ewc-lambda", type=float, default=1.0)
@@ -187,7 +189,8 @@ def main():
 
     model = SpikingLM(SpikingConfig(
         vocab=len(WORDS), dim=args.dim, layers=args.layers, mode="spike",
-        adapt=args.adapt, memory=True, mem_read_pos=pos)).to(device)
+        adapt=args.adapt, memory=args.slots == 0, slots=args.slots,
+        mem_read_pos=pos)).to(device)
     losses_a, sec_a = train_phase(
         model, old_train, old_train, args.steps_a, args.batch, args.lr,
         device, args.amp, n, aux_weight=args.aux_weight,

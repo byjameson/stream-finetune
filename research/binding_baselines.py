@@ -99,13 +99,14 @@ def binding_aux_loss(model, x, aux_pos, copy_weight=0.0, attn_weight=0.0):
         qc = x[:, aux_pos - 2]
         qo = x[:, aux_pos - 1]
         n_stmt = (aux_pos - 4) // 5
-        target = torch.full_like(qc, 4)
+        slot_mode = getattr(model.config, "slots", 0) > 0
+        target = torch.full_like(qc, 0 if slot_mode else 4)
         for i in range(n_stmt):
             color = x[:, 5 * i + 2]
             obj = x[:, 5 * i + 3]
             match = (color == qc) & (obj == qo)
-            target = torch.where(
-                match, torch.full_like(target, 5 * i + 4), target)
+            value = i if slot_mode else 5 * i + 4
+            target = torch.where(match, torch.full_like(target, value), target)
         loss = loss + attn_weight * F.cross_entropy(model.last_mem_attn,
                                                     target)
     return loss
