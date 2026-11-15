@@ -1,0 +1,68 @@
+{
+  "task": "conjunction variable binding",
+  "config": {
+    "arms": "transformer",
+    "steps": 12000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 4,
+    "heads": 8,
+    "dropout": 0.1,
+    "lr": 0.0005,
+    "adapt": 0.1,
+    "eval_every": 1000,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/binding_transformer_big.json"
+  },
+  "heuristics": {
+    "position": [
+      0.36,
+      0.302,
+      0.338
+    ],
+    "color_only": 0.516,
+    "object_only": 0.506,
+    "pair_match": 1.0
+  },
+  "chance": 0.25,
+  "results": [
+    {
+      "arm": "transformer",
+      "test_acc": 1.0,
+      "eval": {
+        "accuracy": 1.0,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 72,
+          "mia": 138,
+          "sam": 94,
+          "lily": 196
+        }
+      },
+      "train_loss": 0.34216392040252686,
+      "sec": 234.4,
+      "params": 2125329
+    }
+  ]
+}

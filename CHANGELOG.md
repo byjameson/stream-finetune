@@ -35,10 +35,15 @@
 - Variable binding on a non-TinyStories task: disjoint train/test triples,
   spike 0.168 (below 0.25 chance), rate control 0.318. Both fail held-out
   binding; the current topology memorizes train triples.
-- 94 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Binding benchmark audit: the first task is solvable 78% by color alone and
+  76% by object alone. A corrected conjunction split gives spike 0.220, rate
+  0.326, transformer 0.886 (2L, dropout) / 1.000 (4L). The task is learnable;
+  the spiking model lacks the binding mechanism.
+- 97 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
-  `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`.
+  `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
+  `research/SPIKING_BINDING_CONJ.md`.
 
 ## 0.6.4 — spiking LM product MVP
 - `streamft spiking train|tokenize|info|generate|serve`: from-scratch LIF

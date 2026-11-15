@@ -45,6 +45,10 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_ewc_sweep_50m.json` | `research/spiking_ewc_sweep_50m.py` | 50M EWC lambda 0.5/2.0: old ~1.31, new 3.23/3.24, semantic 0.39/0.40 |
 | `spiking_feedback.json` | `research/spiking_feedback.py` | top-down feedback: semantic 0.39 vs baseline 0.45; bpb 1.361 vs 1.352 |
 | `spiking_binding.json` | `research/spiking_binding.py` | disjoint binding split: spike 0.168, rate 0.318; chance 0.25 |
+| `binding_baselines.json` | `research/binding_baselines.py` | curriculum: spike 0.356, rate 0.360; transformer 0.118 |
+| `spiking_binding_conj.json` | `research/spiking_binding_conj.py` | conjunction split: spike 0.220, rate 0.326, transformer 0.260 |
+| `binding_transformer_mid.json` | `research/spiking_binding_conj.py` (2L/128, dropout 0.1) | transformer 0.886 at 6k steps |
+| `binding_transformer_big.json` | `research/spiking_binding_conj.py` (4L/256, dropout 0.1) | transformer 1.000; task is learnable |
 
 ## Local assistant
 
