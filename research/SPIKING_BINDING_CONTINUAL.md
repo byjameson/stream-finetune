@@ -180,6 +180,28 @@ retention (naive old 0.22/0.44, and seed-0 replay learns new colors poorly at
 0.324). Replay is still the best simple arm: old/new 1.000 and held
 0.926/0.760.
 
+### Five-statement copy-only (positive)
+
+The task was extended to five statements and five names (`tom`, `mia`, `sam`,
+`lily`, plus `zoe`), sequence length 32, five attr-key slots, four heads. It was
+trained with **copy-only** (no matching-attention loss), 5,000 phase-A steps and
+2,500 phase-B steps, seeds 0 and 1.
+
+Phase A: old **0.998** on both seeds; per-position 0.988-1.000; old permutation
+1.000. New/held are unseen colors: seed 0 0.362/0.218, seed 1 0.634/0.596.
+
+| arm | seed 0 old/new/held | seed 1 old/new/held | old permutation |
+|---|---|---|---|
+| naive | 0.950/1.000/0.244 | 0.994/1.000/0.982 | 0.944/0.994 |
+| replay 20% | **1.000/1.000/0.356** | **1.000/1.000/0.980** | **1.000/1.000** |
+
+Old per-position accuracy is 0.929-1.000 for naive and 1.000 for replay. The
+architecture therefore scales to five statements and five names: copy-only
+learning and replay keep balanced, permutation-invariant old binding and learn
+the new colors. The weak point is **held-out composition**: seed 0 reaches only
+0.244/0.356 on held colors+objects while seed 1 reaches 0.982/0.980. That is a
+seed/data generalization gap, not a position bias.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -237,9 +259,16 @@ retention (naive old 0.22/0.44, and seed-0 replay learns new colors poorly at
    forgets old (0.220/0.444) and seed-0 replay learns new colors poorly (0.324).
    The structured key is the mechanism; the auxiliary loss can hurt.
 
-10. **The practical rule transfers to the learnable setup:** store old stories
-   and replay ~20% during updates. Use hard rollback only when replay is
-   unavailable or a regression appears anyway.
+10. **The architecture scales to five statements and five names.** With
+    copy-only training and five attr-key slots, phase A is 0.998 (balanced,
+    permutation 1.000). Phase B keeps old at 0.950/0.994 (naive) or 1.000
+    (replay), new at 1.000, and old permutation at 0.944/0.994 or 1.000.
+    Held-out composition is seed-sensitive (0.244/0.356 on seed 0 versus
+    0.982/0.980 on seed 1). This is a generalization gap, not a position bias.
+
+11. **The practical rule transfers to the learnable setup:** store old stories
+    and replay ~20% during updates. Use hard rollback only when replay is
+    unavailable or a regression appears anyway.
 
 ## Caveats
 
@@ -249,16 +278,20 @@ retention (naive old 0.22/0.44, and seed-0 replay learns new colors poorly at
   and holds out objects `book`/`car`; phase A already sees all objects with old
   colors, so this is an attribute-composition shift, not new words only.
 - Rollback fraction and EWC lambda were not swept on this task.
-- Held accuracy is 0.79-0.99 depending on the seed and arm, not perfect.
-- The 4-statement positive result uses task-structured keys: name first, color/
-  object at fixed offsets, period boundaries. It is not a general language model.
+- Five-statement runs add a fifth name (`zoe`) and use sequence length 32. Held
+  composition is seed-sensitive: seed 0 reaches 0.244/0.356, seed 1 0.982/0.980.
+- The 4/5-statement positive results use task-structured keys: name first,
+  color/object at fixed offsets, period boundaries. They are not general
+  language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Move to 5+ statements or multi-token answers with the same attr-key multi-head
-  slots; test whether the copy-only result holds.
+- Move to 6+ statements or multi-token answers with the same attr-key multi-head
+  slots; the 5-statement copy-only result holds.
+- Improve held-out composition: the seed-0 held gap (0.24-0.36) is the main
+  weakness, not old/new retention.
 - Relax the structure: learned statement boundaries, no fixed name position, or
   keys from the recurrent state instead of raw token embeddings.
 - Run the copy-only + replay arm on more seeds and sweep the replay fraction.

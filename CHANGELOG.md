@@ -83,7 +83,12 @@
   and held 0.926/0.760. The structured key is the mechanism; the task-specific
   attention loss is unnecessary and can hurt retention (naive old 0.220/0.444
   with it).
-- 120 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Five-statement copy-only: five names, five attr-key slots, seq 32. Phase A
+  0.998, all positions balanced, permutation 1.000. Copy-only phase B old
+  0.950/0.994 (naive) or 1.000 (replay), new 1.000, old permutation
+  0.944/0.994 or 1.000. Held composition is seed-sensitive (0.244/0.356 vs
+  0.982/0.980); retention is solid, composition is the next gap.
+- 121 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

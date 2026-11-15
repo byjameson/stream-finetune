@@ -1,0 +1,430 @@
+{
+  "question": "Does four-statement binding retain replay-first?",
+  "config": {
+    "n_statements": 5,
+    "steps_a": 5000,
+    "steps_b": 2500,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.0,
+    "slots": 5,
+    "slot_heads": 4,
+    "slot_attr_keys": true,
+    "replay": 0.2,
+    "rollback": 0.1,
+    "ewc_lambda": 1.0,
+    "arms": "naive,replay_20",
+    "fisher_batches": 8,
+    "fisher_batch_size": 8,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_long5_copy_seed0.json"
+  },
+  "split": {
+    "old": 40,
+    "new": 20,
+    "held": 20
+  },
+  "before": {
+    "old": {
+      "accuracy": 0.9980000257492065,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 83,
+          "acc": 0.9879517555236816
+        },
+        "answer_at_stmt1": {
+          "n": 91,
+          "acc": 1.0
+        },
+        "answer_at_stmt2": {
+          "n": 97,
+          "acc": 0.9999999403953552
+        },
+        "answer_at_stmt3": {
+          "n": 112,
+          "acc": 1.0
+        },
+        "answer_at_stmt4": {
+          "n": 117,
+          "acc": 1.0
+        }
+      },
+      "pred_counts": {
+        "tom": 80,
+        "mia": 92,
+        "sam": 101,
+        "lily": 117,
+        "<eos>": 1,
+        "zoe": 109
+      }
+    },
+    "new": {
+      "accuracy": 0.3620000183582306,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 79,
+          "acc": 0.29113924503326416
+        },
+        "answer_at_stmt1": {
+          "n": 112,
+          "acc": 0.3571428656578064
+        },
+        "answer_at_stmt2": {
+          "n": 112,
+          "acc": 0.3392857313156128
+        },
+        "answer_at_stmt3": {
+          "n": 107,
+          "acc": 0.3925233483314514
+        },
+        "answer_at_stmt4": {
+          "n": 90,
+          "acc": 0.42222222685813904
+        }
+      },
+      "pred_counts": {
+        "tom": 36,
+        "mia": 152,
+        "sam": 189,
+        "lily": 46,
+        "<eos>": 59,
+        "zoe": 18
+      }
+    },
+    "held": {
+      "accuracy": 0.21800000965595245,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 106,
+          "acc": 0.19811320304870605
+        },
+        "answer_at_stmt1": {
+          "n": 108,
+          "acc": 0.23148147761821747
+        },
+        "answer_at_stmt2": {
+          "n": 84,
+          "acc": 0.2380952388048172
+        },
+        "answer_at_stmt3": {
+          "n": 93,
+          "acc": 0.17204301059246063
+        },
+        "answer_at_stmt4": {
+          "n": 109,
+          "acc": 0.24770641326904297
+        }
+      },
+      "pred_counts": {
+        "tom": 39,
+        "mia": 184,
+        "sam": 96,
+        "lily": 40,
+        "?": 2,
+        "<eos>": 86,
+        "zoe": 53
+      }
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "rollback": 0.0,
+      "ewc_lambda": 0.0,
+      "sec": 430.3,
+      "train_loss": 0.756749153137207,
+      "after": {
+        "old": {
+          "accuracy": 0.9500000476837158,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 83,
+              "acc": 0.9638553857803345
+            },
+            "answer_at_stmt1": {
+              "n": 91,
+              "acc": 0.9560439586639404
+            },
+            "answer_at_stmt2": {
+              "n": 97,
+              "acc": 0.938144326210022
+            },
+            "answer_at_stmt3": {
+              "n": 112,
+              "acc": 0.9285714626312256
+            },
+            "answer_at_stmt4": {
+              "n": 117,
+              "acc": 0.9658120274543762
+            }
+          },
+          "pred_counts": {
+            "tom": 76,
+            "mia": 93,
+            "sam": 105,
+            "lily": 114,
+            "green": 2,
+            "has": 1,
+            "who": 2,
+            ".": 3,
+            "zoe": 104
+          }
+        },
+        "new": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 79,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 112,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 112,
+              "acc": 1.0
+            },
+            "answer_at_stmt3": {
+              "n": 107,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt4": {
+              "n": 90,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 94,
+            "mia": 92,
+            "sam": 103,
+            "lily": 113,
+            "zoe": 98
+          }
+        },
+        "held": {
+          "accuracy": 0.24400001764297485,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 106,
+              "acc": 0.24528302252292633
+            },
+            "answer_at_stmt1": {
+              "n": 108,
+              "acc": 0.25925925374031067
+            },
+            "answer_at_stmt2": {
+              "n": 84,
+              "acc": 0.2857142984867096
+            },
+            "answer_at_stmt3": {
+              "n": 93,
+              "acc": 0.24731183052062988
+            },
+            "answer_at_stmt4": {
+              "n": 109,
+              "acc": 0.19266054034233093
+            }
+          },
+          "pred_counts": {
+            "tom": 46,
+            "mia": 191,
+            "sam": 78,
+            "lily": 75,
+            "green": 9,
+            "has": 9,
+            "who": 1,
+            "?": 5,
+            ".": 5,
+            "<eos>": 26,
+            "zoe": 55
+          }
+        }
+      },
+      "old_permuted": {
+        "accuracy": 0.9440000653266907,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 117,
+            "acc": 0.9487180113792419
+          },
+          "answer_at_stmt1": {
+            "n": 112,
+            "acc": 0.9285714626312256
+          },
+          "answer_at_stmt2": {
+            "n": 97,
+            "acc": 0.938144326210022
+          },
+          "answer_at_stmt3": {
+            "n": 91,
+            "acc": 0.9670329689979553
+          },
+          "answer_at_stmt4": {
+            "n": 83,
+            "acc": 0.9397590160369873
+          }
+        },
+        "pred_counts": {
+          "tom": 75,
+          "mia": 94,
+          "sam": 104,
+          "lily": 115,
+          "green": 1,
+          "cup": 1,
+          "has": 1,
+          "who": 2,
+          ".": 3,
+          "<eos>": 1,
+          "zoe": 103
+        }
+      }
+    },
+    {
+      "arm": "replay_20",
+      "replay": 0.2,
+      "rollback": 0.0,
+      "ewc_lambda": 0.0,
+      "sec": 436.0,
+      "train_loss": 0.9109170436859131,
+      "after": {
+        "old": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt1": {
+              "n": 91,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 97,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt3": {
+              "n": 112,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 117,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 80,
+            "mia": 92,
+            "sam": 101,
+            "lily": 117,
+            "zoe": 110
+          }
+        },
+        "new": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 79,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 112,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 112,
+              "acc": 1.0
+            },
+            "answer_at_stmt3": {
+              "n": 107,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt4": {
+              "n": 90,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 94,
+            "mia": 92,
+            "sam": 103,
+            "lily": 113,
+            "zoe": 98
+          }
+        },
+        "held": {
+          "accuracy": 0.35600000619888306,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 106,
+              "acc": 0.3113207519054413
+            },
+            "answer_at_stmt1": {
+              "n": 108,
+              "acc": 0.37962964177131653
+            },
+            "answer_at_stmt2": {
+              "n": 84,
+              "acc": 0.3571428656578064
+            },
+            "answer_at_stmt3": {
+              "n": 93,
+              "acc": 0.32258063554763794
+            },
+            "answer_at_stmt4": {
+              "n": 109,
+              "acc": 0.40366971492767334
+            }
+          },
+          "pred_counts": {
+            "tom": 125,
+            "mia": 118,
+            "sam": 64,
+            "lily": 76,
+            "zoe": 117
+          }
+        }
+      },
+      "old_permuted": {
+        "accuracy": 1.0,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 117,
+            "acc": 1.0
+          },
+          "answer_at_stmt1": {
+            "n": 112,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 97,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt3": {
+            "n": 91,
+            "acc": 1.0
+          },
+          "answer_at_stmt4": {
+            "n": 83,
+            "acc": 0.9999999403953552
+          }
+        },
+        "pred_counts": {
+          "tom": 80,
+          "mia": 92,
+          "sam": 101,
+          "lily": 117,
+          "zoe": 110
+        }
+      }
+    }
+  ]
+}

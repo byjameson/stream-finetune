@@ -654,6 +654,14 @@ the task-specific attention loss is unnecessary and can hurt retention (naive
 old **0.220/0.444** with it).
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Five-statement copy-only (positive):** five names, five attr-key slots,
+sequence length 32. Phase A old **0.998** with all positions balanced and
+permutation **1.000**. Copy-only phase B keeps old **0.950/0.994** (naive) or
+**1.000** (replay), new **1.000**, and old permutation **0.944/0.994** or
+**1.000**. Held-out composition is seed-sensitive (**0.244/0.356** on seed 0,
+**0.982/0.980** on seed 1), so the next issue is composition, not retention.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace
