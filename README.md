@@ -600,6 +600,13 @@ model reaches **0.168** (below the 0.25 chance) while the rate control reaches
 architecture needs a memory/attention mechanism, not more parameters.
 [`research/SPIKING_BINDING.md`](research/SPIKING_BINDING.md)
 
+**Binding benchmark audit:** the first task is solvable **78%** by matching color
+alone and **76%** by object alone, so a corrected conjunction split was built
+(both attributes required, unique pair). There spike reaches **0.220**, rate
+**0.326**, while a 2-layer transformer with dropout reaches **0.886** and a
+4-layer transformer **1.000**. The task is learnable; the spiking model lacks the
+binding mechanism. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).

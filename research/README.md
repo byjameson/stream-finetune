@@ -66,6 +66,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   disjoint test triples: spike 0.168 (below chance), rate control 0.318. The
   model memorizes train triples and fails held-out binding.
   [`SPIKING_BINDING.md`](SPIKING_BINDING.md)
+- **Binding benchmark audit + conjunction task:** the first task is solvable
+  78% by color alone and 76% by object alone, so it was too easy to shortcut.
+  A corrected conjunction split (both attributes needed) gives spike 0.220,
+  rate 0.326; a 2-layer transformer 0.886 with dropout and 1.0 with 4 layers.
+  The task is learnable; the spiking model lacks the binding mechanism.
+  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 
@@ -104,6 +110,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_ewc_sweep_50m.py` | 50M, 600-step EWC lambda sweep + semantic eval | ~25 min |
 | `spiking_feedback.py` | 21M baseline vs top-down feedback topology, 500 steps + semantic eval | ~12 min |
 | `spiking_binding.py` | non-TinyStories variable-binding task, spike vs rate, disjoint split | ~3 min |
+| `binding_baselines.py` | curriculum and tiny-transformer baselines for binding | ~12 min |
+| `spiking_binding_conj.py` | conjunction-binding benchmark: spike/rate/transformer | ~10-20 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
