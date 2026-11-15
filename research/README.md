@@ -97,6 +97,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   collapses (0.474/0.644, even with attention). The attention loss is a required
   inductive bias at this budget; replay helps only after phase A is learnable.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Four-statement stories (negative):** with attention, phase A is
+  0.222/0.234/0.214 at 500/2k/5k steps; last-position accuracy is 1.00/0.72/0.67
+  while the other positions stay <=0.13. The current memory does not scale to
+  four statements; three statements remains the hardest learnable test.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

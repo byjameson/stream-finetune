@@ -1,0 +1,268 @@
+{
+  "question": "Does four-statement binding retain replay-first?",
+  "config": {
+    "n_statements": 4,
+    "steps_a": 5000,
+    "steps_b": 1,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.5,
+    "replay": 0.2,
+    "rollback": 0.1,
+    "ewc_lambda": 1.0,
+    "arms": "naive",
+    "fisher_batches": 1,
+    "fisher_batch_size": 2,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_long4_sanity3.json"
+  },
+  "split": {
+    "old": 32,
+    "new": 16,
+    "held": 16
+  },
+  "before": {
+    "old": {
+      "accuracy": 0.21400001645088196,
+      "pos_baseline": {
+        "stmt0": 0.2639999985694885,
+        "stmt1": 0.2900000214576721,
+        "stmt2": 0.2240000069141388,
+        "stmt3": 0.22200001776218414
+      },
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 132,
+          "acc": 0.04545454680919647
+        },
+        "answer_at_stmt1": {
+          "n": 145,
+          "acc": 0.09655172377824783
+        },
+        "answer_at_stmt2": {
+          "n": 112,
+          "acc": 0.1160714328289032
+        },
+        "answer_at_stmt3": {
+          "n": 111,
+          "acc": 0.6666666865348816
+        }
+      },
+      "pred_counts": {
+        "tom": 124,
+        "mia": 67,
+        "sam": 127,
+        "lily": 182
+      }
+    },
+    "new": {
+      "accuracy": 0.0,
+      "pos_baseline": {
+        "stmt0": 0.24000000953674316,
+        "stmt1": 0.25600001215934753,
+        "stmt2": 0.24800001084804535,
+        "stmt3": 0.25600001215934753
+      },
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 120,
+          "acc": 0.0
+        },
+        "answer_at_stmt1": {
+          "n": 128,
+          "acc": 0.0
+        },
+        "answer_at_stmt2": {
+          "n": 124,
+          "acc": 0.0
+        },
+        "answer_at_stmt3": {
+          "n": 128,
+          "acc": 0.0
+        }
+      },
+      "pred_counts": {
+        "<eos>": 500
+      }
+    },
+    "held": {
+      "accuracy": 0.0,
+      "pos_baseline": {
+        "stmt0": 0.2840000092983246,
+        "stmt1": 0.2240000069141388,
+        "stmt2": 0.24000000953674316,
+        "stmt3": 0.25200000405311584
+      },
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 142,
+          "acc": 0.0
+        },
+        "answer_at_stmt1": {
+          "n": 112,
+          "acc": 0.0
+        },
+        "answer_at_stmt2": {
+          "n": 120,
+          "acc": 0.0
+        },
+        "answer_at_stmt3": {
+          "n": 126,
+          "acc": 0.0
+        }
+      },
+      "pred_counts": {
+        "<eos>": 500
+      }
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "rollback": 0.0,
+      "ewc_lambda": 0.0,
+      "sec": 0.2,
+      "train_loss": 10.969635963439941,
+      "after": {
+        "old": {
+          "accuracy": 0.22800001502037048,
+          "pos_baseline": {
+            "stmt0": 0.2639999985694885,
+            "stmt1": 0.2900000214576721,
+            "stmt2": 0.2240000069141388,
+            "stmt3": 0.22200001776218414
+          },
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 132,
+              "acc": 0.007575757801532745
+            },
+            "answer_at_stmt1": {
+              "n": 145,
+              "acc": 0.29655173420906067
+            },
+            "answer_at_stmt2": {
+              "n": 112,
+              "acc": 0.2589285969734192
+            },
+            "answer_at_stmt3": {
+              "n": 111,
+              "acc": 0.36936938762664795
+            }
+          },
+          "pred_counts": {
+            "tom": 208,
+            "sam": 256,
+            "lily": 36
+          }
+        },
+        "new": {
+          "accuracy": 0.24800001084804535,
+          "pos_baseline": {
+            "stmt0": 0.24000000953674316,
+            "stmt1": 0.25600001215934753,
+            "stmt2": 0.24800001084804535,
+            "stmt3": 0.25600001215934753
+          },
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 120,
+              "acc": 0.09166666865348816
+            },
+            "answer_at_stmt1": {
+              "n": 128,
+              "acc": 0.1953125
+            },
+            "answer_at_stmt2": {
+              "n": 124,
+              "acc": 0.10483870655298233
+            },
+            "answer_at_stmt3": {
+              "n": 128,
+              "acc": 0.5859375
+            }
+          },
+          "pred_counts": {
+            "tom": 92,
+            "mia": 10,
+            "sam": 294,
+            "lily": 104
+          }
+        },
+        "held": {
+          "accuracy": 0.2240000069141388,
+          "pos_baseline": {
+            "stmt0": 0.2840000092983246,
+            "stmt1": 0.2240000069141388,
+            "stmt2": 0.24000000953674316,
+            "stmt3": 0.25200000405311584
+          },
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 142,
+              "acc": 0.10563380271196365
+            },
+            "answer_at_stmt1": {
+              "n": 112,
+              "acc": 0.1696428656578064
+            },
+            "answer_at_stmt2": {
+              "n": 120,
+              "acc": 0.10000000894069672
+            },
+            "answer_at_stmt3": {
+              "n": 126,
+              "acc": 0.523809552192688
+            }
+          },
+          "pred_counts": {
+            "tom": 85,
+            "mia": 6,
+            "sam": 307,
+            "lily": 102
+          }
+        }
+      },
+      "old_permuted": {
+        "accuracy": 0.23600001633167267,
+        "pos_baseline": {
+          "stmt0": 0.22200001776218414,
+          "stmt1": 0.2240000069141388,
+          "stmt2": 0.2900000214576721,
+          "stmt3": 0.2639999985694885
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 111,
+            "acc": 0.0
+          },
+          "answer_at_stmt1": {
+            "n": 112,
+            "acc": 0.196428582072258
+          },
+          "answer_at_stmt2": {
+            "n": 145,
+            "acc": 0.35862070322036743
+          },
+          "answer_at_stmt3": {
+            "n": 132,
+            "acc": 0.3333333432674408
+          }
+        },
+        "pred_counts": {
+          "tom": 213,
+          "sam": 261,
+          "lily": 26
+        }
+      }
+    }
+  ]
+}

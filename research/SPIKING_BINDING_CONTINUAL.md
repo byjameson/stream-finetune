@@ -108,6 +108,26 @@ question on a harder split: **no**. The matching-attention loss is necessary for
 phase A at this budget, not just for the easier 4-name single task. Copy-only
 training collapses to a name/position shortcut before phase B begins.
 
+### Four-statement stories (negative)
+
+A longer-story version used four statements, all four names (distinct), sequence
+length 27, and the same old/new color split. Phase A was trained with the
+matching-attention loss at 500, 2,000, and 5,000 steps.
+
+| phase-A steps | old acc | old stmt 0/1/2/3 | new | held |
+|---:|---:|---:|---:|---:|
+| 500 | 0.222 | 0.000/0.000/0.000/**1.000** | 0.254 | 0.254 |
+| 2,000 | 0.234 | 0.068/0.090/0.134/**0.721** | 0.276 | 0.258 |
+| 5,000 | 0.214 | 0.045/0.097/0.116/**0.667** | 0.000 | 0.000 |
+
+The old-name majority baseline is 0.26. Even at 5,000 steps the model is below
+that and strongly last-position-biased; new/held predictions collapse to
+`<eos>`. Phase B was not run because there is no learnable phase A to retain.
+The current memory + single matching-attention readout does not scale to four
+statements at this budget; longer stories need an architectural change (more
+memory slots, multi-head/iterated attention, or more training) before a
+retention comparison is meaningful.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -150,7 +170,13 @@ training collapses to a name/position shortcut before phase B begins.
    loss is a required inductive bias at this budget, not just a single-task
    convenience.
 
-8. **The practical rule transfers to the learnable setup:** store old stories
+8. **Four-statement stories are not learnable at this budget.** With the
+   matching-attention loss, phase A is 0.222/0.234/0.214 at 500/2k/5k steps;
+   the last-position accuracy is 1.00/0.72/0.67 while the other positions stay
+   at or below 0.13, and new/held collapse to `<eos>`. The 3-statement color
+   split remains the hardest learnable split tested.
+
+9. **The practical rule transfers to the learnable setup:** store old stories
    and replay ~20% during updates. Use hard rollback only when replay is
    unavailable or a regression appears anyway.
 
@@ -170,7 +196,8 @@ training collapses to a name/position shortcut before phase B begins.
 - Stabilize the color split (seed-1 collapse) with a fixed LR schedule or more
   phase-A steps.
 - Make the shift harder in a learnable way: three distinct names per story or
-  longer stories, not the 2-name/3-statement construction.
+  longer stories. The 4-statement version failed phase A, so it first needs an
+  architectural change (more memory slots/attention iterations) or more training.
 - The matching-attention loss remains required at this budget. Removing it needs
   a better self-supervised signal (statement boundaries alone were not enough)
   or a different memory/credit-assignment mechanism.
