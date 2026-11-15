@@ -1,0 +1,300 @@
+{
+  "question": "Can a 1->2->3 statement curriculum replace the matching-attention auxiliary loss?",
+  "config": {
+    "arms": "spike,rate",
+    "steps_1": 2000,
+    "steps_2": 2000,
+    "steps_3": 6000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "aux_weight": 0.5,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_curriculum.json"
+  },
+  "results": [
+    {
+      "arm": "spike",
+      "params": 468997,
+      "test_acc": 0.41200003027915955,
+      "permuted_acc": 0.3920000195503235,
+      "eval": {
+        "accuracy": 0.41200003027915955,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 163,
+            "acc": 0.28834354877471924
+          },
+          "answer_at_stmt1": {
+            "n": 180,
+            "acc": 0.11666666716337204
+          },
+          "answer_at_stmt2": {
+            "n": 157,
+            "acc": 0.8789808750152588
+          }
+        },
+        "pred_counts": {
+          "tom": 105,
+          "mia": 139,
+          "sam": 109,
+          "lily": 147
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 0.3920000195503235,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 157,
+            "acc": 0.24203822016716003
+          },
+          "answer_at_stmt1": {
+            "n": 180,
+            "acc": 0.09444444626569748
+          },
+          "answer_at_stmt2": {
+            "n": 163,
+            "acc": 0.8650306463241577
+          }
+        },
+        "pred_counts": {
+          "tom": 104,
+          "mia": 138,
+          "sam": 117,
+          "lily": 141
+        }
+      },
+      "stages": [
+        {
+          "n_statements": 1,
+          "steps": 2000,
+          "train_loss": 0.9251164197921753,
+          "eval3": {
+            "accuracy": 0.0,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.0
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.0
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.0
+              }
+            },
+            "pred_counts": {
+              "who": 500
+            }
+          },
+          "sec": 310.5
+        },
+        {
+          "n_statements": 2,
+          "steps": 2000,
+          "train_loss": 1.2939300537109375,
+          "eval3": {
+            "accuracy": 0.0,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.0
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.0
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.0
+              }
+            },
+            "pred_counts": {
+              "has": 182,
+              "who": 318
+            }
+          },
+          "sec": 237.2
+        },
+        {
+          "n_statements": 3,
+          "steps": 6000,
+          "train_loss": 1.0987200736999512,
+          "eval3": {
+            "accuracy": 0.41200003027915955,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.28834354877471924
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.11666666716337204
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.8789808750152588
+              }
+            },
+            "pred_counts": {
+              "tom": 105,
+              "mia": 139,
+              "sam": 109,
+              "lily": 147
+            }
+          },
+          "sec": 897.1
+        }
+      ],
+      "sec": 1444.9
+    },
+    {
+      "arm": "rate",
+      "params": 468997,
+      "test_acc": 0.2120000123977661,
+      "permuted_acc": 0.21400001645088196,
+      "eval": {
+        "accuracy": 0.2120000123977661,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 163,
+            "acc": 0.2822085916996002
+          },
+          "answer_at_stmt1": {
+            "n": 180,
+            "acc": 0.13333334028720856
+          },
+          "answer_at_stmt2": {
+            "n": 157,
+            "acc": 0.2292993664741516
+          }
+        },
+        "pred_counts": {
+          "tom": 201,
+          "mia": 74,
+          "sam": 105,
+          "lily": 120
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 0.21400001645088196,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 157,
+            "acc": 0.2929936349391937
+          },
+          "answer_at_stmt1": {
+            "n": 180,
+            "acc": 0.1111111119389534
+          },
+          "answer_at_stmt2": {
+            "n": 163,
+            "acc": 0.25153374671936035
+          }
+        },
+        "pred_counts": {
+          "tom": 174,
+          "mia": 81,
+          "sam": 120,
+          "lily": 125
+        }
+      },
+      "stages": [
+        {
+          "n_statements": 1,
+          "steps": 2000,
+          "train_loss": 0.9391154050827026,
+          "eval3": {
+            "accuracy": 0.0,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.0
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.0
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.0
+              }
+            },
+            "pred_counts": {
+              ".": 500
+            }
+          },
+          "sec": 280.4
+        },
+        {
+          "n_statements": 2,
+          "steps": 2000,
+          "train_loss": 1.2685022354125977,
+          "eval3": {
+            "accuracy": 0.0,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.0
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.0
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.0
+              }
+            },
+            "pred_counts": {
+              "ball": 13,
+              "cup": 45,
+              "book": 6,
+              "car": 60,
+              "?": 376
+            }
+          },
+          "sec": 285.5
+        },
+        {
+          "n_statements": 3,
+          "steps": 6000,
+          "train_loss": 1.096956729888916,
+          "eval3": {
+            "accuracy": 0.2120000123977661,
+            "by_answer_pos": {
+              "answer_at_stmt0": {
+                "n": 163,
+                "acc": 0.2822085916996002
+              },
+              "answer_at_stmt1": {
+                "n": 180,
+                "acc": 0.13333334028720856
+              },
+              "answer_at_stmt2": {
+                "n": 157,
+                "acc": 0.2292993664741516
+              }
+            },
+            "pred_counts": {
+              "tom": 201,
+              "mia": 74,
+              "sam": 105,
+              "lily": 120
+            }
+          },
+          "sec": 681.5
+        }
+      ],
+      "sec": 1247.4
+    }
+  ],
+  "note": "Pads fill the missing statements; query/answer positions are fixed."
+}

@@ -87,10 +87,15 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   on 32 triples, phase B on 16 new triples. Naive phase B drops old accuracy
   0.974/1.000 -> 0.322/0.544 and held 0.730/0.926 -> 0.240/0.280; 20% replay
   keeps old 0.992-0.996, new 1.000, held 0.788-0.866. On a harder color split
-  (red/blue -> green/yellow), naive old 0.930 -> 0.700 and held 0.336 -> 0.478;
-  replay reaches 1.000/1.000/0.974. Rollback 10% alone is weak;
+  (red/blue -> green/yellow), naive old 0.930/1.000 -> 0.700/0.702 and held
+  0.336/0.000 -> 0.478/0.662; replay reaches 1.000/1.000/0.974 and
+  1.000/1.000/0.998. Rollback 10% alone is weak or destroys new colors;
   replay+rollback and replay+EWC are close but not consistently better.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
+  copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
+  rate 0.212. It does not replace the matching-attention auxiliary loss.
+  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 

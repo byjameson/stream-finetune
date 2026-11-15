@@ -627,11 +627,19 @@ The architecture can bind; unsupervised credit assignment is still open.
 drops old accuracy from **0.974/1.000** to **0.322/0.544** and held accuracy from
 **0.730/0.926** to **0.240/0.280**. A 20% replay mix keeps old at
 **0.992-0.996**, new at **1.000** and held at **0.788-0.866**. On a harder color
-shift (old red/blue -> new green/yellow), naive old falls **0.930 -> 0.700** and
-held **0.336 -> 0.478**; replay reaches **1.000/1.000/0.974**. Rollback 10%
-alone is weak (0.392/0.674 old on the triple split); replay+rollback and
-replay+EWC are close but not consistently better. Replay is the most reliable
-arm. [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+shift (old red/blue -> new green/yellow), naive old falls **0.930/1.000 ->
+0.700/0.702** and held **0.336/0.000 -> 0.478/0.662**; replay reaches
+**1.000/1.000/0.974** and **1.000/1.000/0.998**. Rollback 10% alone is weak
+(0.392/0.674 old on the triple split) or destroys new colors (new 0.366 on color
+seed 2); replay+rollback and replay+EWC are close but not consistently better.
+Replay is the most reliable arm.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
+**Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
+statement curriculum trained with the copy loss only reaches spike **0.412**
+(permuted 0.392, last-position-biased) and rate **0.212**. It does not replace
+the self-supervised matching-attention loss at this budget.
+[`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 ## License
 
