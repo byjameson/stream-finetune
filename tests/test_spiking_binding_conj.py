@@ -92,6 +92,17 @@ def test_256_seed1_confirms_position_bias():
         assert max(accs) - min(accs) > 0.4
 
 
+def test_512_wide_does_not_improve_binding():
+    payload = json.loads((ROOT / "research/results/binding_spiking_512.json")
+                         .read_text(encoding="utf-8"))
+    arms = {r["arm"]: r for r in payload["results"]}
+    assert arms["spike"]["test_acc"] < 0.55
+    assert arms["rate"]["test_acc"] < 0.55
+    for arm in arms.values():
+        accs = [x["acc"] for x in arm["eval"]["by_answer_pos"].values()]
+        assert max(accs) - min(accs) > 0.25
+
+
 def test_simple_attention_readout_hurts():
     base = json.loads((ROOT / "research/results/binding_spiking_256.json")
                       .read_text(encoding="utf-8"))

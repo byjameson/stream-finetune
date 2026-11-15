@@ -1,0 +1,105 @@
+{
+  "task": "conjunction variable binding",
+  "config": {
+    "arms": "spike,rate",
+    "steps": 6000,
+    "batch": 64,
+    "dim": 512,
+    "layers": 2,
+    "heads": 4,
+    "dropout": 0.0,
+    "lr": 0.0007,
+    "adapt": 0.1,
+    "attention": false,
+    "eval_every": 1000,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/binding_spiking_512.json"
+  },
+  "heuristics": {
+    "position": [
+      0.36,
+      0.302,
+      0.338
+    ],
+    "color_only": 0.516,
+    "object_only": 0.506,
+    "pair_match": 1.0
+  },
+  "chance": 0.25,
+  "results": [
+    {
+      "arm": "spike",
+      "test_acc": 0.44600000977516174,
+      "eval": {
+        "accuracy": 0.44600000977516174,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 0.4444444477558136
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.29139071702957153
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 0.5857987999916077
+          }
+        },
+        "pred_counts": {
+          "tom": 55,
+          "mia": 211,
+          "sam": 41,
+          "lily": 189,
+          "?": 4
+        }
+      },
+      "train_loss": 0.5594650506973267,
+      "sec": 355.0,
+      "params": 1067010
+    },
+    {
+      "arm": "rate",
+      "test_acc": 0.406000018119812,
+      "eval": {
+        "accuracy": 0.406000018119812,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 0.5444444417953491
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.13907285034656525
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 0.4970414340496063
+          }
+        },
+        "pred_counts": {
+          "tom": 135,
+          "mia": 162,
+          "sam": 94,
+          "lily": 109
+        }
+      },
+      "train_loss": 0.425491601228714,
+      "sec": 292.1,
+      "params": 1067010
+    }
+  ]
+}

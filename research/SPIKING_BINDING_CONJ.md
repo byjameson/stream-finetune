@@ -66,6 +66,8 @@ A perfect binder reaches 1.0; single-attribute shortcuts are near 0.5.
 | transformer, 4 layers x 256, dropout 0.1 | ~1.6M | **1.000** |
 | spike, 2 layers x 256 | 271k | 0.572 (seed 0) / 0.466 (seed 1) |
 | rate, 2 layers x 256 | 271k | 0.756 (seed 0) / 0.502 (seed 1) |
+| spike, 2 layers x 512 | 1.07M | 0.446 |
+| rate, 2 layers x 512 | 1.07M | 0.406 |
 
 The 4-layer transformer reaches 1.0 by step 3,000. The 2-layer transformer needs
 dropout and more steps (0.658 at 3k, 0.886 at 6k).
@@ -81,6 +83,8 @@ the correct answer sits in the story:
 | spike 256, seed 1 | 0.296 | 0.182 | **0.872** |
 | rate 256, seed 0 | **0.983** | 0.483 | 0.757 |
 | rate 256, seed 1 | 0.667 | 0.145 | 0.670 |
+| spike 512 | 0.444 | 0.291 | **0.586** |
+| rate 512 | **0.544** | 0.139 | 0.497 |
 | transformer 2L | 0.778 | 0.934 | 0.959 |
 | transformer 4L | **1.000** | **1.000** | **1.000** |
 
@@ -96,20 +100,24 @@ or a minimum-position score.
 
 1. **The task is learnable.** A small transformer solves it on held-out triples,
    so the benchmark is valid and the failure is not task impossibility.
-2. **Capacity helps the spiking model, but does not balance it, and the gain is
-   seed-sensitive.** Going from 128 to 256 wide lifts spike 0.22 -> 0.466-0.572
-   and rate 0.326 -> 0.502-0.756. The per-position table shows why the overall
-   number is misleading: spike is 0.846/0.872 on statement 2 but 0.377/0.182 on
-   statement 1; rate is 0.483/0.145 on statement 1. The seed-1 rate arm (0.502)
-   is barely above the single-attribute heuristics.
-3. **Regularization matters for the transformer.** The same 2-layer transformer
+2. **Capacity helps up to 256, then reverses at 512.** Going from 128 to 256
+   wide lifts spike 0.22 -> 0.466-0.572 and rate 0.326 -> 0.502-0.756. At 512
+   wide both drop (spike 0.446, rate 0.406), with training loss still falling.
+   The per-position table shows why the 256 overall number is misleading: spike
+   is 0.846/0.872 on statement 2 but 0.377/0.182 on statement 1; rate is
+   0.483/0.145 on statement 1. The seed-1 rate arm (0.502) is barely above the
+   single-attribute heuristics.
+3. **The 512 result is not a clean capacity ceiling.** It used LR 7e-4 (vs 1e-3
+   at 256) and the same 6,000 steps, so it may be undertrained. Tune LR/steps
+   before claiming 512 is fundamentally worse.
+4. **Regularization matters for the transformer.** The same 2-layer transformer
    without dropout memorizes the train pairs (train loss 0.36) and scores 0.26;
    adding dropout changes the solution to a rule that generalizes.
-4. **A simple attention readout does not fix binding.** The 256-wide attention
+5. **A simple attention readout does not fix binding.** The 256-wide attention
    arms score 0.364/0.384, below the no-attention arms, and remain position-
    biased. Content-based retrieval is not enough without the right memory
    structure or gating.
-5. **The transformer is still the upper bound.** The 4-layer transformer is
+6. **The transformer is still the upper bound.** The 4-layer transformer is
    balanced at 1.000 across all three answer positions; the 2-layer transformer
    is 0.778/0.934/0.959. No spiking arm is balanced yet.
 
@@ -139,9 +147,10 @@ statement-level memory is still untested.
 
 ## Caveats
 
-- Two seeds at 128 and 256 wide; the transformer controls are not
-  parameter-matched to the 70k spiking model.
+- Two seeds at 128 and 256 wide; one seed at 512.
 - The 256-wide seed variance is large: spike 0.466-0.572, rate 0.502-0.756.
+- The 512-wide run used LR 7e-4 and 6,000 steps; it may be undertrained rather
+  than a hard capacity ceiling.
 - The 4-layer transformer is ~1.6M params and took 12k steps.
 - Test triples are held out, but all words are shared; this is compositional
   binding, not word-level generalization.
@@ -151,7 +160,8 @@ statement-level memory is still untested.
 
 ## Next
 
-- Finish the second 256-wide seed and run two seeds at 512 wide.
+- Tune the 512-wide arm (LR and 10k+ steps) before treating 0.446/0.406 as a
+  capacity ceiling.
 - Add a statement-level content memory (write name/color/object at the period,
   read with the query) or a gated multi-head attention readout.
 - Add a statement-order permutation test: a true binder must answer the same

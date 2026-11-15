@@ -70,9 +70,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   78% by color alone and 76% by object alone, so it was too easy to shortcut.
   A corrected conjunction split (both attributes needed) gives spike 0.220,
   rate 0.326; 256-wide spiking reaches 0.466-0.572 / 0.502-0.756 over two seeds
-  but is position-biased. A 2-layer transformer reaches 0.886 with dropout and a
-  4-layer transformer 1.0 balanced across positions. A simple attention readout
-  hurts (0.364/0.384). [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
+  but is position-biased; 512-wide is worse (0.446/0.406). A 2-layer transformer
+  reaches 0.886 with dropout and a 4-layer transformer 1.0 balanced across
+  positions. A simple attention readout hurts (0.364/0.384).
+  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 
 ## What each script does
 
