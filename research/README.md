@@ -105,6 +105,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   reaches 1.000/1.000 and held 0.926/0.760. The structured key is the mechanism;
   the task-specific attention loss is unnecessary and can hurt retention.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Five-statement copy-only (positive):** five names, five attr-key slots,
+  sequence length 32. Phase A old 0.998, all positions balanced, permutation
+  1.000. Copy-only phase B old 0.950/0.994 (naive) or 1.000 (replay), new 1.000,
+  old permutation 0.944/0.994 or 1.000. Held composition is seed-sensitive
+  (0.244/0.356 vs 0.982/0.980); retention is solid, composition is the next gap.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

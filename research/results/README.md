@@ -75,6 +75,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_long4_continual_seed1.json` | same, `--seed 1` | seed 1: naive old 0.444; replay old/new 1.000/held 0.596 |
 | `spiking_binding_long4_copy_seed0.json` | same, `--aux-attn-weight 0` | copy-only: naive old 0.996/new 1.000/held 0.872; replay 1.000/1.000/0.926 |
 | `spiking_binding_long4_copy_seed1.json` | same, `--seed 1` | copy-only seed 1: naive 0.970/1.000/0.728; replay 1.000/1.000/0.760 |
+| `spiking_binding_long5_copy_seed0.json` | `research/spiking_binding_long5.py` | 5 statements, 5 names, copy-only: phase A 0.998; naive 0.950/1.000/0.244; replay 1.000/1.000/0.356 |
+| `spiking_binding_long5_copy_seed1.json` | same, `--seed 1` | 5 statements, seed 1: naive 0.994/1.000/0.982; replay 1.000/1.000/0.980 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant
