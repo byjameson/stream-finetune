@@ -45,7 +45,9 @@
   first but 0.483/0.145 on the second.
 - Simple causal attention readout hurts: spike 0.364, rate 0.384, still
   position-biased. The transformer remains balanced at 1.000.
-- 101 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 512-wide conjunction is worse than 256: spike 0.446, rate 0.406, with the same
+  middle-position weakness. Width alone does not close the binding gap.
+- 102 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
