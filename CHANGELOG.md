@@ -74,7 +74,10 @@
   is 0.332/0.214 (seed 0/2, at or below chance); a no-overlap 2-name split
   collapses (0.474/0.644 even with attention). The attention loss is a required
   inductive bias; replay only helps after phase A is learnable.
-- 113 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Four-statement stories: with attention, phase A is 0.222/0.234/0.214 at
+  500/2k/5k steps; last-position accuracy is 1.00/0.72/0.67 while the other
+  positions stay <=0.13. The current memory does not scale to four statements.
+- 114 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
