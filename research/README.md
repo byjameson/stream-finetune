@@ -92,6 +92,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   1.000/1.000/0.998. Rollback 10% alone is weak or destroys new colors;
   replay+rollback and replay+EWC are close but not consistently better.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Without the matching-attention loss (negative):** copy-only color phase A is
+  0.332/0.214 (seed 0/2, at or below chance), and a no-overlap 2-name split
+  collapses (0.474/0.644, even with attention). The attention loss is a required
+  inductive bias at this budget; replay helps only after phase A is learnable.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

@@ -72,6 +72,42 @@ An earlier seed-1 run at 3,000/2,000 steps collapsed in phase A (old 0.668,
 new/held predictions all `<eos>`), so it was aborted. The hard color split is
 sensitive to optimization and seed; seed 2 is the clean second seed.
 
+### Name split attempt (negative)
+
+A no-overlap name split (phase A on `tom`/`mia`, phase B on `sam`/`lily`,
+three statements with repeated names) was also tried. It collapsed to a
+name-frequency shortcut:
+
+| run | phase-A old accuracy | prediction |
+|---|---:|---|
+| copy-only, seed 0 | 0.474 | `tom` for all 500 |
+| copy-only, seed 1 | 0.644 | mostly `mia` |
+| matching attention, seed 0 | 0.474 | `tom` for all 500 |
+
+With only two possible answer names and repeated statements, the majority-name
+baseline is high and the memory model does not learn content binding; even the
+matching-attention control fails phase A. This split is not usable for a
+retention comparison. A fair no-overlap name test needs three distinct names per
+story or longer stories, not the 2-name/3-statement construction.
+
+### Copy-only color split (negative)
+
+The color split was also run without the matching-attention loss
+(`--aux-attn-weight 0`), 5,000 phase-A steps, seeds 0 and 2.
+
+| run | old acc | stmt 0/1/2 | prediction |
+|---|---:|---:|---|
+| seed 0 | **0.332** | 0.169/0.374/0.460 | lily 204, tom 128, sam 116, mia 52 |
+| seed 2 | **0.214** | 0.091/0.292/0.284 | lily 411 |
+
+New and held predictions were all `<eos>` (0.000/0.002). Phase B arms were
+aborted: without a learned memory read there is no retention comparison to make.
+
+This is the direct answer to the "without the task-specific attention loss"
+question on a harder split: **no**. The matching-attention loss is necessary for
+phase A at this budget, not just for the easier 4-name single task. Copy-only
+training collapses to a name/position shortcut before phase B begins.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -107,9 +143,16 @@ sensitive to optimization and seed; seed 2 is the clean second seed.
    phase-A steps and LR 8e-4 to reach old 1.000. This is an optimization
    sensitivity, not evidence against the replay result.
 
-7. **The practical rule transfers to the new data:** store old stories and
-   replay ~20% during updates. Use hard rollback only when replay is unavailable
-   or a regression appears anyway.
+7. **Without the matching-attention loss, the harder split does not even learn
+   phase A.** Copy-only color phase A is 0.332 (seed 0) and 0.214 (seed 2), at or
+   below chance, with a strong name/position shortcut. A no-overlap 2-name split
+   also collapsed (0.474/0.644 even with the attention control). The attention
+   loss is a required inductive bias at this budget, not just a single-task
+   convenience.
+
+8. **The practical rule transfers to the learnable setup:** store old stories
+   and replay ~20% during updates. Use hard rollback only when replay is
+   unavailable or a regression appears anyway.
 
 ## Caveats
 
@@ -126,9 +169,9 @@ sensitive to optimization and seed; seed 2 is the clean second seed.
 
 - Stabilize the color split (seed-1 collapse) with a fixed LR schedule or more
   phase-A steps.
-- Make the shift harder: phase A on two names, phase B on two new names, or new
-  objects/colors with no overlap.
-- Replace the matching-attention auxiliary loss with a curriculum or a
-  statement-boundary objective; the 1->2->3 padded curriculum failed at this
-  budget (spike 0.412, rate 0.212).
+- Make the shift harder in a learnable way: three distinct names per story or
+  longer stories, not the 2-name/3-statement construction.
+- The matching-attention loss remains required at this budget. Removing it needs
+  a better self-supervised signal (statement boundaries alone were not enough)
+  or a different memory/credit-assignment mechanism.
 - Try generative/distilled replay when storing old stories is not possible.
