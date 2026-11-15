@@ -138,6 +138,29 @@ def test_five_statement_copy_only_balanced_and_permutation():
             assert held > 0.9
 
 
+def test_six_statement_copy_only_passes_gate():
+    for name in ("spiking_binding_long6_copy_seed0.json",
+                 "spiking_binding_long6_copy_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        before = payload["before"]["old"]
+        assert before["accuracy"] > 0.95
+        for row in before["by_answer_pos"].values():
+            assert row["acc"] > 0.95
+        arms = {a["arm"]: a for a in payload["arms"]}
+        naive = arms["naive"]
+        replay = arms["replay_20"]
+        assert naive["after"]["old"]["accuracy"] > 0.9
+        assert naive["after"]["new"]["accuracy"] > 0.95
+        assert naive["after"]["held"]["accuracy"] > 0.95
+        assert naive["old_permuted"]["accuracy"] > 0.9
+        assert replay["after"]["old"]["accuracy"] > 0.95
+        assert replay["after"]["new"]["accuracy"] > 0.95
+        assert replay["after"]["held"]["accuracy"] > 0.95
+        assert replay["old_permuted"]["accuracy"] > 0.95
+
+
+
 
 
 

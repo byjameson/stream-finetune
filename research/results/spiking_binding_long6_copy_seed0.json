@@ -1,0 +1,476 @@
+{
+  "question": "Does four-statement binding retain replay-first?",
+  "config": {
+    "n_statements": 6,
+    "steps_a": 5000,
+    "steps_b": 2500,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.0,
+    "slots": 6,
+    "slot_heads": 4,
+    "slot_attr_keys": true,
+    "replay": 0.2,
+    "rollback": 0.1,
+    "ewc_lambda": 1.0,
+    "arms": "naive,replay_20",
+    "fisher_batches": 8,
+    "fisher_batch_size": 8,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_long6_copy_seed0.json"
+  },
+  "split": {
+    "old": 48,
+    "new": 24,
+    "held": 24
+  },
+  "before": {
+    "old": {
+      "accuracy": 1.0,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 74,
+          "acc": 1.0
+        },
+        "answer_at_stmt1": {
+          "n": 83,
+          "acc": 0.9999999403953552
+        },
+        "answer_at_stmt2": {
+          "n": 97,
+          "acc": 0.9999999403953552
+        },
+        "answer_at_stmt3": {
+          "n": 88,
+          "acc": 1.0
+        },
+        "answer_at_stmt4": {
+          "n": 75,
+          "acc": 1.0
+        },
+        "answer_at_stmt5": {
+          "n": 83,
+          "acc": 0.9999999403953552
+        }
+      },
+      "pred_counts": {
+        "tom": 85,
+        "mia": 85,
+        "sam": 88,
+        "lily": 75,
+        "zoe": 82,
+        "max": 85
+      }
+    },
+    "new": {
+      "accuracy": 0.398000031709671,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 86,
+          "acc": 0.3139534890651703
+        },
+        "answer_at_stmt1": {
+          "n": 69,
+          "acc": 0.3188405930995941
+        },
+        "answer_at_stmt2": {
+          "n": 83,
+          "acc": 0.3253012001514435
+        },
+        "answer_at_stmt3": {
+          "n": 85,
+          "acc": 0.3529411852359772
+        },
+        "answer_at_stmt4": {
+          "n": 99,
+          "acc": 0.4747474789619446
+        },
+        "answer_at_stmt5": {
+          "n": 78,
+          "acc": 0.5897436141967773
+        }
+      },
+      "pred_counts": {
+        "tom": 71,
+        "mia": 129,
+        "sam": 42,
+        "lily": 39,
+        "blue": 1,
+        "who": 1,
+        "?": 14,
+        "<eos>": 100,
+        "zoe": 83,
+        "max": 20
+      }
+    },
+    "held": {
+      "accuracy": 0.3620000183582306,
+      "by_answer_pos": {
+        "answer_at_stmt0": {
+          "n": 81,
+          "acc": 0.29629629850387573
+        },
+        "answer_at_stmt1": {
+          "n": 89,
+          "acc": 0.26966291666030884
+        },
+        "answer_at_stmt2": {
+          "n": 90,
+          "acc": 0.36666667461395264
+        },
+        "answer_at_stmt3": {
+          "n": 77,
+          "acc": 0.350649356842041
+        },
+        "answer_at_stmt4": {
+          "n": 79,
+          "acc": 0.5189873576164246
+        },
+        "answer_at_stmt5": {
+          "n": 84,
+          "acc": 0.380952388048172
+        }
+      },
+      "pred_counts": {
+        "tom": 95,
+        "mia": 179,
+        "sam": 28,
+        "lily": 20,
+        "?": 14,
+        ".": 3,
+        "<eos>": 61,
+        "zoe": 73,
+        "max": 27
+      }
+    }
+  },
+  "arms": [
+    {
+      "arm": "naive",
+      "replay": 0.0,
+      "rollback": 0.0,
+      "ewc_lambda": 0.0,
+      "sec": 639.5,
+      "train_loss": 1.0115256309509277,
+      "after": {
+        "old": {
+          "accuracy": 0.9980000257492065,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 74,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt2": {
+              "n": 97,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt3": {
+              "n": 88,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 75,
+              "acc": 0.9866666793823242
+            },
+            "answer_at_stmt5": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            }
+          },
+          "pred_counts": {
+            "tom": 85,
+            "mia": 84,
+            "sam": 88,
+            "lily": 75,
+            "who": 1,
+            "zoe": 82,
+            "max": 85
+          }
+        },
+        "new": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 86,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 69,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt3": {
+              "n": 85,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 99,
+              "acc": 1.0
+            },
+            "answer_at_stmt5": {
+              "n": 78,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 83,
+            "mia": 91,
+            "sam": 77,
+            "lily": 63,
+            "zoe": 105,
+            "max": 81
+          }
+        },
+        "held": {
+          "accuracy": 0.9880000352859497,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 81,
+              "acc": 0.9876543283462524
+            },
+            "answer_at_stmt1": {
+              "n": 89,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 90,
+              "acc": 0.9666666984558105
+            },
+            "answer_at_stmt3": {
+              "n": 77,
+              "acc": 0.9870129823684692
+            },
+            "answer_at_stmt4": {
+              "n": 79,
+              "acc": 0.9873418211936951
+            },
+            "answer_at_stmt5": {
+              "n": 84,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 94,
+            "mia": 79,
+            "sam": 89,
+            "lily": 78,
+            "who": 2,
+            ".": 4,
+            "zoe": 71,
+            "max": 83
+          }
+        }
+      },
+      "old_permuted": {
+        "accuracy": 0.9980000257492065,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 83,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt1": {
+            "n": 75,
+            "acc": 0.9866666793823242
+          },
+          "answer_at_stmt2": {
+            "n": 88,
+            "acc": 1.0
+          },
+          "answer_at_stmt3": {
+            "n": 97,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt4": {
+            "n": 83,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt5": {
+            "n": 74,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 85,
+          "mia": 84,
+          "sam": 88,
+          "lily": 75,
+          "who": 1,
+          "zoe": 82,
+          "max": 85
+        }
+      }
+    },
+    {
+      "arm": "replay_20",
+      "replay": 0.2,
+      "rollback": 0.0,
+      "ewc_lambda": 0.0,
+      "sec": 650.1,
+      "train_loss": 1.0644432306289673,
+      "after": {
+        "old": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 74,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt2": {
+              "n": 97,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt3": {
+              "n": 88,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 75,
+              "acc": 1.0
+            },
+            "answer_at_stmt5": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            }
+          },
+          "pred_counts": {
+            "tom": 85,
+            "mia": 85,
+            "sam": 88,
+            "lily": 75,
+            "zoe": 82,
+            "max": 85
+          }
+        },
+        "new": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 86,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 69,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 83,
+              "acc": 0.9999999403953552
+            },
+            "answer_at_stmt3": {
+              "n": 85,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 99,
+              "acc": 1.0
+            },
+            "answer_at_stmt5": {
+              "n": 78,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 83,
+            "mia": 91,
+            "sam": 77,
+            "lily": 63,
+            "zoe": 105,
+            "max": 81
+          }
+        },
+        "held": {
+          "accuracy": 1.0,
+          "by_answer_pos": {
+            "answer_at_stmt0": {
+              "n": 81,
+              "acc": 1.0
+            },
+            "answer_at_stmt1": {
+              "n": 89,
+              "acc": 1.0
+            },
+            "answer_at_stmt2": {
+              "n": 90,
+              "acc": 1.0
+            },
+            "answer_at_stmt3": {
+              "n": 77,
+              "acc": 1.0
+            },
+            "answer_at_stmt4": {
+              "n": 79,
+              "acc": 1.0
+            },
+            "answer_at_stmt5": {
+              "n": 84,
+              "acc": 1.0
+            }
+          },
+          "pred_counts": {
+            "tom": 94,
+            "mia": 80,
+            "sam": 91,
+            "lily": 78,
+            "zoe": 71,
+            "max": 86
+          }
+        }
+      },
+      "old_permuted": {
+        "accuracy": 1.0,
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 83,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt1": {
+            "n": 75,
+            "acc": 1.0
+          },
+          "answer_at_stmt2": {
+            "n": 88,
+            "acc": 1.0
+          },
+          "answer_at_stmt3": {
+            "n": 97,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt4": {
+            "n": 83,
+            "acc": 0.9999999403953552
+          },
+          "answer_at_stmt5": {
+            "n": 74,
+            "acc": 1.0
+          }
+        },
+        "pred_counts": {
+          "tom": 85,
+          "mia": 85,
+          "sam": 88,
+          "lily": 75,
+          "zoe": 82,
+          "max": 85
+        }
+      }
+    }
+  ]
+}
