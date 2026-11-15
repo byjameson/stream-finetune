@@ -97,11 +97,13 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   collapses (0.474/0.644, even with attention). The attention loss is a required
   inductive bias at this budget; replay helps only after phase A is learnable.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
-- **Four-statement stories (negative):** dynamic memory, per-statement slots,
-  slot reset, and a hard name slot all stay at 0.214-0.236 old accuracy
-  (majority 0.26) after 5k steps; last-position 0.67-1.00, other positions
-  <=0.33. The bottleneck is the memory read/key match, not the name value.
-  Three statements remains the hardest learnable test.
+- **Four-statement stories:** dynamic memory, slots, reset, and hard name slot
+  all stay at 0.214-0.236 old accuracy (majority 0.26). Attribute-key
+  multi-head slots (slot key = statement color+object, 4 heads) solve phase A:
+  old 1.000, all positions 1.000, permutation 1.000. Copy-only phase B keeps
+  old 0.996/0.970, new 1.000, held 0.872/0.728, permutation 0.996/0.972; replay
+  reaches 1.000/1.000 and held 0.926/0.760. The structured key is the mechanism;
+  the task-specific attention loss is unnecessary and can hurt retention.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
