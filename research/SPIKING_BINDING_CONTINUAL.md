@@ -202,6 +202,25 @@ the new colors. The weak point is **held-out composition**: seed 0 reaches only
 0.244/0.356 on held colors+objects while seed 1 reaches 0.982/0.980. That is a
 seed/data generalization gap, not a position bias.
 
+### Six-statement copy-only (positive, gate passed)
+
+Six statements, six names (`tom`, `mia`, `sam`, `lily`, `zoe`, `max`), sequence
+length 37, six attr-key slots, four heads, copy-only, 5,000 + 2,500 steps,
+seeds 0 and 1.
+
+Phase A: old **1.000** on both seeds; all six positions 1.000; old permutation
+1.000. New/held unseen colors: seed 0 0.398/0.362, seed 1 0.368/0.392.
+
+| arm | seed 0 old/new/held | seed 1 old/new/held | old permutation |
+|---|---|---|---|
+| naive | 0.998/1.000/0.988 | 0.914/1.000/1.000 | 0.998/0.924 |
+| replay 20% | **1.000/1.000/1.000** | **1.000/1.000/0.998** | **1.000/1.000** |
+
+Old per-position accuracy is 0.873-1.000 for naive and 1.000 for replay. This
+passes the gate on both seeds: balanced positions, permutation invariance, and
+held-out composition above 0.98. The architecture scales from three to six
+statements with copy-only training; replay is the best arm.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -266,7 +285,13 @@ seed/data generalization gap, not a position bias.
     Held-out composition is seed-sensitive (0.244/0.356 on seed 0 versus
     0.982/0.980 on seed 1). This is a generalization gap, not a position bias.
 
-11. **The practical rule transfers to the learnable setup:** store old stories
+11. **The six-statement gate passes.** Six statements/six names, copy-only:
+    phase A old 1.000 (all positions 1.000, permutation 1.000); phase B naive
+    0.998/0.914 old, new 1.000, held 0.988/1.000, permutation 0.998/0.924;
+    replay 1.000/1.000 old and new, held 1.000/0.998, permutation 1.000/1.000.
+    The 5-statement held gap does not persist at six statements/seeds.
+
+12. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -280,7 +305,9 @@ seed/data generalization gap, not a position bias.
 - Rollback fraction and EWC lambda were not swept on this task.
 - Five-statement runs add a fifth name (`zoe`) and use sequence length 32. Held
   composition is seed-sensitive: seed 0 reaches 0.244/0.356, seed 1 0.982/0.980.
-- The 4/5-statement positive results use task-structured keys: name first,
+- Six-statement runs add a sixth name (`max`) and use sequence length 37; held
+  composition is 0.988/1.000 with naive and 1.000/0.998 with replay.
+- The 4/5/6-statement positive results use task-structured keys: name first,
   color/object at fixed offsets, period boundaries. They are not general
   language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -288,10 +315,8 @@ seed/data generalization gap, not a position bias.
 
 ## Next
 
-- Move to 6+ statements or multi-token answers with the same attr-key multi-head
-  slots; the 5-statement copy-only result holds.
-- Improve held-out composition: the seed-0 held gap (0.24-0.36) is the main
-  weakness, not old/new retention.
+- Move to 7+ statements or multi-token answers with the same attr-key multi-head
+  slots; the six-statement gate passes.
 - Relax the structure: learned statement boundaries, no fixed name position, or
   keys from the recurrent state instead of raw token embeddings.
 - Run the copy-only + replay arm on more seeds and sweep the replay fraction.

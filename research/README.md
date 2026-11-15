@@ -111,6 +111,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   old permutation 0.944/0.994 or 1.000. Held composition is seed-sensitive
   (0.244/0.356 vs 0.982/0.980); retention is solid, composition is the next gap.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Six-statement copy-only (positive, gate passed):** six names, six slots,
+  sequence length 37. Phase A old 1.000, all positions and permutation 1.000.
+  Copy-only phase B: naive old 0.998/0.914, new 1.000, held 0.988/1.000,
+  permutation 0.998/0.924; replay 1.000/1.000, held 1.000/0.998, permutation
+  1.000/1.000. Balanced positions, permutation, and held composition pass.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

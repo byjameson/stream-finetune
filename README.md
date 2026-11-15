@@ -662,6 +662,14 @@ permutation **1.000**. Copy-only phase B keeps old **0.950/0.994** (naive) or
 **0.982/0.980** on seed 1), so the next issue is composition, not retention.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Six-statement copy-only (positive, gate passed):** six statements, six names,
+sequence length 37, six attr-key slots. Phase A old **1.000** with all positions
+and permutation **1.000**. Copy-only phase B: naive old **0.998/0.914**, new
+**1.000**, held **0.988/1.000**, permutation **0.998/0.924**; replay
+**1.000/1.000**, held **1.000/0.998**, permutation **1.000/1.000**. Balanced
+positions, permutation invariance, and held composition all pass on both seeds.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

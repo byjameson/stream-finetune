@@ -88,7 +88,12 @@
   0.950/0.994 (naive) or 1.000 (replay), new 1.000, old permutation
   0.944/0.994 or 1.000. Held composition is seed-sensitive (0.244/0.356 vs
   0.982/0.980); retention is solid, composition is the next gap.
-- 121 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Six-statement copy-only: six names, six attr-key slots, seq 37. Phase A
+  1.000, all positions and permutation 1.000. Copy-only phase B naive
+  0.998/0.914 old, new 1.000, held 0.988/1.000, permutation 0.998/0.924;
+  replay 1.000/1.000, held 1.000/0.998, permutation 1.000/1.000. Balanced
+  positions, permutation invariance, and held composition pass on both seeds.
+- 122 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
