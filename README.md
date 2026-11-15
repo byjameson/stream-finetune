@@ -609,8 +609,9 @@ on average over two seeds (seed range **0.466-0.572** / **0.502-0.756**) but are
 **position-biased**: the spike model is best on the third statement (0.846/0.872)
 and weak on the second (0.377/0.182). A 512-wide run is worse (**0.446/0.406**),
 so width alone does not close the gap. A simple attention readout hurts
-(**0.364/0.384**). The task is learnable; the spiking model still lacks balanced
-content binding. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+(**0.364/0.384**); a fixed pointer (**0.236/0.514**) and dropout
+(**0.308/0.460**) also fail. The task is learnable; the spiking model still lacks
+balanced content binding. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 ## License
 

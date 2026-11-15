@@ -96,6 +96,23 @@ is therefore not sufficient; the benchmark should report per-position accuracy
 or a minimum-position score.
 
 
+## Other mechanisms at 256 wide
+
+| variant | spike | rate |
+|---|---:|---:|
+| plain 256 | **0.572** | **0.756** |
+| + causal attention | 0.364 | 0.384 |
+| + pointer offset 4 | 0.236 | 0.514 |
+| + dropout 0.1 | 0.308 | 0.460 |
+| transformer 2L | 0.886 | - |
+| transformer 4L | **1.000** | - |
+
+The pointer variant uses a fixed offset of 4, so the value at a statement-final
+period token is the name token. It still does not learn the content match; the
+spike arm collapses to 0.236, and the rate arm is 0.514 with a strong
+right-position bias (0.550/0.212/0.746). Dropout on the embedding and readout
+also hurts both arms, unlike the transformer where dropout was essential.
+
 ## What it shows
 
 1. **The task is learnable.** A small transformer solves it on held-out triples,
@@ -117,7 +134,11 @@ or a minimum-position score.
    arms score 0.364/0.384, below the no-attention arms, and remain position-
    biased. Content-based retrieval is not enough without the right memory
    structure or gating.
-6. **The transformer is still the upper bound.** The 4-layer transformer is
+6. **Neither a fixed pointer nor dropout helps.** The offset-4 pointer scores
+   0.236/0.514; dropout scores 0.308/0.460. Both are below the plain 256-wide
+   arms. The transformer's dropout success does not transfer to this recurrent
+   spiking model with embedding/readout dropout.
+7. **The transformer is still the upper bound.** The 4-layer transformer is
    balanced at 1.000 across all three answer positions; the 2-layer transformer
    is 0.778/0.934/0.959. No spiking arm is balanced yet.
 
@@ -147,10 +168,12 @@ statement-level memory is still untested.
 
 ## Caveats
 
-- Two seeds at 128 and 256 wide; one seed at 512.
+- Two seeds at 128 and 256 wide; one seed at 512, attention, pointer, and
+  dropout.
 - The 256-wide seed variance is large: spike 0.466-0.572, rate 0.502-0.756.
 - The 512-wide run used LR 7e-4 and 6,000 steps; it may be undertrained rather
   than a hard capacity ceiling.
+- The attention/pointer/dropout variants are single-seed and not tuned.
 - The 4-layer transformer is ~1.6M params and took 12k steps.
 - Test triples are held out, but all words are shared; this is compositional
   binding, not word-level generalization.
@@ -162,8 +185,9 @@ statement-level memory is still untested.
 
 - Tune the 512-wide arm (LR and 10k+ steps) before treating 0.446/0.406 as a
   capacity ceiling.
-- Add a statement-level content memory (write name/color/object at the period,
-  read with the query) or a gated multi-head attention readout.
+- Add an explicit statement-level content memory (write name/color/object at the
+  period, read with the query) or an auxiliary binding/copy loss. Generic
+  attention, a fixed pointer, and embedding/readout dropout all failed.
 - Add a statement-order permutation test: a true binder must answer the same
   query after shuffling the statements; a position-biased model will fail.
 - Compare against the transformer 0.886/1.0 upper bounds before returning to

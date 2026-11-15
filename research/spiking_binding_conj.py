@@ -97,7 +97,9 @@ def run_arm(name, args, train, test, device):
         model = SpikingLM(SpikingConfig(vocab=len(WORDS), dim=args.dim,
                                         layers=args.layers, mode=name,
                                         adapt=args.adapt,
-                                        attention=args.attention)).to(device)
+                                        attention=args.attention,
+                                        pointer_offset=args.pointer_offset,
+                                        dropout=args.dropout)).to(device)
     loss, sec = train_lm(model, train, args.steps, args.batch, args.lr,
                          device, args.amp, args.eval_every, test, LEN,
                          tag=name)
@@ -120,6 +122,8 @@ def main():
     ap.add_argument("--adapt", type=float, default=0.1)
     ap.add_argument("--attention", action="store_true",
                     help="add causal attention over the spiking history")
+    ap.add_argument("--pointer-offset", type=int, default=0,
+                    help="copy the token this many positions before the key")
     ap.add_argument("--eval-every", type=int, default=500)
     ap.add_argument("--n-train", type=int, default=4000)
     ap.add_argument("--n-test", type=int, default=500)
