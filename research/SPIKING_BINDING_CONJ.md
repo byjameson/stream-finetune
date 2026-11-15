@@ -113,6 +113,44 @@ spike arm collapses to 0.236, and the rate arm is 0.514 with a strong
 right-position bias (0.550/0.212/0.746). Dropout on the embedding and readout
 also hurts both arms, unlike the transformer where dropout was essential.
 
+## Statement memory + supervised attention
+
+The plain model does not discover which statement to match. We added a
+statement-level memory to the spiking model:
+
+- `stmt` is a decaying summary of the current statement.
+- `name` is a gated slot that captures the person token.
+- At every step the model writes a key `W_k(stmt)` and value `W_v(name)` with a
+  learned write gate; at the answer position it reads the memory with a query
+  from the readout and adds a copy head over the vocabulary.
+- Two auxiliary losses: a copy loss on the memory readout at the answer
+  position, and an attention loss that points the memory read at the correct
+  statement period (derived from the answer name).
+
+Config: 256-wide, 2 layers, 6,000 steps, copy aux 0.5, attention aux 0.5.
+
+| arm | test | permuted | consistency | stmt 0/1/2 |
+|---|---:|---:|---:|---:|
+| spike, seed 0 | **0.996** | **1.000** | **0.996** | 1.000/0.987/1.000 |
+| spike, seed 1 | **1.000** | **1.000** | **1.000** | 1.000/1.000/1.000 |
+| rate, seed 0 | **1.000** | **1.000** | **1.000** | 1.000/1.000/1.000 |
+| rate, seed 1 | **1.000** | **1.000** | **1.000** | 1.000/1.000/1.000 |
+| spike + memory + copy aux only | 0.308 | 0.340 | 0.348 | 0.172/0.152/0.592 |
+| rate + memory + copy aux only | 0.696 | 0.670 | 0.612 | 0.656/0.536/0.882 |
+| plain 256 spike | 0.572 | - | - | 0.478/0.377/0.846 |
+| plain 256 rate | 0.756 | - | - | 0.983/0.483/0.757 |
+
+The model is permutation-invariant on both seeds: reversing the statement
+order leaves the answer unchanged in 99.6-100% of cases, and the permuted
+accuracy is still 1.000. Because the test triples are held out, this is content
+binding, not memorization or a position shortcut.
+
+**Caveat:** the attention loss uses the correct statement location. This is
+process supervision, not unsupervised discovery. Without it, the same memory
+(copy aux only) reaches 0.308/0.696 and is not permutation-invariant. The result
+shows the spiking architecture *can* bind when the memory read is supervised;
+the open problem is learning the read without the location labels.
+
 ## What it shows
 
 1. **The task is learnable.** A small transformer solves it on held-out triples,
@@ -140,7 +178,12 @@ also hurts both arms, unlike the transformer where dropout was essential.
    spiking model with embedding/readout dropout.
 7. **The transformer is still the upper bound.** The 4-layer transformer is
    balanced at 1.000 across all three answer positions; the 2-layer transformer
-   is 0.778/0.934/0.959. No spiking arm is balanced yet.
+   is 0.778/0.934/0.959. No plain spiking arm is balanced yet.
+8. **A statement memory with supervised attention solves the toy task.** The
+   256-wide spiking model reaches 0.996/1.000 across two seeds, is
+   permutation-invariant (0.996/1.000 consistency), and is balanced across
+   positions. The remaining gap is unsupervised credit assignment: the same
+   memory without the attention loss reaches only 0.308/0.696.
 
 ## Interrupted run
 
@@ -183,12 +226,10 @@ statement-level memory is still untested.
 
 ## Next
 
-- Tune the 512-wide arm (LR and 10k+ steps) before treating 0.446/0.406 as a
-  capacity ceiling.
-- Add an explicit statement-level content memory (write name/color/object at the
-  period, read with the query) or an auxiliary binding/copy loss. Generic
-  attention, a fixed pointer, and embedding/readout dropout all failed.
-- Add a statement-order permutation test: a true binder must answer the same
-  query after shuffling the statements; a position-biased model will fail.
-- Compare against the transformer 0.886/1.0 upper bounds before returning to
-  TinyStories quality work.
+- Repeat the memory + supervised-attention result on a second seed (done:
+  spike 0.996/1.000, rate 1.000/1.000).
+- Remove the attention supervision: learn the memory read from the copy loss
+  alone, with a curriculum (fewer statements first), or with self-supervised
+  statement boundaries. This is the main open problem.
+- Extend the memory task beyond three statements and single-token answers.
+- Only after that return to TinyStories quality work and deployment.

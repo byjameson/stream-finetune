@@ -123,6 +123,23 @@ def test_dropout_is_deterministic_in_eval():
     assert torch.allclose(a, b)
 
 
+def test_statement_memory_matches_incremental_steps():
+    torch.manual_seed(0)
+    model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1, memory=True))
+    x = torch.randint(0, 32, (2, 8))
+    with torch.no_grad():
+        full = model(x)
+        state = model.init_state(2, x.device)
+        parts = []
+        for t in range(x.shape[1]):
+            out, state = model.step(x[:, t], state)
+            parts.append(out)
+        inc = torch.stack(parts, dim=1)
+    assert torch.allclose(full, inc, atol=1e-6)
+    assert model.last_copy_logits.shape == (2, 8, 32)
+    assert len(state["mem_k"]) == x.shape[1]
+
+
 def test_checkpoint_writes_config_and_card(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None)

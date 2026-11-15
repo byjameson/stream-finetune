@@ -81,11 +81,13 @@ def evaluate(model, test, device, seq_len):
         pred_counts = pred.cpu().bincount(minlength=len(WORDS)).tolist()
     model.train()
     return {"accuracy": acc, "pos_baseline": pos_base, "by_answer_pos": by_pos,
-            "pred_counts": {WORDS[i]: c for i, c in enumerate(pred_counts) if c}}
+            "pred_counts": {WORDS[i]: c for i, c in enumerate(pred_counts) if c},
+            "pred": pred.cpu()}
 
 
 def train_lm(model, train, steps, batch, lr, device, amp, eval_every,
-             test=None, seq_len=None, tag=""):
+             test=None, seq_len=None, tag="", aux_weight=0.0, aux_pos=None,
+             aux_attn_weight=0.0):
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
     model.train()
     t0 = time.perf_counter()
@@ -98,6 +100,21 @@ def train_lm(model, train, steps, batch, lr, device, amp, eval_every,
             logits = model(x)
             loss = F.cross_entropy(logits[:, :-1].reshape(-1, len(WORDS)),
                                    x[:, 1:].reshape(-1))
+            if (aux_weight and aux_pos is not None
+                    and getattr(model, "last_copy_logits", None) is not None):
+                copy_logits = model.last_copy_logits
+                if copy_logits.dim() == 3:
+                    copy_logits = copy_logits[:, aux_pos]
+                aux = F.cross_entropy(copy_logits, x[:, aux_pos + 1])
+                loss = loss + aux_weight * aux
+            if (aux_attn_weight and aux_pos is not None
+                    and getattr(model, "last_mem_attn", None) is not None):
+                names = [x[:, 0], x[:, 5], x[:, 10]]
+                ans = x[:, aux_pos + 1]
+                target = torch.where(names[0] == ans, 4,
+                                     torch.where(names[1] == ans, 9, 14))
+                attn_loss = F.cross_entropy(model.last_mem_attn, target)
+                loss = loss + aux_attn_weight * attn_loss
         opt.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

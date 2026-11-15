@@ -610,8 +610,16 @@ on average over two seeds (seed range **0.466-0.572** / **0.502-0.756**) but are
 and weak on the second (0.377/0.182). A 512-wide run is worse (**0.446/0.406**),
 so width alone does not close the gap. A simple attention readout hurts
 (**0.364/0.384**); a fixed pointer (**0.236/0.514**) and dropout
-(**0.308/0.460**) also fail. The task is learnable; the spiking model still lacks
-balanced content binding. [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+(**0.308/0.460**) also fail.
+
+**Statement memory (positive):** a 256-wide spiking model with a statement-level
+name/attribute memory plus a copy loss and an attention loss on the correct
+statement reaches **0.996/1.000** across two seeds on held-out conjunction
+binding, is balanced across all three positions, and is permutation-invariant
+(**0.996/1.000** consistency). Caveat: the attention loss supplies the correct
+statement location; without it, the same memory reaches only **0.308/0.696**.
+The architecture can bind; unsupervised credit assignment is still open.
+[`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 ## License
 
