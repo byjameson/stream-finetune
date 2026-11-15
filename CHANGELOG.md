@@ -93,7 +93,12 @@
   0.998/0.914 old, new 1.000, held 0.988/1.000, permutation 0.998/0.924;
   replay 1.000/1.000, held 1.000/0.998, permutation 1.000/1.000. Balanced
   positions, permutation invariance, and held composition pass on both seeds.
-- 122 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Seven-statement copy-only: seven names, seven attr-key slots, seq 42. Phase A
+  old 1.000/0.998, all positions and permutation 1.000. Copy-only phase B naive
+  old 1.000/0.986, new 1.000, held 0.998/0.966, permutation 1.000/0.986;
+  replay 1.000/1.000, held 0.988/0.994, permutation 1.000/1.000. Gate passes
+  on both seeds at seven statements.
+- 123 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
