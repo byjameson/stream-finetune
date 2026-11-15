@@ -75,6 +75,23 @@ def test_feedback_starts_as_identity():
     assert fb.w_fb is not None
 
 
+def test_attention_readout_matches_incremental_steps():
+    torch.manual_seed(0)
+    model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=2, attention=True))
+    x = torch.randint(0, 32, (2, 8))
+    with torch.no_grad():
+        full = model(x)
+        state = model.init_state(2, x.device)
+        parts = []
+        for t in range(x.shape[1]):
+            out, state = model.step(x[:, t], state)
+            parts.append(out)
+        inc = torch.stack(parts, dim=1)
+    assert torch.allclose(full, inc, atol=1e-6)
+    assert model.attn_q is not None
+    assert len(state["hist_k"]) == x.shape[1]
+
+
 def test_checkpoint_writes_config_and_card(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None)

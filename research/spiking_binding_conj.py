@@ -96,7 +96,8 @@ def run_arm(name, args, train, test, device):
     else:
         model = SpikingLM(SpikingConfig(vocab=len(WORDS), dim=args.dim,
                                         layers=args.layers, mode=name,
-                                        adapt=args.adapt)).to(device)
+                                        adapt=args.adapt,
+                                        attention=args.attention)).to(device)
     loss, sec = train_lm(model, train, args.steps, args.batch, args.lr,
                          device, args.amp, args.eval_every, test, LEN,
                          tag=name)
@@ -117,6 +118,8 @@ def main():
     ap.add_argument("--dropout", type=float, default=0.0)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--adapt", type=float, default=0.1)
+    ap.add_argument("--attention", action="store_true",
+                    help="add causal attention over the spiking history")
     ap.add_argument("--eval-every", type=int, default=500)
     ap.add_argument("--n-train", type=int, default=4000)
     ap.add_argument("--n-test", type=int, default=500)

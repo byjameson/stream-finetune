@@ -49,6 +49,9 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_conj.json` | `research/spiking_binding_conj.py` | conjunction split: spike 0.220, rate 0.326, transformer 0.260 |
 | `binding_transformer_mid.json` | `research/spiking_binding_conj.py` (2L/128, dropout 0.1) | transformer 0.886 at 6k steps |
 | `binding_transformer_big.json` | `research/spiking_binding_conj.py` (4L/256, dropout 0.1) | transformer 1.000; task is learnable |
+| `binding_spiking_256.json` | `research/spiking_binding_conj.py` (2L/256, seed 0) | spike 0.572, rate 0.756; both position-biased |
+| `binding_spiking_256_seed1.json` | `research/spiking_binding_conj.py` (`--seed 1`) | seed 1: spike 0.466, rate 0.502; same position bias |
+| `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant
 
