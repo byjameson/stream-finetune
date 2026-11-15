@@ -4,7 +4,11 @@ from pathlib import Path
 import torch
 
 from research.spiking_binding import make_data, make_split
-from research.spiking_binding_conj import heuristic_baselines, make_data as make_conj
+from research.spiking_binding_conj import (
+    heuristic_baselines,
+    make_data as make_conj,
+    permute_test,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -51,6 +55,16 @@ def test_conjunction_benchmark_removes_single_attribute_shortcuts():
     assert h["color_only"] < 0.6
     assert h["object_only"] < 0.6
     assert abs(h["pair_match"] - 1.0) < 1e-6
+
+
+def test_permute_test_keeps_query_and_answer():
+    _, test_triples = make_split(0)
+    test = make_conj(10, test_triples, 2)
+    perm = permute_test(test)
+    assert torch.equal(perm[:, 15:22], test[:, 15:22])
+    assert torch.equal(perm[:, 0:5], test[:, 10:15])
+    assert torch.equal(perm[:, 5:10], test[:, 5:10])
+    assert torch.equal(perm[:, 10:15], test[:, 0:5])
 
 
 def test_transformer_solves_conjunction_but_spiking_does_not():
@@ -115,6 +129,29 @@ def test_pointer_and_dropout_do_not_beat_plain_256():
     d = {r["arm"]: r["test_acc"] for r in drop["results"]}
     assert p["spike"] < b["spike"] and p["rate"] < b["rate"]
     assert d["spike"] < b["spike"] and d["rate"] < b["rate"]
+
+
+def test_memory_without_attention_supervision_does_not_solve():
+    payload = json.loads((ROOT / "research/results/binding_memory_256.json")
+                         .read_text(encoding="utf-8"))
+    arms = {r["arm"]: r for r in payload["results"]}
+    assert arms["spike"]["test_acc"] < 0.4
+    assert arms["rate"]["test_acc"] < 0.75
+    assert arms["spike"]["consistency"] < 0.5
+    assert arms["rate"]["consistency"] < 0.7
+
+
+def test_memory_with_supervised_attention_solves_binding():
+    for name in ("binding_memory_attn_256.json",
+                 "binding_memory_attn_256_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        for arm in payload["results"]:
+            assert arm["test_acc"] > 0.95
+            assert arm["permuted_acc"] > 0.95
+            assert arm["consistency"] > 0.95
+            accs = [x["acc"] for x in arm["eval"]["by_answer_pos"].values()]
+            assert min(accs) > 0.95
 
 
 def test_simple_attention_readout_hurts():

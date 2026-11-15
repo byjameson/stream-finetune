@@ -35,6 +35,9 @@ class SpikingConfig:
     feedback: bool = False
     attention: bool = False
     pointer_offset: int = 0
+    memory: bool = False
+    mem_decay: float = 0.5
+    mem_read_pos: int = -1
     dropout: float = 0.0
     decay_syn: float = 0.90
     decay_mem: float = 0.90
@@ -123,6 +126,21 @@ class SpikingLM(nn.Module):
         self.copy_scale = None
         if config.pointer_offset > 0:
             self.copy_scale = nn.Parameter(torch.ones(1))
+        self.mem_name = None
+        if config.memory:
+            self.mem_name = nn.Linear(config.dim, 1)
+            self.mem_write = nn.Linear(config.dim, 1)
+            self.mem_key = nn.Linear(config.dim, config.dim, bias=False)
+            self.mem_val = nn.Linear(config.dim, config.dim, bias=False)
+            self.mem_query = nn.Linear(config.dim, config.dim, bias=False)
+            self.mem_scale = nn.Parameter(torch.ones(1))
+            for layer in (self.mem_key, self.mem_val, self.mem_query):
+                nn.init.normal_(layer.weight, mean=0.0, std=0.02)
+            nn.init.constant_(self.mem_write.bias, -2.0)
+        self._mem_copy = None
+        self._mem_attn = None
+        self.last_copy_logits = None
+        self.last_mem_attn = None
         self.drop = nn.Dropout(config.dropout) if config.dropout > 0 else None
         self.last_activity = 0.0
 
@@ -135,12 +153,18 @@ class SpikingLM(nn.Module):
             "hist_k": [],
             "hist_v": [],
             "emb_hist": [],
+            "stmt": z.clone(),
+            "name": z.clone(),
+            "mem_k": [],
+            "mem_v": [],
+            "t": 0,
         }
 
     def step(self, tokens: torch.Tensor, state: dict):
-        emb = self.emb(tokens)
-        if self.drop is not None:
-            emb = self.drop(emb)
+        t = state["t"]
+        state["t"] = t + 1
+        emb_raw = self.emb(tokens)
+        emb = self.drop(emb_raw) if self.drop is not None else emb_raw
         cur = emb
         if self.w_fb is not None:
             cur = cur + self.w_fb(state["top"])
@@ -172,21 +196,53 @@ class SpikingLM(nn.Module):
             readout = readout + ctx
             if self.copy_scale is not None:
                 copy_logits = (ctx @ self.emb.weight.T) / math.sqrt(self.dim)
+        mem_copy = None
+        self._mem_copy = None
+        if self.mem_name is not None:
+            state["stmt"] = self.config.mem_decay * state["stmt"] + emb_raw
+            g_name = torch.sigmoid(self.mem_name(emb_raw))
+            state["name"] = (1.0 - g_name) * state["name"] + g_name * emb_raw
+            g_write = torch.sigmoid(self.mem_write(emb_raw))
+            state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
+            state["mem_v"].append(g_write * self.mem_val(state["name"]))
+            read_pos = self.config.mem_read_pos
+            if read_pos < 0 or t == read_pos:
+                mk = torch.stack(state["mem_k"], dim=1)
+                mv = torch.stack(state["mem_v"], dim=1)
+                mq = self.mem_query(readout).unsqueeze(1)
+                mscores = mq @ mk.transpose(-1, -2) / math.sqrt(self.dim)
+                mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
+                mctx = (mattn @ mv).squeeze(1)
+                readout = readout + mctx
+                mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
+                self._mem_attn = mattn.squeeze(1)
         logits = self.head(self.drop(readout) if self.drop is not None else readout)
         if copy_logits is not None:
             logits = logits + self.copy_scale * copy_logits
+        if mem_copy is not None:
+            logits = logits + self.mem_scale * mem_copy
+        self._mem_copy = mem_copy
         return logits, state
 
     def forward(self, tokens: torch.Tensor) -> torch.Tensor:
         batch, seq = tokens.shape
         state = self.init_state(batch, tokens.device)
         logits = []
+        mem_copies = []
         activity = 0.0
         for t in range(seq):
             out, state = self.step(tokens[:, t], state)
             logits.append(out)
+            if self.mem_name is not None and self._mem_copy is not None:
+                mem_copies.append(self._mem_copy)
             activity += float(state["layers"][-1][2].detach().abs().mean())
         self.last_activity = activity / max(seq, 1)
+        if len(mem_copies) == 1:
+            self.last_copy_logits = mem_copies[0]
+        else:
+            self.last_copy_logits = (torch.stack(mem_copies, dim=1)
+                                     if mem_copies else None)
+        self.last_mem_attn = self._mem_attn
         return torch.stack(logits, dim=1)
 
 

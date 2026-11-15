@@ -24,7 +24,12 @@ from pathlib import Path
 
 import torch
 
-from research.binding_baselines import TinyTransformer, evaluate, train_lm
+from research.binding_baselines import (
+    TinyTransformer,
+    answer_position,
+    evaluate,
+    train_lm,
+)
 from research.spiking_binding import LEN, NAMES, W2I, WORDS, make_split
 from streamft.spiking import SpikingConfig, SpikingLM
 
@@ -88,23 +93,49 @@ def heuristic_baselines(test):
     }
 
 
+def permute_test(test, order=(2, 1, 0)):
+    """Reorder each story's statements while keeping the query and answer."""
+    out = test.clone()
+    for i in range(len(test)):
+        row = test[i]
+        stmts = [row[5 * j:5 * j + 5] for j in range(3)]
+        query = row[15:20]
+        ans = row[20:22]
+        out[i] = torch.cat([stmts[j] for j in order] + [query, ans])
+    return out
+
+
 def run_arm(name, args, train, test, device):
     torch.manual_seed(args.seed)
     if name == "transformer":
         model = TinyTransformer(len(WORDS), args.dim, args.layers,
                                 args.heads, dropout=args.dropout).to(device)
     else:
+        mem_read = args.mem_read_pos
+        if args.memory and mem_read < 0:
+            mem_read = answer_position(LEN)
         model = SpikingLM(SpikingConfig(vocab=len(WORDS), dim=args.dim,
                                         layers=args.layers, mode=name,
                                         adapt=args.adapt,
                                         attention=args.attention,
                                         pointer_offset=args.pointer_offset,
+                                        memory=args.memory,
+                                        mem_read_pos=mem_read,
                                         dropout=args.dropout)).to(device)
     loss, sec = train_lm(model, train, args.steps, args.batch, args.lr,
                          device, args.amp, args.eval_every, test, LEN,
-                         tag=name)
+                         tag=name, aux_weight=args.aux_weight,
+                         aux_pos=answer_position(LEN),
+                         aux_attn_weight=args.aux_attn_weight)
     ev = evaluate(model, test, device, LEN)
-    return {"arm": name, "test_acc": ev["accuracy"], "eval": ev,
+    perm = permute_test(test)
+    ev_perm = evaluate(model, perm, device, LEN)
+    pred = ev.pop("pred")
+    pred_perm = ev_perm.pop("pred")
+    consistency = float((pred == pred_perm).float().mean().item())
+    return {"arm": name, "test_acc": ev["accuracy"],
+            "permuted_acc": ev_perm["accuracy"], "consistency": consistency,
+            "eval": ev, "permuted_eval": ev_perm,
             "train_loss": loss, "sec": round(sec, 1),
             "params": sum(p.numel() for p in model.parameters())}
 
@@ -124,6 +155,14 @@ def main():
                     help="add causal attention over the spiking history")
     ap.add_argument("--pointer-offset", type=int, default=0,
                     help="copy the token this many positions before the key")
+    ap.add_argument("--memory", action="store_true",
+                    help="statement-level name/attribute memory")
+    ap.add_argument("--mem-read-pos", type=int, default=-1,
+                    help="only read memory at this timestep (-1 = every step)")
+    ap.add_argument("--aux-weight", type=float, default=0.0,
+                    help="auxiliary copy loss weight on the memory readout")
+    ap.add_argument("--aux-attn-weight", type=float, default=0.0,
+                    help="auxiliary attention loss on the correct statement")
     ap.add_argument("--eval-every", type=int, default=500)
     ap.add_argument("--n-train", type=int, default=4000)
     ap.add_argument("--n-test", type=int, default=500)
