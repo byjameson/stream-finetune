@@ -69,6 +69,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_long4_slots_phase_a.json` | same, `--slots 4` | 4-statement phase A, slots: old 0.222; stmt3 1.000 |
 | `spiking_binding_long4_slots_reset_phase_a.json` | same, `--slots 4` (reset) | slots + reset: old 0.236; stmt3 0.685 |
 | `spiking_binding_long4_slots_name_phase_a.json` | same, `--slots 4` (hard name) | slots + reset + hard name: old 0.228; stmt3 0.703 |
+| `spiking_binding_long4_mhattn_phase_a.json` | same, `--slots 4 --slot-heads 4` | multi-head summary-key slots: old 0.250, per-position 0.212/0.221/0.223/0.360; balanced but at chance |
 | `spiking_binding_long4_attr_phase_a.json` | same, `--slots 4 --slot-heads 4 --slot-attr-keys` | attribute-key multi-head slots: old 1.000, all positions 1.000, permutation 1.000 |
 | `spiking_binding_long4_continual_seed0.json` | same, matching-attention phase B | 4-statement continual: naive old 0.220; replay old 1.000/new 0.324 |
 | `spiking_binding_long4_continual_seed1.json` | same, `--seed 1` | seed 1: naive old 0.444; replay old/new 1.000/held 0.596 |
