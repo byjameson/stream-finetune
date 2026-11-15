@@ -70,6 +70,10 @@
 - Padded 1 -> 2 -> 3 statement curriculum with the copy loss only (no matching
   attention) gives spike 0.412 (permuted 0.392, last-position-biased) and rate
   0.212. The curriculum does not replace the matching-attention loss.
+- Without the matching-attention loss on harder splits: copy-only color phase A
+  is 0.332/0.214 (seed 0/2, at or below chance); a no-overlap 2-name split
+  collapses (0.474/0.644 even with attention). The attention loss is a required
+  inductive bias; replay only helps after phase A is learnable.
 - 113 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,

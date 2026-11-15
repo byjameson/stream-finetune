@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import time
 from pathlib import Path
 
@@ -24,7 +25,7 @@ import torch
 import torch.nn.functional as F
 
 from research.binding_baselines import binding_aux_loss, evaluate
-from research.spiking_binding import COLORS, LEN, NAMES, OBJECTS, WORDS, make_split
+from research.spiking_binding import COLORS, LEN, NAMES, OBJECTS, W2I, WORDS, make_split
 from research.spiking_binding_conj import make_data
 from research.spiking_shift import clone_state, load_state
 from streamft.spiking import (
@@ -35,6 +36,31 @@ from streamft.spiking import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def sample_story_names(allowed, rng):
+    """Three statements from a small name pool; names may repeat."""
+    by_name = {n: [t for t in allowed if t[0] == n] for n in NAMES}
+    avail = [n for n in NAMES if by_name[n]]
+    for _ in range(1000):
+        names = [rng.choice(avail) for _ in range(3)]
+        stmts = [rng.choice(by_name[n]) for n in names]
+        pairs = [(c, o) for _, c, o in stmts]
+        if len(set(pairs)) != 3:
+            continue
+        q = rng.choice(stmts)
+        toks = []
+        for n, c, o in stmts:
+            toks += [n, "has", c, o, "."]
+        toks += ["who", "has", q[1], q[2], "?", q[0], "<eos>"]
+        return [W2I[t] for t in toks]
+    raise RuntimeError("could not build a name-split story")
+
+
+def make_name_data(n, allowed, seed):
+    rng = random.Random(seed)
+    return torch.tensor([sample_story_names(allowed, rng) for _ in range(n)],
+                        dtype=torch.long)
 
 
 def train_phase(model, new_data, old_data, steps, batch, lr, device, amp,
@@ -84,6 +110,12 @@ def eval_sets(model, sets, device):
     return out
 
 
+def majority_baseline(data):
+    ans = data[:, LEN - 2]
+    counts = torch.bincount(ans, minlength=len(WORDS))
+    return float(counts.max()) / max(len(ans), 1)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--steps-a", type=int, default=3000)
@@ -104,8 +136,9 @@ def main():
     ap.add_argument("--n-train", type=int, default=4000)
     ap.add_argument("--n-test", type=int, default=500)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--hard-split", choices=["none", "colors"], default="none",
-                    help="none = disjoint triples; colors = old colors -> new color")
+    ap.add_argument("--hard-split", choices=["none", "colors", "names"],
+                    default="none",
+                    help="none = disjoint triples; colors = old colors -> new; names = old names -> new")
     ap.add_argument("--amp", action="store_true")
     ap.add_argument("--out",
                     default=str(ROOT / "research/results/spiking_binding_continual.json"))
@@ -120,17 +153,35 @@ def main():
                        for o in OBJECTS[:2]]
         held_triples = [(n, c, o) for n in NAMES for c in COLORS[2:]
                         for o in OBJECTS[2:]]
+    elif args.hard_split == "names":
+        old_names = NAMES[:2]
+        new_names = NAMES[2:]
+        old_triples = [(n, c, o) for n in old_names for c in COLORS
+                       for o in OBJECTS]
+        new_triples = [(n, c, o) for n in new_names for c in COLORS
+                       for o in OBJECTS[:2]]
+        held_triples = [(n, c, o) for n in new_names for c in COLORS
+                        for o in OBJECTS[2:]]
     else:
         train_triples, held_triples = make_split(args.seed)
         old_triples = train_triples[:32]
         new_triples = train_triples[32:]
-    old_train = make_data(args.n_train, old_triples, args.seed + 11)
-    new_train = make_data(args.n_train, new_triples, args.seed + 12)
-    sets = {
-        "old": make_data(args.n_test, old_triples, args.seed + 13),
-        "new": make_data(args.n_test, new_triples, args.seed + 14),
-        "held": make_data(args.n_test, held_triples, args.seed + 15),
-    }
+    if args.hard_split == "names":
+        old_train = make_name_data(args.n_train, old_triples, args.seed + 11)
+        new_train = make_name_data(args.n_train, new_triples, args.seed + 12)
+        sets = {
+            "old": make_name_data(args.n_test, old_triples, args.seed + 13),
+            "new": make_name_data(args.n_test, new_triples, args.seed + 14),
+            "held": make_name_data(args.n_test, held_triples, args.seed + 15),
+        }
+    else:
+        old_train = make_data(args.n_train, old_triples, args.seed + 11)
+        new_train = make_data(args.n_train, new_triples, args.seed + 12)
+        sets = {
+            "old": make_data(args.n_test, old_triples, args.seed + 13),
+            "new": make_data(args.n_test, new_triples, args.seed + 14),
+            "held": make_data(args.n_test, held_triples, args.seed + 15),
+        }
     print(json.dumps({"hard_split": args.hard_split,
                       "old_triples": len(old_triples),
                       "new_triples": len(new_triples),
@@ -198,6 +249,7 @@ def main():
                   "new_triples": len(new_triples),
                   "held_triples": len(held_triples)},
         "before": before,
+        "majority_baseline": {k: majority_baseline(v) for k, v in sets.items()},
         "arms": rows,
     }
     out = Path(args.out)

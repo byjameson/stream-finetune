@@ -635,6 +635,13 @@ seed 2); replay+rollback and replay+EWC are close but not consistently better.
 Replay is the most reliable arm.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Without the matching-attention loss on harder splits (negative):** copy-only
+color phase A is **0.332/0.214** (seed 0/2, at or below chance), and a no-overlap
+2-name split collapses (**0.474/0.644**, even with the attention control). The
+attention loss remains a required inductive bias at this budget; replay only
+helps once phase A is learnable.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace
