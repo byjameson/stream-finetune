@@ -176,6 +176,28 @@ label. It is not answer leakage, but it is also not pure next-token discovery.
 The copy-loss-only result shows the spiking model needs this inductive bias at
 the current budget.
 
+## Curriculum control (negative)
+
+A 1 -> 2 -> 3 statement curriculum was tested as a replacement for the
+matching-attention loss. Missing statements are replaced by a pad token between
+the statements and the query, so the query/answer positions stay fixed. The
+model is trained with the copy loss only (no attention auxiliary loss):
+
+- 2,000 steps with 1 statement
+- 2,000 steps with 2 statements
+- 6,000 steps with the full 3-statement task
+
+| arm | test | permuted | stmt 0/1/2 |
+|---|---:|---:|---:|
+| spike | 0.412 | 0.392 | 0.288/0.117/**0.879** |
+| rate | 0.212 | 0.214 | 0.282/0.133/0.229 |
+
+The curriculum **does not replace** the matching-attention loss. The spike model
+is still last-position-biased (0.879 on statement 2, 0.117 on statement 1), and
+the rate control is worse than direct copy-only training (0.212 vs 0.874 at
+12k). Padding the missing statements appears to hurt the memory read rather
+than teach it.
+
 ## What it shows
 
 1. **The task is learnable.** A small transformer solves it on held-out triples,
@@ -210,6 +232,10 @@ the current budget.
    positions. The remaining gap is unsupervised credit assignment: without the
    attention loss, 6k steps give 0.308/0.696; at 12k the rate control reaches
    0.874 but the spike model is 0.47 and strongly position-biased.
+9. **A padded 1->2->3 curriculum is not a substitute.** Copy-loss-only
+   curriculum training gives spike 0.412 (permuted 0.392, last-position-biased)
+   and rate 0.212. The matching-attention loss remains necessary at this
+   budget.
 
 ## Interrupted run
 
