@@ -56,15 +56,15 @@
   matching-attention loss derived from the query/statement attributes reaches
   0.996/1.000 (two seeds) on held-out conjunction binding, is balanced across
   positions, and is permutation-invariant (0.996/1.000 consistency). Without the
-  attention loss the same memory reaches only 0.308/0.696; learning the binding
-  objective from the LM loss alone is open.
+  attention loss the same memory reaches 0.308/0.696 at 6k; at 12k the rate
+  control reaches 0.874 but the spike model stays at 0.470 and position-biased.
 - Continual binding (replay-first transfers, two seeds + hard split): naive
   phase B on 16 new triples drops old 0.974/1.000 -> 0.322/0.544 and held
   0.730/0.926 -> 0.240/0.280; 20% replay keeps old 0.992-0.996, new 1.000,
   held 0.788-0.866. On old colors -> new colors, naive old 0.930 -> 0.700 and
   held 0.336 -> 0.478; replay reaches 1.000/1.000/0.974. Rollback 10% alone is
   weak; replay+rollback and replay+EWC are close but not consistently better.
-- 111 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 112 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

@@ -151,13 +151,30 @@ attributes. It selects the same statement as the answer name would, so the
 result matches an earlier answer-derived-location run exactly; the difference is
 that no answer information enters the attention loss.
 
+## Copy-loss-only control at 12k steps
+
+The matching-attention loss is self-supervised but task-specific. To test whether
+the memory read can be learned from the copy loss alone, the same 256-wide model
+was trained for 12,000 steps with `--aux-attn-weight 0`.
+
+| arm | test | permuted | consistency | stmt 0/1/2 |
+|---|---:|---:|---:|---:|
+| spike, copy only, 12k | 0.470 | 0.470 | 0.268 | 0.344/0.159/**0.882** |
+| rate, copy only, 12k | 0.874 | 0.858 | 0.790 | 0.939/0.715/0.947 |
+| spike, attention aux, 6k | **0.996** | **1.000** | **0.996** | 1.000/0.987/1.000 |
+| rate, attention aux, 6k | **1.000** | **1.000** | **1.000** | 1.000/1.000/1.000 |
+
+The rate control can learn most of the memory read from the copy loss alone with
+twice the steps, but it is still less balanced (middle statement 0.715) and less
+permutation-invariant. The spike model cannot: it stays last-position-biased
+(0.882 on statement 2, 0.159 on statement 1). The attention loss is therefore a
+strong sample-efficiency and balance mechanism, not just a label shortcut.
+
 **Caveat:** the attention loss is an explicit self-supervised binding
 objective derived from the query/statement attributes, not from the answer
-label. It is not answer leakage, but it is also not pure next-token discovery:
-without the attention loss, the same memory (copy aux only) reaches 0.308/0.696
-and is not permutation-invariant. The result shows the spiking architecture
-*can* bind when the memory read is trained with a matching objective; learning
-that objective from the LM loss alone remains open.
+label. It is not answer leakage, but it is also not pure next-token discovery.
+The copy-loss-only result shows the spiking model needs this inductive bias at
+the current budget.
 
 ## What it shows
 
@@ -190,8 +207,9 @@ that objective from the LM loss alone remains open.
 8. **A statement memory with supervised attention solves the toy task.** The
    256-wide spiking model reaches 0.996/1.000 across two seeds, is
    permutation-invariant (0.996/1.000 consistency), and is balanced across
-   positions. The remaining gap is unsupervised credit assignment: the same
-   memory without the attention loss reaches only 0.308/0.696.
+   positions. The remaining gap is unsupervised credit assignment: without the
+   attention loss, 6k steps give 0.308/0.696; at 12k the rate control reaches
+   0.874 but the spike model is 0.47 and strongly position-biased.
 
 ## Interrupted run
 
@@ -238,6 +256,7 @@ statement-level memory is still untested.
   spike 0.996/1.000, rate 1.000/1.000).
 - Remove the attention supervision: learn the memory read from the copy loss
   alone, with a curriculum (fewer statements first), or with self-supervised
-  statement boundaries. This is the main open problem.
+  statement boundaries. The 12k copy-only control shows the rate control can
+  reach 0.874 but the spike model stays at 0.47 and position-biased.
 - Extend the memory task beyond three statements and single-token answers.
 - Only after that return to TinyStories quality work and deployment.

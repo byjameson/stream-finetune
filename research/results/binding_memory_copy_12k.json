@@ -1,0 +1,169 @@
+{
+  "task": "conjunction variable binding",
+  "config": {
+    "arms": "spike,rate",
+    "steps": 12000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "heads": 4,
+    "dropout": 0.0,
+    "lr": 0.001,
+    "adapt": 0.1,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": true,
+    "mem_read_pos": -1,
+    "aux_weight": 0.5,
+    "aux_attn_weight": 0.0,
+    "eval_every": 2000,
+    "n_train": 4000,
+    "n_test": 500,
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/binding_memory_copy_12k.json"
+  },
+  "heuristics": {
+    "position": [
+      0.36,
+      0.302,
+      0.338
+    ],
+    "color_only": 0.516,
+    "object_only": 0.506,
+    "pair_match": 1.0
+  },
+  "chance": 0.25,
+  "results": [
+    {
+      "arm": "spike",
+      "test_acc": 0.4700000286102295,
+      "permuted_acc": 0.4700000286102295,
+      "consistency": 0.2680000066757202,
+      "eval": {
+        "accuracy": 0.4700000286102295,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 0.3444444537162781
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.1589404046535492
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 0.88165682554245
+          }
+        },
+        "pred_counts": {
+          "tom": 158,
+          "mia": 66,
+          "sam": 108,
+          "lily": 168
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 0.4700000286102295,
+        "pos_baseline": {
+          "stmt0": 0.33800002932548523,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.36000001430511475
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 169,
+            "acc": 0.2840236723423004
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.18543046712875366
+          },
+          "answer_at_stmt2": {
+            "n": 180,
+            "acc": 0.8833333253860474
+          }
+        },
+        "pred_counts": {
+          "tom": 145,
+          "mia": 76,
+          "sam": 114,
+          "lily": 165
+        }
+      },
+      "train_loss": 1.0135058164596558,
+      "sec": 1460.8,
+      "params": 468485
+    },
+    {
+      "arm": "rate",
+      "test_acc": 0.8740000128746033,
+      "permuted_acc": 0.8580000400543213,
+      "consistency": 0.7900000214576721,
+      "eval": {
+        "accuracy": 0.8740000128746033,
+        "pos_baseline": {
+          "stmt0": 0.36000001430511475,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.33800002932548523
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 180,
+            "acc": 0.9388889074325562
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.7152317762374878
+          },
+          "answer_at_stmt2": {
+            "n": 169,
+            "acc": 0.9467455744743347
+          }
+        },
+        "pred_counts": {
+          "tom": 107,
+          "mia": 138,
+          "sam": 82,
+          "lily": 173
+        }
+      },
+      "permuted_eval": {
+        "accuracy": 0.8580000400543213,
+        "pos_baseline": {
+          "stmt0": 0.33800002932548523,
+          "stmt1": 0.3020000159740448,
+          "stmt2": 0.36000001430511475
+        },
+        "by_answer_pos": {
+          "answer_at_stmt0": {
+            "n": 169,
+            "acc": 0.9585798978805542
+          },
+          "answer_at_stmt1": {
+            "n": 151,
+            "acc": 0.6821191906929016
+          },
+          "answer_at_stmt2": {
+            "n": 180,
+            "acc": 0.9111111164093018
+          }
+        },
+        "pred_counts": {
+          "tom": 105,
+          "mia": 129,
+          "sam": 87,
+          "lily": 179
+        }
+      },
+      "train_loss": 1.0307883024215698,
+      "sec": 1348.3,
+      "params": 468485
+    }
+  ]
+}

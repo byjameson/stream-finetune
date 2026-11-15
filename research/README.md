@@ -79,9 +79,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   matching-attention** auxiliary losses reaches 0.996/1.000 across two seeds on
   held-out conjunction binding and is permutation-invariant (0.996/1.000
   consistency). The attention target comes from the query/statement attributes,
-  not the answer. Without it the same memory reaches only 0.308/0.696; learning
-  the binding objective from the LM loss alone remains open.
-  [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
+  not the answer. Without it the same memory reaches 0.308/0.696 at 6k; at 12k
+  the rate control reaches 0.874 but the spike model stays at 0.470 and is
+  position-biased. Learning the binding objective from the LM loss alone remains
+  open. [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
 - **Continual binding (replay-first transfers, two seeds + hard split):** phase A
   on 32 triples, phase B on 16 new triples. Naive phase B drops old accuracy
   0.974/1.000 -> 0.322/0.544 and held 0.730/0.926 -> 0.240/0.280; 20% replay
