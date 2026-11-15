@@ -154,6 +154,16 @@ def test_memory_with_supervised_attention_solves_binding():
             assert min(accs) > 0.95
 
 
+def test_copy_only_12k_does_not_solve_the_spike_model():
+    payload = json.loads((ROOT / "research/results/binding_memory_copy_12k.json")
+                         .read_text(encoding="utf-8"))
+    arms = {a["arm"]: a for a in payload["results"]}
+    assert arms["spike"]["test_acc"] < 0.5
+    assert arms["spike"]["consistency"] < 0.4
+    assert arms["rate"]["test_acc"] > 0.8
+    assert arms["rate"]["test_acc"] < 0.95
+
+
 def test_simple_attention_readout_hurts():
     base = json.loads((ROOT / "research/results/binding_spiking_256.json")
                       .read_text(encoding="utf-8"))

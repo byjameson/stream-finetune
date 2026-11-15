@@ -617,9 +617,10 @@ name/attribute memory plus a copy loss and a **self-supervised matching
 attention** loss reaches **0.996/1.000** across two seeds on held-out
 conjunction binding, is balanced across all three positions, and is
 permutation-invariant (**0.996/1.000** consistency). The attention target is
-derived from the query/statement attributes, not the answer. Without it, the
-same memory reaches only **0.308/0.696**; learning the binding objective from
-the LM loss alone is still open.
+derived from the query/statement attributes, not the answer. Without it, 6k
+steps give **0.308/0.696**; at 12k the rate control reaches **0.874** but the
+spike model is **0.470** and strongly position-biased (middle statement 0.159).
+The architecture can bind; unsupervised credit assignment is still open.
 [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
 **Continual binding (two seeds + hard split):** naive phase B on 16 new triples

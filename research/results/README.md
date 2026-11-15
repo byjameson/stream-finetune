@@ -59,6 +59,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `binding_memory_attn_256_seed1.json` | same, `--seed 1` | seed 1: spike 1.000, rate 1.000 |
 | `binding_memory_selfattn_256.json` | same, self-supervised attention target | spike 0.996, rate 1.000; permutation-invariant |
 | `binding_memory_selfattn_256_seed1.json` | same, `--seed 1` | seed 1: spike 1.000, rate 1.000 |
+| `binding_memory_copy_12k.json` | `research/spiking_binding_conj.py` (`--memory --aux-weight 0.5 --aux-attn-weight 0`) | copy-only 12k: spike 0.470, rate 0.874; spike position-biased |
 | `spiking_binding_continual.json` | `research/spiking_binding_continual.py` | old/new/held: naive 0.322/1.000/0.240; replay 0.996/1.000/0.788; rollback 0.392/0.768/0.196 |
 | `spiking_binding_continual_seed1.json` | same, `--seed 1` | seed 1: naive 0.544/0.992/0.280; replay 0.992/1.000/0.866 |
 | `spiking_binding_continual_colors.json` | same, `--hard-split colors` | old colors -> new colors: naive 0.700/1.000/0.478; replay 1.000/1.000/0.974 |
