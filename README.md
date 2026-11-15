@@ -670,6 +670,14 @@ and permutation **1.000**. Copy-only phase B: naive old **0.998/0.914**, new
 positions, permutation invariance, and held composition all pass on both seeds.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Seven-statement copy-only (positive, gate passed):** seven statements, seven
+names, sequence length 42. Phase A old **1.000/0.998**, all positions and
+permutation **1.000**. Copy-only phase B: naive old **1.000/0.986**, new
+**1.000**, held **0.998/0.966**, permutation **1.000/0.986**; replay
+**1.000/1.000**, held **0.988/0.994**, permutation **1.000/1.000**. The gate
+passes on both seeds at seven statements.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

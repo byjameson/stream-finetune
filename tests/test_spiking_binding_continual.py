@@ -160,6 +160,25 @@ def test_six_statement_copy_only_passes_gate():
         assert replay["old_permuted"]["accuracy"] > 0.95
 
 
+def test_seven_statement_copy_only_passes_gate():
+    for name in ("spiking_binding_long7_copy_seed0.json",
+                 "spiking_binding_long7_copy_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        before = payload["before"]["old"]
+        assert before["accuracy"] > 0.95
+        for row in before["by_answer_pos"].values():
+            assert row["acc"] > 0.95
+        arms = {a["arm"]: a for a in payload["arms"]}
+        for arm in ("naive", "replay_20"):
+            row = arms[arm]
+            assert row["after"]["old"]["accuracy"] > 0.95
+            assert row["after"]["new"]["accuracy"] > 0.95
+            assert row["after"]["held"]["accuracy"] > 0.95
+            assert row["old_permuted"]["accuracy"] > 0.95
+
+
+
 
 
 

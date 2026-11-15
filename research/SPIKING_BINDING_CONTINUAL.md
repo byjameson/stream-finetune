@@ -221,6 +221,23 @@ passes the gate on both seeds: balanced positions, permutation invariance, and
 held-out composition above 0.98. The architecture scales from three to six
 statements with copy-only training; replay is the best arm.
 
+### Seven-statement copy-only (positive, gate passed)
+
+Seven statements, seven names (adding `ben`), sequence length 42, seven attr-key
+slots, four heads, copy-only, 5,000 + 2,500 steps, seeds 0 and 1.
+
+Phase A: old **1.000/0.998**, all seven positions 0.985-1.000, permutation
+1.000. New/held unseen colors: seed 0 0.460/0.524, seed 1 0.258/0.324.
+
+| arm | seed 0 old/new/held | seed 1 old/new/held | old permutation |
+|---|---|---|---|
+| naive | 1.000/1.000/0.998 | 0.986/1.000/0.966 | 1.000/0.986 |
+| replay 20% | **1.000/1.000/0.988** | **1.000/1.000/0.994** | **1.000/1.000** |
+
+Old per-position accuracy is 0.971-1.000 for naive and 1.000 for replay. The
+seven-statement gate passes on both seeds: balanced positions, permutation
+invariance, held-out composition above 0.96, and new-color accuracy 1.000.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -291,7 +308,14 @@ statements with copy-only training; replay is the best arm.
     replay 1.000/1.000 old and new, held 1.000/0.998, permutation 1.000/1.000.
     The 5-statement held gap does not persist at six statements/seeds.
 
-12. **The practical rule transfers to the learnable setup:** store old stories
+12. **The seven-statement gate passes.** Seven statements/seven names, copy-only:
+    phase A old 1.000/0.998, all positions 0.985-1.000, permutation 1.000;
+    phase B naive old 1.000/0.986, new 1.000, held 0.998/0.966, permutation
+    1.000/0.986; replay 1.000/1.000 old and new, held 0.988/0.994, permutation
+    1.000/1.000. The architecture scales to seven statements with no loss of
+    balance or permutation invariance.
+
+13. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -307,7 +331,9 @@ statements with copy-only training; replay is the best arm.
   composition is seed-sensitive: seed 0 reaches 0.244/0.356, seed 1 0.982/0.980.
 - Six-statement runs add a sixth name (`max`) and use sequence length 37; held
   composition is 0.988/1.000 with naive and 1.000/0.998 with replay.
-- The 4/5/6-statement positive results use task-structured keys: name first,
+- Seven-statement runs add a seventh name (`ben`) and use sequence length 42;
+  held composition is 0.998/0.966 with naive and 0.988/0.994 with replay.
+- The 4/5/6/7-statement positive results use task-structured keys: name first,
   color/object at fixed offsets, period boundaries. They are not general
   language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -315,8 +341,8 @@ statements with copy-only training; replay is the best arm.
 
 ## Next
 
-- Move to 7+ statements or multi-token answers with the same attr-key multi-head
-  slots; the six-statement gate passes.
+- Move to 8+ statements or multi-token answers with the same attr-key multi-head
+  slots; the seven-statement gate passes.
 - Relax the structure: learned statement boundaries, no fixed name position, or
   keys from the recurrent state instead of raw token embeddings.
 - Run the copy-only + replay arm on more seeds and sweep the replay fraction.
