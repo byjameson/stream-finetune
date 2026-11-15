@@ -24,7 +24,7 @@ import torch
 import torch.nn.functional as F
 
 from research.binding_baselines import binding_aux_loss, evaluate
-from research.spiking_binding import LEN, WORDS, make_split
+from research.spiking_binding import COLORS, LEN, NAMES, OBJECTS, WORDS, make_split
 from research.spiking_binding_conj import make_data
 from research.spiking_shift import clone_state, load_state
 from streamft.spiking import (
@@ -104,6 +104,8 @@ def main():
     ap.add_argument("--n-train", type=int, default=4000)
     ap.add_argument("--n-test", type=int, default=500)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--hard-split", choices=["none", "colors"], default="none",
+                    help="none = disjoint triples; colors = old colors -> new color")
     ap.add_argument("--amp", action="store_true")
     ap.add_argument("--out",
                     default=str(ROOT / "research/results/spiking_binding_continual.json"))
@@ -111,9 +113,17 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(args.seed)
-    train_triples, held_triples = make_split(args.seed)
-    old_triples = train_triples[:32]
-    new_triples = train_triples[32:]
+    if args.hard_split == "colors":
+        old_triples = [(n, c, o) for n in NAMES for c in COLORS[:2]
+                       for o in OBJECTS]
+        new_triples = [(n, c, o) for n in NAMES for c in COLORS[2:]
+                       for o in OBJECTS[:2]]
+        held_triples = [(n, c, o) for n in NAMES for c in COLORS[2:]
+                        for o in OBJECTS[2:]]
+    else:
+        train_triples, held_triples = make_split(args.seed)
+        old_triples = train_triples[:32]
+        new_triples = train_triples[32:]
     old_train = make_data(args.n_train, old_triples, args.seed + 11)
     new_train = make_data(args.n_train, new_triples, args.seed + 12)
     sets = {
@@ -121,7 +131,8 @@ def main():
         "new": make_data(args.n_test, new_triples, args.seed + 14),
         "held": make_data(args.n_test, held_triples, args.seed + 15),
     }
-    print(json.dumps({"old_triples": len(old_triples),
+    print(json.dumps({"hard_split": args.hard_split,
+                      "old_triples": len(old_triples),
                       "new_triples": len(new_triples),
                       "held_triples": len(held_triples),
                       "train": [len(old_train), len(new_train)],
@@ -182,7 +193,8 @@ def main():
     payload = {
         "question": "Do replay/shadow rollback/EWC retain old binding after new triples?",
         "config": vars(args),
-        "split": {"old_triples": len(old_triples),
+        "split": {"hard_split": args.hard_split,
+                  "old_triples": len(old_triples),
                   "new_triples": len(new_triples),
                   "held_triples": len(held_triples)},
         "before": before,

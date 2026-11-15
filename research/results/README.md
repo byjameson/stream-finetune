@@ -60,6 +60,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `binding_memory_selfattn_256.json` | same, self-supervised attention target | spike 0.996, rate 1.000; permutation-invariant |
 | `binding_memory_selfattn_256_seed1.json` | same, `--seed 1` | seed 1: spike 1.000, rate 1.000 |
 | `spiking_binding_continual.json` | `research/spiking_binding_continual.py` | old/new/held: naive 0.322/1.000/0.240; replay 0.996/1.000/0.788; rollback 0.392/0.768/0.196 |
+| `spiking_binding_continual_seed1.json` | same, `--seed 1` | seed 1: naive 0.544/0.992/0.280; replay 0.992/1.000/0.866 |
+| `spiking_binding_continual_colors.json` | same, `--hard-split colors` | old colors -> new colors: naive 0.700/1.000/0.478; replay 1.000/1.000/0.974 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

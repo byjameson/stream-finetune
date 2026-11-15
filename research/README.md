@@ -82,11 +82,13 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   not the answer. Without it the same memory reaches only 0.308/0.696; learning
   the binding objective from the LM loss alone remains open.
   [`SPIKING_BINDING_CONJ.md`](SPIKING_BINDING_CONJ.md)
-- **Continual binding (replay-first transfers):** phase A on 32 triples, phase B
-  on 16 new triples. Naive phase B drops old accuracy 0.974 -> 0.322 and held
-  0.730 -> 0.240; 20% replay keeps old **0.996**, new **1.000**, held **0.788**.
-  Rollback 10% alone gives 0.392/0.768/0.196; replay+rollback 0.980/0.794/0.768;
-  replay+EWC 0.988/0.966/0.776. Replay is the best arm on every split.
+- **Continual binding (replay-first transfers, two seeds + hard split):** phase A
+  on 32 triples, phase B on 16 new triples. Naive phase B drops old accuracy
+  0.974/1.000 -> 0.322/0.544 and held 0.730/0.926 -> 0.240/0.280; 20% replay
+  keeps old 0.992-0.996, new 1.000, held 0.788-0.866. On a harder color split
+  (red/blue -> green/yellow), naive old 0.930 -> 0.700 and held 0.336 -> 0.478;
+  replay reaches 1.000/1.000/0.974. Rollback 10% alone is weak;
+  replay+rollback and replay+EWC are close but not consistently better.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 
 ## What each script does
