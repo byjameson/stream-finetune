@@ -65,7 +65,10 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_continual_colors.json` | same, `--hard-split colors` | old colors -> new colors: naive 0.700/1.000/0.478; replay 1.000/1.000/0.974 |
 | `spiking_binding_continual_colors_seed2.json` | same, `--hard-split colors --seed 2` | seed 2: naive 0.702/1.000/0.662; replay 1.000/1.000/0.998; EWC 1.000/1.000/0.994 |
 | `spiking_binding_curriculum.json` | `research/spiking_binding_curriculum.py` | padded 1->2->3, copy loss only: spike 0.412, rate 0.212; not a replacement for attention |
-| `spiking_binding_long4_phase_a.json` | `research/spiking_binding_long.py` | 4-statement phase A, 5k steps: old 0.214; stmt3 0.667, stmt0/1/2 <=0.12; not learnable |
+| `spiking_binding_long4_phase_a.json` | `research/spiking_binding_long.py` | 4-statement phase A, dynamic memory, 5k: old 0.214; stmt3 0.667 |
+| `spiking_binding_long4_slots_phase_a.json` | same, `--slots 4` | 4-statement phase A, slots: old 0.222; stmt3 1.000 |
+| `spiking_binding_long4_slots_reset_phase_a.json` | same, `--slots 4` (reset) | slots + reset: old 0.236; stmt3 0.685 |
+| `spiking_binding_long4_slots_name_phase_a.json` | same, `--slots 4` (hard name) | slots + reset + hard name: old 0.228; stmt3 0.703 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

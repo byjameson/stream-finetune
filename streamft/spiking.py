@@ -36,6 +36,7 @@ class SpikingConfig:
     attention: bool = False
     pointer_offset: int = 0
     memory: bool = False
+    slots: int = 0
     mem_decay: float = 0.5
     mem_read_pos: int = -1
     dropout: float = 0.0
@@ -127,7 +128,7 @@ class SpikingLM(nn.Module):
         if config.pointer_offset > 0:
             self.copy_scale = nn.Parameter(torch.ones(1))
         self.mem_name = None
-        if config.memory:
+        if config.memory or config.slots > 0:
             self.mem_name = nn.Linear(config.dim, 1)
             self.mem_write = nn.Linear(config.dim, 1)
             self.mem_key = nn.Linear(config.dim, config.dim, bias=False)
@@ -137,6 +138,13 @@ class SpikingLM(nn.Module):
             for layer in (self.mem_key, self.mem_val, self.mem_query):
                 nn.init.normal_(layer.weight, mean=0.0, std=0.02)
             nn.init.constant_(self.mem_write.bias, -2.0)
+        self.slot_key = None
+        if config.slots > 0:
+            self.slot_key = nn.Linear(config.dim, config.dim, bias=False)
+            self.slot_val = nn.Linear(config.dim, config.dim, bias=False)
+            self.slot_query = nn.Linear(config.dim, config.dim, bias=False)
+            for layer in (self.slot_key, self.slot_val, self.slot_query):
+                nn.init.normal_(layer.weight, mean=0.0, std=0.02)
         self._mem_copy = None
         self._mem_attn = None
         self.last_copy_logits = None
@@ -157,6 +165,8 @@ class SpikingLM(nn.Module):
             "name": z.clone(),
             "mem_k": [],
             "mem_v": [],
+            "slot_k": [],
+            "slot_v": [],
             "t": 0,
         }
 
@@ -202,20 +212,39 @@ class SpikingLM(nn.Module):
             state["stmt"] = self.config.mem_decay * state["stmt"] + emb_raw
             g_name = torch.sigmoid(self.mem_name(emb_raw))
             state["name"] = (1.0 - g_name) * state["name"] + g_name * emb_raw
-            g_write = torch.sigmoid(self.mem_write(emb_raw))
-            state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
-            state["mem_v"].append(g_write * self.mem_val(state["name"]))
             read_pos = self.config.mem_read_pos
-            if read_pos < 0 or t == read_pos:
-                mk = torch.stack(state["mem_k"], dim=1)
-                mv = torch.stack(state["mem_v"], dim=1)
-                mq = self.mem_query(readout).unsqueeze(1)
-                mscores = mq @ mk.transpose(-1, -2) / math.sqrt(self.dim)
-                mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
-                mctx = (mattn @ mv).squeeze(1)
-                readout = readout + mctx
-                mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
-                self._mem_attn = mattn.squeeze(1)
+            if self.slot_key is not None:
+                if t % 5 == 0:
+                    state["name"] = emb_raw
+                if t % 5 == 4:
+                    state["slot_k"].append(self.slot_key(state["stmt"]))
+                    state["slot_v"].append(self.slot_val(state["name"]))
+                    state["stmt"] = torch.zeros_like(state["stmt"])
+                    state["name"] = torch.zeros_like(state["name"])
+                if read_pos < 0 or t == read_pos:
+                    sk = torch.stack(state["slot_k"], dim=1)
+                    sv = torch.stack(state["slot_v"], dim=1)
+                    mq = self.slot_query(readout).unsqueeze(1)
+                    mscores = mq @ sk.transpose(-1, -2) / math.sqrt(self.dim)
+                    mattn = torch.softmax(mscores.float(), dim=-1).to(sv.dtype)
+                    mctx = (mattn @ sv).squeeze(1)
+                    readout = readout + mctx
+                    mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
+                    self._mem_attn = mattn.squeeze(1)
+            else:
+                g_write = torch.sigmoid(self.mem_write(emb_raw))
+                state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
+                state["mem_v"].append(g_write * self.mem_val(state["name"]))
+                if read_pos < 0 or t == read_pos:
+                    mk = torch.stack(state["mem_k"], dim=1)
+                    mv = torch.stack(state["mem_v"], dim=1)
+                    mq = self.mem_query(readout).unsqueeze(1)
+                    mscores = mq @ mk.transpose(-1, -2) / math.sqrt(self.dim)
+                    mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
+                    mctx = (mattn @ mv).squeeze(1)
+                    readout = readout + mctx
+                    mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
+                    self._mem_attn = mattn.squeeze(1)
         logits = self.head(self.drop(readout) if self.drop is not None else readout)
         if copy_logits is not None:
             logits = logits + self.copy_scale * copy_logits
