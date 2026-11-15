@@ -642,11 +642,16 @@ attention loss remains a required inductive bias at this budget; replay only
 helps once phase A is learnable.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
-**Four-statement stories (negative):** dynamic memory, per-statement slots, slot
-reset, and a hard name slot all stay at **0.214-0.236** old accuracy (majority
-**0.26**) after 5k steps. Last-position accuracy is **0.67-1.00** while the other
-positions stay at or below 0.33. The bottleneck is the memory read/key match,
-not the name value. Three statements remains the hardest learnable test.
+**Four-statement stories:** dynamic memory, per-statement slots, slot reset, and
+a hard name slot all stay at **0.214-0.236** old accuracy (majority **0.26**)
+after 5k steps. Changing the slot key to the statement's **color+object
+embeddings** and using **4-head attention** solves phase A: old **1.000**, all
+four positions **1.000**, old permutation **1.000**. Copy-only phase B (no
+matching-attention loss) keeps old **0.996/0.970**, new **1.000**, held
+**0.872/0.728**, permutation **0.996/0.972**; replay reaches
+**1.000/1.000** and held **0.926/0.760**. The structured key is the mechanism;
+the task-specific attention loss is unnecessary and can hurt retention (naive
+old **0.220/0.444** with it).
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3

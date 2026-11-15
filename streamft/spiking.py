@@ -37,6 +37,8 @@ class SpikingConfig:
     pointer_offset: int = 0
     memory: bool = False
     slots: int = 0
+    slot_heads: int = 1
+    slot_attr_keys: bool = False
     mem_decay: float = 0.5
     mem_read_pos: int = -1
     dropout: float = 0.0
@@ -139,12 +141,16 @@ class SpikingLM(nn.Module):
                 nn.init.normal_(layer.weight, mean=0.0, std=0.02)
             nn.init.constant_(self.mem_write.bias, -2.0)
         self.slot_key = None
+        self.slot_out = None
         if config.slots > 0:
             self.slot_key = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_val = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_query = nn.Linear(config.dim, config.dim, bias=False)
             for layer in (self.slot_key, self.slot_val, self.slot_query):
                 nn.init.normal_(layer.weight, mean=0.0, std=0.02)
+            if config.slot_heads > 1:
+                self.slot_out = nn.Linear(config.dim, config.dim, bias=False)
+                nn.init.normal_(self.slot_out.weight, mean=0.0, std=0.02)
         self._mem_copy = None
         self._mem_attn = None
         self.last_copy_logits = None
@@ -167,6 +173,7 @@ class SpikingLM(nn.Module):
             "mem_v": [],
             "slot_k": [],
             "slot_v": [],
+            "prev": [],
             "t": 0,
         }
 
@@ -213,24 +220,38 @@ class SpikingLM(nn.Module):
             g_name = torch.sigmoid(self.mem_name(emb_raw))
             state["name"] = (1.0 - g_name) * state["name"] + g_name * emb_raw
             read_pos = self.config.mem_read_pos
+            prev = state["prev"]
             if self.slot_key is not None:
                 if t % 5 == 0:
                     state["name"] = emb_raw
                 if t % 5 == 4:
-                    state["slot_k"].append(self.slot_key(state["stmt"]))
+                    key_in = state["stmt"]
+                    if self.config.slot_attr_keys and len(prev) >= 2:
+                        key_in = prev[-2] + prev[-1]
+                    state["slot_k"].append(self.slot_key(key_in))
                     state["slot_v"].append(self.slot_val(state["name"]))
                     state["stmt"] = torch.zeros_like(state["stmt"])
                     state["name"] = torch.zeros_like(state["name"])
                 if read_pos < 0 or t == read_pos:
                     sk = torch.stack(state["slot_k"], dim=1)
                     sv = torch.stack(state["slot_v"], dim=1)
-                    mq = self.slot_query(readout).unsqueeze(1)
-                    mscores = mq @ sk.transpose(-1, -2) / math.sqrt(self.dim)
-                    mattn = torch.softmax(mscores.float(), dim=-1).to(sv.dtype)
-                    mctx = (mattn @ sv).squeeze(1)
+                    batch = sk.size(0)
+                    heads = self.config.slot_heads
+                    dh = self.dim // heads
+                    q_in = readout
+                    if self.config.slot_attr_keys and len(prev) >= 2:
+                        q_in = prev[-2] + prev[-1]
+                    mq = self.slot_query(q_in).view(batch, heads, 1, dh)
+                    mk = sk.view(batch, sk.size(1), heads, dh).permute(0, 2, 1, 3)
+                    mv = sv.view(batch, sv.size(1), heads, dh).permute(0, 2, 1, 3)
+                    mscores = mq @ mk.transpose(-1, -2) / math.sqrt(dh)
+                    mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
+                    mctx = (mattn @ mv).squeeze(2).reshape(batch, self.dim)
+                    if self.slot_out is not None:
+                        mctx = self.slot_out(mctx)
                     readout = readout + mctx
                     mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
-                    self._mem_attn = mattn.squeeze(1)
+                    self._mem_attn = mattn.mean(dim=1).squeeze(1)
             else:
                 g_write = torch.sigmoid(self.mem_write(emb_raw))
                 state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
@@ -245,6 +266,7 @@ class SpikingLM(nn.Module):
                     readout = readout + mctx
                     mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
                     self._mem_attn = mattn.squeeze(1)
+            state["prev"] = (prev + [emb_raw])[-2:]
         logits = self.head(self.drop(readout) if self.drop is not None else readout)
         if copy_logits is not None:
             logits = logits + self.copy_scale * copy_logits

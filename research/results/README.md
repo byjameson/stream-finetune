@@ -69,6 +69,11 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_long4_slots_phase_a.json` | same, `--slots 4` | 4-statement phase A, slots: old 0.222; stmt3 1.000 |
 | `spiking_binding_long4_slots_reset_phase_a.json` | same, `--slots 4` (reset) | slots + reset: old 0.236; stmt3 0.685 |
 | `spiking_binding_long4_slots_name_phase_a.json` | same, `--slots 4` (hard name) | slots + reset + hard name: old 0.228; stmt3 0.703 |
+| `spiking_binding_long4_attr_phase_a.json` | same, `--slots 4 --slot-heads 4 --slot-attr-keys` | attribute-key multi-head slots: old 1.000, all positions 1.000, permutation 1.000 |
+| `spiking_binding_long4_continual_seed0.json` | same, matching-attention phase B | 4-statement continual: naive old 0.220; replay old 1.000/new 0.324 |
+| `spiking_binding_long4_continual_seed1.json` | same, `--seed 1` | seed 1: naive old 0.444; replay old/new 1.000/held 0.596 |
+| `spiking_binding_long4_copy_seed0.json` | same, `--aux-attn-weight 0` | copy-only: naive old 0.996/new 1.000/held 0.872; replay 1.000/1.000/0.926 |
+| `spiking_binding_long4_copy_seed1.json` | same, `--seed 1` | copy-only seed 1: naive 0.970/1.000/0.728; replay 1.000/1.000/0.760 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

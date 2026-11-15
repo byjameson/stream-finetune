@@ -140,6 +140,45 @@ need a different retrieval mechanism (multi-head or iterated attention, a
 pointer over statement boundaries, or more depth), not just slots or a hard
 name slot.
 
+### Attribute-key multi-head slots (positive phase A)
+
+The diagnosis was the read/key match, so the slot key was changed to the
+statement's **color+object embeddings** and the read was made **4-head**. The
+query key is the query's color+object pair, so the match is symmetric; the slot
+value is still the statement's name.
+
+Phase A, 5,000 steps, two seeds: old **1.000** on both, all four positions
+1.000, old permutation **1.000**. New/held are unseen colors: seed 0
+0.522/0.490, seed 1 0.510/0.480.
+
+Phase B with the matching-attention loss (2,500 steps):
+
+| arm | seed 0 old/new/held | seed 1 old/new/held |
+|---|---|---|
+| naive | 0.220/0.512/0.304 | 0.444/1.000/0.250 |
+| replay 20% | 1.000/0.324/0.260 | 1.000/1.000/0.596 |
+| rollback 10% | 0.444/0.508/0.478 | 0.420/1.000/0.216 |
+| replay + rollback | 1.000/0.436/0.410 | 1.000/1.000/0.758 |
+| replay + EWC | 1.000/0.256/0.252 | 1.000/1.000/0.482 |
+
+Phase B **without** the matching-attention loss (copy-only):
+
+| arm | seed 0 old/new/held | seed 1 old/new/held |
+|---|---|---|
+| naive | **0.996/1.000/0.872** | **0.970/1.000/0.728** |
+| replay 20% | **1.000/1.000/0.926** | **1.000/1.000/0.760** |
+
+Copy-only old permutation accuracy is 0.996/0.972 for naive and 1.000 for
+replay; the per-position old accuracies are 0.97-1.00. This is the first
+four-statement configuration that learns balanced, permutation-invariant
+binding **without** the task-specific matching-attention loss.
+
+The structured key is the real inductive bias. With it, the copy loss alone
+learns the read; the matching-attention loss is unnecessary and can hurt
+retention (naive old 0.22/0.44, and seed-0 replay learns new colors poorly at
+0.324). Replay is still the best simple arm: old/new 1.000 and held
+0.926/0.760.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -182,14 +221,22 @@ name slot.
    loss is a required inductive bias at this budget, not just a single-task
    convenience.
 
-8. **Four-statement stories are not learnable at this budget.** Dynamic memory,
-   per-statement slots, slot reset, and a hard name slot all stay at 0.214-0.236
-   old accuracy (majority 0.26), with last-position accuracy 0.67-1.00 and other
-   positions at or below 0.33. The bottleneck is the memory read/key match, not
-   the name value. The 3-statement color split remains the hardest learnable
-   split tested.
+8. **Four-statement stories are learnable with attribute-key multi-head slots.**
+   Dynamic memory, per-statement slots, slot reset, and a hard name slot all
+   stay at 0.214-0.236 old accuracy (majority 0.26), with last-position accuracy
+   0.67-1.00. Changing the slot key to the statement's color+object embeddings
+   and using 4-head attention solves phase A: old **1.000**, all four positions
+   1.000, old permutation **1.000**. The bottleneck was the read/key match, not
+   the name value.
 
-9. **The practical rule transfers to the learnable setup:** store old stories
+9. **The task-specific attention loss is not required with structured keys.**
+   Copy-only phase B reaches old **0.996/0.970**, new **1.000**, held
+   **0.872/0.728**, with old permutation 0.996/0.972; replay reaches
+   1.000/1.000 and held 0.926/0.760. With the matching-attention loss, naive
+   forgets old (0.220/0.444) and seed-0 replay learns new colors poorly (0.324).
+   The structured key is the mechanism; the auxiliary loss can hurt.
+
+10. **The practical rule transfers to the learnable setup:** store old stories
    and replay ~20% during updates. Use hard rollback only when replay is
    unavailable or a regression appears anyway.
 
@@ -202,16 +249,16 @@ name slot.
   colors, so this is an attribute-composition shift, not new words only.
 - Rollback fraction and EWC lambda were not swept on this task.
 - Held accuracy is 0.79-0.99 depending on the seed and arm, not perfect.
-- The attention auxiliary loss is self-supervised but task-specific.
+- The 4-statement positive result uses task-structured keys: name first, color/
+  object at fixed offsets, period boundaries. It is not a general language model.
+- The attention auxiliary loss is task-specific and, with structured keys, can
+  be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Stabilize the color split (seed-1 collapse) with a fixed LR schedule or more
-  phase-A steps.
-- Longer stories need a different retrieval mechanism: multi-head or iterated
-  attention, a pointer over statement boundaries, or more depth. Per-statement
-  slots, slot reset, and a hard name slot were not enough.
-- The matching-attention loss remains required at this budget. Removing it needs
-  a better self-supervised signal (statement boundaries alone were not enough)
-  or a different memory/credit-assignment mechanism.
+- Move to 5+ statements or multi-token answers with the same attr-key multi-head
+  slots; test whether the copy-only result holds.
+- Relax the structure: learned statement boundaries, no fixed name position, or
+  keys from the recurrent state instead of raw token embeddings.
+- Run the copy-only + replay arm on more seeds and sweep the replay fraction.
 - Try generative/distilled replay when storing old stories is not possible.

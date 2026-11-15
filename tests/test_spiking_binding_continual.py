@@ -77,5 +77,43 @@ def test_four_statement_phase_a_does_not_learn():
         assert payload["before"]["held"]["accuracy"] < 0.3
 
 
+def test_attr_key_multihead_slots_learn_four_statements():
+    payload = json.loads((ROOT / "research/results/spiking_binding_long4_attr_phase_a.json")
+                         .read_text(encoding="utf-8"))
+    old = payload["before"]["old"]
+    assert old["accuracy"] > 0.95
+    for key, row in old["by_answer_pos"].items():
+        assert row["acc"] > 0.95
+    assert payload["arms"][0]["old_permuted"]["accuracy"] > 0.95
+
+
+def test_four_statement_copy_only_retains_and_is_permutation_invariant():
+    for name in ("spiking_binding_long4_copy_seed0.json",
+                 "spiking_binding_long4_copy_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        arms = {a["arm"]: a for a in payload["arms"]}
+        for arm in ("naive", "replay_20"):
+            row = arms[arm]
+            assert row["after"]["old"]["accuracy"] > 0.95
+            assert row["after"]["new"]["accuracy"] > 0.95
+            assert row["after"]["held"]["accuracy"] > 0.7
+            assert row["old_permuted"]["accuracy"] > 0.95
+            for pos in row["after"]["old"]["by_answer_pos"].values():
+                assert pos["acc"] > 0.9
+
+
+def test_four_statement_attention_aux_can_forget():
+    for name in ("spiking_binding_long4_continual_seed0.json",
+                 "spiking_binding_long4_continual_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        naive = {a["arm"]: a for a in payload["arms"]}["naive"]
+        assert naive["after"]["old"]["accuracy"] < 0.5
+        assert naive["old_permuted"]["accuracy"] < 0.5
+
+
+
+
 
 
