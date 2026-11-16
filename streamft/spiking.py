@@ -41,6 +41,7 @@ class SpikingConfig:
     slot_attr_keys: bool = False
     slot_conj: bool = False
     slot_factorized: bool = False
+    query_color_copy: bool = False
     write_token: int = -1
     read_token: int = -1
     mem_decay: float = 0.5
@@ -147,6 +148,9 @@ class SpikingLM(nn.Module):
         self.slot_key = None
         self.slot_out = None
         self.slot_key_c = None
+        self.color_copy_scale = None
+        if config.query_color_copy:
+            self.color_copy_scale = nn.Parameter(torch.ones(1))
         if config.slots > 0:
             self.slot_key = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_val = nn.Linear(config.dim, config.dim, bias=False)
@@ -190,12 +194,16 @@ class SpikingLM(nn.Module):
             "slot_ko": [],
             "prev": [],
             "new_stmt": True,
+            "query_color": z.clone(),
+            "after_read": False,
             "t": 0,
         }
 
     def step(self, tokens: torch.Tensor, state: dict):
         t = state["t"]
         state["t"] = t + 1
+        apply_color_copy = state["after_read"]
+        state["after_read"] = False
         emb_raw = self.emb(tokens)
         emb = self.drop(emb_raw) if self.drop is not None else emb_raw
         cur = emb
@@ -318,6 +326,9 @@ class SpikingLM(nn.Module):
                         readout = readout + mctx
                         mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
                         self._mem_attn = mattn.mean(dim=1).squeeze(1)
+                    if self.config.query_color_copy and len(prev) >= 2:
+                        state["query_color"] = prev[-2]
+                        state["after_read"] = True
             else:
                 g_write = torch.sigmoid(self.mem_write(emb_raw))
                 state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
@@ -338,6 +349,9 @@ class SpikingLM(nn.Module):
             logits = logits + self.copy_scale * copy_logits
         if mem_copy is not None:
             logits = logits + self.mem_scale * mem_copy
+        if self.config.query_color_copy and apply_color_copy:
+            logits = logits + self.color_copy_scale * (
+                state["query_color"] @ self.emb.weight.T) / math.sqrt(self.dim)
         self._mem_copy = mem_copy
         return logits, state
 
