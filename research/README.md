@@ -123,6 +123,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   0.998/0.966, permutation 1.000/0.986; replay 1.000/1.000, held 0.988/0.994,
   permutation 1.000/1.000. Gate passes on both seeds.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Relaxed structure (partial):** variable filler lengths 0/1/2,
+  token-triggered boundaries/read. Replay old/new 1.000, permutation 1.000, but
+  held composition 0.803/0.651. The gate fails on held composition, not on
+  old/new or balance. [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

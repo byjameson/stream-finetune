@@ -98,7 +98,10 @@
   old 1.000/0.986, new 1.000, held 0.998/0.966, permutation 1.000/0.986;
   replay 1.000/1.000, held 0.988/0.994, permutation 1.000/1.000. Gate passes
   on both seeds at seven statements.
-- 123 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Relaxed structure (variable filler 0/1/2, token-triggered boundaries/read):
+  replay old/new 1.000, permutation 1.000, but held composition 0.803/0.651.
+  The gate fails on held composition, not on old/new or balance.
+- 125 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

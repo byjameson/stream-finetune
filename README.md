@@ -678,6 +678,12 @@ permutation **1.000**. Copy-only phase B: naive old **1.000/0.986**, new
 passes on both seeds at seven statements.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Relaxed structure (partial):** variable filler lengths 0/1/2 with
+token-triggered boundaries/read. Replay keeps old/new at **1.000** and
+permutation at **1.000**, but held composition drops to **0.803/0.651**. The gate
+fails on held-out composition, not on old/new or balance.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

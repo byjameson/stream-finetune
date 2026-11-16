@@ -178,6 +178,22 @@ def test_seven_statement_copy_only_passes_gate():
             assert row["old_permuted"]["accuracy"] > 0.95
 
 
+def test_relaxed_structure_balances_but_held_fails():
+    for name in ("spiking_binding_relaxed_seed0.json",
+                 "spiking_binding_relaxed_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        row = payload["results"][0]
+        assert row["before"]["old"]["mean"] > 0.95
+        assert row["after"]["old"]["mean"] > 0.95
+        assert row["after"]["new"]["mean"] > 0.95
+        assert row["old_perm"] > 0.95
+        assert 0.6 < row["after"]["held"]["mean"] < 0.9
+        for filler in ("0", "1", "2"):
+            assert row["after"]["old"]["by_filler"][filler]["accuracy"] > 0.95
+
+
+
 
 
 

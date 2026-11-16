@@ -195,6 +195,29 @@ def test_attr_key_slot_memory_matches_incremental_steps():
     assert model.last_mem_attn.shape == (2, 1)
 
 
+def test_token_triggered_slot_memory_matches_incremental_steps():
+    torch.manual_seed(0)
+    model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1, slots=3,
+                                    slot_heads=2, slot_attr_keys=True,
+                                    write_token=4, read_token=9,
+                                    mem_read_pos=-1))
+    x = torch.tensor([[0, 1, 2, 3, 4, 5, 6, 7, 8, 4, 0, 1, 2, 3, 4,
+                       6, 7, 8, 3, 9, 1, 0],
+                      [1, 2, 3, 0, 4, 6, 7, 8, 5, 4, 1, 2, 3, 0, 4,
+                       7, 8, 6, 3, 9, 2, 1]])
+    with torch.no_grad():
+        full = model(x)
+        state = model.init_state(2, x.device)
+        parts = []
+        for t in range(x.shape[1]):
+            out, state = model.step(x[:, t], state)
+            parts.append(out)
+        inc = torch.stack(parts, dim=1)
+    assert torch.allclose(full, inc, atol=1e-6)
+    assert model.last_copy_logits.shape == (2, 32)
+    assert model.last_mem_attn.shape == (2, 3)
+
+
 def test_checkpoint_writes_config_and_card(tmp_path):
     model = SpikingLM(SpikingConfig(vocab=32, dim=16, layers=1))
     save_checkpoint(model, tmp_path, tokenizer_path=None)
