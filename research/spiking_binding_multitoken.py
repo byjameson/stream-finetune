@@ -210,8 +210,21 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
                            "loss": losses_a[-1], "sec": round(sec, 1)})
         sec_a = total_sec
     else:
-        losses_a, sec_a = train_phase(model, old_train, old_train, args.steps_a,
-                                      args.batch, args.lr, device, args.amp)
+        sec_a = 0.0
+        if args.old_curriculum:
+            warm_triples = [(n, COLORS[0], o) for n in NAMES8 for o in OBJECTS]
+            warm = {f: make_data(args.n_train, warm_triples,
+                                 args.seed + 61 + f, f) for f in (0, 1, 2)}
+            losses_w, sec_w = train_phase(model, warm, warm, args.steps_warm,
+                                          args.batch, args.lr, device, args.amp)
+            sec_a += sec_w
+            print(json.dumps({"event": "warm", "filler": "red-only",
+                              "sec": round(sec_w, 1),
+                              "loss": losses_w[-1]}), flush=True)
+        losses_a, sec_new = train_phase(model, old_train, old_train,
+                                        args.steps_a, args.batch, args.lr,
+                                        device, args.amp)
+        sec_a += sec_new
     before = {k: eval_set(model, v, device) for k, v in sets.items()}
     print(json.dumps({"event": "after_a", "seed": args.seed,
                       "sec": round(sec_a, 1), "loss": losses_a[-1],
@@ -241,6 +254,8 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--steps-a", type=int, default=5000)
+    ap.add_argument("--old-curriculum", action="store_true")
+    ap.add_argument("--steps-warm", type=int, default=3000)
     ap.add_argument("--curriculum", action="store_true")
     ap.add_argument("--steps-0", type=int, default=2000)
     ap.add_argument("--steps-1", type=int, default=2000)

@@ -94,6 +94,10 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_multitoken_sanity.json` | `research/spiking_binding_multitoken.py` | 2-token answer without color copy: name 1.000, color 0.18, exact 0.135 |
 | `spiking_binding_multitoken_seed0.json` | same + `--query-color-copy` | 2-token answer: old/new/held 1.000, permutation 1.000 |
 | `spiking_binding_multitoken_seed1.json` | same, `--seed 1` | seed 1: name read fails; old 0.231, new 0.354, held 0.341 |
+| `spiking_binding_multitoken_stable_seed0.json` | same, LR 5e-4, 10k A | old/new/held exact 1.000, permutation 1.000 |
+| `spiking_binding_multitoken_stable_seed1.json` | same, `--seed 1` | lower LR/more steps does not fix name read: old 0.287, new/held 1.000 |
+| `spiking_binding_multitoken_curr_seed0.json` | same + `--old-curriculum` | red-only 3k -> red+blue 6k -> phase B: exact 1.000/1.000/1.000, permutation 1.000 |
+| `spiking_binding_multitoken_curr_seed1.json` | same, `--seed 1` | curriculum seed 1: exact 1.000/1.000/1.000, permutation 1.000 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

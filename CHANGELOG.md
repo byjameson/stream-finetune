@@ -115,7 +115,10 @@
 - Multi-token answer (name + color, query-color copy): seed 0 exact
   1.000/1.000/1.000, permutation 1.000; seed 1 name read fails (old 0.231, new
   0.354, held 0.341) though color is 1.000. The two-token gate is seed-sensitive.
-- 130 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Multi-token curriculum: 3k red-only + 6k red+blue + 3k phase B fixes seed 1;
+  both seeds exact 1.000/1.000/1.000, permutation 1.000, name/color 1.000 at
+  every filler length. The failure was the old-color read, not the second token.
+- 131 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
