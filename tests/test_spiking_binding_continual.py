@@ -222,6 +222,22 @@ def test_factorized_attention_fixes_relaxed_held():
             assert row["after"]["held"]["by_filler"][filler]["accuracy"] > 0.95
 
 
+def test_eight_statement_factorized_relaxed_passes_gate():
+    for name in ("spiking_binding_relaxed8_seed0.json",
+                 "spiking_binding_relaxed8_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        row = payload["results"][0]
+        assert row["before"]["old"]["mean"] > 0.95
+        assert row["after"]["old"]["mean"] > 0.95
+        assert row["after"]["new"]["mean"] > 0.95
+        assert row["after"]["held"]["mean"] > 0.95
+        assert row["old_perm"] > 0.95
+        for filler in ("0", "1", "2"):
+            assert row["after"]["held"]["by_filler"][filler]["accuracy"] > 0.95
+
+
+
 
 
 

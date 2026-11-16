@@ -109,7 +109,10 @@
   object keys/queries, multiplied attention; old/new/held 1.000/1.000/1.000,
   permutation 1.000, held 1.000 at every filler length on two seeds. The held
   gap was the additive key, not data or training.
-- 128 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Eight-statement factorized relaxed: eight names, seq 63, fillers 0/1/2.
+  Replay old/new/held 1.000/1.000/1.000, permutation 1.000, held 1.000 at every
+  filler length on two seeds. Factorized attention scales to eight statements.
+- 129 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

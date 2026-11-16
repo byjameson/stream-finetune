@@ -693,6 +693,12 @@ structure: old/new/held **1.000/1.000/1.000**, permutation **1.000**, and held
 additive key, not data or training.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Eight-statement factorized relaxed (positive, gate passed):** eight names,
+eight slots, sequence length 63, fillers 0/1/2. Replay: old/new/held
+**1.000/1.000/1.000**, permutation **1.000**, held **1.000** at every filler
+length on both seeds. The factorized mechanism scales to eight statements.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace
