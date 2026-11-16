@@ -125,8 +125,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Relaxed structure (partial):** variable filler lengths 0/1/2,
   token-triggered boundaries/read. Replay old/new 1.000, permutation 1.000, but
-  held composition 0.803/0.651. The gate fails on held composition, not on
-  old/new or balance. [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+  held composition 0.803/0.651. A 0->1->2->mixed curriculum with 6k data and
+  9k phase-A steps gives 0.786/0.611; no improvement. The gate fails on held
+  composition, not old/new or balance.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

@@ -261,6 +261,24 @@ variable lengths. The held-out composition gate does **not** pass (0.651-0.803
 versus the fixed-structure 0.99). The weakness is consistent across filler
 lengths, so it is a composition/data issue rather than a length-specific bug.
 
+### Filler-length curriculum (negative for held)
+
+A 0 -> 1 -> 2 -> mixed filler curriculum was tried with more data and steps:
+2,000 steps on each fixed filler, 3,000 mixed, 6,000 training stories, 3,000
+phase-B steps, replay 20%, seeds 0 and 1.
+
+| run | old | new | held | old permutation |
+|---|---:|---:|---:|---:|
+| random mixed filler | 1.000 | 1.000 | 0.803/0.651 | 1.000 |
+| 0->1->2->mixed curriculum | 1.000 | 1.000 | **0.786/0.611** | 1.000 |
+
+Phase A: old 1.000 on both seeds; new 0.438/0.458, held 0.373/0.498 before phase B.
+
+The curriculum **does not improve held-out composition**; it is slightly worse
+than random mixed training (within seed variance). More length-specific
+training, more data, and more steps do not close the gap. The held weakness is a
+composition/data issue, not a shortage of filler-length practice.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -341,8 +359,9 @@ lengths, so it is a composition/data issue rather than a length-specific bug.
 13. **Relaxed structure is a partial pass.** With variable filler lengths
     (0/1/2), token-triggered boundaries and read, replay keeps old/new at 1.000
     and permutation at 1.000, but held composition drops to 0.803/0.651. The gate
-    fails on held-out composition, not on old/new or balance. The gap is
-    consistent across filler lengths, so it is a composition/data issue.
+    fails on held-out composition, not on old/new or balance. A 0->1->2->mixed
+    filler curriculum with 6k stories and 9k phase-A steps does **not** improve
+    it (0.786/0.611); the gap is composition/data, not length practice.
 
 14. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
@@ -365,6 +384,8 @@ lengths, so it is a composition/data issue rather than a length-specific bug.
 - Relaxed-structure runs use filler counts 0/1/2 (synchronised within a batch),
   token-triggered boundaries/read; old/new and permutation pass, held
   composition is 0.803/0.651 and the held gate fails.
+- A 0->1->2->mixed filler curriculum with 6k stories and 9k phase-A steps does
+  not improve held (0.786/0.611); the gap is composition/data, not practice.
 - The 4/5/6/7-statement positive results use task-structured keys: name first,
   color/object at fixed offsets, period boundaries. The relaxed run removes the
   fixed offsets but still uses known period/`?` tokens, not learned boundaries.
@@ -373,10 +394,11 @@ lengths, so it is a composition/data issue rather than a length-specific bug.
 
 ## Next
 
-- Improve held-out composition under relaxed structure: more steps/data per
-  filler length, a 0->1->2 filler curriculum, or key augmentation.
-- Move to 8+ statements or multi-token answers with the same attr-key multi-head
-  slots; the fixed-structure seven-statement gate passes.
+- Improve held-out composition under relaxed structure with key augmentation,
+  more diverse color/object training, or explicit held-like examples. More
+  filler-length steps alone did not work.
+- Keep the fixed-structure seven-statement result as the positive gate; do not
+  scale to 8+ statements or multi-token answers until relaxed held >0.95.
 - Relax the structure further: learned statement boundaries, no fixed name
   position, or keys from the recurrent state instead of raw token embeddings.
 - Run the copy-only + replay arm on more seeds and sweep the replay fraction.

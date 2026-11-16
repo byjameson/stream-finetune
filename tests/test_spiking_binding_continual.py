@@ -193,6 +193,21 @@ def test_relaxed_structure_balances_but_held_fails():
             assert row["after"]["old"]["by_filler"][filler]["accuracy"] > 0.95
 
 
+def test_relaxed_filler_curriculum_does_not_fix_held():
+    for name in ("spiking_binding_relaxed_curriculum_seed0.json",
+                 "spiking_binding_relaxed_curriculum_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        row = payload["results"][0]
+        assert row["before"]["old"]["mean"] > 0.95
+        assert row["after"]["old"]["mean"] > 0.95
+        assert row["after"]["new"]["mean"] > 0.95
+        assert row["old_perm"] > 0.95
+        assert 0.55 < row["after"]["held"]["mean"] < 0.85
+        assert len(row["stages"]) == 4
+
+
+
 
 
 
