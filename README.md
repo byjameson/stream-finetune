@@ -699,6 +699,13 @@ eight slots, sequence length 63, fillers 0/1/2. Replay: old/new/held
 length on both seeds. The factorized mechanism scales to eight statements.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Multi-token answer (partial):** answer is name + color, with a query-color
+copy for the second token. Seed 0 reaches exact **1.000/1.000/1.000** and
+permutation **1.000**; seed 1 fails the name read (old **0.231**, new **0.354**,
+held **0.341**), though its color token is **1.000**. The multi-token gate is
+seed-sensitive and not yet robust.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

@@ -237,6 +237,26 @@ def test_eight_statement_factorized_relaxed_passes_gate():
             assert row["after"]["held"]["by_filler"][filler]["accuracy"] > 0.95
 
 
+def test_multitoken_answer_is_seed_sensitive():
+    good = json.loads((ROOT / "research/results/spiking_binding_multitoken_seed0.json")
+                      .read_text(encoding="utf-8"))["results"][0]
+    assert good["before"]["old"]["mean"] > 0.95
+    assert good["after"]["old"]["mean"] > 0.95
+    assert good["after"]["new"]["mean"] > 0.95
+    assert good["after"]["held"]["mean"] > 0.95
+    assert good["old_perm"] > 0.95
+
+    bad = json.loads((ROOT / "research/results/spiking_binding_multitoken_seed1.json")
+                     .read_text(encoding="utf-8"))["results"][0]
+    assert bad["before"]["old"]["mean"] < 0.5
+    assert bad["after"]["old"]["mean"] < 0.5
+    assert bad["after"]["new"]["mean"] < 0.5
+    assert bad["after"]["held"]["mean"] < 0.5
+    for filler in ("0", "1", "2"):
+        assert bad["after"]["held"]["by_filler"][filler]["color_acc"] > 0.95
+
+
+
 
 
 

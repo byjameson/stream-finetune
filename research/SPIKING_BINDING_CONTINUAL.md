@@ -325,6 +325,26 @@ eight statements: balanced positions, permutation invariance, and held-out
 composition. The factorized mechanism scales from seven to eight statements
 without a new failure mode.
 
+### Multi-token answer (partial)
+
+The answer was extended to **name + color**: `... ? name color <eos>`. The
+factorized memory reads the name at `?`; a query-color copy readout supplies the
+second token from the query color. Exact two-token accuracy requires both
+tokens.
+
+| seed | phase-A old | old | new | held | permutation |
+|---|---:|---:|---:|---:|---:|
+| 0 | 1.000 | **1.000** | **1.000** | **1.000** | **1.000** |
+| 1 | 0.224 | 0.231 | 0.354 | 0.341 | 0.257 |
+
+Seed 0 passes the full gate. Seed 1 does not: its **color** token is 1.000 at
+every filler length, but the **name** read fails (name accuracy 0.23-0.38), so
+exact two-token accuracy is low.
+
+A control without the query-color copy reaches name 1.000, color 0.18, exact
+0.135 on seed 0. The copy readout fixes the second token; the remaining failure
+is the seed-sensitive name read, not the color copy.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -422,7 +442,13 @@ without a new failure mode.
     every filler length on both seeds. The factorized mechanism scales to eight
     statements.
 
-16. **The practical rule transfers to the learnable setup:** store old stories
+16. **Multi-token answers are a partial pass.** Seed 0 reaches exact
+    name+color **1.000/1.000/1.000** with permutation 1.000. Seed 1 fails: color
+    is 1.000 at every length, but the name read is only 0.23-0.38, so exact is
+    0.23-0.35. The query-color copy fixes the second token; the remaining issue
+    is a seed-sensitive name read, not the multi-token mechanism itself.
+
+17. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -449,16 +475,19 @@ without a new failure mode.
   with 6k + 3k steps and replay, across filler lengths 0/1/2.
 - Eight-statement runs add `ava` and use sequence length 63; held is 1.000 on
   both seeds and every filler length with factorized attention.
+- Multi-token runs answer `name + color`; the query-color copy gives color 1.000
+  on both seeds, but the name read is seed-sensitive (seed 0 1.000, seed 1
+  0.23-0.38), so the two-token gate is not robust.
 - The relaxed positive still uses token-triggered known `.`/`?` boundaries,
-  seven/eight statements, single-token answers, and task-structured color/
-  object factors. It is not a general language model.
+  seven/eight statements, task-structured color/object factors, and a
+  task-structured color-copy readout. It is not a general language model.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Move to multi-token answers with factorized color-object attention; the
-  eight-statement relaxed gate passes.
+- Stabilize the multi-token name read on seed 1 (lower LR, more steps, a
+  curriculum, or a second read) and rerun two seeds; exact two-token >0.95.
 - Relax the structure further: learned statement boundaries, no fixed name
   position, or keys from the recurrent state instead of raw token embeddings.
 - Run the factorized model on more seeds and sweep the replay fraction.

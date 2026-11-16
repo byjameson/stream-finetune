@@ -139,6 +139,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   1.000/1.000/1.000, permutation 1.000, held 1.000 at every filler length on two
   seeds. Factorized attention scales to eight statements.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Multi-token answer (partial):** name + color with query-color copy. Seed 0
+  exact 1.000/1.000/1.000, permutation 1.000; seed 1 name read fails (old 0.231,
+  new 0.354, held 0.341) though color is 1.000. The multi-token gate is
+  seed-sensitive. [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.
