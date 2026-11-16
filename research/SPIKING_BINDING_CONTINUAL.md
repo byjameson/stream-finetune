@@ -345,6 +345,22 @@ A control without the query-color copy reaches name 1.000, color 0.18, exact
 0.135 on seed 0. The copy readout fixes the second token; the remaining failure
 is the seed-sensitive name read, not the color copy.
 
+### Multi-token with old-color curriculum (positive, gate passed)
+
+Lower LR and more steps alone did not fix seed 1: at LR 5e-4 and 10k phase-A
+steps its old exact was 0.277, while seed 0 was 1.000. A one-color warmup did:
+
+- 3,000 steps on red-only old stories;
+- 6,000 steps on red+blue old stories;
+- 3,000 phase-B steps on new colors with 20% replay.
+
+Both seeds: phase A old **1.000**; after phase B old/new/held
+**1.000/1.000/1.000**, permutation **1.000**; name and color are both 1.000 at
+every filler length.
+
+The earlier multi-token failure was the seed-sensitive **old-color read**, not
+the second token. The one-color curriculum stabilizes it.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -442,13 +458,19 @@ is the seed-sensitive name read, not the color copy.
     every filler length on both seeds. The factorized mechanism scales to eight
     statements.
 
-16. **Multi-token answers are a partial pass.** Seed 0 reaches exact
-    name+color **1.000/1.000/1.000** with permutation 1.000. Seed 1 fails: color
-    is 1.000 at every length, but the name read is only 0.23-0.38, so exact is
-    0.23-0.35. The query-color copy fixes the second token; the remaining issue
-    is a seed-sensitive name read, not the multi-token mechanism itself.
+16. **Multi-token answers are a partial pass without curriculum.** Seed 0
+    reaches exact name+color **1.000/1.000/1.000** with permutation 1.000. Seed 1
+    fails: color is 1.000 at every length, but the name read is only 0.23-0.38, so
+    exact is 0.23-0.35. The query-color copy fixes the second token; the remaining
+    issue is a seed-sensitive name read.
 
-17. **The practical rule transfers to the learnable setup:** store old stories
+17. **A one-color curriculum stabilizes multi-token seed 1.** Lower LR and 10k
+    steps did not help (old exact 0.277), but 3k red-only + 6k red+blue + 3k
+    phase B gives old/new/held **1.000/1.000/1.000**, permutation **1.000**, and
+    name/color 1.000 at every filler length on both seeds. The failure was the
+    old-color read, not the multi-token output.
+
+18. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -476,19 +498,20 @@ is the seed-sensitive name read, not the color copy.
 - Eight-statement runs add `ava` and use sequence length 63; held is 1.000 on
   both seeds and every filler length with factorized attention.
 - Multi-token runs answer `name + color`; the query-color copy gives color 1.000
-  on both seeds, but the name read is seed-sensitive (seed 0 1.000, seed 1
-  0.23-0.38), so the two-token gate is not robust.
-- The relaxed positive still uses token-triggered known `.`/`?` boundaries,
-  seven/eight statements, task-structured color/object factors, and a
-  task-structured color-copy readout. It is not a general language model.
+  on both seeds, but the name read is seed-sensitive. A 3k red-only warmup +
+  6k red+blue + 3k phase B stabilizes it to 1.000/1.000/1.000 on both seeds.
+- The positive results still use token-triggered known `.`/`?` boundaries,
+  task-structured color/object factors, and a task-structured color-copy
+  readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Stabilize the multi-token name read on seed 1 (lower LR, more steps, a
-  curriculum, or a second read) and rerun two seeds; exact two-token >0.95.
-- Relax the structure further: learned statement boundaries, no fixed name
-  position, or keys from the recurrent state instead of raw token embeddings.
-- Run the factorized model on more seeds and sweep the replay fraction.
+- Relax the boundaries: learned statement ends and query positions instead of
+  known `.`/`?` tokens.
+- Move from synthetic statements to a small natural-language template set or a
+  broader attribute vocabulary.
+- Run the curriculum-stabilized multi-token model on more seeds and sweep the
+  replay fraction.
 - Try generative/distilled replay when storing old stories is not possible.
