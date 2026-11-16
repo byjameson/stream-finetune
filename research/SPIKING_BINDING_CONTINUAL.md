@@ -279,6 +279,33 @@ than random mixed training (within seed variance). More length-specific
 training, more data, and more steps do not close the gap. The held weakness is a
 composition/data issue, not a shortage of filler-length practice.
 
+### Factorized color-object attention (positive, gate passed)
+
+The held gap was a **key-matching** problem: summing color+object into one key
+(and even adding their product) does not enforce a conjunction. The read was
+factorized into two attentions:
+
+- keys/queries for the color and object are projected separately;
+- `attn_color` and `attn_object` are computed independently;
+- the two distributions are multiplied and renormalized before the value read.
+
+Seven statements, fillers 0/1/2, replay 20%, 6k + 3k steps, seeds 0 and 1.
+
+| key mechanism | held (seed 0/1) |
+|---|---:|
+| summed color+object | 0.803/0.651 |
+| summed + product feature | 0.799/0.847 |
+| **factorized color x object attention** | **1.000/1.000** |
+
+Phase A old 1.000 on both seeds; new/held 0.388/0.397 (seed 0) and 0.396/0.398
+(seed 1) before phase B. After phase B replay: old **1.000**, new **1.000**,
+held **1.000**, permutation **1.000** on both seeds, and held is 1.000 for
+every filler length.
+
+This is the first relaxed-structure configuration that passes the full gate.
+The result says the earlier held failure was the additive key, not a lack of
+data, steps, or length practice.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -356,14 +383,21 @@ composition/data issue, not a shortage of filler-length practice.
     1.000/1.000. The architecture scales to seven statements with no loss of
     balance or permutation invariance.
 
-13. **Relaxed structure is a partial pass.** With variable filler lengths
-    (0/1/2), token-triggered boundaries and read, replay keeps old/new at 1.000
-    and permutation at 1.000, but held composition drops to 0.803/0.651. The gate
-    fails on held-out composition, not on old/new or balance. A 0->1->2->mixed
-    filler curriculum with 6k stories and 9k phase-A steps does **not** improve
-    it (0.786/0.611); the gap is composition/data, not length practice.
+13. **Relaxed structure is a partial pass with a summed key.** With variable
+    filler lengths (0/1/2), token-triggered boundaries and read, replay keeps
+    old/new at 1.000 and permutation at 1.000, but held composition drops to
+    0.803/0.651. The gate fails on held-out composition, not on old/new or
+    balance. A 0->1->2->mixed filler curriculum with 6k stories and 9k phase-A
+    steps does **not** improve it (0.786/0.611); the gap is composition/data,
+    not length practice.
 
-14. **The practical rule transfers to the learnable setup:** store old stories
+14. **Factorized color-object attention passes the relaxed gate.** Separate
+    color and object keys/queries, multiplied attention distributions, replay:
+    old/new/held **1.000/1.000/1.000**, permutation **1.000/1.000** on both
+    seeds, and held is 1.000 at every filler length. The earlier held failure
+    was the additive key, not a lack of data or training.
+
+15. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -385,21 +419,20 @@ composition/data issue, not a shortage of filler-length practice.
   token-triggered boundaries/read; old/new and permutation pass, held
   composition is 0.803/0.651 and the held gate fails.
 - A 0->1->2->mixed filler curriculum with 6k stories and 9k phase-A steps does
-  not improve held (0.786/0.611); the gap is composition/data, not practice.
-- The 4/5/6/7-statement positive results use task-structured keys: name first,
-  color/object at fixed offsets, period boundaries. The relaxed run removes the
-  fixed offsets but still uses known period/`?` tokens, not learned boundaries.
+  not improve held (0.786/0.611) with the summed key; the gap is composition.
+- Factorized color-object attention removes the relaxed held gap: 1.000/1.000
+  with 6k + 3k steps and replay, across filler lengths 0/1/2.
+- The relaxed positive still uses token-triggered known `.`/`?` boundaries,
+  seven statements, single-token answers, and task-structured color/object
+  factors. It is not a general language model.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Improve held-out composition under relaxed structure with key augmentation,
-  more diverse color/object training, or explicit held-like examples. More
-  filler-length steps alone did not work.
-- Keep the fixed-structure seven-statement result as the positive gate; do not
-  scale to 8+ statements or multi-token answers until relaxed held >0.95.
+- Move to 8+ statements or multi-token answers with factorized color-object
+  attention; the relaxed seven-statement gate passes.
 - Relax the structure further: learned statement boundaries, no fixed name
   position, or keys from the recurrent state instead of raw token embeddings.
-- Run the copy-only + replay arm on more seeds and sweep the replay fraction.
+- Run the factorized model on more seeds and sweep the replay fraction.
 - Try generative/distilled replay when storing old stories is not possible.

@@ -686,6 +686,13 @@ permutation at **1.000**, but held composition drops to **0.803/0.651**. A
 old/new or balance; more filler-length practice does not fix it.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Factorized color-object attention (positive, gate passed):** separate color
+and object keys/queries with multiplied attention distributions. Relaxed
+structure: old/new/held **1.000/1.000/1.000**, permutation **1.000**, and held
+**1.000** at every filler length, on both seeds. The earlier held gap was the
+additive key, not data or training.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

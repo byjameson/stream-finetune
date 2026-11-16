@@ -177,6 +177,8 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
         vocab=VOCAB, dim=args.dim, layers=args.layers, mode="spike",
         adapt=args.adapt, memory=False, slots=N_STMT,
         slot_heads=args.heads, slot_attr_keys=True,
+        slot_conj=args.slot_conj,
+        slot_factorized=args.slot_factorized,
         write_token=W2I["."], read_token=W2I["?"],
         mem_read_pos=-1)).to(device)
 
@@ -255,6 +257,8 @@ def main():
     ap.add_argument("--dim", type=int, default=256)
     ap.add_argument("--layers", type=int, default=2)
     ap.add_argument("--heads", type=int, default=4)
+    ap.add_argument("--slot-conj", action="store_true")
+    ap.add_argument("--slot-factorized", action="store_true")
     ap.add_argument("--lr", type=float, default=8e-4)
     ap.add_argument("--adapt", type=float, default=0.1)
     ap.add_argument("--replay", type=float, default=0.2)
