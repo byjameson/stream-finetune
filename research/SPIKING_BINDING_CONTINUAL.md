@@ -238,6 +238,29 @@ Old per-position accuracy is 0.971-1.000 for naive and 1.000 for replay. The
 seven-statement gate passes on both seeds: balanced positions, permutation
 invariance, held-out composition above 0.96, and new-color accuracy 1.000.
 
+### Relaxed structure: variable filler lengths (partial)
+
+The fixed offsets were relaxed: statements are `name has (big)*k color object .`
+with filler count k=0,1,2. Boundaries are triggered by the period token, the
+read by the `?` token, and the name is captured at the first token after a
+period. A batch uses one filler count so boundaries stay synchronised; training
+mixes 0/1/2. Seven statements, seven names, copy-only, replay 20%, 5k + 2.5k
+steps, seeds 0 and 1.
+
+| arm | old (mean) | new | held | old permutation |
+|---|---:|---:|---:|---:|
+| replay, seed 0 | 1.000 | 1.000 | 0.803 | 1.000 |
+| replay, seed 1 | 1.000 | 1.000 | 0.651 | 1.000 |
+
+Held by filler length: seed 0 0.790/0.793/0.827, seed 1 0.673/0.627/0.653.
+Old accuracy is 1.000 on every filler length on both seeds.
+
+This is a **partial pass**: the architecture no longer needs fixed name/color/
+object offsets for old/new binding, and permutation invariance holds across
+variable lengths. The held-out composition gate does **not** pass (0.651-0.803
+versus the fixed-structure 0.99). The weakness is consistent across filler
+lengths, so it is a composition/data issue rather than a length-specific bug.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -315,7 +338,13 @@ invariance, held-out composition above 0.96, and new-color accuracy 1.000.
     1.000/1.000. The architecture scales to seven statements with no loss of
     balance or permutation invariance.
 
-13. **The practical rule transfers to the learnable setup:** store old stories
+13. **Relaxed structure is a partial pass.** With variable filler lengths
+    (0/1/2), token-triggered boundaries and read, replay keeps old/new at 1.000
+    and permutation at 1.000, but held composition drops to 0.803/0.651. The gate
+    fails on held-out composition, not on old/new or balance. The gap is
+    consistent across filler lengths, so it is a composition/data issue.
+
+14. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -333,17 +362,22 @@ invariance, held-out composition above 0.96, and new-color accuracy 1.000.
   composition is 0.988/1.000 with naive and 1.000/0.998 with replay.
 - Seven-statement runs add a seventh name (`ben`) and use sequence length 42;
   held composition is 0.998/0.966 with naive and 0.988/0.994 with replay.
+- Relaxed-structure runs use filler counts 0/1/2 (synchronised within a batch),
+  token-triggered boundaries/read; old/new and permutation pass, held
+  composition is 0.803/0.651 and the held gate fails.
 - The 4/5/6/7-statement positive results use task-structured keys: name first,
-  color/object at fixed offsets, period boundaries. They are not general
-  language models.
+  color/object at fixed offsets, period boundaries. The relaxed run removes the
+  fixed offsets but still uses known period/`?` tokens, not learned boundaries.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
+- Improve held-out composition under relaxed structure: more steps/data per
+  filler length, a 0->1->2 filler curriculum, or key augmentation.
 - Move to 8+ statements or multi-token answers with the same attr-key multi-head
-  slots; the seven-statement gate passes.
-- Relax the structure: learned statement boundaries, no fixed name position, or
-  keys from the recurrent state instead of raw token embeddings.
+  slots; the fixed-structure seven-statement gate passes.
+- Relax the structure further: learned statement boundaries, no fixed name
+  position, or keys from the recurrent state instead of raw token embeddings.
 - Run the copy-only + replay arm on more seeds and sweep the replay fraction.
 - Try generative/distilled replay when storing old stories is not possible.

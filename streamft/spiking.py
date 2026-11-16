@@ -39,6 +39,8 @@ class SpikingConfig:
     slots: int = 0
     slot_heads: int = 1
     slot_attr_keys: bool = False
+    write_token: int = -1
+    read_token: int = -1
     mem_decay: float = 0.5
     mem_read_pos: int = -1
     dropout: float = 0.0
@@ -174,6 +176,7 @@ class SpikingLM(nn.Module):
             "slot_k": [],
             "slot_v": [],
             "prev": [],
+            "new_stmt": True,
             "t": 0,
         }
 
@@ -217,14 +220,29 @@ class SpikingLM(nn.Module):
         self._mem_copy = None
         if self.mem_name is not None:
             state["stmt"] = self.config.mem_decay * state["stmt"] + emb_raw
-            g_name = torch.sigmoid(self.mem_name(emb_raw))
-            state["name"] = (1.0 - g_name) * state["name"] + g_name * emb_raw
+            if self.config.write_token < 0:
+                g_name = torch.sigmoid(self.mem_name(emb_raw))
+                state["name"] = ((1.0 - g_name) * state["name"]
+                                 + g_name * emb_raw)
             read_pos = self.config.mem_read_pos
             prev = state["prev"]
             if self.slot_key is not None:
-                if t % 5 == 0:
-                    state["name"] = emb_raw
-                if t % 5 == 4:
+                if self.config.write_token >= 0:
+                    if state["new_stmt"]:
+                        state["name"] = emb_raw
+                        state["new_stmt"] = False
+                    boundary = bool((tokens == self.config.write_token).all().item())
+                    if self.config.read_token >= 0:
+                        do_read = bool((tokens == self.config.read_token)
+                                       .all().item())
+                    else:
+                        do_read = (read_pos < 0 or t == read_pos)
+                else:
+                    if t % 5 == 0:
+                        state["name"] = emb_raw
+                    boundary = (t % 5 == 4)
+                    do_read = (read_pos < 0 or t == read_pos)
+                if boundary:
                     key_in = state["stmt"]
                     if self.config.slot_attr_keys and len(prev) >= 2:
                         key_in = prev[-2] + prev[-1]
@@ -232,7 +250,8 @@ class SpikingLM(nn.Module):
                     state["slot_v"].append(self.slot_val(state["name"]))
                     state["stmt"] = torch.zeros_like(state["stmt"])
                     state["name"] = torch.zeros_like(state["name"])
-                if read_pos < 0 or t == read_pos:
+                    state["new_stmt"] = len(state["slot_k"]) < self.config.slots
+                if do_read:
                     sk = torch.stack(state["slot_k"], dim=1)
                     sv = torch.stack(state["slot_v"], dim=1)
                     batch = sk.size(0)
