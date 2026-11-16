@@ -83,8 +83,12 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_long7_copy_seed1.json` | same, `--seed 1` | 7 statements, seed 1: naive 0.986/1.000/0.966; replay 1.000/1.000/0.994 |
 | `spiking_binding_relaxed_seed0.json` | `research/spiking_binding_relaxed.py` | variable filler 0/1/2: replay old/new 1.000, held 0.803, permutation 1.000 |
 | `spiking_binding_relaxed_seed1.json` | same, `--seed 1` | seed 1: replay old/new 1.000, held 0.651, permutation 1.000 |
+| `spiking_binding_relaxed_conj_seed0.json` | same, `--slot-conj` | color x object product feature: replay old/new 1.000, held 0.799 |
+| `spiking_binding_relaxed_conj_seed1.json` | same, `--seed 1` | product feature seed 1: old/new 1.000, held 0.847 |
 | `spiking_binding_relaxed_curriculum_seed0.json` | same, `--curriculum` | filler 0->1->2->mixed, 6k data: replay old/new 1.000, held 0.786 |
 | `spiking_binding_relaxed_curriculum_seed1.json` | same, `--seed 1` | curriculum seed 1: replay old/new 1.000, held 0.611 |
+| `spiking_binding_relaxed_factor_seed0.json` | same, `--slot-factorized` | factorized color x object attention: old/new/held 1.000, permutation 1.000 |
+| `spiking_binding_relaxed_factor_seed1.json` | same, `--seed 1` | factorized seed 1: old/new/held 1.000, permutation 1.000 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

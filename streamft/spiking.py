@@ -39,6 +39,8 @@ class SpikingConfig:
     slots: int = 0
     slot_heads: int = 1
     slot_attr_keys: bool = False
+    slot_conj: bool = False
+    slot_factorized: bool = False
     write_token: int = -1
     read_token: int = -1
     mem_decay: float = 0.5
@@ -144,13 +146,22 @@ class SpikingLM(nn.Module):
             nn.init.constant_(self.mem_write.bias, -2.0)
         self.slot_key = None
         self.slot_out = None
+        self.slot_key_c = None
         if config.slots > 0:
             self.slot_key = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_val = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_query = nn.Linear(config.dim, config.dim, bias=False)
             for layer in (self.slot_key, self.slot_val, self.slot_query):
                 nn.init.normal_(layer.weight, mean=0.0, std=0.02)
-            if config.slot_heads > 1:
+            if config.slot_factorized:
+                self.slot_key_c = nn.Linear(config.dim, config.dim, bias=False)
+                self.slot_key_o = nn.Linear(config.dim, config.dim, bias=False)
+                self.slot_query_c = nn.Linear(config.dim, config.dim, bias=False)
+                self.slot_query_o = nn.Linear(config.dim, config.dim, bias=False)
+                for layer in (self.slot_key_c, self.slot_key_o,
+                              self.slot_query_c, self.slot_query_o):
+                    nn.init.normal_(layer.weight, mean=0.0, std=0.02)
+            if config.slot_heads > 1 and not config.slot_factorized:
                 self.slot_out = nn.Linear(config.dim, config.dim, bias=False)
                 nn.init.normal_(self.slot_out.weight, mean=0.0, std=0.02)
         self._mem_copy = None
@@ -175,6 +186,8 @@ class SpikingLM(nn.Module):
             "mem_v": [],
             "slot_k": [],
             "slot_v": [],
+            "slot_kc": [],
+            "slot_ko": [],
             "prev": [],
             "new_stmt": True,
             "t": 0,
@@ -245,32 +258,66 @@ class SpikingLM(nn.Module):
                 if boundary:
                     key_in = state["stmt"]
                     if self.config.slot_attr_keys and len(prev) >= 2:
-                        key_in = prev[-2] + prev[-1]
-                    state["slot_k"].append(self.slot_key(key_in))
+                        c, o = prev[-2], prev[-1]
+                        if self.config.slot_factorized:
+                            state["slot_kc"].append(self.slot_key_c(c))
+                            state["slot_ko"].append(self.slot_key_o(o))
+                        else:
+                            key_in = c + o
+                            if self.config.slot_conj:
+                                key_in = key_in + c * o
+                            state["slot_k"].append(self.slot_key(key_in))
+                    else:
+                        state["slot_k"].append(self.slot_key(key_in))
                     state["slot_v"].append(self.slot_val(state["name"]))
                     state["stmt"] = torch.zeros_like(state["stmt"])
                     state["name"] = torch.zeros_like(state["name"])
-                    state["new_stmt"] = len(state["slot_k"]) < self.config.slots
+                    state["new_stmt"] = len(state["slot_v"]) < self.config.slots
                 if do_read:
-                    sk = torch.stack(state["slot_k"], dim=1)
                     sv = torch.stack(state["slot_v"], dim=1)
-                    batch = sk.size(0)
-                    heads = self.config.slot_heads
-                    dh = self.dim // heads
-                    q_in = readout
-                    if self.config.slot_attr_keys and len(prev) >= 2:
-                        q_in = prev[-2] + prev[-1]
-                    mq = self.slot_query(q_in).view(batch, heads, 1, dh)
-                    mk = sk.view(batch, sk.size(1), heads, dh).permute(0, 2, 1, 3)
-                    mv = sv.view(batch, sv.size(1), heads, dh).permute(0, 2, 1, 3)
-                    mscores = mq @ mk.transpose(-1, -2) / math.sqrt(dh)
-                    mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
-                    mctx = (mattn @ mv).squeeze(2).reshape(batch, self.dim)
-                    if self.slot_out is not None:
-                        mctx = self.slot_out(mctx)
-                    readout = readout + mctx
-                    mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
-                    self._mem_attn = mattn.mean(dim=1).squeeze(1)
+                    batch = sv.size(0)
+                    if self.config.slot_factorized:
+                        kc = torch.stack(state["slot_kc"], dim=1)
+                        ko = torch.stack(state["slot_ko"], dim=1)
+                        c, o = prev[-2], prev[-1]
+                        qc = self.slot_query_c(c).unsqueeze(1)
+                        qo = self.slot_query_o(o).unsqueeze(1)
+                        ac = torch.softmax(
+                            qc @ kc.transpose(-1, -2) / math.sqrt(self.dim),
+                            dim=-1).float()
+                        ao = torch.softmax(
+                            qo @ ko.transpose(-1, -2) / math.sqrt(self.dim),
+                            dim=-1).float()
+                        mattn = ac * ao
+                        mattn = mattn / mattn.sum(dim=-1, keepdim=True).clamp_min(1e-9)
+                        mctx = (mattn @ sv.float()).squeeze(1)
+                        if self.slot_out is not None:
+                            mctx = self.slot_out(mctx)
+                        mctx = mctx.to(readout.dtype)
+                        readout = readout + mctx
+                        mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
+                        self._mem_attn = mattn.squeeze(1)
+                    else:
+                        sk = torch.stack(state["slot_k"], dim=1)
+                        heads = self.config.slot_heads
+                        dh = self.dim // heads
+                        q_in = readout
+                        if self.config.slot_attr_keys and len(prev) >= 2:
+                            c, o = prev[-2], prev[-1]
+                            q_in = c + o
+                            if self.config.slot_conj:
+                                q_in = q_in + c * o
+                        mq = self.slot_query(q_in).view(batch, heads, 1, dh)
+                        mk = sk.view(batch, sk.size(1), heads, dh).permute(0, 2, 1, 3)
+                        mv = sv.view(batch, sv.size(1), heads, dh).permute(0, 2, 1, 3)
+                        mscores = mq @ mk.transpose(-1, -2) / math.sqrt(dh)
+                        mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
+                        mctx = (mattn @ mv).squeeze(2).reshape(batch, self.dim)
+                        if self.slot_out is not None:
+                            mctx = self.slot_out(mctx)
+                        readout = readout + mctx
+                        mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
+                        self._mem_attn = mattn.mean(dim=1).squeeze(1)
             else:
                 g_write = torch.sigmoid(self.mem_write(emb_raw))
                 state["mem_k"].append(g_write * self.mem_key(state["stmt"]))

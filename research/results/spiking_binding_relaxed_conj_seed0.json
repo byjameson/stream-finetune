@@ -1,0 +1,840 @@
+{
+  "question": "Does binding survive variable statement lengths?",
+  "config": {
+    "steps_a": 6000,
+    "curriculum": false,
+    "steps_0": 2000,
+    "steps_1": 2000,
+    "steps_2": 2000,
+    "steps_mix": 3000,
+    "steps_b": 3000,
+    "batch": 64,
+    "dim": 256,
+    "layers": 2,
+    "heads": 4,
+    "slot_conj": true,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "replay": 0.2,
+    "n_train": 6000,
+    "n_test": 300,
+    "arms": "replay_20",
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_relaxed_conj_seed0.json"
+  },
+  "max_len": 56,
+  "results": [
+    {
+      "arm": "replay_20",
+      "seed": 0,
+      "replay": 0.2,
+      "sec": 2461.5,
+      "train_loss": 1.6941156387329102,
+      "stages": [],
+      "before": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 33,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt3": {
+                  "n": 44,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 52,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 38,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 53,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 43,
+                "mia": 59,
+                "sam": 35,
+                "lily": 31,
+                "zoe": 43,
+                "max": 49,
+                "ben": 40
+              }
+            },
+            "1": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 44,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 38,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 48,
+                  "acc": 1.0
+                },
+                "answer_at_stmt3": {
+                  "n": 32,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 57,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 42,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 32,
+                "mia": 50,
+                "sam": 54,
+                "lily": 42,
+                "zoe": 41,
+                "max": 39,
+                "ben": 42
+              }
+            },
+            "2": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 45,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt2": {
+                  "n": 42,
+                  "acc": 1.0
+                },
+                "answer_at_stmt3": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 45,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 36,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 52,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 47,
+                "mia": 44,
+                "sam": 48,
+                "lily": 46,
+                "zoe": 42,
+                "max": 35,
+                "ben": 38
+              }
+            }
+          },
+          "mean": 1.0
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.4300000071525574,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 41,
+                  "acc": 0.2682926654815674
+                },
+                "answer_at_stmt1": {
+                  "n": 46,
+                  "acc": 0.43478262424468994
+                },
+                "answer_at_stmt2": {
+                  "n": 41,
+                  "acc": 0.5121951103210449
+                },
+                "answer_at_stmt3": {
+                  "n": 37,
+                  "acc": 0.5675675868988037
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.3829787075519562
+                },
+                "answer_at_stmt5": {
+                  "n": 37,
+                  "acc": 0.37837839126586914
+                },
+                "answer_at_stmt6": {
+                  "n": 51,
+                  "acc": 0.4705882668495178
+                }
+              },
+              "pred_counts": {
+                "tom": 99,
+                "mia": 17,
+                "sam": 23,
+                "lily": 47,
+                "zoe": 23,
+                "max": 27,
+                "ben": 50,
+                "has": 10,
+                "<eos>": 4
+              }
+            },
+            "1": {
+              "accuracy": 0.4300000071525574,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 43,
+                  "acc": 0.4651162624359131
+                },
+                "answer_at_stmt1": {
+                  "n": 39,
+                  "acc": 0.43589743971824646
+                },
+                "answer_at_stmt2": {
+                  "n": 36,
+                  "acc": 0.3888888955116272
+                },
+                "answer_at_stmt3": {
+                  "n": 62,
+                  "acc": 0.32258063554763794
+                },
+                "answer_at_stmt4": {
+                  "n": 42,
+                  "acc": 0.5
+                },
+                "answer_at_stmt5": {
+                  "n": 46,
+                  "acc": 0.5
+                },
+                "answer_at_stmt6": {
+                  "n": 32,
+                  "acc": 0.4375
+                }
+              },
+              "pred_counts": {
+                "tom": 96,
+                "mia": 18,
+                "sam": 31,
+                "lily": 49,
+                "zoe": 21,
+                "max": 33,
+                "ben": 36,
+                "has": 12,
+                "<eos>": 4
+              }
+            },
+            "2": {
+              "accuracy": 0.42000001668930054,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 39,
+                  "acc": 0.4615384638309479
+                },
+                "answer_at_stmt1": {
+                  "n": 36,
+                  "acc": 0.5
+                },
+                "answer_at_stmt2": {
+                  "n": 47,
+                  "acc": 0.3404255211353302
+                },
+                "answer_at_stmt3": {
+                  "n": 41,
+                  "acc": 0.4390243887901306
+                },
+                "answer_at_stmt4": {
+                  "n": 44,
+                  "acc": 0.5
+                },
+                "answer_at_stmt5": {
+                  "n": 52,
+                  "acc": 0.3076923191547394
+                },
+                "answer_at_stmt6": {
+                  "n": 41,
+                  "acc": 0.4390243887901306
+                }
+              },
+              "pred_counts": {
+                "tom": 86,
+                "mia": 11,
+                "sam": 32,
+                "lily": 36,
+                "zoe": 24,
+                "max": 32,
+                "ben": 33,
+                "has": 16,
+                "<eos>": 30
+              }
+            }
+          },
+          "mean": 0.4266666769981384
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.42000001668930054,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 42,
+                  "acc": 0.4761904776096344
+                },
+                "answer_at_stmt1": {
+                  "n": 40,
+                  "acc": 0.4749999940395355
+                },
+                "answer_at_stmt2": {
+                  "n": 48,
+                  "acc": 0.4375
+                },
+                "answer_at_stmt3": {
+                  "n": 52,
+                  "acc": 0.3461538553237915
+                },
+                "answer_at_stmt4": {
+                  "n": 44,
+                  "acc": 0.3181818127632141
+                },
+                "answer_at_stmt5": {
+                  "n": 32,
+                  "acc": 0.4375
+                },
+                "answer_at_stmt6": {
+                  "n": 42,
+                  "acc": 0.4761904776096344
+                }
+              },
+              "pred_counts": {
+                "tom": 102,
+                "mia": 12,
+                "sam": 27,
+                "lily": 31,
+                "zoe": 19,
+                "max": 34,
+                "ben": 60,
+                "has": 15
+              }
+            },
+            "1": {
+              "accuracy": 0.4000000059604645,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 46,
+                  "acc": 0.45652174949645996
+                },
+                "answer_at_stmt1": {
+                  "n": 36,
+                  "acc": 0.3055555522441864
+                },
+                "answer_at_stmt2": {
+                  "n": 40,
+                  "acc": 0.375
+                },
+                "answer_at_stmt3": {
+                  "n": 52,
+                  "acc": 0.38461539149284363
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.46808508038520813
+                },
+                "answer_at_stmt5": {
+                  "n": 36,
+                  "acc": 0.3888888955116272
+                },
+                "answer_at_stmt6": {
+                  "n": 43,
+                  "acc": 0.39534884691238403
+                }
+              },
+              "pred_counts": {
+                "tom": 124,
+                "mia": 9,
+                "sam": 21,
+                "lily": 27,
+                "zoe": 28,
+                "max": 33,
+                "ben": 50,
+                "has": 6,
+                "<eos>": 2
+              }
+            },
+            "2": {
+              "accuracy": 0.3700000047683716,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 40,
+                  "acc": 0.5
+                },
+                "answer_at_stmt1": {
+                  "n": 44,
+                  "acc": 0.3636363744735718
+                },
+                "answer_at_stmt2": {
+                  "n": 38,
+                  "acc": 0.4736842215061188
+                },
+                "answer_at_stmt3": {
+                  "n": 35,
+                  "acc": 0.2571428716182709
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.2978723347187042
+                },
+                "answer_at_stmt5": {
+                  "n": 49,
+                  "acc": 0.3877550959587097
+                },
+                "answer_at_stmt6": {
+                  "n": 47,
+                  "acc": 0.3191489279270172
+                }
+              },
+              "pred_counts": {
+                "tom": 90,
+                "mia": 7,
+                "sam": 22,
+                "lily": 17,
+                "zoe": 20,
+                "max": 40,
+                "ben": 52,
+                "has": 17,
+                "<eos>": 35
+              }
+            }
+          },
+          "mean": 0.39666667580604553
+        }
+      },
+      "after": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 33,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt3": {
+                  "n": 44,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 52,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 38,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 53,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 43,
+                "mia": 59,
+                "sam": 35,
+                "lily": 31,
+                "zoe": 43,
+                "max": 49,
+                "ben": 40
+              }
+            },
+            "1": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 44,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 38,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 48,
+                  "acc": 1.0
+                },
+                "answer_at_stmt3": {
+                  "n": 32,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 57,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 42,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 32,
+                "mia": 50,
+                "sam": 54,
+                "lily": 42,
+                "zoe": 41,
+                "max": 39,
+                "ben": 42
+              }
+            },
+            "2": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 45,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt2": {
+                  "n": 42,
+                  "acc": 1.0
+                },
+                "answer_at_stmt3": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 45,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 36,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 52,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 47,
+                "mia": 44,
+                "sam": 48,
+                "lily": 46,
+                "zoe": 42,
+                "max": 35,
+                "ben": 38
+              }
+            }
+          },
+          "mean": 1.0
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt1": {
+                  "n": 46,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt3": {
+                  "n": 37,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt5": {
+                  "n": 37,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 51,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 51,
+                "mia": 47,
+                "sam": 31,
+                "lily": 41,
+                "zoe": 30,
+                "max": 58,
+                "ben": 42
+              }
+            },
+            "1": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 43,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 36,
+                  "acc": 1.0
+                },
+                "answer_at_stmt3": {
+                  "n": 62,
+                  "acc": 1.0
+                },
+                "answer_at_stmt4": {
+                  "n": 42,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 46,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 32,
+                  "acc": 1.0
+                }
+              },
+              "pred_counts": {
+                "tom": 40,
+                "mia": 50,
+                "sam": 45,
+                "lily": 42,
+                "zoe": 36,
+                "max": 50,
+                "ben": 37
+              }
+            },
+            "2": {
+              "accuracy": 1.0,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 39,
+                  "acc": 1.0
+                },
+                "answer_at_stmt1": {
+                  "n": 36,
+                  "acc": 1.0
+                },
+                "answer_at_stmt2": {
+                  "n": 47,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt3": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                },
+                "answer_at_stmt4": {
+                  "n": 44,
+                  "acc": 1.0
+                },
+                "answer_at_stmt5": {
+                  "n": 52,
+                  "acc": 1.0
+                },
+                "answer_at_stmt6": {
+                  "n": 41,
+                  "acc": 0.9999999403953552
+                }
+              },
+              "pred_counts": {
+                "tom": 36,
+                "mia": 33,
+                "sam": 54,
+                "lily": 56,
+                "zoe": 46,
+                "max": 40,
+                "ben": 35
+              }
+            }
+          },
+          "mean": 1.0
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.7866666913032532,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 42,
+                  "acc": 0.785714328289032
+                },
+                "answer_at_stmt1": {
+                  "n": 40,
+                  "acc": 0.824999988079071
+                },
+                "answer_at_stmt2": {
+                  "n": 48,
+                  "acc": 0.8125
+                },
+                "answer_at_stmt3": {
+                  "n": 52,
+                  "acc": 0.692307710647583
+                },
+                "answer_at_stmt4": {
+                  "n": 44,
+                  "acc": 0.8181818723678589
+                },
+                "answer_at_stmt5": {
+                  "n": 32,
+                  "acc": 0.8125
+                },
+                "answer_at_stmt6": {
+                  "n": 42,
+                  "acc": 0.785714328289032
+                }
+              },
+              "pred_counts": {
+                "tom": 47,
+                "mia": 33,
+                "sam": 46,
+                "lily": 44,
+                "zoe": 32,
+                "max": 46,
+                "ben": 51,
+                "has": 1
+              }
+            },
+            "1": {
+              "accuracy": 0.7900000214576721,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 46,
+                  "acc": 0.8913043737411499
+                },
+                "answer_at_stmt1": {
+                  "n": 36,
+                  "acc": 0.694444477558136
+                },
+                "answer_at_stmt2": {
+                  "n": 40,
+                  "acc": 0.675000011920929
+                },
+                "answer_at_stmt3": {
+                  "n": 52,
+                  "acc": 0.8076923489570618
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.8297871947288513
+                },
+                "answer_at_stmt5": {
+                  "n": 36,
+                  "acc": 0.8611111044883728
+                },
+                "answer_at_stmt6": {
+                  "n": 43,
+                  "acc": 0.7441860437393188
+                }
+              },
+              "pred_counts": {
+                "tom": 57,
+                "mia": 41,
+                "sam": 56,
+                "lily": 40,
+                "zoe": 30,
+                "max": 26,
+                "ben": 50
+              }
+            },
+            "2": {
+              "accuracy": 0.8199999928474426,
+              "by_answer_pos": {
+                "answer_at_stmt0": {
+                  "n": 40,
+                  "acc": 0.800000011920929
+                },
+                "answer_at_stmt1": {
+                  "n": 44,
+                  "acc": 0.7045454978942871
+                },
+                "answer_at_stmt2": {
+                  "n": 38,
+                  "acc": 0.8157894611358643
+                },
+                "answer_at_stmt3": {
+                  "n": 35,
+                  "acc": 0.7714285850524902
+                },
+                "answer_at_stmt4": {
+                  "n": 47,
+                  "acc": 0.8723403811454773
+                },
+                "answer_at_stmt5": {
+                  "n": 49,
+                  "acc": 0.9387754797935486
+                },
+                "answer_at_stmt6": {
+                  "n": 47,
+                  "acc": 0.8085106015205383
+                }
+              },
+              "pred_counts": {
+                "tom": 56,
+                "mia": 28,
+                "sam": 36,
+                "lily": 43,
+                "zoe": 33,
+                "max": 62,
+                "ben": 42
+              }
+            }
+          },
+          "mean": 0.7988889018694559
+        }
+      },
+      "old_perm": 1.0
+    }
+  ]
+}

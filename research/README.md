@@ -129,6 +129,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   9k phase-A steps gives 0.786/0.611; no improvement. The gate fails on held
   composition, not old/new or balance.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Factorized color-object attention (positive, gate passed):** separate color
+  and object keys/queries, multiplied attention. Relaxed structure: old/new/held
+  1.000/1.000/1.000, permutation 1.000, held 1.000 at every filler length on two
+  seeds. The held gap was the additive key, not data/training.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.

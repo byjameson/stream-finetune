@@ -105,7 +105,11 @@
   replay old/new 1.000, permutation 1.000, held 0.786/0.611. No improvement over
   random mixed filler (0.803/0.651); the held gap is composition/data, not
   filler-length practice.
-- 126 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Factorized color-object attention passes the relaxed gate: separate color/
+  object keys/queries, multiplied attention; old/new/held 1.000/1.000/1.000,
+  permutation 1.000, held 1.000 at every filler length on two seeds. The held
+  gap was the additive key, not data or training.
+- 128 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
