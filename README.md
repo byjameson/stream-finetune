@@ -680,8 +680,10 @@ passes on both seeds at seven statements.
 
 **Relaxed structure (partial):** variable filler lengths 0/1/2 with
 token-triggered boundaries/read. Replay keeps old/new at **1.000** and
-permutation at **1.000**, but held composition drops to **0.803/0.651**. The gate
-fails on held-out composition, not on old/new or balance.
+permutation at **1.000**, but held composition drops to **0.803/0.651**. A
+0->1->2->mixed filler curriculum with 6k stories and 9k phase-A steps gives
+**0.786/0.611** — no improvement. The gate fails on held-out composition, not on
+old/new or balance; more filler-length practice does not fix it.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3

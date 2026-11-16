@@ -192,8 +192,30 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
         "held": {f: make_data(args.n_test, held_triples, args.seed + 51 + f, f)
                  for f in (0, 1, 2)},
     }
-    losses_a, sec_a = train_phase(model, old_train, old_train, args.steps_a,
-                                  args.batch, args.lr, device, args.amp)
+    stage_rows = []
+    if args.curriculum:
+        total_sec = 0.0
+        for f, steps in ((0, args.steps_0), (1, args.steps_1),
+                         (2, args.steps_2)):
+            losses, sec = train_phase(model, old_train, old_train, steps,
+                                      args.batch, args.lr, device, args.amp,
+                                      fillers=(f,))
+            total_sec += sec
+            stage_rows.append({"filler": f, "steps": steps,
+                               "loss": losses[-1], "sec": round(sec, 1)})
+            print(json.dumps({"event": "stage", "filler": f,
+                              "steps": steps, "sec": round(sec, 1)}),
+                  flush=True)
+        losses_a, sec = train_phase(model, old_train, old_train, args.steps_mix,
+                                    args.batch, args.lr, device, args.amp,
+                                    fillers=(0, 1, 2))
+        total_sec += sec
+        stage_rows.append({"filler": "mixed", "steps": args.steps_mix,
+                           "loss": losses_a[-1], "sec": round(sec, 1)})
+        sec_a = total_sec
+    else:
+        losses_a, sec_a = train_phase(model, old_train, old_train, args.steps_a,
+                                      args.batch, args.lr, device, args.amp)
     before = {k: eval_set(model, v, device) for k, v in sets.items()}
     print(json.dumps({"event": "after_a", "seed": args.seed,
                       "sec": round(sec_a, 1), "loss": losses_a[-1],
@@ -209,7 +231,7 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
     perm_ev = evaluate(model, perm, device)
     row = {"arm": name, "seed": args.seed,
            "replay": replay, "sec": round(sec_a + sec_b, 1),
-           "train_loss": losses_b[-1],
+           "train_loss": losses_b[-1], "stages": stage_rows,
            "before": before, "after": after,
            "old_perm": perm_ev["accuracy"]}
     print(json.dumps({"event": "arm", "arm": name, "seed": args.seed,
@@ -223,6 +245,11 @@ def run_arm(name, args, train_triples, old_triples, new_triples,
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--steps-a", type=int, default=5000)
+    ap.add_argument("--curriculum", action="store_true")
+    ap.add_argument("--steps-0", type=int, default=2000)
+    ap.add_argument("--steps-1", type=int, default=2000)
+    ap.add_argument("--steps-2", type=int, default=2000)
+    ap.add_argument("--steps-mix", type=int, default=3000)
     ap.add_argument("--steps-b", type=int, default=2500)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--dim", type=int, default=256)
@@ -231,7 +258,7 @@ def main():
     ap.add_argument("--lr", type=float, default=8e-4)
     ap.add_argument("--adapt", type=float, default=0.1)
     ap.add_argument("--replay", type=float, default=0.2)
-    ap.add_argument("--n-train", type=int, default=4000)
+    ap.add_argument("--n-train", type=int, default=6000)
     ap.add_argument("--n-test", type=int, default=300)
     ap.add_argument("--arms", default="naive,replay_20")
     ap.add_argument("--seed", type=int, default=0)

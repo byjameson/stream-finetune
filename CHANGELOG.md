@@ -101,7 +101,11 @@
 - Relaxed structure (variable filler 0/1/2, token-triggered boundaries/read):
   replay old/new 1.000, permutation 1.000, but held composition 0.803/0.651.
   The gate fails on held composition, not on old/new or balance.
-- 125 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Relaxed filler curriculum (0->1->2->mixed, 6k stories, 9k phase-A steps):
+  replay old/new 1.000, permutation 1.000, held 0.786/0.611. No improvement over
+  random mixed filler (0.803/0.651); the held gap is composition/data, not
+  filler-length practice.
+- 126 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
