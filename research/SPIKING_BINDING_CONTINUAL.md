@@ -306,6 +306,25 @@ This is the first relaxed-structure configuration that passes the full gate.
 The result says the earlier held failure was the additive key, not a lack of
 data, steps, or length practice.
 
+### Eight-statement factorized relaxed (positive, gate passed)
+
+Eight statements, eight names (adding `ava`), sequence length 63, filler 0/1/2,
+factorized color-object attention, copy-only, replay 20%, 6k + 3k steps,
+seeds 0 and 1.
+
+Phase A: old **1.000** on both seeds; new/held 0.382/0.366 (seed 0) and
+0.478/0.461 (seed 1) before phase B.
+
+| arm | old | new | held | permutation |
+|---|---:|---:|---:|---:|
+| replay, seed 0 | **1.000** | **1.000** | **1.000** | **1.000** |
+| replay, seed 1 | **1.000** | **1.000** | **1.000** | **1.000** |
+
+Old and held are 1.000 at every filler length. This passes the full gate at
+eight statements: balanced positions, permutation invariance, and held-out
+composition. The factorized mechanism scales from seven to eight statements
+without a new failure mode.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -397,7 +416,13 @@ data, steps, or length practice.
     seeds, and held is 1.000 at every filler length. The earlier held failure
     was the additive key, not a lack of data or training.
 
-15. **The practical rule transfers to the learnable setup:** store old stories
+15. **The eight-statement relaxed gate also passes.** Eight statements/eight
+    names, sequence length 63, fillers 0/1/2: phase A old 1.000; replay
+    old/new/held **1.000/1.000/1.000**, permutation **1.000**, held 1.000 at
+    every filler length on both seeds. The factorized mechanism scales to eight
+    statements.
+
+16. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -422,16 +447,18 @@ data, steps, or length practice.
   not improve held (0.786/0.611) with the summed key; the gap is composition.
 - Factorized color-object attention removes the relaxed held gap: 1.000/1.000
   with 6k + 3k steps and replay, across filler lengths 0/1/2.
+- Eight-statement runs add `ava` and use sequence length 63; held is 1.000 on
+  both seeds and every filler length with factorized attention.
 - The relaxed positive still uses token-triggered known `.`/`?` boundaries,
-  seven statements, single-token answers, and task-structured color/object
-  factors. It is not a general language model.
+  seven/eight statements, single-token answers, and task-structured color/
+  object factors. It is not a general language model.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Move to 8+ statements or multi-token answers with factorized color-object
-  attention; the relaxed seven-statement gate passes.
+- Move to multi-token answers with factorized color-object attention; the
+  eight-statement relaxed gate passes.
 - Relax the structure further: learned statement boundaries, no fixed name
   position, or keys from the recurrent state instead of raw token embeddings.
 - Run the factorized model on more seeds and sweep the replay fraction.
