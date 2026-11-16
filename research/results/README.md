@@ -91,6 +91,9 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_relaxed_factor_seed1.json` | same, `--seed 1` | factorized seed 1: old/new/held 1.000, permutation 1.000 |
 | `spiking_binding_relaxed8_seed0.json` | `research/spiking_binding_relaxed8.py` (`--slot-factorized`) | 8 statements, 8 names: old/new/held 1.000, permutation 1.000 |
 | `spiking_binding_relaxed8_seed1.json` | same, `--seed 1` | 8 statements seed 1: old/new/held 1.000, permutation 1.000 |
+| `spiking_binding_multitoken_sanity.json` | `research/spiking_binding_multitoken.py` | 2-token answer without color copy: name 1.000, color 0.18, exact 0.135 |
+| `spiking_binding_multitoken_seed0.json` | same + `--query-color-copy` | 2-token answer: old/new/held 1.000, permutation 1.000 |
+| `spiking_binding_multitoken_seed1.json` | same, `--seed 1` | seed 1: name read fails; old 0.231, new 0.354, held 0.341 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant
