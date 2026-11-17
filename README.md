@@ -708,6 +708,14 @@ exact **1.000/1.000/1.000**, permutation **1.000**, name/color 1.000 at every
 filler length.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Learned boundaries, two-token answers (positive, gate passed):** statements
+end with a generic `|`; learned write/read gates replace the known `.`/`?`
+boundaries. Two seeds: phase-A old **1.000**, phase-B old/new/held
+**1.000/1.000/1.000**, permutation **1.000**, name/color 1.000 at every filler
+length. The remaining structure is a task-specific color/object factor and a
+task-specific color-copy readout, not a general language model.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

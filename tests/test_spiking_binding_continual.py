@@ -274,6 +274,25 @@ def test_multitoken_curriculum_passes_gate():
             assert cell["color_acc"] > 0.95
 
 
+def test_learned_boundary_curriculum_passes_gate():
+    for name in ("spiking_binding_learned_boundary_curr_seed0.json",
+                 "spiking_binding_learned_boundary_curr_seed1.json"):
+        payload = json.loads((ROOT / "research/results" / name)
+                             .read_text(encoding="utf-8"))
+        row = payload["results"][0]
+        assert row["before"]["old"]["mean"] > 0.95
+        assert row["after"]["old"]["mean"] > 0.95
+        assert row["after"]["new"]["mean"] > 0.95
+        assert row["after"]["held"]["mean"] > 0.95
+        assert row["old_perm"] > 0.95
+        for split in ("old", "new", "held"):
+            for filler in ("0", "1", "2"):
+                cell = row["after"][split]["by_filler"][filler]
+                assert cell["accuracy"] > 0.95
+                assert cell["name_acc"] > 0.95
+                assert cell["color_acc"] > 0.95
+
+
 
 
 
