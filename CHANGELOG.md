@@ -16,6 +16,10 @@
 - 50M/500M spiking run stopped at 1,500 steps: 1.3256 bpb vs 1.327 for 21M and
   1.336 for 4.3M; no scaling win. The active direction is the spiking research
   line; the Qwen assistant is parked.
+- Generative data diversity: 4.3M, 3000 steps, 16M tokens. TinyStories-only:
+  TS 1.566 / WikiText 4.455 bpb. Mixed 8M TinyStories + 8M WikiText: TS 1.702
+  / WikiText 2.906 bpb. The 21M/50M TinyStories models stay at WikiText 4.03;
+  data diversity moves the general-text metric where parameter scaling did not.
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -141,7 +145,7 @@
   (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
   (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
   (0.579/0.597). Documented as a negative scale result.
-- 149 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 151 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

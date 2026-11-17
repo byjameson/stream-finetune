@@ -557,6 +557,13 @@ task but discards all new learning. [`research/SPIKING_SHIFT.md`](research/SPIKI
 slightly worse on a fixed sample-quality probe. More parameters did not buy quality at
 this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md)
 
+**Generative data diversity (first generative result):** a 4.3M model trained for
+3,000 steps on 16M tokens. TinyStories-only: TinyStories **1.566** / WikiText
+**4.455** bpb. Mixed 8M TinyStories + 8M WikiText: TinyStories **1.702** /
+WikiText **2.906** bpb. The 21M/50M TinyStories-only models stay at WikiText
+4.03, so data diversity moves the general-text metric where parameter scaling
+did not. [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
+
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains
 **99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback

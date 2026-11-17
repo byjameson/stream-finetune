@@ -1,0 +1,113 @@
+{
+  "question": "Does data diversity improve WikiText bpb at a fixed budget?",
+  "config": {
+    "seq": 128,
+    "batches": 8,
+    "batch_size": 8,
+    "max_tokens": 200000,
+    "seed": 0
+  },
+  "runs": [
+    {
+      "name": "spiking_4m_10k",
+      "model": "checkpoints/spiking_4m_10k",
+      "tinystories_bpb": 1.3024997051365534,
+      "wikitext_bpb": 4.0033711806049945,
+      "tinystories": {
+        "loss": 3.7815673649311066,
+        "ppl": 43.884771310902984,
+        "bpb": 1.3024997051365534,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 7.9467469453811646,
+        "ppl": 2826.36565757256,
+        "bpb": 4.0033711806049945,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    },
+    {
+      "name": "spiking_21m",
+      "model": "checkpoints/spiking_21m",
+      "tinystories_bpb": 1.2864752186701935,
+      "wikitext_bpb": 4.02965505507574,
+      "tinystories": {
+        "loss": 3.735043227672577,
+        "ppl": 41.88983632409387,
+        "bpb": 1.2864752186701935,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 7.998920798301697,
+        "ppl": 2977.7426674208073,
+        "bpb": 4.02965505507574,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    },
+    {
+      "name": "spiking_50m",
+      "model": "checkpoints/spiking_50m",
+      "tinystories_bpb": 1.2865808037179536,
+      "wikitext_bpb": 4.030278272111837,
+      "tinystories": {
+        "loss": 3.7353497743606567,
+        "ppl": 41.90267948309658,
+        "bpb": 1.2865808037179536,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 8.00015789270401,
+        "ppl": 2981.4286957185977,
+        "bpb": 4.030278272111837,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    },
+    {
+      "name": "ts_only_3k",
+      "model": "checkpoints/spiking_ts4m_3k",
+      "tinystories_bpb": 1.5662441024360452,
+      "wikitext_bpb": 4.454552569494684,
+      "tinystories": {
+        "loss": 4.5473005175590515,
+        "ppl": 94.37729428318018,
+        "bpb": 1.5662441024360452,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 8.842348217964172,
+        "ppl": 6921.226120531286,
+        "bpb": 4.454552569494684,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    },
+    {
+      "name": "mix_3k",
+      "model": "checkpoints/spiking_mix4m",
+      "tinystories_bpb": 1.702473573052621,
+      "wikitext_bpb": 2.9064039212898094,
+      "tinystories": {
+        "loss": 4.9428176283836365,
+        "ppl": 140.1646255238925,
+        "bpb": 1.702473573052621,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 5.769251823425293,
+        "ppl": 320.2980035155231,
+        "bpb": 2.9064039212898094,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    }
+  ],
+  "note": "ts_only_3k and mix_3k use the same 4.3M architecture, 3000 steps, 16M training tokens and seed. mix is 8M TinyStories + 8M WikiText interleaved. The older 4.3M/21M/50M models are TinyStories-only baselines."
+}
