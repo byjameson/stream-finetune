@@ -716,6 +716,14 @@ length. The remaining structure is a task-specific color/object factor and a
 task-specific color-copy readout, not a general language model.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Raw boundaries, no separator (positive, gate passed):** statements are
+concatenated with no separator token at all. A write candidate on the object
+token plus a context read gate gives the same result: two seeds, phase-A old
+**1.000**, phase-B old/new/held **1.000/1.000/1.000**, permutation **1.000**,
+name/color 1.000 at fillers 0/1/2. The gate is supervised with object positions,
+so this is learned write/read classification, not unsupervised segmentation.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

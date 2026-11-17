@@ -122,7 +122,12 @@
   factorized attention and query-color copy. Two seeds: phase-A old 1.000;
   phase-B old/new/held 1.000/1.000/1.000, permutation 1.000, name/color 1.000 at
   fillers 0/1/2. Known `.`/`?` boundary tokens are no longer used.
-- 134 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Raw boundaries, no separator: statements are concatenated directly; a write
+  candidate on the object token plus a context read gate. Two seeds: phase-A old
+  1.000; phase-B old/new/held 1.000/1.000/1.000, permutation 1.000, name/color
+  1.000 at fillers 0/1/2. The gates are supervised with object positions, not
+  unsupervised segmentation.
+- 138 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
