@@ -442,6 +442,32 @@ All 18 split/filler cells are above 0.95; seed 1's lowest cell is held filler 0
 at 0.997 exact, 0.997 name, 1.000 color. This is the first positive result on
 English-like templates rather than symbolic statements.
 
+### Wide natural-language templates (positive, gate passed)
+
+The template surface now varies the verb, article and adjectives:
+
+```text
+tom owns the old red ball.
+mia likes a small blue cup.
+who found a big yellow car? sam yellow.
+```
+
+The binding is still carried by color and object. The same learned `.`/`?`
+gates, factorized color-object attention and query-color copy are used.
+
+Protocol: eight statements, eight names, fillers 0/1/2, sequence length 75,
+dim 128, one layer, two heads, 3k red-only + 6k red+blue + 3k phase B, 20%
+replay, seeds 0 and 1.
+
+| seed | phase-A old | old | new | held | permutation |
+|---|---:|---:|---:|---:|---:|
+| 0 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+| 1 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+
+All 18 split/filler cells are 1.000, including name and color. The mechanism
+tolerates surface variation in verbs, articles and adjectives; it is still a
+fixed template set, not free-form language.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -573,7 +599,13 @@ English-like templates rather than symbolic statements.
     **1.000**, with all filler cells above 0.95. This is template surface
     variation, not free-form language.
 
-21. **The practical rule transfers to the learnable setup:** store old stories
+21. **Wide natural-language templates also pass.** Varying verbs (`has/owns/
+    likes/found`), articles (`a/the`) and adjectives (`big/small/old/new`) gives
+    both seeds phase-A old **1.000** and phase-B old/new/held
+    **1.000/1.000/1.000**, permutation **1.000**, all 18 split/filler cells
+    1.000. Surface variation does not break the binding mechanism.
+
+22. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -614,10 +646,11 @@ English-like templates rather than symbolic statements.
   gates with BCE targets at the object positions derived from the data layout.
   The gate learns to classify write/read positions; it is not unsupervised
   segmentation.
-- Natural-template runs are English-like but fixed: a 24-word vocabulary,
-  `name has a (big)*k color object .` and `who has ... ? name color`, no
-  paraphrases or free-form sentences. The `.`/`?` gates are supervised with
-  punctuation positions.
+- Natural-template runs are English-like but fixed: a 24-word vocabulary for
+  the narrow set, 31 words with the wide verbs/articles/adjectives, and a fixed
+  `name VERB ARTICLE (ADJ)*k color object .` grammar. No paraphrases or
+  free-form sentences. The `.`/`?` gates are supervised with punctuation
+  positions.
 - The positive results still use task-structured color/object factors and a
   task-structured color-copy readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -625,10 +658,10 @@ English-like templates rather than symbolic statements.
 
 ## Next
 
-- Broaden the natural-language templates (paraphrases, more verbs/adjectives,
-  more names/colors/objects) and then move to free-form sentences.
+- Move from fixed templates to free-form sentences and a broader vocabulary;
+  keep the same binding probe on held-out compositions.
 - Remove the supervised boundary targets: learn statement ends and query reads
   from next-token prediction or a self-supervised segmenter.
-- Run the natural-template curriculum on more seeds and sweep the replay
+- Run the wide natural-template curriculum on more seeds and sweep the replay
   fraction.
 - Try generative/distilled replay when storing old stories is not possible.
