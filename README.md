@@ -732,6 +732,13 @@ filler cells above 0.95. Still a fixed 24-word template set, not free-form
 language.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Wide natural-language templates (positive, gate passed):** verbs, articles
+and adjectives vary (`tom owns the old red ball.` / `who found a big yellow
+car? sam yellow.`). Two seeds: phase-A old **1.000**, phase-B old/new/held
+**1.000/1.000/1.000**, permutation **1.000**, all 18 split/filler cells 1.000.
+Still a fixed 31-word template set, not free-form language.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

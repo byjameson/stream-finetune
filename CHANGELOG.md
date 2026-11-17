@@ -132,7 +132,11 @@
   phase-A old 1.000; old/new/held 1.000/1.000/1.000 (seed 1 held 0.9989),
   permutation 1.000, all filler cells >0.95. Fixed 24-word template set, not
   free-form language.
-- 141 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Wide natural-language templates: varied verbs (`has/owns/likes/found`),
+  articles (`a/the`) and adjectives (`big/small/old/new`). Two seeds: phase-A
+  old 1.000; old/new/held 1.000/1.000/1.000, permutation 1.000, all 18
+  split/filler cells 1.000. Fixed 31-word template set.
+- 144 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

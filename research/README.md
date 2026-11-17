@@ -163,6 +163,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   1.000/1.000/1.000 (seed 1 held 0.9989), permutation 1.000, all filler cells
   above 0.95. Fixed template set, not free-form language.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Wide natural-language templates (positive, gate passed):** varied verbs,
+  articles and adjectives (`tom owns the old red ball.`). Two seeds: phase-A old
+  1.000, phase-B old/new/held 1.000/1.000/1.000, permutation 1.000, all 18
+  split/filler cells 1.000. Fixed 31-word template set.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.
@@ -210,6 +215,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_binding_learned_boundary.py` | learned `\|` boundaries + two-token answers; two-seed gate | ~45 min |
 | `spiking_binding_raw_boundary.py` | no separator token; learned object/query boundaries + two-token answers | ~45 min |
 | `spiking_binding_natural.py` | English-like templates with `.`/`?`; learned write/read gates + two-token answers | ~60-90 min |
+| `spiking_binding_natural_wide.py` | English-like templates with varied verbs/articles/adjectives; same gates | ~60-90 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
