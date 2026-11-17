@@ -44,6 +44,7 @@ class SpikingConfig:
     query_color_copy: bool = False
     color_copy_init: float = 1.0
     learned_boundaries: bool = False
+    raw_boundaries: bool = False
     write_token: int = -1
     read_token: int = -1
     mem_decay: float = 0.5
@@ -271,6 +272,10 @@ class SpikingLM(nn.Module):
             prev = state["prev"]
             if self.slot_key is not None:
                 if self.config.learned_boundaries:
+                    # The write gate is a candidate detector: in separator
+                    # mode it fires on the separator token, in raw mode on the
+                    # object token that ends a statement or the query. The read
+                    # gate uses statement context to pick the query object.
                     wlog = self.boundary_write(emb_raw)
                     rlog = self.boundary_read(emb_raw + state["stmt"])
                     self._write_logit = wlog
@@ -281,6 +286,9 @@ class SpikingLM(nn.Module):
                     # picks the query boundary; it is applied softly per row so
                     # one uncertain row cannot veto the whole batch.
                     boundary = float(write_p.mean().detach()) > 0.5
+                    need_prev = 1 if self.config.raw_boundaries else 2
+                    if boundary and len(prev) < need_prev:
+                        boundary = False
                     do_read = (boundary and len(state["slot_v"]) > 0
                                and float(read_p.mean().detach()) > 0.5)
                     if do_read:
@@ -305,8 +313,12 @@ class SpikingLM(nn.Module):
                     do_read = (read_pos < 0 or t == read_pos)
                 if boundary:
                     key_in = state["stmt"]
-                    if self.config.slot_attr_keys and len(prev) >= 2:
-                        c, o = prev[-2], prev[-1]
+                    min_prev = 1 if self.config.raw_boundaries else 2
+                    if self.config.slot_attr_keys and len(prev) >= min_prev:
+                        if self.config.raw_boundaries:
+                            c, o = prev[-1], emb_raw
+                        else:
+                            c, o = prev[-2], prev[-1]
                         if self.config.slot_factorized:
                             state["slot_kc"].append(self.slot_key_c(c))
                             state["slot_ko"].append(self.slot_key_o(o))
@@ -327,7 +339,10 @@ class SpikingLM(nn.Module):
                     if self.config.slot_factorized:
                         kc = torch.stack(state["slot_kc"], dim=1)
                         ko = torch.stack(state["slot_ko"], dim=1)
-                        c, o = prev[-2], prev[-1]
+                        if self.config.raw_boundaries:
+                            c, o = prev[-1], emb_raw
+                        else:
+                            c, o = prev[-2], prev[-1]
                         qc = self.slot_query_c(c).unsqueeze(1)
                         qo = self.slot_query_o(o).unsqueeze(1)
                         ac = torch.softmax(
@@ -352,8 +367,12 @@ class SpikingLM(nn.Module):
                         heads = self.config.slot_heads
                         dh = self.dim // heads
                         q_in = readout
-                        if self.config.slot_attr_keys and len(prev) >= 2:
-                            c, o = prev[-2], prev[-1]
+                        min_prev = 1 if self.config.raw_boundaries else 2
+                        if self.config.slot_attr_keys and len(prev) >= min_prev:
+                            if self.config.raw_boundaries:
+                                c, o = prev[-1], emb_raw
+                            else:
+                                c, o = prev[-2], prev[-1]
                             q_in = c + o
                             if self.config.slot_conj:
                                 q_in = q_in + c * o
@@ -371,7 +390,9 @@ class SpikingLM(nn.Module):
                         mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
                         self._mem_attn = mattn.mean(dim=1).squeeze(1)
                     if self.config.query_color_copy and len(prev) >= 2:
-                        state["query_color"] = prev[-2]
+                        state["query_color"] = (
+                            prev[-1] if self.config.raw_boundaries
+                            else prev[-2])
                         if self.config.learned_boundaries:
                             state["color_mask"] = read_p
                         else:

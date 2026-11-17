@@ -390,6 +390,32 @@ Two failures were needed to get here. A batch-mean scalar read gate gave color
 a read threshold that does not suppress statement writes, and setting the slot
 name at the first token after a boundary instead of only at the boundary.
 
+### Raw boundaries, no separator (positive, gate passed)
+
+The generic `|` token is removed entirely. Statements are concatenated as
+`name has (big)*k color object`, and the query is
+`who has color object name color <eos>`. There is no punctuation or separator
+token between statements.
+
+The write gate is a candidate detector on the object token. The read gate sees
+the token plus the statement state and picks the query object. Statement keys
+use the current object and the previous token (the color). A first attempt that
+asked the write gate to fire only at statement ends and not at the query object
+failed: the query object has the same token embedding. The candidate + read
+design removes that conflict.
+
+Protocol is the same as the learned-separator run: eight statements, fillers
+0/1/2, sequence padded to 63, dim 128, one layer, two heads, 3k red-only +
+6k red+blue + 3k phase B, 20% replay, seeds 0 and 1.
+
+| seed | phase-A old | old | new | held | permutation |
+|---|---:|---:|---:|---:|---:|
+| 0 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+| 1 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+
+All 18 split/filler cells are 1.000; name and color are 1.000 at fillers 0/1/2.
+This is the first result with **no boundary separator token at all**.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -506,7 +532,15 @@ name at the first token after a boundary instead of only at the boundary.
     color 1.000 at every filler length. The known `.`/`?` boundary tokens are no
     longer used.
 
-19. **The practical rule transfers to the learnable setup:** store old stories
+19. **Raw boundaries pass without any separator token.** With statements
+    concatenated directly and no punctuation, a write candidate on the object
+    token plus a context read gate gives the same result: both seeds phase-A old
+    **1.000**, phase-B old/new/held **1.000/1.000/1.000**, permutation
+    **1.000**, name/color 1.000 at fillers 0/1/2. The boundary gate is
+    supervised with object positions, so this is learned classification of
+    write/read positions, not unsupervised segmentation.
+
+20. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -543,6 +577,10 @@ name at the first token after a boundary instead of only at the boundary.
 - The learned-boundary run uses dim 128, one layer and a task-structured
   color-copy readout with a direct auxiliary loss; it is not a general language
   model.
+- Raw-boundary runs remove the separator token but still supervise the write/read
+  gates with BCE targets at the object positions derived from the data layout.
+  The gate learns to classify write/read positions; it is not unsupervised
+  segmentation.
 - The positive results still use task-structured color/object factors and a
   task-structured color-copy readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -550,10 +588,9 @@ name at the first token after a boundary instead of only at the boundary.
 
 ## Next
 
-- Remove the generic `|` separator: learn boundaries from raw unsegmented text,
-  or from punctuation the model must discover.
+- Remove the supervised boundary targets: learn statement ends and query reads
+  from next-token prediction or a self-supervised segmenter.
 - Move from synthetic statements to a small natural-language template set or a
   broader attribute vocabulary.
-- Run the learned-boundary curriculum on more seeds and sweep the replay
-  fraction.
+- Run the raw-boundary curriculum on more seeds and sweep the replay fraction.
 - Try generative/distilled replay when storing old stories is not possible.

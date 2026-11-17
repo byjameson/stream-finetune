@@ -100,6 +100,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_multitoken_curr_seed1.json` | same, `--seed 1` | curriculum seed 1: exact 1.000/1.000/1.000, permutation 1.000 |
 | `spiking_binding_learned_boundary_curr_seed0.json` | `research/spiking_binding_learned_boundary.py --slot-factorized --query-color-copy --old-curriculum` | learned `|` boundaries: old/new/held 1.000, permutation 1.000, name/color 1.000 at fillers 0/1/2 |
 | `spiking_binding_learned_boundary_curr_seed1.json` | same, `--seed 1` | seed 1: old/new/held 1.000, permutation 1.000, name/color 1.000 at fillers 0/1/2 |
+| `spiking_binding_raw_boundary_curr_seed0.json` | `research/spiking_binding_raw_boundary.py --slot-factorized --query-color-copy --old-curriculum` | no separator token: old/new/held 1.000, permutation 1.000, name/color 1.000 at fillers 0/1/2 |
+| `spiking_binding_raw_boundary_curr_seed1.json` | same, `--seed 1` | raw boundaries seed 1: old/new/held 1.000, permutation 1.000, name/color 1.000 at fillers 0/1/2 |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant
