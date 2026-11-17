@@ -724,6 +724,14 @@ name/color 1.000 at fillers 0/1/2. The gate is supervised with object positions,
 so this is learned write/read classification, not unsupervised segmentation.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Natural-language templates (positive, gate passed):** English-like
+`tom has a big red ball.` / `who has a big red ball? mia red.` with learned
+`.`/`?` gates. Two seeds: phase-A old **1.000**, phase-B old/new/held
+**1.000/1.000/1.000** (seed 1 held **0.9989**), permutation **1.000**, all
+filler cells above 0.95. Still a fixed 24-word template set, not free-form
+language.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

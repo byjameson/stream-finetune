@@ -416,6 +416,32 @@ Protocol is the same as the learned-separator run: eight statements, fillers
 All 18 split/filler cells are 1.000; name and color are 1.000 at fillers 0/1/2.
 This is the first result with **no boundary separator token at all**.
 
+### Natural-language templates (positive, gate passed)
+
+The surface forms are now English-like:
+
+```text
+tom has a big red ball.
+who has a big red ball? mia red.
+```
+
+The learned write gate treats `.` and `?` as boundary candidates; the read gate
+selects `?` as the query read. The readout is the same factorized color-object
+attention plus query-color copy; the vocabulary adds `a`, `.` and `?`.
+
+Protocol: eight statements, eight names, fillers 0/1/2, sequence length 75,
+dim 128, one layer, two heads, 3k red-only + 6k red+blue + 3k phase B, 20%
+replay, seeds 0 and 1.
+
+| seed | phase-A old | old | new | held | permutation |
+|---|---:|---:|---:|---:|---:|
+| 0 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+| 1 | **1.000** | **1.000** | **1.000** | **0.9989** | **1.000** |
+
+All 18 split/filler cells are above 0.95; seed 1's lowest cell is held filler 0
+at 0.997 exact, 0.997 name, 1.000 color. This is the first positive result on
+English-like templates rather than symbolic statements.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -540,7 +566,14 @@ This is the first result with **no boundary separator token at all**.
     supervised with object positions, so this is learned classification of
     write/read positions, not unsupervised segmentation.
 
-20. **The practical rule transfers to the learnable setup:** store old stories
+20. **English-like templates pass the same gate.** With `tom has a big red
+    ball.` / `who has a big red ball? mia red.`, learned `.`/`?` gates,
+    factorized attention and query-color copy give phase-A old **1.000** and
+    phase-B old/new/held **1.000/1.000/1.000** (seed 1 held 0.9989), permutation
+    **1.000**, with all filler cells above 0.95. This is template surface
+    variation, not free-form language.
+
+21. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -581,6 +614,10 @@ This is the first result with **no boundary separator token at all**.
   gates with BCE targets at the object positions derived from the data layout.
   The gate learns to classify write/read positions; it is not unsupervised
   segmentation.
+- Natural-template runs are English-like but fixed: a 24-word vocabulary,
+  `name has a (big)*k color object .` and `who has ... ? name color`, no
+  paraphrases or free-form sentences. The `.`/`?` gates are supervised with
+  punctuation positions.
 - The positive results still use task-structured color/object factors and a
   task-structured color-copy readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -588,9 +625,10 @@ This is the first result with **no boundary separator token at all**.
 
 ## Next
 
+- Broaden the natural-language templates (paraphrases, more verbs/adjectives,
+  more names/colors/objects) and then move to free-form sentences.
 - Remove the supervised boundary targets: learn statement ends and query reads
   from next-token prediction or a self-supervised segmenter.
-- Move from synthetic statements to a small natural-language template set or a
-  broader attribute vocabulary.
-- Run the raw-boundary curriculum on more seeds and sweep the replay fraction.
+- Run the natural-template curriculum on more seeds and sweep the replay
+  fraction.
 - Try generative/distilled replay when storing old stories is not possible.
