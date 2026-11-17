@@ -136,7 +136,12 @@
   articles (`a/the`) and adjectives (`big/small/old/new`). Two seeds: phase-A
   old 1.000; old/new/held 1.000/1.000/1.000, permutation 1.000, all 18
   split/filler cells 1.000. Fixed 31-word template set.
-- 144 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Paraphrase templates: category states track name/color/object across word
+  orders; template curriculum + 50% replay. 4-pair subset passes on two seeds
+  (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
+  (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
+  (0.579/0.597). Documented as a negative scale result.
+- 149 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

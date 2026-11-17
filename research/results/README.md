@@ -106,6 +106,12 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_natural_curr_seed1.json` | same, `--seed 1` | natural templates seed 1: old/new 1.000, held 0.9989, permutation 1.000, all filler cells >0.95 |
 | `spiking_binding_natural_wide_curr_seed0.json` | `research/spiking_binding_natural_wide.py --slot-factorized --query-color-copy --old-curriculum` | varied verbs/articles/adjectives: old/new/held 1.000, permutation 1.000, all filler cells 1.000 |
 | `spiking_binding_natural_wide_curr_seed1.json` | same, `--seed 1` | wide templates seed 1: old/new/held 1.000, permutation 1.000, all filler cells 1.000 |
+| `spiking_binding_paraphrase_4pair_seed0.json` | `research/spiking_binding_paraphrase.py --template-curriculum --stmt-kinds 0,1 --query-kinds 0,1 --replay 0.5` | 4-pair paraphrase: old/new/held 1.000, permutation 1.000 |
+| `spiking_binding_paraphrase_4pair_seed1.json` | same, `--seed 1` | 4-pair paraphrase seed 1: old/new/held 1.000, permutation 1.000 |
+| `spiking_binding_paraphrase_curr_seed0.json` | full 16-pair paraphrase, 20% replay | negative: old name read 0.579, new/held 1.000 |
+| `spiking_binding_paraphrase_curr_seed1.json` | same, `--seed 1` | negative: old name read 0.597, new/held ~1.000 |
+| `spiking_binding_paraphrase_curr50c_seed0.json` | 16-pair paraphrase, template curriculum + 50% replay | seed 0 phase-A old 0.576; negative seed sensitivity |
+| `spiking_binding_paraphrase_curr50c_seed1.json` | same, `--seed 1` | seed 1 old/new/held 1.000; seed-sensitive positive |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

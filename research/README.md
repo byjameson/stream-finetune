@@ -168,6 +168,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   1.000, phase-B old/new/held 1.000/1.000/1.000, permutation 1.000, all 18
   split/filler cells 1.000. Fixed 31-word template set.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Paraphrase templates (scoped positive, 4 pairs):** name-first/name-last and
+  two query forms with category states, template curriculum and 50% replay.
+  Two seeds: old/new/held 1.000/1.000/1.000, permutation 1.000. The full 16-pair
+  set is seed-sensitive (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay
+  forgets the old name read (0.579/0.597). Negative scale result is documented.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.
@@ -216,6 +222,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_binding_raw_boundary.py` | no separator token; learned object/query boundaries + two-token answers | ~45 min |
 | `spiking_binding_natural.py` | English-like templates with `.`/`?`; learned write/read gates + two-token answers | ~60-90 min |
 | `spiking_binding_natural_wide.py` | English-like templates with varied verbs/articles/adjectives; same gates | ~60-90 min |
+| `spiking_binding_paraphrase.py` | paraphrase templates; category states track name/color/object across word orders | ~60-90 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |
