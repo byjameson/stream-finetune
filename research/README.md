@@ -145,6 +145,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   red-only warmup + 6k red+blue + 3k phase B fixes both seeds to exact
   1.000/1.000/1.000, permutation 1.000, name/color 1.000 at every filler length.
   [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
+- **Learned boundaries, two-token answers (positive, gate passed):** generic `|`
+  separators with learned write/read gates replace the known `.`/`?` boundaries.
+  Two seeds: phase-A old 1.000, phase-B old/new/held 1.000/1.000/1.000,
+  permutation 1.000, name/color 1.000 at every filler length. Still a toy:
+  task-structured color/object factors and color-copy readout.
+  [`SPIKING_BINDING_CONTINUAL.md`](SPIKING_BINDING_CONTINUAL.md)
 - **Padded curriculum (negative):** a 1 -> 2 -> 3 statement curriculum with the
   copy loss only gives spike 0.412 (permuted 0.392, last-position-biased) and
   rate 0.212. It does not replace the matching-attention auxiliary loss.
@@ -189,6 +195,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_binding.py` | non-TinyStories variable-binding task, spike vs rate, disjoint split | ~3 min |
 | `binding_baselines.py` | curriculum and tiny-transformer baselines for binding | ~12 min |
 | `spiking_binding_conj.py` | conjunction-binding benchmark: spike/rate/transformer | ~10-20 min |
+| `spiking_binding_learned_boundary.py` | learned `\|` boundaries + two-token answers; two-seed gate | ~45 min |
 | `quant_speed_0p5b.py` | bf16 vs 4-bit inference on 0.5B (speed + VRAM) | ~2 min |
 | `sst2_adapter.py` | Qwen3B SST-2 LoRA (2k/400); pack 8/4-bit + accuracy | ~15 min |
 | `sst2_loss_eval.py` | paired masked loss for the SST-2 adapter variants | ~3 min |

@@ -361,6 +361,35 @@ every filler length.
 The earlier multi-token failure was the seed-sensitive **old-color read**, not
 the second token. The one-color curriculum stabilizes it.
 
+### Learned boundaries, two-token answers (positive, gate passed)
+
+Boundaries and the query read are **learned**, not hardcoded. Statements end
+with a generic `|` token. A learned write gate detects the separator, and a
+learned read gate decides whether that boundary is a statement write or the
+query read. The readout is factorized color x object attention plus a
+query-color copy for the second answer token. The color copy has its own
+cross-entropy auxiliary loss, and its scale starts at 3.0; a scale sweep showed
+that 2x was needed before the head stopped drowning out the copy.
+
+Protocol: eight statements, eight names, fillers 0/1/2, sequence length 64,
+dim 128, one layer, two heads. Curriculum: 3,000 red-only warmup steps, 6,000
+red+blue old steps, 3,000 phase-B steps on new colors with 20% replay. Seeds 0
+and 1.
+
+| seed | phase-A old | old | new | held | permutation |
+|---|---:|---:|---:|---:|---:|
+| 0 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+| 1 | **1.000** | **1.000** | **1.000** | **1.000** | **1.000** |
+
+Name and color are both 1.000 at every filler length, and permutation is
+1.000. This passes the full two-token gate with learned boundaries: no `.`/`?`
+token IDs and no hardcoded read position.
+
+Two failures were needed to get here. A batch-mean scalar read gate gave color
+0.00-0.90 and phase B collapsed. The fix was per-row soft read/color masking,
+a read threshold that does not suppress statement writes, and setting the slot
+name at the first token after a boundary instead of only at the boundary.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -470,7 +499,14 @@ the second token. The one-color curriculum stabilizes it.
     name/color 1.000 at every filler length on both seeds. The failure was the
     old-color read, not the multi-token output.
 
-18. **The practical rule transfers to the learnable setup:** store old stories
+18. **Learned boundaries pass the two-token gate.** With a generic `|`
+    separator, learned write/read gates, factorized color-object attention and
+    a query-color copy, both seeds reach phase-A old **1.000** and phase-B
+    old/new/held **1.000/1.000/1.000**, permutation **1.000**, with name and
+    color 1.000 at every filler length. The known `.`/`?` boundary tokens are no
+    longer used.
+
+19. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -500,18 +536,24 @@ the second token. The one-color curriculum stabilizes it.
 - Multi-token runs answer `name + color`; the query-color copy gives color 1.000
   on both seeds, but the name read is seed-sensitive. A 3k red-only warmup +
   6k red+blue + 3k phase B stabilizes it to 1.000/1.000/1.000 on both seeds.
-- The positive results still use token-triggered known `.`/`?` boundaries,
-  task-structured color/object factors, and a task-structured color-copy
-  readout. They are not general language models.
+- Learned-boundary runs use an explicit generic `|` separator; the gates learn
+  which separators are writes and which is the query read, not how to segment
+  raw unsegmented text. Batches are still one filler count and the write/read
+  decision uses a batch-mean threshold, with per-row soft read/color masks.
+- The learned-boundary run uses dim 128, one layer and a task-structured
+  color-copy readout with a direct auxiliary loss; it is not a general language
+  model.
+- The positive results still use task-structured color/object factors and a
+  task-structured color-copy readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
   be removed; this does not mean all binding is solved without structure.
 
 ## Next
 
-- Relax the boundaries: learned statement ends and query positions instead of
-  known `.`/`?` tokens.
+- Remove the generic `|` separator: learn boundaries from raw unsegmented text,
+  or from punctuation the model must discover.
 - Move from synthetic statements to a small natural-language template set or a
   broader attribute vocabulary.
-- Run the curriculum-stabilized multi-token model on more seeds and sweep the
-  replay fraction.
+- Run the learned-boundary curriculum on more seeds and sweep the replay
+  fraction.
 - Try generative/distilled replay when storing old stories is not possible.

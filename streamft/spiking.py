@@ -42,6 +42,8 @@ class SpikingConfig:
     slot_conj: bool = False
     slot_factorized: bool = False
     query_color_copy: bool = False
+    color_copy_init: float = 1.0
+    learned_boundaries: bool = False
     write_token: int = -1
     read_token: int = -1
     mem_decay: float = 0.5
@@ -150,7 +152,22 @@ class SpikingLM(nn.Module):
         self.slot_key_c = None
         self.color_copy_scale = None
         if config.query_color_copy:
-            self.color_copy_scale = nn.Parameter(torch.ones(1))
+            self.color_copy_scale = nn.Parameter(
+                torch.full((1,), config.color_copy_init))
+        self.boundary_write = None
+        self.boundary_read = None
+        if config.learned_boundaries:
+            self.boundary_write = nn.Linear(config.dim, 1)
+            self.boundary_read = nn.Linear(config.dim, 1)
+            nn.init.constant_(self.boundary_write.bias, -2.0)
+            nn.init.constant_(self.boundary_read.bias, -2.0)
+        self._write_logit = None
+        self._read_logit = None
+        self._last_query_color = None
+        self._last_color_copy_logits = None
+        self.last_color_copy_logits = None
+        self.last_write_logits = None
+        self.last_read_logits = None
         if config.slots > 0:
             self.slot_key = nn.Linear(config.dim, config.dim, bias=False)
             self.slot_val = nn.Linear(config.dim, config.dim, bias=False)
@@ -196,6 +213,7 @@ class SpikingLM(nn.Module):
             "new_stmt": True,
             "query_color": z.clone(),
             "after_read": False,
+            "color_mask": None,
             "t": 0,
         }
 
@@ -204,6 +222,10 @@ class SpikingLM(nn.Module):
         state["t"] = t + 1
         apply_color_copy = state["after_read"]
         state["after_read"] = False
+        apply_color_mask = state["color_mask"]
+        state["color_mask"] = None
+        self._write_logit = None
+        self._read_logit = None
         emb_raw = self.emb(tokens)
         emb = self.drop(emb_raw) if self.drop is not None else emb_raw
         cur = emb
@@ -241,14 +263,32 @@ class SpikingLM(nn.Module):
         self._mem_copy = None
         if self.mem_name is not None:
             state["stmt"] = self.config.mem_decay * state["stmt"] + emb_raw
-            if self.config.write_token < 0:
+            if self.config.write_token < 0 and not self.config.learned_boundaries:
                 g_name = torch.sigmoid(self.mem_name(emb_raw))
                 state["name"] = ((1.0 - g_name) * state["name"]
                                  + g_name * emb_raw)
             read_pos = self.config.mem_read_pos
             prev = state["prev"]
             if self.slot_key is not None:
-                if self.config.write_token >= 0:
+                if self.config.learned_boundaries:
+                    wlog = self.boundary_write(emb_raw)
+                    rlog = self.boundary_read(emb_raw + state["stmt"])
+                    self._write_logit = wlog
+                    self._read_logit = rlog
+                    write_p = torch.sigmoid(wlog)
+                    read_p = torch.sigmoid(rlog)
+                    # The write gate detects a generic separator. The read gate
+                    # picks the query boundary; it is applied softly per row so
+                    # one uncertain row cannot veto the whole batch.
+                    boundary = float(write_p.mean().detach()) > 0.5
+                    do_read = (boundary and len(state["slot_v"]) > 0
+                               and float(read_p.mean().detach()) > 0.5)
+                    if do_read:
+                        boundary = False
+                    if state["new_stmt"]:
+                        state["name"] = emb_raw
+                        state["new_stmt"] = False
+                elif self.config.write_token >= 0:
                     if state["new_stmt"]:
                         state["name"] = emb_raw
                         state["new_stmt"] = False
@@ -299,6 +339,8 @@ class SpikingLM(nn.Module):
                         mattn = ac * ao
                         mattn = mattn / mattn.sum(dim=-1, keepdim=True).clamp_min(1e-9)
                         mctx = (mattn @ sv.float()).squeeze(1)
+                        if self.config.learned_boundaries:
+                            mctx = mctx * read_p
                         if self.slot_out is not None:
                             mctx = self.slot_out(mctx)
                         mctx = mctx.to(readout.dtype)
@@ -321,6 +363,8 @@ class SpikingLM(nn.Module):
                         mscores = mq @ mk.transpose(-1, -2) / math.sqrt(dh)
                         mattn = torch.softmax(mscores.float(), dim=-1).to(mv.dtype)
                         mctx = (mattn @ mv).squeeze(2).reshape(batch, self.dim)
+                        if self.config.learned_boundaries:
+                            mctx = mctx * read_p
                         if self.slot_out is not None:
                             mctx = self.slot_out(mctx)
                         readout = readout + mctx
@@ -328,7 +372,11 @@ class SpikingLM(nn.Module):
                         self._mem_attn = mattn.mean(dim=1).squeeze(1)
                     if self.config.query_color_copy and len(prev) >= 2:
                         state["query_color"] = prev[-2]
-                        state["after_read"] = True
+                        if self.config.learned_boundaries:
+                            state["color_mask"] = read_p
+                        else:
+                            state["after_read"] = True
+                        self._last_query_color = state["query_color"]
             else:
                 g_write = torch.sigmoid(self.mem_write(emb_raw))
                 state["mem_k"].append(g_write * self.mem_key(state["stmt"]))
@@ -349,31 +397,53 @@ class SpikingLM(nn.Module):
             logits = logits + self.copy_scale * copy_logits
         if mem_copy is not None:
             logits = logits + self.mem_scale * mem_copy
-        if self.config.query_color_copy and apply_color_copy:
-            logits = logits + self.color_copy_scale * (
+        if self.config.query_color_copy and (
+                apply_color_copy or apply_color_mask is not None):
+            color_copy_logits = (
                 state["query_color"] @ self.emb.weight.T) / math.sqrt(self.dim)
+            if apply_color_mask is not None:
+                logits = logits + self.color_copy_scale * (
+                    color_copy_logits * apply_color_mask)
+            else:
+                logits = logits + self.color_copy_scale * color_copy_logits
+            self._last_color_copy_logits = color_copy_logits
         self._mem_copy = mem_copy
         return logits, state
 
     def forward(self, tokens: torch.Tensor) -> torch.Tensor:
         batch, seq = tokens.shape
+        self._last_query_color = None
+        self._last_color_copy_logits = None
+        self.last_color_copy_logits = None
         state = self.init_state(batch, tokens.device)
         logits = []
         mem_copies = []
+        write_logits = []
+        read_logits = []
         activity = 0.0
         for t in range(seq):
             out, state = self.step(tokens[:, t], state)
             logits.append(out)
             if self.mem_name is not None and self._mem_copy is not None:
                 mem_copies.append(self._mem_copy)
+            if self._write_logit is not None:
+                write_logits.append(self._write_logit)
+                read_logits.append(self._read_logit)
             activity += float(state["layers"][-1][2].detach().abs().mean())
         self.last_activity = activity / max(seq, 1)
-        if len(mem_copies) == 1:
+        self.last_write_logits = (torch.stack(write_logits, dim=1)
+                                  if write_logits else None)
+        self.last_read_logits = (torch.stack(read_logits, dim=1)
+                                 if read_logits else None)
+        if self.config.learned_boundaries:
+            self.last_copy_logits = mem_copies[-1] if mem_copies else None
+        elif len(mem_copies) == 1:
             self.last_copy_logits = mem_copies[0]
         else:
             self.last_copy_logits = (torch.stack(mem_copies, dim=1)
                                      if mem_copies else None)
         self.last_mem_attn = self._mem_attn
+        self.last_color_copy_logits = self._last_color_copy_logits
         return torch.stack(logits, dim=1)
 
 
