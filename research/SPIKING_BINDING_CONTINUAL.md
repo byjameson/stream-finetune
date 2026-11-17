@@ -468,6 +468,31 @@ All 18 split/filler cells are 1.000, including name and color. The mechanism
 tolerates surface variation in verbs, articles and adjectives; it is still a
 fixed template set, not free-form language.
 
+### Paraphrase templates (scoped positive, 4 pairs)
+
+Names, colors and objects now move to different positions:
+
+```text
+tom has a big red ball.
+the big red ball belongs to tom.
+who has the big red ball?
+whose big red ball is it?
+```
+
+Category states track the name, color and object wherever they appear. Batches
+are aligned to one statement/query template pair, so the `.`/`?` boundaries
+stay synchronised. A template curriculum (one 600-step stage per statement
+kind, then mixed) plus **50% replay** gives, on four template pairs (2
+statement x 2 query), seeds 0 and 1: old/new/held **1.000/1.000/1.000**,
+permutation **1.000**, all 18 split/filler cells 1.000.
+
+The wider 16-pair paraphrase set is **seed-sensitive**: with the same
+curriculum and 50% replay, seed 1 reaches **1.000/1.000/1.000**, while seed 0
+stalls at phase-A old **0.576**. With 20% replay the old name binding falls to
+**0.579/0.597** even though new/held stay at 1.000; the color copy is retained,
+the name read is not. This is a negative result about scale of paraphrase
+diversity, not about the 4-pair mechanism.
+
 ## What it shows
 
 1. **Catastrophic forgetting is real on the new task.** Naive phase B drops old
@@ -605,7 +630,15 @@ fixed template set, not free-form language.
     **1.000/1.000/1.000**, permutation **1.000**, all 18 split/filler cells
     1.000. Surface variation does not break the binding mechanism.
 
-22. **The practical rule transfers to the learnable setup:** store old stories
+22. **Paraphrase templates pass on a controlled 4-pair subset.** With name
+    first and name last, and two query forms, category states plus a template
+    curriculum and 50% replay give both seeds old/new/held
+    **1.000/1.000/1.000**, permutation **1.000**. The full 16-pair set is
+    seed-sensitive (seed 1 1.000, seed 0 phase-A old 0.576) and 20% replay
+    forgets the old name read (0.579/0.597). The mechanism scales to a few
+    paraphrases, not yet to broad surface diversity.
+
+23. **The practical rule transfers to the learnable setup:** store old stories
     and replay ~20% during updates. Use hard rollback only when replay is
     unavailable or a regression appears anyway.
 
@@ -651,6 +684,10 @@ fixed template set, not free-form language.
   `name VERB ARTICLE (ADJ)*k color object .` grammar. No paraphrases or
   free-form sentences. The `.`/`?` gates are supervised with punctuation
   positions.
+- Paraphrase runs use four template pairs (2 statement x 2 query) for the
+  passing gate; the full 16-pair set is seed-sensitive. Batches are aligned to
+  one template pair and categories are still given through `name/color/object`
+  ID lists.
 - The positive results still use task-structured color/object factors and a
   task-structured color-copy readout. They are not general language models.
 - The attention auxiliary loss is task-specific and, with structured keys, can
@@ -658,10 +695,12 @@ fixed template set, not free-form language.
 
 ## Next
 
-- Move from fixed templates to free-form sentences and a broader vocabulary;
-  keep the same binding probe on held-out compositions.
-- Remove the supervised boundary targets: learn statement ends and query reads
-  from next-token prediction or a self-supervised segmenter.
-- Run the wide natural-template curriculum on more seeds and sweep the replay
-  fraction.
-- Try generative/distilled replay when storing old stories is not possible.
+- **Pivot to a token-level generative spiking LM on real text** (TinyStories +
+  WikiText or a broader corpus); use binding as an evaluation probe, not as the
+  training task.
+- Keep the 4-pair paraphrase gate as a scoped mechanism result; the 16-pair
+  full set remains a negative/seed-sensitivity result.
+- In the generative line, remove the hand-provided category and boundary
+  supervision and let next-token prediction learn the representations.
+- Use replay/EWC for continual learning on the generative model; keep the
+  deployment gate separate from the mechanism gates.

@@ -1,0 +1,230 @@
+{
+  "question": "Does binding survive variable statement lengths?",
+  "config": {
+    "steps_a": 5000,
+    "template_curriculum": true,
+    "stage_steps": 600,
+    "mixed_steps": 2000,
+    "old_curriculum": true,
+    "steps_warm": 2000,
+    "curriculum": false,
+    "steps_0": 2000,
+    "steps_1": 2000,
+    "steps_2": 2000,
+    "steps_mix": 3000,
+    "steps_b": 3000,
+    "batch": 64,
+    "dim": 128,
+    "layers": 1,
+    "heads": 2,
+    "slot_conj": false,
+    "slot_factorized": true,
+    "query_color_copy": true,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "replay": 0.5,
+    "n_train": 6000,
+    "n_test": 300,
+    "arms": "replay_50",
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_paraphrase_curr50c_seed0.json"
+  },
+  "max_len": 48,
+  "results": [
+    {
+      "arm": "replay_50",
+      "seed": 0,
+      "replay": 0.5,
+      "sec": 2745.2,
+      "train_loss": 1.1549636125564575,
+      "stages": [
+        {
+          "stmt_kind": 0,
+          "steps": 600,
+          "loss": 2.2788455486297607,
+          "sec": 173.8
+        },
+        {
+          "stmt_kind": 1,
+          "steps": 600,
+          "loss": 2.1165826320648193,
+          "sec": 176.7
+        },
+        {
+          "stmt_kind": 2,
+          "steps": 600,
+          "loss": 1.8099058866500854,
+          "sec": 176.3
+        },
+        {
+          "stmt_kind": 3,
+          "steps": 600,
+          "loss": 1.8799891471862793,
+          "sec": 174.9
+        }
+      ],
+      "before": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.5674999877810478,
+              "name_acc": 0.5674999877810478,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.577499981969595,
+              "name_acc": 0.577499981969595,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.5843749828636646,
+              "name_acc": 0.5843749828636646,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.5764583175381025
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.0,
+              "name_acc": 0.36937498999759555,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.0,
+              "name_acc": 0.4112499924376607,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.0,
+              "name_acc": 0.48562498576939106,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.0
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.0,
+              "name_acc": 0.37187499180436134,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.0,
+              "name_acc": 0.405624988488853,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.0,
+              "name_acc": 0.4918749872595072,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.0
+        }
+      },
+      "after": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.5637499839067459,
+              "name_acc": 0.5637499839067459,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.5737499855458736,
+              "name_acc": 0.5737499855458736,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.5749999918043613,
+              "name_acc": 0.5749999918043613,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.5708333204189936
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        }
+      },
+      "old_perm": 0.5918749868869781
+    }
+  ]
+}

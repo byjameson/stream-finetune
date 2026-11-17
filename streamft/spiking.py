@@ -45,6 +45,10 @@ class SpikingConfig:
     color_copy_init: float = 1.0
     learned_boundaries: bool = False
     raw_boundaries: bool = False
+    category_states: bool = False
+    name_ids: tuple = ()
+    color_ids: tuple = ()
+    object_ids: tuple = ()
     write_token: int = -1
     read_token: int = -1
     mem_decay: float = 0.5
@@ -157,6 +161,13 @@ class SpikingLM(nn.Module):
                 torch.full((1,), config.color_copy_init))
         self.boundary_write = None
         self.boundary_read = None
+        if config.category_states:
+            self.register_buffer(
+                "_name_ids", torch.tensor(config.name_ids), persistent=False)
+            self.register_buffer(
+                "_color_ids", torch.tensor(config.color_ids), persistent=False)
+            self.register_buffer(
+                "_object_ids", torch.tensor(config.object_ids), persistent=False)
         if config.learned_boundaries:
             self.boundary_write = nn.Linear(config.dim, 1)
             self.boundary_read = nn.Linear(config.dim, 1)
@@ -213,6 +224,8 @@ class SpikingLM(nn.Module):
             "prev": [],
             "new_stmt": True,
             "query_color": z.clone(),
+            "color": z.clone(),
+            "object": z.clone(),
             "after_read": False,
             "color_mask": None,
             "t": 0,
@@ -228,6 +241,16 @@ class SpikingLM(nn.Module):
         self._write_logit = None
         self._read_logit = None
         emb_raw = self.emb(tokens)
+        if self.config.category_states:
+            is_name = (tokens.unsqueeze(-1) == self._name_ids).any(-1)
+            is_color = (tokens.unsqueeze(-1) == self._color_ids).any(-1)
+            is_object = (tokens.unsqueeze(-1) == self._object_ids).any(-1)
+            state["name"] = torch.where(
+                is_name.unsqueeze(-1), emb_raw, state["name"])
+            state["color"] = torch.where(
+                is_color.unsqueeze(-1), emb_raw, state["color"])
+            state["object"] = torch.where(
+                is_object.unsqueeze(-1), emb_raw, state["object"])
         emb = self.drop(emb_raw) if self.drop is not None else emb_raw
         cur = emb
         if self.w_fb is not None:
@@ -286,14 +309,15 @@ class SpikingLM(nn.Module):
                     # picks the query boundary; it is applied softly per row so
                     # one uncertain row cannot veto the whole batch.
                     boundary = float(write_p.mean().detach()) > 0.5
-                    need_prev = 1 if self.config.raw_boundaries else 2
+                    need_prev = (0 if self.config.category_states
+                                 else (1 if self.config.raw_boundaries else 2))
                     if boundary and len(prev) < need_prev:
                         boundary = False
                     do_read = (boundary and len(state["slot_v"]) > 0
                                and float(read_p.mean().detach()) > 0.5)
                     if do_read:
                         boundary = False
-                    if state["new_stmt"]:
+                    if not self.config.category_states and state["new_stmt"]:
                         state["name"] = emb_raw
                         state["new_stmt"] = False
                 elif self.config.write_token >= 0:
@@ -313,36 +337,57 @@ class SpikingLM(nn.Module):
                     do_read = (read_pos < 0 or t == read_pos)
                 if boundary:
                     key_in = state["stmt"]
-                    min_prev = 1 if self.config.raw_boundaries else 2
-                    if self.config.slot_attr_keys and len(prev) >= min_prev:
-                        if self.config.raw_boundaries:
-                            c, o = prev[-1], emb_raw
+                    if self.config.category_states:
+                        c, o = state["color"], state["object"]
+                        if self.config.slot_attr_keys:
+                            if self.config.slot_factorized:
+                                state["slot_kc"].append(self.slot_key_c(c))
+                                state["slot_ko"].append(self.slot_key_o(o))
+                            else:
+                                key_in = c + o
+                                if self.config.slot_conj:
+                                    key_in = key_in + c * o
+                                state["slot_k"].append(self.slot_key(key_in))
                         else:
-                            c, o = prev[-2], prev[-1]
-                        if self.config.slot_factorized:
-                            state["slot_kc"].append(self.slot_key_c(c))
-                            state["slot_ko"].append(self.slot_key_o(o))
-                        else:
-                            key_in = c + o
-                            if self.config.slot_conj:
-                                key_in = key_in + c * o
                             state["slot_k"].append(self.slot_key(key_in))
+                        state["slot_v"].append(self.slot_val(state["name"]))
+                        state["stmt"] = torch.zeros_like(state["stmt"])
+                        state["name"] = torch.zeros_like(state["name"])
+                        state["color"] = torch.zeros_like(state["color"])
+                        state["object"] = torch.zeros_like(state["object"])
                     else:
-                        state["slot_k"].append(self.slot_key(key_in))
-                    state["slot_v"].append(self.slot_val(state["name"]))
-                    state["stmt"] = torch.zeros_like(state["stmt"])
-                    state["name"] = torch.zeros_like(state["name"])
+                        min_prev = 1 if self.config.raw_boundaries else 2
+                        if self.config.slot_attr_keys and len(prev) >= min_prev:
+                            if self.config.raw_boundaries:
+                                c, o = prev[-1], emb_raw
+                            else:
+                                c, o = prev[-2], prev[-1]
+                            if self.config.slot_factorized:
+                                state["slot_kc"].append(self.slot_key_c(c))
+                                state["slot_ko"].append(self.slot_key_o(o))
+                            else:
+                                key_in = c + o
+                                if self.config.slot_conj:
+                                    key_in = key_in + c * o
+                                state["slot_k"].append(self.slot_key(key_in))
+                        else:
+                            state["slot_k"].append(self.slot_key(key_in))
+                        state["slot_v"].append(self.slot_val(state["name"]))
+                        state["stmt"] = torch.zeros_like(state["stmt"])
+                        state["name"] = torch.zeros_like(state["name"])
                     state["new_stmt"] = len(state["slot_v"]) < self.config.slots
                 if do_read:
                     sv = torch.stack(state["slot_v"], dim=1)
                     batch = sv.size(0)
+                    if self.config.category_states:
+                        c, o = state["color"], state["object"]
+                    elif self.config.raw_boundaries:
+                        c, o = prev[-1], emb_raw
+                    else:
+                        c, o = prev[-2], prev[-1]
                     if self.config.slot_factorized:
                         kc = torch.stack(state["slot_kc"], dim=1)
                         ko = torch.stack(state["slot_ko"], dim=1)
-                        if self.config.raw_boundaries:
-                            c, o = prev[-1], emb_raw
-                        else:
-                            c, o = prev[-2], prev[-1]
                         qc = self.slot_query_c(c).unsqueeze(1)
                         qo = self.slot_query_o(o).unsqueeze(1)
                         ac = torch.softmax(
@@ -367,12 +412,7 @@ class SpikingLM(nn.Module):
                         heads = self.config.slot_heads
                         dh = self.dim // heads
                         q_in = readout
-                        min_prev = 1 if self.config.raw_boundaries else 2
-                        if self.config.slot_attr_keys and len(prev) >= min_prev:
-                            if self.config.raw_boundaries:
-                                c, o = prev[-1], emb_raw
-                            else:
-                                c, o = prev[-2], prev[-1]
+                        if self.config.slot_attr_keys:
                             q_in = c + o
                             if self.config.slot_conj:
                                 q_in = q_in + c * o
@@ -390,9 +430,12 @@ class SpikingLM(nn.Module):
                         mem_copy = (mctx @ self.emb.weight.T) / math.sqrt(self.dim)
                         self._mem_attn = mattn.mean(dim=1).squeeze(1)
                     if self.config.query_color_copy and len(prev) >= 2:
-                        state["query_color"] = (
-                            prev[-1] if self.config.raw_boundaries
-                            else prev[-2])
+                        if self.config.category_states:
+                            state["query_color"] = state["color"]
+                        elif self.config.raw_boundaries:
+                            state["query_color"] = prev[-1]
+                        else:
+                            state["query_color"] = prev[-2]
                         if self.config.learned_boundaries:
                             state["color_mask"] = read_p
                         else:

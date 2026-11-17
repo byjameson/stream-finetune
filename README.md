@@ -739,6 +739,13 @@ car? sam yellow.`). Two seeds: phase-A old **1.000**, phase-B old/new/held
 Still a fixed 31-word template set, not free-form language.
 [`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
 
+**Paraphrase templates (scoped positive, 4 pairs):** names and queries move
+(`tom has a red ball.` / `the red ball belongs to tom.` / `whose red ball is
+it?`). Category states plus a template curriculum and 50% replay give two seeds
+old/new/held **1.000/1.000/1.000**, permutation **1.000**. The full 16-pair set
+is seed-sensitive and stays a negative result.
+[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace

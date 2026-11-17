@@ -1,0 +1,220 @@
+{
+  "question": "Does binding survive variable statement lengths?",
+  "config": {
+    "steps_a": 5000,
+    "template_curriculum": true,
+    "stmt_kinds": "0,1",
+    "query_kinds": "0,1",
+    "stage_steps": 600,
+    "mixed_steps": 1500,
+    "old_curriculum": true,
+    "steps_warm": 1000,
+    "curriculum": false,
+    "steps_0": 2000,
+    "steps_1": 2000,
+    "steps_2": 2000,
+    "steps_mix": 3000,
+    "steps_b": 2500,
+    "batch": 64,
+    "dim": 128,
+    "layers": 1,
+    "heads": 2,
+    "slot_conj": false,
+    "slot_factorized": true,
+    "query_color_copy": true,
+    "lr": 0.0008,
+    "adapt": 0.1,
+    "replay": 0.5,
+    "n_train": 6000,
+    "n_test": 300,
+    "arms": "replay_50",
+    "seed": 0,
+    "amp": true,
+    "out": "research/results/spiking_binding_paraphrase_4pair_seed0.json"
+  },
+  "max_len": 48,
+  "results": [
+    {
+      "arm": "replay_50",
+      "seed": 0,
+      "replay": 0.5,
+      "sec": 1907.0,
+      "train_loss": 0.8857479095458984,
+      "stages": [
+        {
+          "stmt_kind": 0,
+          "steps": 600,
+          "loss": 1.8900700807571411,
+          "sec": 170.4
+        },
+        {
+          "stmt_kind": 1,
+          "steps": 600,
+          "loss": 1.619798183441162,
+          "sec": 189.2
+        }
+      ],
+      "before": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.0,
+              "name_acc": 0.049999999813735485,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.0,
+              "name_acc": 0.0924999974668026,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.0,
+              "name_acc": 0.08249999582767487,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.0
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 0.0,
+              "name_acc": 0.04499999759718776,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 0.0,
+              "name_acc": 0.08249999769032001,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 0.0,
+              "name_acc": 0.10499999625608325,
+              "color_acc": 0.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 0.0
+        }
+      },
+      "after": {
+        "old": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        },
+        "new": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        },
+        "held": {
+          "by_filler": {
+            "0": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "1": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            },
+            "2": {
+              "accuracy": 1.0,
+              "name_acc": 1.0,
+              "color_acc": 1.0,
+              "by_answer_pos": {},
+              "pred_counts": {}
+            }
+          },
+          "mean": 1.0
+        }
+      },
+      "old_perm": 1.0
+    }
+  ]
+}
