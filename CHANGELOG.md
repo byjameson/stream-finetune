@@ -17,9 +17,10 @@
   1.336 for 4.3M; no scaling win. The active direction is the spiking research
   line; the Qwen assistant is parked.
 - Generative data diversity: 4.3M, 3000 steps, 16M tokens. TinyStories-only:
-  TS 1.566 / WikiText 4.455 bpb. Mixed 8M TinyStories + 8M WikiText: TS 1.702
-  / WikiText 2.906 bpb. The 21M/50M TinyStories models stay at WikiText 4.03;
-  data diversity moves the general-text metric where parameter scaling did not.
+  TS 1.566 / WikiText 4.455 bpb. 25% WikiText (12M+4M): TS 1.605 / WikiText
+  2.927; 50%: 1.702/2.906; 75%: 1.734/2.820. Most of the WikiText gain comes
+  from adding a small amount of diverse data; ratio beyond 25% costs more
+  TinyStories than it buys. 21M/50M TinyStories models stay at WikiText 4.03.
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

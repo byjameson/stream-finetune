@@ -29,10 +29,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   spike-frequency adaptation), with 0.053-0.066 mean firing. The rate control is weaker
   (2.207 at 1000 steps) and saturates. [`SPIKING_LM.md`](SPIKING_LM.md)
 - **Generative data diversity (first generative result):** 4.3M, 3000 steps, 16M
-  tokens. TinyStories-only: TS 1.566 / WikiText 4.455 bpb. Mixed 8M TinyStories
-  + 8M WikiText: TS 1.702 / WikiText 2.906 bpb. The 21M/50M TinyStories-only
-  models stay at WikiText 4.03; data diversity moves the general-text metric
-  where parameter scaling did not. [`SPIKING_GENERATIVE.md`](SPIKING_GENERATIVE.md)
+  tokens. TinyStories-only: TS 1.566 / WikiText 4.455 bpb. 25% WikiText
+  (12M+4M): TS 1.605 / WikiText 2.927 bpb. 50%/75% add little WikiText gain at a
+  larger TS cost (50%: 1.702/2.906; 75%: 1.734/2.820). The 21M/50M
+  TinyStories-only models stay at WikiText 4.03; data diversity moves the
+  general-text metric where parameter scaling did not.
+  [`SPIKING_GENERATIVE.md`](SPIKING_GENERATIVE.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
   new-task gain on two seeds. Global rollback throws away all new learning.

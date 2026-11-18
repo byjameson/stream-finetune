@@ -28,12 +28,17 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | 21M, 10k | TinyStories | 1.286 | 4.030 |
 | 50M | TinyStories | 1.287 | 4.030 |
 | 4.3M, 3k | TinyStories | **1.566** | 4.455 |
-| 4.3M, 3k | TinyStories + WikiText | 1.702 | **2.906** |
+| 4.3M, 3k | 25% WikiText (12M+4M) | **1.605** | **2.927** |
+| 4.3M, 3k | 50% WikiText (8M+8M) | 1.702 | 2.906 |
+| 4.3M, 3k | 75% WikiText (4M+12M) | 1.734 | **2.820** |
 
-The equal-budget comparison is the last two rows:
+The equal-budget comparison is the last four rows:
 
-- WikiText bpb falls from **4.455 to 2.906** (-1.55) with the mixed corpus.
-- TinyStories bpb rises from **1.566 to 1.702** (+0.136).
+- Adding any WikiText moves the general-text metric a lot: 4.455 -> 2.927 at 25%.
+- 25% captures almost all of the WikiText gain at a small TinyStories cost
+  (+0.039 bpb); 50% costs +0.136 for only -0.021 more WikiText.
+- 75% buys another -0.107 WikiText for +0.129 TinyStories. The ratio curve is
+  strongly diminishing; the main lever is domain diversity, not the exact mix.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
 
@@ -58,7 +63,8 @@ competence.
 
 ## Next
 
-1. Sweep the mix ratio (25/50/75% WikiText) and training length.
+1. Sweep lower ratios (5/10/25% WikiText) to find the minimum useful dose, and
+   repeat the 25% run at 21M and a larger token budget.
 2. Repeat the mixed run at 21M and at a larger token budget; check whether the
    TinyStories cost shrinks with capacity.
 3. Generate samples and measure repetition/coherence, not only bpb.

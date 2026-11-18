@@ -559,10 +559,12 @@ this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](do
 
 **Generative data diversity (first generative result):** a 4.3M model trained for
 3,000 steps on 16M tokens. TinyStories-only: TinyStories **1.566** / WikiText
-**4.455** bpb. Mixed 8M TinyStories + 8M WikiText: TinyStories **1.702** /
-WikiText **2.906** bpb. The 21M/50M TinyStories-only models stay at WikiText
-4.03, so data diversity moves the general-text metric where parameter scaling
-did not. [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
+**4.455** bpb. Mixed 25% WikiText (12M TinyStories + 4M WikiText): TinyStories
+**1.605** / WikiText **2.927** bpb. 50% and 75% WikiText add little WikiText
+gain at a larger TinyStories cost (50%: 1.702/2.906; 75%: 1.734/2.820). The
+21M/50M TinyStories-only models stay at WikiText 4.03, so data diversity moves
+the general-text metric where parameter scaling did not.
+[`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains

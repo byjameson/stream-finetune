@@ -22,6 +22,20 @@ def test_data_diversity_lowers_wikitext_bpb():
     assert mix["tinystories_bpb"] > ts_only["tinystories_bpb"]
 
 
+def test_twenty_five_percent_wikitext_is_the_best_tradeoff():
+    runs = load_runs()
+    mix25 = runs["mix25_3k"]
+    mix50 = runs["mix_3k"]
+    mix75 = runs["mix75_3k"]
+    ts_only = runs["ts_only_3k"]
+    assert mix25["wikitext_bpb"] < 3.0
+    assert mix25["tinystories_bpb"] > ts_only["tinystories_bpb"]
+    assert mix25["tinystories_bpb"] < mix50["tinystories_bpb"]
+    assert abs(mix25["wikitext_bpb"] - mix50["wikitext_bpb"]) < 0.05
+    assert mix75["wikitext_bpb"] < mix25["wikitext_bpb"]
+    assert mix75["tinystories_bpb"] > mix25["tinystories_bpb"]
+
+
 def test_parameter_scaling_does_not_move_wikitext():
     runs = load_runs()
     assert runs["spiking_50m"]["wikitext_bpb"] > 4.0
