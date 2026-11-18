@@ -36,6 +36,15 @@ def test_twenty_five_percent_wikitext_is_the_best_tradeoff():
     assert mix75["tinystories_bpb"] > mix25["tinystories_bpb"]
 
 
+def test_heldout_world_facts_transfer():
+    runs = load_runs()
+    mix = runs["mix25_10k"]
+    ts_only = runs["spiking_4m_10k"]
+    assert mix["world_facts_bpb"] < 3.5
+    assert ts_only["world_facts_bpb"] > 3.9
+    assert mix["world_facts_bpb"] < ts_only["world_facts_bpb"] - 0.5
+
+
 def test_longer_mixed_training_improves_both_domains():
     runs = load_runs()
     mix3 = runs["mix25_3k"]
@@ -43,6 +52,7 @@ def test_longer_mixed_training_improves_both_domains():
     ts10 = runs["spiking_4m_10k"]
     assert mix10["tinystories_bpb"] < mix3["tinystories_bpb"]
     assert mix10["wikitext_bpb"] < mix3["wikitext_bpb"]
+    assert mix10["world_facts_bpb"] < mix3["world_facts_bpb"]
     assert mix10["tinystories_bpb"] < 1.6
     assert mix10["wikitext_bpb"] < 2.9
     assert ts10["tinystories_bpb"] < mix10["tinystories_bpb"]
@@ -59,6 +69,7 @@ def test_21m_10k_is_under_token_budget():
     # The 21M 10k run used batch 16, so only half the 4.3M mix token budget.
     assert mix21_10["tinystories_bpb"] > mix4["tinystories_bpb"]
     assert mix21_10["wikitext_bpb"] > mix4["wikitext_bpb"]
+    assert mix21_10["world_facts_bpb"] > mix4["world_facts_bpb"]
 
 
 def test_larger_mix_is_undertrained_at_3k():

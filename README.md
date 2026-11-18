@@ -567,9 +567,11 @@ WikiText gain at a larger TinyStories cost (50%: 1.702/2.906; 75%:
 1.734/2.820). The 21M/50M TinyStories-only models stay at WikiText 4.03, so
 data diversity moves the general-text metric where parameter scaling did not.
 The 21M 10k mix used batch 16 (20.5M tokens, half the 4.3M budget) and is worse
-(1.774/3.108); 21M at matched tokens is still untested. Generation samples
-remain locally repetitive and ungrammatical; lower bpb is not yet a
-generation-quality or deployment win.
+(1.774/3.108); 21M at matched tokens is still untested. On a held-out
+world-facts article set, the 4.3M mix reaches **3.249** bpb versus **3.949**
+for TinyStories-only 10k, so the diversity gain transfers beyond WikiText-2.
+Generation samples remain locally repetitive and ungrammatical; lower bpb is
+not yet a generation-quality or deployment win.
 [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
