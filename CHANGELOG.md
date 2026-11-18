@@ -43,7 +43,12 @@
   (adjacent 0.052 -> 0.034, distinct-2 0.971 -> 0.983) but hurts the mix model
   (0.065 -> 0.107, 0.968 -> 0.909). No sampling setting rescues the mix.
   No clean generation winner and no deployment win.
-- 161 tests;
+- Tiny Spiking Lab domain ingest: 4.3M mix base, 250/76 world-facts split,
+  300 steps, 20% replay. Target bpb 5.99 -> 4.45; ingest gate accepted on a
+  4096-token eval (old +2.55%), but full 8192 eval shows old +3.29% and
+  unmonitored WikiText +7.1%. Generation is formatting noise/corrupted.
+  Release gate BLOCKED; no deployable artifact.
+- 162 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -169,7 +174,12 @@
   (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
   (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
   (0.579/0.597). Documented as a negative scale result.
-- 161 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Tiny Spiking Lab domain ingest: 4.3M mix base, 250/76 world-facts split,
+  300 steps, 20% replay. Target bpb 5.99 -> 4.45; ingest gate accepted on a
+  4096-token eval (old +2.55%), but full 8192 eval shows old +3.29% and
+  unmonitored WikiText +7.1%. Generation is formatting noise/corrupted.
+  Release gate BLOCKED; no deployable artifact.
+- 162 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
