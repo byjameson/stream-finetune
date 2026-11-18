@@ -23,7 +23,11 @@
   TinyStories than it buys. 21M/50M TinyStories models stay at WikiText 4.03.
 - 21M 25% mix at 3000 steps: TS 1.910 / WikiText 3.228; undertrained at this
   budget and worse than the 4.3M mix. Scaling needs more steps.
-- 153 tests;
+- Generation samples: all 3k models remain locally repetitive/ungrammatical;
+  the 25% mix has adjacent-repeat 0.068, distinct-2 0.953, top-word 0.098, not
+  clearly better than the TS-only 3k control (0.055/0.961/0.138). Lower bpb is
+  not yet a generation-quality or deployment win.
+- 154 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -149,7 +153,7 @@
   (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
   (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
   (0.579/0.597). Documented as a negative scale result.
-- 153 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 154 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
