@@ -27,6 +27,7 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | 4.3M, 10k | TinyStories | **1.302** | 4.003 |
 | 4.3M, 10k | 25% WikiText (30M+10M) | 1.464 | **2.794** |
 | 4.3M, 10k | 5k TinyStories then 5k 25% mix | **1.439** | 2.964 |
+| 4.3M, 10k | 25% mix, cleaned `=`/newline tokens | 1.435 | 2.973 |
 | 21M, 10k | TinyStories | 1.286 | 4.030 |
 | 50M | TinyStories | 1.287 | 4.030 |
 | 4.3M, 3k | TinyStories | **1.566** | 4.455 |
@@ -52,6 +53,10 @@ The equal-budget comparison is the last four rows:
   it slightly improves TinyStories (1.439 vs 1.464) but loses WikiText
   (2.964 vs 2.794) and world-facts (3.374 vs 3.249). It only shifts the
   tradeoff toward stories; pure mix is the better general-text model.
+- Cleaning `=`/newline tokens from WikiText also fails to dominate: TS 1.435 and
+  world facts 3.214 improve, but WikiText 2.973 gets worse. Story-prompt
+  generation is unchanged, and domain prompts (`Abuja is`) still produce
+  digits/`@`/garbage. The model is a text-continuation model, not a fact model.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
 - The 21M mix is **token-starved** in the batch-16 runs. The 3k run used 6M
@@ -79,6 +84,7 @@ the local world-facts corpus were tokenized with the same BPE-8k tokenizer
 | 21M TinyStories-only 10k | 3.964 |
 | 50M TinyStories-only | 3.963 |
 | 4.3M 25% mix 10k | **3.249** |
+| 4.3M clean mix 10k | 3.214 |
 | 4.3M TS-first curriculum 10k | 3.374 |
 | 21M 25% mix 10k (41M tokens) | 3.384 |
 | 21M 25% mix 10k (20.5M tokens) | 3.465 |

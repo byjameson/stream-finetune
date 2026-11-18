@@ -1,0 +1,62 @@
+{
+  "demo": "space-story style ingest",
+  "base_model": "checkpoints/spiking_21m",
+  "ingested_model": "checkpoints/spiking_space_demo/versions/v0001",
+  "domain": {
+    "name": "synthetic Zeta the robot stories",
+    "train_stories": 200,
+    "valid_stories": 100
+  },
+  "config": {
+    "steps": 300,
+    "batch": 16,
+    "seq": 128,
+    "lr": 0.0003,
+    "replay_fraction": 0.2,
+    "rollback_fraction": 0.1
+  },
+  "ingest_gate": {
+    "accepted": true,
+    "rolled_back": true,
+    "version": "v0001",
+    "before": {
+      "old_bpb_4096": 1.3124673279754633,
+      "new_bpb_4096": 2.2098107350944347
+    },
+    "after": {
+      "old_bpb_4096": 1.2715204641382745,
+      "new_bpb_4096": 1.675778452232728
+    }
+  },
+  "full_eval": {
+    "target_bpb_before": 2.187382743547073,
+    "target_bpb_after": 1.6585779358999744,
+    "old_ts_bpb_before": 1.2864752186701935,
+    "old_ts_bpb_after": 1.4608504442554433,
+    "general_wt_bpb_before": 4.02965505507574,
+    "general_wt_bpb_after": 5.397603987969345,
+    "target_improvement": 0.2418,
+    "old_regression": 0.1356,
+    "general_regression": 0.3394
+  },
+  "generation": {
+    "base_alpha_ratio": [0.660, 0.731, 0.743],
+    "after_alpha_ratio": [0.704, 0.758, 0.741],
+    "base_equals_ratio": [0.0, 0.0, 0.0],
+    "after_equals_ratio": [0.0, 0.0, 0.0],
+    "after_robot_theme": true
+  },
+  "release_gate": {
+    "verdict": "BLOCKED",
+    "target_improves_1pct": true,
+    "old_within_3pct_full_eval": false,
+    "general_within_5pct": false,
+    "generation_quality": true,
+    "notes": [
+      "The target style adapts and generation becomes robot-themed.",
+      "The small 4096-token old eval looked safe after rollback (1.312 -> 1.272).",
+      "The full 8192-token eval shows TinyStories +13.6% and WikiText +33.9%.",
+      "A one-shard, small-window acceptance rule is not safe."
+    ]
+  }
+}

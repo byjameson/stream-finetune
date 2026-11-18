@@ -62,11 +62,48 @@ unusable text:
 | domain v0001 | Abuja is | 0.303 | 0.000 | 5 |
 | domain v0001 | Afghanistan is | 0.254 | 0.000 | 3 |
 | domain v0001 | The capital of Nigeria is | 0.734 | 0.000 | 0 |
+| space v0001 | Zeta the robot | 0.704 | 0.000 | 0 |
+| space v0001 | Zeta saw a | 0.758 | 0.000 | 0 |
+| space v0001 | Zeta learned that | 0.741 | 0.000 | 0 |
 
 The base mix model mostly emits WikiText formatting (`=` and whitespace).
 The domain-adapted model emits digits, `?` and replacement characters. Neither
 is a usable base model. Lowering the sampling temperature does not fix this
 (`research/results/spiking_generative_sampling.json`).
+
+## Story-style ingest: target works, retention fails
+
+Second demo, using the 21M TinyStories base and 200 synthetic "Zeta the robot"
+stories (100 held out). Ingest: 300 steps, batch 16, LR 3e-4, replay 0.20,
+Fisher rollback 0.10.
+
+The ingest gate accepted `v0001` after a rollback:
+
+| metric | before | after |
+|---|---:|---:|
+| space-story bpb (4096) | 2.210 | **1.676** |
+| old TinyStories bpb (4096) | 1.312 | 1.272 |
+
+Full fixed-window eval tells a different story:
+
+| shard | before | after | delta |
+|---|---:|---:|---:|
+| space stories | 2.187 | **1.659** | -24.2% |
+| TinyStories | 1.286 | 1.461 | **+13.6%** |
+| WikiText | 4.030 | 5.398 | **+33.9%** |
+
+Generation adapts to the requested style: the base is story-like; after ingest
+the samples are robot-themed ("a small robot... the robot was excited"), alpha
+ratio 0.70-0.76, no `=` spam and no replacement characters. But the model has
+badly forgotten the old and general distributions. The one-shard, 4096-token
+acceptance rule is not safe.
+
+Verdict for this demo:
+
+- target style: ? (bpb -24%, robot-themed samples)
+- generation format: ? (alpha >= 0.70, no formatting/replacement)
+- old TinyStories: ? (+13.6%)
+- general WikiText: ? (+33.9%)
 
 ## Release gate (current verdict: BLOCKED)
 

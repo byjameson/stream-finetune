@@ -205,6 +205,34 @@
       }
     },
     {
+      "name": "mixclean_10k",
+      "model": "checkpoints/spiking_mixclean_4m_10k",
+      "tinystories_bpb": 1.4348886761810025,
+      "wikitext_bpb": 2.9733026593294727,
+      "world_facts_bpb": 3.214473140280784,
+      "tinystories": {
+        "loss": 4.165934294462204,
+        "ppl": 64.45287228321442,
+        "bpb": 1.4348886761810025,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 5.902046740055084,
+        "ppl": 365.7853697917412,
+        "bpb": 2.9733026593294727,
+        "tokens": 8192,
+        "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.165361166000366,
+        "ppl": 475.9730171668302,
+        "bpb": 3.214473140280784,
+        "tokens": 8192,
+        "bytes": 22668
+      }
+    },
+    {
       "name": "mix_3k",
       "model": "checkpoints/spiking_mix4m",
       "tinystories_bpb": 1.702473573052621,

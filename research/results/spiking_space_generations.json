@@ -1,0 +1,58 @@
+{
+  "rows": [
+    {
+      "model": "base_21m",
+      "prompt": "Zeta the robot",
+      "text": " and to her.\n\n\"Can, you you?\" asks asked asks, \" \" courseSure please I. You don't want to my me.\"\n\nLily the dog and says are, \" is,, I am too. You to a a friend friend. I can have play with me.\"\n\nBen, says \",, I will want to your friend. I I am",
+      "alpha_ratio": 0.6598360655737705,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "base_21m",
+      "prompt": "Zeta saw a",
+      "text": " big girl and the said was. She didn't want to go to her, but wanted to it to it. She tried away, but she kept was away. So, she started to to the way.\n\nShe, the little girl came to her. She saw the and she was very happy. She was so happy to the the girl. The man had her very. She thanked the",
+      "alpha_ratio": 0.7312925170068028,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "base_21m",
+      "prompt": "Zeta learned that",
+      "text": " she could be more happy to to the world.Once upon a time, there was a little girl named Lily. She loved to play her and every day would her the friends. One day,, she was a friend named named \",Lily Lily's a big- friend. Lily was very friend because she was so very excited.\n\n\"Wow, I's very!\" said said,",
+      "alpha_ratio": 0.743421052631579,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "space_v0001",
+      "prompt": "Zeta the robot",
+      "text": "a lived a a small robot. lived lived a on a house with. The day was very very sad.\n\nOne day, Tom to to the mom and saw the big house. They wanted to to play the. But said,, \" was too, I you want to play!\" Tim and the said boy, \"No,!\" Tim was sad. They wanted to to play the.",
+      "alpha_ratio": 0.7043795620437956,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "space_v0001",
+      "prompt": "Zeta saw a",
+      "text": " the robot robot was to to a the. The robot was excited to to his the robot. The robot was very happy, and he had all it.\n\nThe robot robot to to the robot robot. played with the robot robot and it't robot. The robot robot't to the robot robot to to a robot robot. to robot robot to play robot. The robot robot robot to to make",
+      "alpha_ratio": 0.7576687116564417,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "space_v0001",
+      "prompt": "Zeta learned that",
+      "text": " the robot robot was to to a the big. robot was with and the robot. He was happy to with it a robot. He had a new robot. He was robot to to his robot. He robot with a robot robot. had robot a. robot robot robot't play. robot He robot't robot. robot robot't to play robot.. He robot robot want know to to play.",
+      "alpha_ratio": 0.7411003236245954,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    }
+  ]
+}

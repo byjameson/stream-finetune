@@ -23,12 +23,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ts-tokens", type=int, default=8_000_000)
     ap.add_argument("--wt-tokens", type=int, default=8_000_000)
+    ap.add_argument("--wt-data", default=str(ROOT / "data/ts_wt2_train.pt"))
     ap.add_argument("--out", default=str(ROOT / "data/mix_ts_wt2_train.pt"))
     args = ap.parse_args()
 
     ts = torch.load(ROOT / "data/ts_train.pt", weights_only=True).to(torch.int64)
-    wt = torch.load(ROOT / "data/ts_wt2_train.pt",
-                     weights_only=True).to(torch.int64)
+    wt = torch.load(args.wt_data, weights_only=True).to(torch.int64)
     parts = []
     i = j = 0
     n_ts = n_wt = 0

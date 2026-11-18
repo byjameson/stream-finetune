@@ -586,8 +586,11 @@ win.
 improves a 76-article held-out domain from **5.99 to 4.45 bpb** in 300 steps
 with 20% replay. It accepted the update on a 4096-token eval (old +2.55%), but
 the full 8192-token eval shows old **+3.29%** and unmonitored WikiText **+7.1%**;
-generation is formatting noise or corrupted text. The hard release gate is
-**BLOCKED** until generation quality and general-shard retention pass.
+generation is formatting noise or corrupted text. A story-style ingest demo
+does adapt the target (space-story bpb 2.19 -> 1.66, robot-themed samples) and
+passes the generation format gate, but full eval shows TinyStories **+13.6%**
+and WikiText **+33.9%**. The hard release gate is **BLOCKED** until generation
+quality and general-shard retention pass.
 [`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
