@@ -87,11 +87,13 @@ beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
 
 | model | adjacent-repeat rate | top-word fraction | distinct-2 |
 |---|---:|---:|---:|
-| 4.3M, 10k TinyStories | 0.052 | 0.087 | 0.971 |
+| 4.3M, 10k TinyStories | 0.052 | 0.088 | 0.971 |
 | 4.3M, 3k TinyStories | 0.055 | 0.138 | 0.961 |
-| 4.3M, 3k 25% mix | 0.068 | 0.098 | 0.953 |
-| 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.967 |
-| 21M, 10k 25% mix | 0.110 | 0.108 | 0.928 |
+| 21M, 10k TinyStories | 0.051 | 0.107 | 0.928 |
+| 50M, TinyStories | 0.051 | 0.107 | 0.928 |
+| 4.3M, 3k 25% mix | 0.068 | 0.097 | 0.953 |
+| 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.968 |
+| 21M, 10k 25% mix | 0.109 | 0.109 | 0.928 |
 
 All three are locally repetitive and ungrammatical. A mixed-model sample
 starts:
@@ -102,12 +104,14 @@ One day day, a, saw was park an to a in big big.
 ```
 
 The mixed model has lower WikiText bpb but is not clearly more coherent than
-the TinyStories-only control; the 10k mixed model is still locally repetitive
-("was was", "to to", "little little") and ungrammatical. The 21M 10k sample is
-the worst of the set on "The city of" (adjacent-repeat 0.20, distinct-2 0.877,
-a 4-gram repeated three times). The 10k TinyStories model is somewhat more
-story-like but also makes agreement errors. The lower bpb is real, but it is
-**not** a generation-quality win, and it is not a deployment result.
+the TinyStories-only controls; the 10k mixed model is still locally repetitive
+("was was", "to to", "little little") and ungrammatical. The 21M/50M
+TinyStories-only samples are more story-shaped ("there was a little girl named
+Lily...") but still repeat function words; their distinct-2 is 0.928, below the
+4.3M 10k TinyStories model's 0.971. The 21M 10k mix is the worst sample on
+"The city of" (adjacent-repeat 0.20, distinct-2 0.877, a 4-gram repeated three
+times). There is no clean generation-quality winner: **bpb and repetition
+metrics do not line up with visual coherence**, and none is deployment-ready.
 
 ## Caveats
 
