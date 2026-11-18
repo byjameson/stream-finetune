@@ -36,6 +36,16 @@ def test_twenty_five_percent_wikitext_is_the_best_tradeoff():
     assert mix75["tinystories_bpb"] > mix25["tinystories_bpb"]
 
 
+def test_larger_mix_is_undertrained_at_3k():
+    runs = load_runs()
+    mix25 = runs["mix25_3k"]
+    mix21 = runs["mix25_21m_3k"]
+    ts21 = runs["spiking_21m"]
+    assert mix21["tinystories_bpb"] > mix25["tinystories_bpb"]
+    assert mix21["wikitext_bpb"] > mix25["wikitext_bpb"]
+    assert mix21["wikitext_bpb"] < ts21["wikitext_bpb"]
+
+
 def test_parameter_scaling_does_not_move_wikitext():
     runs = load_runs()
     assert runs["spiking_50m"]["wikitext_bpb"] > 4.0

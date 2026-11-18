@@ -31,6 +31,7 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | 4.3M, 3k | 25% WikiText (12M+4M) | **1.605** | **2.927** |
 | 4.3M, 3k | 50% WikiText (8M+8M) | 1.702 | 2.906 |
 | 4.3M, 3k | 75% WikiText (4M+12M) | 1.734 | **2.820** |
+| 21M, 3k | 25% WikiText (12M+4M) | 1.910 | 3.228 |
 
 The equal-budget comparison is the last four rows:
 
@@ -41,6 +42,9 @@ The equal-budget comparison is the last four rows:
   strongly diminishing; the main lever is domain diversity, not the exact mix.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
+- The 21M mix at 3k steps is **undertrained**: TS 1.910 / WikiText 3.228, worse
+  than the 4.3M mix at the same budget. Scaling needs more steps; 3000 is not
+  enough to compare 21M with 4.3M.
 
 This is the first result in the generative line where a change moves the
 general-text metric. It supports the pivot from task-specific binding to a
@@ -49,7 +53,8 @@ competence.
 
 ## Caveats
 
-- One seed, 3000 steps, 16M training tokens, 4.3M parameters.
+- One seed, 3000 steps, 16M training tokens. The main comparison is 4.3M; the
+  21M row is an undertrained scaling check, not a fair 21M baseline.
 - WikiText-2 train is repeated ~2x to reach the 8M token budget; the model may
   partially memorize it.
 - Evaluation is 8192 tokens per shard (8 x 8 x 128); the differences are much
