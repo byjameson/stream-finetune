@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PROMPTS = ["Once upon a time", "The city of", "In the beginning"]
 MODELS = [
     ("spiking_4m_10k", "checkpoints/spiking_4m_10k"),
+    ("spiking_21m", "checkpoints/spiking_21m"),
+    ("spiking_50m", "checkpoints/spiking_50m"),
     ("ts_only_3k", "checkpoints/spiking_ts4m_3k"),
     ("mix25_3k", "checkpoints/spiking_mix25_4m"),
     ("mix25_10k", "checkpoints/spiking_mix25_4m_10k"),

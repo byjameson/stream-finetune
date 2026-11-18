@@ -32,9 +32,10 @@
 - Held-out world-facts: 4.3M mix 10k reaches 3.249 bpb vs 3.949 for
   TinyStories-only 10k; 21M mix 10k is 3.465 (under-budget). The data-diversity
   gain transfers beyond WikiText-2, though the articles are also Wikipedia.
-- Generation samples: all models remain locally repetitive/ungrammatical;
-  the 10k mix has adjacent-repeat 0.065, distinct-2 0.967, top-word 0.096, not
-  a generation-quality or deployment win.
+- Generation samples: all models remain locally repetitive/ungrammatical.
+  The 10k mix has adjacent-repeat 0.065, distinct-2 0.967; 21M/50M TS-only are
+  more story-shaped but distinct-2 0.928, still repetitive. No clean generation
+  winner and no deployment win.
 - 158 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
