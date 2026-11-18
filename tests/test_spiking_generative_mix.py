@@ -49,6 +49,18 @@ def test_longer_mixed_training_improves_both_domains():
     assert ts10["wikitext_bpb"] > mix10["wikitext_bpb"]
 
 
+def test_21m_10k_is_under_token_budget():
+    runs = load_runs()
+    mix21_3 = runs["mix25_21m_3k"]
+    mix21_10 = runs["mix25_21m_10k"]
+    mix4 = runs["mix25_10k"]
+    assert mix21_10["tinystories_bpb"] < mix21_3["tinystories_bpb"]
+    assert mix21_10["wikitext_bpb"] < mix21_3["wikitext_bpb"]
+    # The 21M 10k run used batch 16, so only half the 4.3M mix token budget.
+    assert mix21_10["tinystories_bpb"] > mix4["tinystories_bpb"]
+    assert mix21_10["wikitext_bpb"] > mix4["wikitext_bpb"]
+
+
 def test_larger_mix_is_undertrained_at_3k():
     runs = load_runs()
     mix25 = runs["mix25_3k"]

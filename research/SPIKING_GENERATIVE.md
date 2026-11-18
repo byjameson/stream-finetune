@@ -33,6 +33,7 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | 4.3M, 3k | 50% WikiText (8M+8M) | 1.702 | 2.906 |
 | 4.3M, 3k | 75% WikiText (4M+12M) | 1.734 | **2.820** |
 | 21M, 3k | 25% WikiText (12M+4M) | 1.910 | 3.228 |
+| 21M, 10k | 25% WikiText (30M+10M) | 1.774 | 3.108 |
 
 The equal-budget comparison is the last four rows:
 
@@ -47,9 +48,11 @@ The equal-budget comparison is the last four rows:
   This is the strongest 4.3M tradeoff so far.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
-- The 21M mix at 3k steps is **undertrained**: TS 1.910 / WikiText 3.228, worse
-  than the 4.3M mix at the same budget. Scaling needs more steps; 3000 is not
-  enough to compare 21M with 4.3M.
+- The 21M mix is **token-starved** in both runs. The 3k run used 6M tokens;
+  the 10k run used batch 16, so 20.5M tokens, half of the 4.3M 10k run's 41M
+  (batch 32). It improves from 3k to 10k (1.910/3.228 -> 1.774/3.108) but is
+  still worse than the 4.3M mix. This is **not** a fair parameter-scaling test;
+  21M at matched tokens is still untested.
 
 This is the first result in the generative line where a change moves the
 general-text metric. It supports the pivot from task-specific binding to a
@@ -68,6 +71,7 @@ beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
 | 4.3M, 3k TinyStories | 0.055 | 0.138 | 0.961 |
 | 4.3M, 3k 25% mix | 0.068 | 0.098 | 0.953 |
 | 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.967 |
+| 21M, 10k 25% mix | 0.110 | 0.108 | 0.928 |
 
 All three are locally repetitive and ungrammatical. A mixed-model sample
 starts:
@@ -79,17 +83,18 @@ One day day, a, saw was park an to a in big big.
 
 The mixed model has lower WikiText bpb but is not clearly more coherent than
 the TinyStories-only control; the 10k mixed model is still locally repetitive
-("was was", "to to", "little little") and ungrammatical. The 10k TinyStories
-model is somewhat more story-like but also makes agreement errors. The lower
-bpb is real, but it is **not** a generation-quality win, and it is not a
-deployment result.
+("was was", "to to", "little little") and ungrammatical. The 21M 10k sample is
+the worst of the set on "The city of" (adjacent-repeat 0.20, distinct-2 0.877,
+a 4-gram repeated three times). The 10k TinyStories model is somewhat more
+story-like but also makes agreement errors. The lower bpb is real, but it is
+**not** a generation-quality win, and it is not a deployment result.
 
 ## Caveats
 
-- One seed. The 3k runs use 16M training tokens; the 10k mix uses 40M tokens
-  (30M TinyStories + 10M WikiText, WikiText repeated ~2.6x). The main
-  comparison is 4.3M; the 21M row is an undertrained scaling check, not a fair
-  21M baseline.
+- One seed. The 3k runs use 16M training tokens; the 4.3M 10k mix uses 40M
+  tokens (30M TinyStories + 10M WikiText, WikiText repeated ~2.6x). The 21M
+  10k run used batch 16 and therefore only 20.5M tokens; it is an
+  under-token-budget scaling check, not a fair 21M baseline.
 - WikiText-2 train is repeated ~2x to reach the 8M token budget; the model may
   partially memorize it.
 - Evaluation is 8192 tokens per shard (8 x 8 x 128); the differences are much
