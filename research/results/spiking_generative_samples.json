@@ -210,6 +210,57 @@
       "max_repeat_4gram": 1,
       "adjacent_repeat_rate": 0.047619047619047616,
       "top_word_frac": 0.078125
+    },
+    {
+      "model": "mix25_21m_10k",
+      "prompt": "Once upon a time",
+      "text": " time there two was named Lily in.. loved was loved go day., day day day, to with the a, it they park together to. She together, they of to. They\n,, was,,, they had a a was park in a park. They. It a a some some. and, a,!\" to was Lily Lily to her.. She,,",
+      "chars": 254,
+      "words": 56,
+      "distinct_1": 0.6607142857142857,
+      "max_repeat_1gram": 5,
+      "distinct_2": 0.9818181818181818,
+      "max_repeat_2gram": 2,
+      "distinct_3": 1.0,
+      "max_repeat_3gram": 1,
+      "distinct_4": 1.0,
+      "max_repeat_4gram": 1,
+      "adjacent_repeat_rate": 0.07272727272727272,
+      "top_word_frac": 0.08928571428571429
+    },
+    {
+      "model": "mix25_21m_10k",
+      "prompt": "The city of",
+      "text": " his her and was up to in the. The was of excited and and of the of and, to in the a, it they and all to. uponOnce upon upon there there there there there there girl was was named named girl.. She She She in a park the and and to would to in in. in One she,, day was she to to her.\n\n,,",
+      "chars": 285,
+      "words": 66,
+      "distinct_1": 0.5,
+      "max_repeat_1gram": 6,
+      "distinct_2": 0.8769230769230769,
+      "max_repeat_2gram": 5,
+      "distinct_3": 0.953125,
+      "max_repeat_3gram": 4,
+      "distinct_4": 0.9682539682539683,
+      "max_repeat_4gram": 3,
+      "adjacent_repeat_rate": 0.2,
+      "top_word_frac": 0.09090909090909091
+    },
+    {
+      "model": "mix25_21m_10k",
+      "prompt": "In the beginning",
+      "text": " his, and was as to in the. was\n\n end saidWhen, end, boy, was was, a, it was He to to. in He, so to to. to in to he with, he, a he a a was a in a. He\n day He a and in a of and. a,,, was to to to her.\n He,,",
+      "chars": 205,
+      "words": 55,
+      "distinct_1": 0.4909090909090909,
+      "max_repeat_1gram": 8,
+      "distinct_2": 0.9259259259259259,
+      "max_repeat_2gram": 2,
+      "distinct_3": 1.0,
+      "max_repeat_3gram": 1,
+      "distinct_4": 1.0,
+      "max_repeat_4gram": 1,
+      "adjacent_repeat_rate": 0.05555555555555555,
+      "top_word_frac": 0.14545454545454545
     }
   ]
 }

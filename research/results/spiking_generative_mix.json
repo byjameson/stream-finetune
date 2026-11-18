@@ -187,6 +187,26 @@
         "tokens": 8192,
         "bytes": 23460
       }
+    },
+    {
+      "name": "mix25_21m_10k",
+      "model": "checkpoints/spiking_mix25_21m_10k",
+      "tinystories_bpb": 1.7741675655195126,
+      "wikitext_bpb": 3.10752147876946,
+      "tinystories": {
+        "loss": 5.15096789598465,
+        "ppl": 172.59846685888579,
+        "bpb": 1.7741675655195126,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 6.168472945690155,
+        "ppl": 477.45644719122237,
+        "bpb": 3.10752147876946,
+        "tokens": 8192,
+        "bytes": 23460
+      }
     }
   ],
   "note": "ts_only_3k and the mix runs use the same 4.3M architecture, 3000 steps, 16M training tokens and seed. mix25/mix/mix75 are 12M+4M, 8M+8M and 4M+12M TinyStories+WikiText. The 21M mix run uses 3000 steps and is undertrained at that budget; the older 4.3M/21M/50M models are TinyStories-only baselines."
