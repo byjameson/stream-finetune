@@ -49,6 +49,7 @@ def main():
         ("mix25_3k", "checkpoints/spiking_mix25_4m"),
         ("mix_3k", "checkpoints/spiking_mix4m"),
         ("mix75_3k", "checkpoints/spiking_mix75_4m"),
+        ("mix25_21m_3k", "checkpoints/spiking_mix25_21m"),
     ]
     runs = []
     for name, path in models:
@@ -69,8 +70,10 @@ def main():
         "runs": runs,
         "note": ("ts_only_3k and the mix runs use the same 4.3M architecture, "
                  "3000 steps, 16M training tokens and seed. mix25/mix/mix75 "
-                 "are 12M+4M, 8M+8M and 4M+12M TinyStories+WikiText. The older "
-                 "4.3M/21M/50M models are TinyStories-only baselines."),
+                 "are 12M+4M, 8M+8M and 4M+12M TinyStories+WikiText. The "
+                 "21M mix run uses 3000 steps and is undertrained at that "
+                 "budget; the older 4.3M/21M/50M models are TinyStories-only "
+                 "baselines."),
     }
     out = ROOT / "research/results/spiking_generative_mix.json"
     out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
