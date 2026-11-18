@@ -566,8 +566,10 @@ tokens) improves both: TinyStories **1.464** / WikiText **2.794** bpb, versus
 WikiText gain at a larger TinyStories cost (50%: 1.702/2.906; 75%:
 1.734/2.820). The 21M/50M TinyStories-only models stay at WikiText 4.03, so
 data diversity moves the general-text metric where parameter scaling did not.
-The 21M 10k mix used batch 16 (20.5M tokens, half the 4.3M budget) and is worse
-(1.774/3.108); 21M at matched tokens is still untested. On a held-out
+The 21M 10k mix at matched 41M tokens (batch 32) is still worse on all three
+bpb (1.669 / 3.011 / 3.384 vs 1.464 / 2.794 / 3.249); 5x parameters do not buy
+quality at this budget. The batch-16 run (20.5M tokens) is worse still
+(1.774/3.108). On a held-out
 world-facts article set, the 4.3M mix reaches **3.249** bpb versus **3.949**
 for TinyStories-only 10k, so the diversity gain transfers beyond WikiText-2.
 A TinyStories-first curriculum does not dominate: it is slightly better on

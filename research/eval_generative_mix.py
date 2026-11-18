@@ -54,6 +54,7 @@ def main():
         ("mix75_3k", "checkpoints/spiking_mix75_4m"),
         ("mix25_21m_3k", "checkpoints/spiking_mix25_21m"),
         ("mix25_21m_10k", "checkpoints/spiking_mix25_21m_10k"),
+        ("mix25_21m_10k_b32", "checkpoints/spiking_mix25_21m_10k_b32"),
     ]
     runs = []
     for name, path in models:

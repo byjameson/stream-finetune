@@ -34,7 +34,8 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | 4.3M, 3k | 50% WikiText (8M+8M) | 1.702 | 2.906 |
 | 4.3M, 3k | 75% WikiText (4M+12M) | 1.734 | **2.820** |
 | 21M, 3k | 25% WikiText (12M+4M) | 1.910 | 3.228 |
-| 21M, 10k | 25% WikiText (30M+10M) | 1.774 | 3.108 |
+| 21M, 10k | 25% WikiText (30M+10M), batch 16 | 1.774 | 3.108 |
+| 21M, 10k | 25% WikiText (30M+10M), batch 32 | 1.669 | 3.011 |
 
 The equal-budget comparison is the last four rows:
 
@@ -53,11 +54,13 @@ The equal-budget comparison is the last four rows:
   tradeoff toward stories; pure mix is the better general-text model.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
-- The 21M mix is **token-starved** in both runs. The 3k run used 6M tokens;
-  the 10k run used batch 16, so 20.5M tokens, half of the 4.3M 10k run's 41M
-  (batch 32). It improves from 3k to 10k (1.910/3.228 -> 1.774/3.108) but is
-  still worse than the 4.3M mix. This is **not** a fair parameter-scaling test;
-  21M at matched tokens is still untested.
+- The 21M mix is **token-starved** in the batch-16 runs. The 3k run used 6M
+  tokens; the 10k batch-16 run used 20.5M tokens, half of the 4.3M 10k run's
+  41M. The 10k batch-32 run matches the 4.3M budget (41M tokens, 10k updates)
+  and improves to 1.669/3.011, but is still worse than the 4.3M mix on
+  TinyStories, WikiText and world facts. At this budget **5x parameters do not
+  buy quality**; the 4.3M mix remains the best model. The larger model needs
+  more updates/tokens or different tuning.
 
 This is the first result in the generative line where a change moves the
 general-text metric. It supports the pivot from task-specific binding to a
@@ -77,7 +80,9 @@ the local world-facts corpus were tokenized with the same BPE-8k tokenizer
 | 50M TinyStories-only | 3.963 |
 | 4.3M 25% mix 10k | **3.249** |
 | 4.3M TS-first curriculum 10k | 3.374 |
+| 21M 25% mix 10k (41M tokens) | 3.384 |
 | 21M 25% mix 10k (20.5M tokens) | 3.465 |
+| 21M 25% mix 10k (41M tokens) | 3.384 |
 
 The data-diversity gain transfers to this held-out article set: the 4.3M mix
 is 0.70 bpb better than the TinyStories-only 10k model, while the 21M mix is
@@ -101,7 +106,8 @@ beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
 | 4.3M, 3k 25% mix | 0.068 | 0.097 | 0.953 |
 | 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.968 |
 | 4.3M, 10k TS-first curriculum | 0.041 | 0.101 | 0.943 |
-| 21M, 10k 25% mix | 0.109 | 0.109 | 0.928 |
+| 21M, 10k 25% mix (20.5M tok) | 0.109 | 0.109 | 0.928 |
+| 21M, 10k 25% mix (41M tok) | 0.093 | 0.168 | 0.929 |
 
 All three are locally repetitive and ungrammatical. A mixed-model sample
 starts:
