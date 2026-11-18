@@ -26,6 +26,7 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 |---|---|---:|---:|
 | 4.3M, 10k | TinyStories | **1.302** | 4.003 |
 | 4.3M, 10k | 25% WikiText (30M+10M) | 1.464 | **2.794** |
+| 4.3M, 10k | 5k TinyStories then 5k 25% mix | **1.439** | 2.964 |
 | 21M, 10k | TinyStories | 1.286 | 4.030 |
 | 50M | TinyStories | 1.287 | 4.030 |
 | 4.3M, 3k | TinyStories | **1.566** | 4.455 |
@@ -45,7 +46,11 @@ The equal-budget comparison is the last four rows:
 - Longer training helps both domains: 3k -> 10k at 25% WikiText moves
   1.605/2.927 -> **1.464/2.794**. Against the 4.3M TinyStories-only 10k model
   (1.302/4.003), the 10k mix pays +0.161 TinyStories bpb for -1.209 WikiText.
-  This is the strongest 4.3M tradeoff so far.
+  This is the strongest 4.3M general-text tradeoff so far.
+- A TinyStories-first curriculum (5k TS, then 5k mix) does **not** dominate:
+  it slightly improves TinyStories (1.439 vs 1.464) but loses WikiText
+  (2.964 vs 2.794) and world-facts (3.374 vs 3.249). It only shifts the
+  tradeoff toward stories; pure mix is the better general-text model.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
 - The 21M mix is **token-starved** in both runs. The 3k run used 6M tokens;
@@ -71,11 +76,13 @@ the local world-facts corpus were tokenized with the same BPE-8k tokenizer
 | 21M TinyStories-only 10k | 3.964 |
 | 50M TinyStories-only | 3.963 |
 | 4.3M 25% mix 10k | **3.249** |
+| 4.3M TS-first curriculum 10k | 3.374 |
 | 21M 25% mix 10k (20.5M tokens) | 3.465 |
 
 The data-diversity gain transfers to this held-out article set: the 4.3M mix
 is 0.70 bpb better than the TinyStories-only 10k model, while the 21M mix is
-under-trained because it saw half the tokens. Caveat: these articles are also
+under-trained because it saw half the tokens. The TS-first curriculum does not
+beat the pure mix here either (3.374 vs 3.249). Caveat: these articles are also
 Wikipedia, so the style overlaps WikiText-2; they are held out from the training
 mix but not deduplicated against WikiText-2.
 
@@ -93,6 +100,7 @@ beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
 | 50M, TinyStories | 0.051 | 0.107 | 0.928 |
 | 4.3M, 3k 25% mix | 0.068 | 0.097 | 0.953 |
 | 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.968 |
+| 4.3M, 10k TS-first curriculum | 0.041 | 0.101 | 0.943 |
 | 21M, 10k 25% mix | 0.109 | 0.109 | 0.928 |
 
 All three are locally repetitive and ungrammatical. A mixed-model sample

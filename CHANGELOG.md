@@ -32,11 +32,14 @@
 - Held-out world-facts: 4.3M mix 10k reaches 3.249 bpb vs 3.949 for
   TinyStories-only 10k; 21M mix 10k is 3.465 (under-budget). The data-diversity
   gain transfers beyond WikiText-2, though the articles are also Wikipedia.
+- TS-first curriculum (5k TS + 5k mix) does not dominate: TS 1.439, WikiText
+  2.964, world facts 3.374 vs pure mix 1.464/2.794/3.249. It only shifts the
+  tradeoff toward stories; pure mix is better for general text.
 - Generation samples: all models remain locally repetitive/ungrammatical.
   The 10k mix has adjacent-repeat 0.065, distinct-2 0.967; 21M/50M TS-only are
   more story-shaped but distinct-2 0.928, still repetitive. No clean generation
   winner and no deployment win.
-- 158 tests;
+- 159 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -162,7 +165,7 @@
   (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
   (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
   (0.579/0.597). Documented as a negative scale result.
-- 158 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 159 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

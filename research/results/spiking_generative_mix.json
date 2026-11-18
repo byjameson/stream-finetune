@@ -177,6 +177,34 @@
       }
     },
     {
+      "name": "mixcurr_10k",
+      "model": "checkpoints/spiking_mixcurr_4m",
+      "tinystories_bpb": 1.439245645332461,
+      "wikitext_bpb": 2.964442678045987,
+      "world_facts_bpb": 3.3742906142675615,
+      "tinystories": {
+        "loss": 4.178583949804306,
+        "ppl": 65.27335738959569,
+        "bpb": 1.439245645332461,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 5.884459555149078,
+        "ppl": 359.408475039307,
+        "bpb": 2.964442678045987,
+        "tokens": 8192,
+        "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.471891164779663,
+        "ppl": 646.7055980709753,
+        "bpb": 3.3742906142675615,
+        "tokens": 8192,
+        "bytes": 22668
+      }
+    },
+    {
       "name": "mix_3k",
       "model": "checkpoints/spiking_mix4m",
       "tinystories_bpb": 1.702473573052621,

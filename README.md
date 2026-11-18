@@ -570,9 +570,12 @@ The 21M 10k mix used batch 16 (20.5M tokens, half the 4.3M budget) and is worse
 (1.774/3.108); 21M at matched tokens is still untested. On a held-out
 world-facts article set, the 4.3M mix reaches **3.249** bpb versus **3.949**
 for TinyStories-only 10k, so the diversity gain transfers beyond WikiText-2.
-Generation samples remain locally repetitive and ungrammatical; 21M/50M
-TinyStories-only samples are more story-shaped but still repetitive. Lower bpb
-is not yet a generation-quality or deployment win.
+A TinyStories-first curriculum does not dominate: it is slightly better on
+TinyStories (1.439) but worse on WikiText (2.964) and world facts (3.374);
+pure mix remains the best general-text tradeoff. Generation samples remain
+locally repetitive and ungrammatical; 21M/50M TinyStories-only samples are more
+story-shaped but still repetitive. Lower bpb is not yet a generation-quality or
+deployment win.
 [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
