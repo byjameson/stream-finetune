@@ -26,6 +26,7 @@ MODELS = [
     ("ts_only_3k", "checkpoints/spiking_ts4m_3k"),
     ("mix25_3k", "checkpoints/spiking_mix25_4m"),
     ("mix25_10k", "checkpoints/spiking_mix25_4m_10k"),
+    ("mixcurr_10k", "checkpoints/spiking_mixcurr_4m"),
     ("mix25_21m_10k", "checkpoints/spiking_mix25_21m_10k"),
 ]
 MAX_NEW = 80

@@ -9,7 +9,7 @@ def test_generative_samples_are_not_degenerate_but_remain_weak():
         (ROOT / "research/results/spiking_generative_samples.json")
         .read_text(encoding="utf-8"))
     rows = payload["rows"]
-    assert len(rows) == 21
+    assert len(rows) == 24
     for row in rows:
         # Not collapsed to one token or a tight loop.
         assert row["adjacent_repeat_rate"] < 0.25

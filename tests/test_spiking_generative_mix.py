@@ -72,6 +72,15 @@ def test_21m_10k_is_under_token_budget():
     assert mix21_10["world_facts_bpb"] > mix4["world_facts_bpb"]
 
 
+def test_ts_first_curriculum_does_not_dominate():
+    runs = load_runs()
+    mix = runs["mix25_10k"]
+    curr = runs["mixcurr_10k"]
+    assert curr["tinystories_bpb"] < mix["tinystories_bpb"]
+    assert curr["wikitext_bpb"] > mix["wikitext_bpb"]
+    assert curr["world_facts_bpb"] > mix["world_facts_bpb"]
+
+
 def test_larger_mix_is_undertrained_at_3k():
     runs = load_runs()
     mix25 = runs["mix25_3k"]
