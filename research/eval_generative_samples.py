@@ -27,6 +27,7 @@ MODELS = [
     ("mix25_3k", "checkpoints/spiking_mix25_4m"),
     ("mix25_10k", "checkpoints/spiking_mix25_4m_10k"),
     ("mixcurr_10k", "checkpoints/spiking_mixcurr_4m"),
+    ("mixclean_10k", "checkpoints/spiking_mixclean_4m_10k"),
     ("mix25_21m_10k", "checkpoints/spiking_mix25_21m_10k"),
     ("mix25_21m_10k_b32", "checkpoints/spiking_mix25_21m_10k_b32"),
 ]

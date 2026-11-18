@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MODELS = [
     ("base", "checkpoints/spiking_mix25_4m_10k"),
     ("domain_v0001", "checkpoints/spiking_domain_demo/versions/v0001"),
+    ("clean_mix", "checkpoints/spiking_mixclean_4m_10k"),
 ]
 PROMPTS = ["Abuja is", "Afghanistan is", "The capital of Nigeria is"]
 MAX_NEW = 60

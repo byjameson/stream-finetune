@@ -50,6 +50,7 @@ def main():
         ("mix25_3k", "checkpoints/spiking_mix25_4m"),
         ("mix25_10k", "checkpoints/spiking_mix25_4m_10k"),
         ("mixcurr_10k", "checkpoints/spiking_mixcurr_4m"),
+        ("mixclean_10k", "checkpoints/spiking_mixclean_4m_10k"),
         ("mix_3k", "checkpoints/spiking_mix4m"),
         ("mix75_3k", "checkpoints/spiking_mix75_4m"),
         ("mix25_21m_3k", "checkpoints/spiking_mix25_21m"),

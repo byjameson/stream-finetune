@@ -87,6 +87,15 @@ def test_matched_token_21m_does_not_beat_4_3m():
     assert mix21["wikitext_bpb"] < ts21["wikitext_bpb"]
 
 
+def test_clean_mix_is_not_a_clear_win():
+    runs = load_runs()
+    mix = runs["mix25_10k"]
+    clean = runs["mixclean_10k"]
+    assert clean["tinystories_bpb"] < mix["tinystories_bpb"]
+    assert clean["wikitext_bpb"] > mix["wikitext_bpb"]
+    assert clean["world_facts_bpb"] < mix["world_facts_bpb"]
+
+
 def test_ts_first_curriculum_does_not_dominate():
     runs = load_runs()
     mix = runs["mix25_10k"]

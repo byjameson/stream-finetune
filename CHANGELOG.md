@@ -48,7 +48,15 @@
   4096-token eval (old +2.55%), but full 8192 eval shows old +3.29% and
   unmonitored WikiText +7.1%. Generation is formatting noise/corrupted.
   Release gate BLOCKED; no deployable artifact.
-- 162 tests;
+- Clean-WikiText mix: removing `=`/newline tokens gives TS 1.435, WikiText
+  2.973, world facts 3.214 vs normal mix 1.464/2.794/3.249; it improves TS and
+  world facts but loses WikiText and does not fix domain-prompt generation.
+  Not a clear win.
+- Space-story ingest demo: 21M TS base, 200 synthetic Zeta stories, 300 steps,
+  20% replay + rollback. Target 2.19 -> 1.66 bpb and robot-themed samples
+  (alpha ~0.7); full eval TinyStories +13.6%, WikiText +33.9%. Release still
+  BLOCKED by retention.
+- 164 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -179,7 +187,15 @@
   4096-token eval (old +2.55%), but full 8192 eval shows old +3.29% and
   unmonitored WikiText +7.1%. Generation is formatting noise/corrupted.
   Release gate BLOCKED; no deployable artifact.
-- 162 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Clean-WikiText mix: removing `=`/newline tokens gives TS 1.435, WikiText
+  2.973, world facts 3.214 vs normal mix 1.464/2.794/3.249; it improves TS and
+  world facts but loses WikiText and does not fix domain-prompt generation.
+  Not a clear win.
+- Space-story ingest demo: 21M TS base, 200 synthetic Zeta stories, 300 steps,
+  20% replay + rollback. Target 2.19 -> 1.66 bpb and robot-themed samples
+  (alpha ~0.7); full eval TinyStories +13.6%, WikiText +33.9%. Release still
+  BLOCKED by retention.
+- 164 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
