@@ -72,6 +72,21 @@ def test_21m_10k_is_under_token_budget():
     assert mix21_10["world_facts_bpb"] > mix4["world_facts_bpb"]
 
 
+def test_matched_token_21m_does_not_beat_4_3m():
+    runs = load_runs()
+    mix4 = runs["mix25_10k"]
+    mix21 = runs["mix25_21m_10k_b32"]
+    under = runs["mix25_21m_10k"]
+    ts21 = runs["spiking_21m"]
+    assert mix21["tinystories_bpb"] > mix4["tinystories_bpb"]
+    assert mix21["wikitext_bpb"] > mix4["wikitext_bpb"]
+    assert mix21["world_facts_bpb"] > mix4["world_facts_bpb"]
+    # More tokens help the 21M model, but do not make it beat the 4.3M mix.
+    assert mix21["tinystories_bpb"] < under["tinystories_bpb"]
+    assert mix21["wikitext_bpb"] < under["wikitext_bpb"]
+    assert mix21["wikitext_bpb"] < ts21["wikitext_bpb"]
+
+
 def test_ts_first_curriculum_does_not_dominate():
     runs = load_runs()
     mix = runs["mix25_10k"]

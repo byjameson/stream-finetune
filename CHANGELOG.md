@@ -26,9 +26,10 @@
 - Longer mixed training: 25% WikiText, 10k steps, 40M tokens gives TS 1.464 /
   WikiText 2.794 bpb, versus 1.302/4.003 for TinyStories-only 10k. The 10k mix
   pays +0.161 TS bpb for -1.209 WikiText.
-- 21M 10k mix: TS 1.774 / WikiText 3.108, better than the 21M 3k run but worse
-  than the 4.3M mix. It used batch 16 (20.5M tokens), half the 4.3M mix budget;
-  21M at matched tokens is still untested.
+- 21M 10k mix: batch-16 run TS 1.774 / WikiText 3.108 (20.5M tokens); batch-32
+  matched-token run TS 1.669 / WikiText 3.011 / world facts 3.384. Both are
+  worse than the 4.3M mix (1.464/2.794/3.249): 5x parameters do not buy quality
+  at this 41M-token budget.
 - Held-out world-facts: 4.3M mix 10k reaches 3.249 bpb vs 3.949 for
   TinyStories-only 10k; 21M mix 10k is 3.465 (under-budget). The data-diversity
   gain transfers beyond WikiText-2, though the articles are also Wikipedia.
@@ -42,7 +43,7 @@
   (adjacent 0.052 -> 0.034, distinct-2 0.971 -> 0.983) but hurts the mix model
   (0.065 -> 0.107, 0.968 -> 0.909). No sampling setting rescues the mix.
   No clean generation winner and no deployment win.
-- 160 tests;
+- 161 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -168,7 +169,7 @@
   (old/new/held 1.000, permutation 1.000). The 16-pair full set is seed-sensitive
   (seed 1 1.000, seed 0 phase-A old 0.576); 20% replay forgets the old name read
   (0.579/0.597). Documented as a negative scale result.
-- 160 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- 161 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
