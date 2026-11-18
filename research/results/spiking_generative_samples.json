@@ -159,6 +159,57 @@
       "max_repeat_4gram": 1,
       "adjacent_repeat_rate": 0.08064516129032258,
       "top_word_frac": 0.09523809523809523
+    },
+    {
+      "model": "mix25_10k",
+      "prompt": "Once upon a time",
+      "text": " time there was was a Lily named. Lily The was loved excited to. She the wanted to her to play. She One it,, she decided was to to go the. She wanted to to to go with park her, So she. walked was her in big park the and. Suddenly She saw some a ground and started on play..\n\n\" picked herHi,!, It",
+      "chars": 295,
+      "words": 63,
+      "distinct_1": 0.6507936507936508,
+      "max_repeat_1gram": 7,
+      "distinct_2": 0.9354838709677419,
+      "max_repeat_2gram": 3,
+      "distinct_3": 0.9836065573770492,
+      "max_repeat_3gram": 2,
+      "distinct_4": 1.0,
+      "max_repeat_4gram": 1,
+      "adjacent_repeat_rate": 0.06451612903225806,
+      "top_word_frac": 0.1111111111111111
+    },
+    {
+      "model": "mix25_10k",
+      "prompt": "The city of",
+      "text": " his were and was happy to the the family. They had go a and of end their and, a adventure.\nOnce upon a there time was a little little girl named called. She She three girl years, three, loved had old a toys. One day,, mommy she she would to some some park and.\n\n\nAsLook Lily, came her saw a of,,",
+      "chars": 296,
+      "words": 61,
+      "distinct_1": 0.7377049180327869,
+      "max_repeat_1gram": 6,
+      "distinct_2": 0.9833333333333333,
+      "max_repeat_2gram": 2,
+      "distinct_3": 1.0,
+      "max_repeat_3gram": 1,
+      "distinct_4": 1.0,
+      "max_repeat_4gram": 1,
+      "adjacent_repeat_rate": 0.08333333333333333,
+      "top_word_frac": 0.09836065573770492
+    },
+    {
+      "model": "mix25_10k",
+      "prompt": "In the beginning",
+      "text": " his of and was have to a the family of their of end and. they end and, upon upon,,,, they was an a a little little girl girl named to. She mom to do with, her, mommy her. mom She her looked a and daddy mommy \" to a can some do.\n\nLily that's need to together Lily to her know if to, make",
+      "chars": 287,
+      "words": 64,
+      "distinct_1": 0.671875,
+      "max_repeat_1gram": 5,
+      "distinct_2": 0.9841269841269841,
+      "max_repeat_2gram": 2,
+      "distinct_3": 1.0,
+      "max_repeat_3gram": 1,
+      "distinct_4": 1.0,
+      "max_repeat_4gram": 1,
+      "adjacent_repeat_rate": 0.047619047619047616,
+      "top_word_frac": 0.078125
     }
   ]
 }
