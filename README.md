@@ -574,8 +574,10 @@ A TinyStories-first curriculum does not dominate: it is slightly better on
 TinyStories (1.439) but worse on WikiText (2.964) and world facts (3.374);
 pure mix remains the best general-text tradeoff. Generation samples remain
 locally repetitive and ungrammatical; 21M/50M TinyStories-only samples are more
-story-shaped but still repetitive. Lower bpb is not yet a generation-quality or
-deployment win.
+story-shaped but still repetitive. Tighter sampling helps the TinyStories-only
+4.3M model but hurts the mix model, so the generation gap is not just a
+temperature problem. Lower bpb is not yet a generation-quality or deployment
+win.
 [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows

@@ -216,6 +216,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `spiking_lm.py` | 4.3M LIF/rate LM from scratch; synaptic current, surrogate spikes, bpb + firing rate; `--adapt` adds spike-frequency adaptation | ~2 min (300 steps, both modes) |
 | `eval_generative_mix.py` | TinyStories-only vs mixed-corpus spiking LM on TinyStories and WikiText bpb | ~2 min |
 | `eval_generative_samples.py` | sample TinyStories-only vs mixed models; repetition/distinct n-gram metrics | ~1 min |
+| `eval_generative_sampling.py` | sampling sweep (temperature/top-k/repetition penalty) on three models | ~2 min |
 | `make_mixed_corpus.py` | 16M-token TinyStories + WikiText training shard for the generative experiment | ~1 min |
 | `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |

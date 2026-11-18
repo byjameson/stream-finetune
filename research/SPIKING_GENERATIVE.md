@@ -121,6 +121,25 @@ Lily...") but still repeat function words; their distinct-2 is 0.928, below the
 times). There is no clean generation-quality winner: **bpb and repetition
 metrics do not line up with visual coherence**, and none is deployment-ready.
 
+### Sampling sweep (negative)
+
+Three settings were tested: loose (T=0.8, top-k 40, no penalty), tight
+(T=0.5, top-k 10, penalty 1.1) and tightest (T=0.3, top-k 10, penalty 1.1).
+Means over the same three prompts:
+
+| model | setting | adjacent-repeat | top-word | distinct-2 |
+|---|---|---:|---:|---:|
+| 4.3M TS | loose | 0.052 | 0.088 | 0.971 |
+| 4.3M TS | tight | **0.034** | **0.073** | **0.983** |
+| 4.3M mix 10k | loose | **0.065** | **0.096** | **0.968** |
+| 4.3M mix 10k | tight | 0.085 | 0.125 | 0.914 |
+| 4.3M mix 10k | tightest | 0.107 | 0.111 | 0.909 |
+| 21M TS | tight | 0.045 | 0.119 | 0.932 |
+
+Tighter sampling helps the TinyStories-only 4.3M model but **hurts the mixed
+model** (more adjacent repeats, fewer distinct bigrams). No setting rescues the
+mix model, so the generation gap is not only a sampling-temperature problem.
+
 ## Caveats
 
 - One seed. The 3k runs use 16M training tokens; the 4.3M 10k mix uses 40M
