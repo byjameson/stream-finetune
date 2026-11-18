@@ -33,7 +33,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   (12M+4M): TS 1.605 / WikiText 2.927 bpb. 50%/75% add little WikiText gain at a
   larger TS cost (50%: 1.702/2.906; 75%: 1.734/2.820). The 21M/50M
   TinyStories-only models stay at WikiText 4.03; data diversity moves the
-  general-text metric where parameter scaling did not.
+  general-text metric where parameter scaling did not. Generation samples
+  remain repetitive/ungrammatical; lower bpb is not yet a quality win.
   [`SPIKING_GENERATIVE.md`](SPIKING_GENERATIVE.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
@@ -213,6 +214,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `watermark_adapter.py` | trigger → token LoRA; 8/4-bit fingerprint retention; `JOINT=1` adds SST-2 rows, `TASK_RATIO=2` trains 2 task steps per trigger, `INIT_ADAPTER` + `ONLY_TRIGGERS=1` does task-first then watermark | ~5 min |
 | `spiking_lm.py` | 4.3M LIF/rate LM from scratch; synaptic current, surrogate spikes, bpb + firing rate; `--adapt` adds spike-frequency adaptation | ~2 min (300 steps, both modes) |
 | `eval_generative_mix.py` | TinyStories-only vs mixed-corpus spiking LM on TinyStories and WikiText bpb | ~2 min |
+| `eval_generative_samples.py` | sample TinyStories-only vs mixed models; repetition/distinct n-gram metrics | ~1 min |
 | `make_mixed_corpus.py` | 16M-token TinyStories + WikiText training shard for the generative experiment | ~1 min |
 | `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |

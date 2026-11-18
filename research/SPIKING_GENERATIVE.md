@@ -51,6 +51,32 @@ general-text metric. It supports the pivot from task-specific binding to a
 token-level generative LM with broader data; it does not show general language
 competence.
 
+## Generation quality (weak/negative)
+
+bpb is a next-token metric, not a coherence metric. The same checkpoints were
+sampled with three prompts ("Once upon a time", "The city of", "In the
+beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
+
+| model | adjacent-repeat rate | top-word fraction | distinct-2 |
+|---|---:|---:|---:|
+| 4.3M, 10k TinyStories | 0.052 | 0.087 | 0.971 |
+| 4.3M, 3k TinyStories | 0.055 | 0.138 | 0.961 |
+| 4.3M, 3k 25% mix | 0.068 | 0.098 | 0.953 |
+
+All three are locally repetitive and ungrammatical. A mixed-model sample
+starts:
+
+```text
+, there was was was a boy. named He was loved to to his of his big.
+One day day, a, saw was park an to a in big big.
+```
+
+The mixed model has lower WikiText bpb but is not clearly more coherent than
+the TinyStories-only control; the 10k TinyStories model is somewhat more
+story-like but still makes repeated function words and agreement errors. The
+lower bpb is real, but it is **not** a generation-quality win, and it is not a
+deployment result.
+
 ## Caveats
 
 - One seed, 3000 steps, 16M training tokens. The main comparison is 4.3M; the
@@ -97,6 +123,9 @@ python -m streamft.spiking_cli train --data data/mix_ts_wt2_train.pt \
 
 # larger fixed-window evaluation on both shards
 python research/eval_generative_mix.py
+
+# generation samples + repetition metrics
+python research/eval_generative_samples.py
 ```
 
 The evaluation script loads the checkpoints, evaluates both shards with fixed
