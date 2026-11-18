@@ -36,6 +36,19 @@ def test_twenty_five_percent_wikitext_is_the_best_tradeoff():
     assert mix75["tinystories_bpb"] > mix25["tinystories_bpb"]
 
 
+def test_longer_mixed_training_improves_both_domains():
+    runs = load_runs()
+    mix3 = runs["mix25_3k"]
+    mix10 = runs["mix25_10k"]
+    ts10 = runs["spiking_4m_10k"]
+    assert mix10["tinystories_bpb"] < mix3["tinystories_bpb"]
+    assert mix10["wikitext_bpb"] < mix3["wikitext_bpb"]
+    assert mix10["tinystories_bpb"] < 1.6
+    assert mix10["wikitext_bpb"] < 2.9
+    assert ts10["tinystories_bpb"] < mix10["tinystories_bpb"]
+    assert ts10["wikitext_bpb"] > mix10["wikitext_bpb"]
+
+
 def test_larger_mix_is_undertrained_at_3k():
     runs = load_runs()
     mix25 = runs["mix25_3k"]

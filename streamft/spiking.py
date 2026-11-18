@@ -537,7 +537,9 @@ def save_checkpoint(model: SpikingLM, out_dir: str | Path,
         "meta": meta or {},
     }, indent=2) + "\n", encoding="utf-8")
     if tokenizer_path is not None:
-        shutil.copyfile(tokenizer_path, out / "tokenizer.json")
+        dst = out / "tokenizer.json"
+        if Path(tokenizer_path).resolve() != dst.resolve():
+            shutil.copyfile(tokenizer_path, dst)
     return out
 
 

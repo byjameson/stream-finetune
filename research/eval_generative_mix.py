@@ -47,6 +47,7 @@ def main():
         ("spiking_50m", "checkpoints/spiking_50m"),
         ("ts_only_3k", "checkpoints/spiking_ts4m_3k"),
         ("mix25_3k", "checkpoints/spiking_mix25_4m"),
+        ("mix25_10k", "checkpoints/spiking_mix25_4m_10k"),
         ("mix_3k", "checkpoints/spiking_mix4m"),
         ("mix75_3k", "checkpoints/spiking_mix75_4m"),
         ("mix25_21m_3k", "checkpoints/spiking_mix25_21m"),

@@ -109,6 +109,26 @@
       }
     },
     {
+      "name": "mix25_10k",
+      "model": "checkpoints/spiking_mix25_4m_10k",
+      "tinystories_bpb": 1.463805162674418,
+      "wikitext_bpb": 2.7935814593970143,
+      "tinystories": {
+        "loss": 4.249887973070145,
+        "ppl": 70.09755909247261,
+        "bpb": 1.463805162674418,
+        "tokens": 8192,
+        "bytes": 34313
+      },
+      "wikitext": {
+        "loss": 5.545297682285309,
+        "ppl": 256.03078272885784,
+        "bpb": 2.7935814593970143,
+        "tokens": 8192,
+        "bytes": 23460
+      }
+    },
+    {
       "name": "mix_3k",
       "model": "checkpoints/spiking_mix4m",
       "tinystories_bpb": 1.702473573052621,

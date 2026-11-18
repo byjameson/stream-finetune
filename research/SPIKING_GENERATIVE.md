@@ -25,6 +25,7 @@ Batch size 32, LR 1e-3, AdamW, bf16 autocast, spike mode.
 | model | training data | TinyStories bpb | WikiText bpb |
 |---|---|---:|---:|
 | 4.3M, 10k | TinyStories | **1.302** | 4.003 |
+| 4.3M, 10k | 25% WikiText (30M+10M) | 1.464 | **2.794** |
 | 21M, 10k | TinyStories | 1.286 | 4.030 |
 | 50M | TinyStories | 1.287 | 4.030 |
 | 4.3M, 3k | TinyStories | **1.566** | 4.455 |
@@ -40,6 +41,10 @@ The equal-budget comparison is the last four rows:
   (+0.039 bpb); 50% costs +0.136 for only -0.021 more WikiText.
 - 75% buys another -0.107 WikiText for +0.129 TinyStories. The ratio curve is
   strongly diminishing; the main lever is domain diversity, not the exact mix.
+- Longer training helps both domains: 3k -> 10k at 25% WikiText moves
+  1.605/2.927 -> **1.464/2.794**. Against the 4.3M TinyStories-only 10k model
+  (1.302/4.003), the 10k mix pays +0.161 TinyStories bpb for -1.209 WikiText.
+  This is the strongest 4.3M tradeoff so far.
 - Parameter scaling from 4.3M to 50M did **not** improve WikiText bpb at all
   (4.003 -> 4.030).
 - The 21M mix at 3k steps is **undertrained**: TS 1.910 / WikiText 3.228, worse
@@ -62,6 +67,7 @@ beginning"), 80 new tokens, temperature 0.8, top-k 40, seed 0.
 | 4.3M, 10k TinyStories | 0.052 | 0.087 | 0.971 |
 | 4.3M, 3k TinyStories | 0.055 | 0.138 | 0.961 |
 | 4.3M, 3k 25% mix | 0.068 | 0.098 | 0.953 |
+| 4.3M, 10k 25% mix | 0.065 | 0.096 | 0.967 |
 
 All three are locally repetitive and ungrammatical. A mixed-model sample
 starts:
@@ -72,15 +78,18 @@ One day day, a, saw was park an to a in big big.
 ```
 
 The mixed model has lower WikiText bpb but is not clearly more coherent than
-the TinyStories-only control; the 10k TinyStories model is somewhat more
-story-like but still makes repeated function words and agreement errors. The
-lower bpb is real, but it is **not** a generation-quality win, and it is not a
+the TinyStories-only control; the 10k mixed model is still locally repetitive
+("was was", "to to", "little little") and ungrammatical. The 10k TinyStories
+model is somewhat more story-like but also makes agreement errors. The lower
+bpb is real, but it is **not** a generation-quality win, and it is not a
 deployment result.
 
 ## Caveats
 
-- One seed, 3000 steps, 16M training tokens. The main comparison is 4.3M; the
-  21M row is an undertrained scaling check, not a fair 21M baseline.
+- One seed. The 3k runs use 16M training tokens; the 10k mix uses 40M tokens
+  (30M TinyStories + 10M WikiText, WikiText repeated ~2.6x). The main
+  comparison is 4.3M; the 21M row is an undertrained scaling check, not a fair
+  21M baseline.
 - WikiText-2 train is repeated ~2x to reach the 8M token budget; the model may
   partially memorize it.
 - Evaluation is 8192 tokens per shard (8 x 8 x 128); the differences are much

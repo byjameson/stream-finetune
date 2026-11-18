@@ -30,10 +30,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   (2.207 at 1000 steps) and saturates. [`SPIKING_LM.md`](SPIKING_LM.md)
 - **Generative data diversity (first generative result):** 4.3M, 3000 steps, 16M
   tokens. TinyStories-only: TS 1.566 / WikiText 4.455 bpb. 25% WikiText
-  (12M+4M): TS 1.605 / WikiText 2.927 bpb. 50%/75% add little WikiText gain at a
-  larger TS cost (50%: 1.702/2.906; 75%: 1.734/2.820). The 21M/50M
-  TinyStories-only models stay at WikiText 4.03; data diversity moves the
-  general-text metric where parameter scaling did not. Generation samples
+  (12M+4M): TS 1.605 / WikiText 2.927 bpb. 10k steps on 40M tokens improve both
+  to TS 1.464 / WikiText 2.794, versus 1.302/4.003 for TinyStories-only 10k.
+  50%/75% add little WikiText gain at a larger TS cost (50%: 1.702/2.906; 75%:
+  1.734/2.820). The 21M/50M TinyStories-only models stay at WikiText 4.03;
+  data diversity moves the general-text metric where parameter scaling did not. Generation samples
   remain repetitive/ungrammatical; lower bpb is not yet a quality win.
   [`SPIKING_GENERATIVE.md`](SPIKING_GENERATIVE.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
