@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "model": "base",
+      "prompt": "Abuja is",
+      "text": " . and \n\n\n\n\n=  ==  ===\n\n\n\n\n\n \n  == =\n\n = =  \n=\n\n\n\n\n\n = =  ===\n\n\n\n \n\n\n  ==  ===\n\n",
+      "alpha_ratio": 0.0375,
+      "equals_ratio": 0.275,
+      "replacement_count": 0
+    },
+    {
+      "model": "base",
+      "prompt": "Afghanistan is",
+      "text": " . and \n\n\n\n\n =  ===\n\n The   === \n\n\n\n\n\n\n  === \n\n  === \n\n\n\n\n\n\n\n\n  ==== \n\n  ===  \n\n\n\n\n\n\n",
+      "alpha_ratio": 0.07058823529411765,
+      "equals_ratio": 0.23529411764705882,
+      "replacement_count": 0
+    },
+    {
+      "model": "base",
+      "prompt": "The capital of Nigeria is",
+      "text": " . and \n\n\n\n\n=  ==  == The  ==\n\n \n\n\n\n\n == \n\n == \n\n\n\n\n  ====\n\n\n\n   ====\n\n \n\n\n\n\n   ===",
+      "alpha_ratio": 0.07228915662650602,
+      "equals_ratio": 0.26506024096385544,
+      "replacement_count": 0
+    },
+    {
+      "model": "domain_v0001",
+      "prompt": "Abuja is",
+      "text": "-nan A\ufffdaa\ufffd,, the\nAana, the\ufffd\u0131\ufffd\u0131l \u0171\ufffd,  00000 .0000 200000000000010.0",
+      "alpha_ratio": 0.30303030303030304,
+      "equals_ratio": 0.0,
+      "replacement_count": 5
+    },
+    {
+      "model": "domain_v0001",
+      "prompt": "Afghanistan is",
+      "text": " al0 -\ufffda , of theilsi of the \u0131\ufffd .\n\n  1 \ufffd   0                           ",
+      "alpha_ratio": 0.2535211267605634,
+      "equals_ratio": 0.0,
+      "replacement_count": 3
+    },
+    {
+      "model": "domain_v0001",
+      "prompt": "The capital of Nigeria is",
+      "text": " to the the of water the the,al of the of sea the. of the of the Theth of the cent-uishry, the was of cent the the- centalorry,,\n, the, of the theish-thth ofry cent cent centry,",
+      "alpha_ratio": 0.7344632768361582,
+      "equals_ratio": 0.0,
+      "replacement_count": 0
+    }
+  ]
+}

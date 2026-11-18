@@ -37,6 +37,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   data diversity moves the general-text metric where parameter scaling did not. Generation samples
   remain repetitive/ungrammatical; lower bpb is not yet a quality win.
   [`SPIKING_GENERATIVE.md`](SPIKING_GENERATIVE.md)
+- **Tiny Spiking Lab (product path, release blocked):** domain ingest improves
+  the target 5.99 -> 4.45 bpb in 300 steps with 20% replay. The ingest gate
+  accepts on a 4096-token eval (old +2.55%), but the full 8192 eval is old
+  +3.29%, WikiText +7.1%, and generation is formatting noise/corrupted. The
+  release gate is BLOCKED until generation and general retention pass.
+  [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
   new-task gain on two seeds. Global rollback throws away all new learning.
@@ -217,6 +223,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `eval_generative_mix.py` | TinyStories-only vs mixed-corpus spiking LM on TinyStories and WikiText bpb | ~2 min |
 | `eval_generative_samples.py` | sample TinyStories-only vs mixed models; repetition/distinct n-gram metrics | ~1 min |
 | `eval_generative_sampling.py` | sampling sweep (temperature/top-k/repetition penalty) on three models | ~2 min |
+| `generate_domain_demo.py` | before/after domain-ingest samples + alpha/formatting quality metrics | ~1 min |
+| `check_release_gate.py` | hard bpb + generation release gate for the Tiny Spiking Lab | ~2 min |
 | `make_mixed_corpus.py` | 16M-token TinyStories + WikiText training shard for the generative experiment | ~1 min |
 | `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |

@@ -582,6 +582,14 @@ temperature problem. Lower bpb is not yet a generation-quality or deployment
 win.
 [`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
 
+**Tiny Spiking Lab (product path, release blocked):** the local ingest workflow
+improves a 76-article held-out domain from **5.99 to 4.45 bpb** in 300 steps
+with 20% replay. It accepted the update on a 4096-token eval (old +2.55%), but
+the full 8192-token eval shows old **+3.29%** and unmonitored WikiText **+7.1%**;
+generation is formatting noise or corrupted text. The hard release gate is
+**BLOCKED** until generation quality and general-shard retention pass.
+[`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
+
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains
 **99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback

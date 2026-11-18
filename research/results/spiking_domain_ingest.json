@@ -1,0 +1,68 @@
+{
+  "demo": "tiny spiking lab domain ingest",
+  "base_model": "checkpoints/spiking_mix25_4m_10k",
+  "ingested_model": "checkpoints/spiking_domain_demo/versions/v0001",
+  "domain": {
+    "name": "world facts",
+    "train_articles": 250,
+    "valid_articles": 76
+  },
+  "config": {
+    "steps": 300,
+    "batch": 32,
+    "seq": 128,
+    "lr": 0.0003,
+    "replay_fraction": 0.2,
+    "max_old_regression": 0.03,
+    "min_new_gain": 0.01,
+    "rollback_fraction": 0.1
+  },
+  "ingest_gate": {
+    "accepted": true,
+    "version": "v0001",
+    "before": {
+      "old_bpb": 1.497083573812893,
+      "new_bpb": 5.910658419871525
+    },
+    "after": {
+      "old_bpb": 1.535343103840955,
+      "new_bpb": 4.384173708182489
+    },
+    "old_regression": 0.02555,
+    "new_improvement": 0.25826
+  },
+  "full_eval_8192": {
+    "before": {
+      "target_bpb": 5.994448235631203,
+      "old_bpb": 1.463805162674418,
+      "general_bpb": 2.7935814593970143
+    },
+    "after": {
+      "target_bpb": 4.4466217746669265,
+      "old_bpb": 1.5120497589504434,
+      "general_bpb": 2.992421654811203
+    },
+    "old_regression": 0.03295,
+    "general_regression": 0.07118,
+    "target_improvement": 0.25821
+  },
+  "generation": {
+    "base_alpha_ratio": [0.037, 0.071, 0.072],
+    "base_equals_ratio": [0.275, 0.235, 0.265],
+    "domain_alpha_ratio": [0.303, 0.254, 0.734],
+    "domain_replacement_chars": [5, 3, 0]
+  },
+  "release_gate": {
+    "verdict": "BLOCKED",
+    "target_improves_1pct": true,
+    "old_within_3pct_full_eval": false,
+    "general_within_5pct": false,
+    "generation_quality": false,
+    "notes": [
+      "The ingest gate accepted on a 4096-token eval (+2.55% old).",
+      "The full 8192-token eval shows +3.29% old, over the 3% budget.",
+      "WikiText was not monitored and degraded by 7.12%.",
+      "Base and domain generations are formatting noise or corrupted text."
+    ]
+  }
+}
