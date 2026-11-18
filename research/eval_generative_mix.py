@@ -29,7 +29,8 @@ def evaluate_model(path: str, device) -> dict:
     model.eval()
     rows = {}
     for name, data in (("tinystories", "data/ts_valid.pt"),
-                       ("wikitext", "data/ts_wt2_valid.pt")):
+                       ("wikitext", "data/ts_wt2_valid.pt"),
+                       ("world_facts", "data/world_facts_bpe8k.pt")):
         tokens = load_tokens(str(ROOT / data), MAX_TOKENS)
         batches = fixed_windows(tokens, SEQ, BATCHES, BATCH_SIZE, 0, device)
         rows[name] = evaluate_bpb(model, tok, batches)
@@ -59,12 +60,14 @@ def main():
         run = {"name": name, "model": path,
                "tinystories_bpb": rows["tinystories"]["bpb"],
                "wikitext_bpb": rows["wikitext"]["bpb"],
+               "world_facts_bpb": rows["world_facts"]["bpb"],
                "tinystories": rows["tinystories"],
-               "wikitext": rows["wikitext"]}
+               "wikitext": rows["wikitext"],
+               "world_facts": rows["world_facts"]}
         runs.append(run)
         print(json.dumps({k: run[k] for k in
-                          ("name", "tinystories_bpb", "wikitext_bpb")}),
-              flush=True)
+                          ("name", "tinystories_bpb", "wikitext_bpb",
+                           "world_facts_bpb")}), flush=True)
     payload = {
         "question": "Does data diversity improve WikiText bpb at a fixed budget?",
         "config": {"seq": SEQ, "batches": BATCHES, "batch_size": BATCH_SIZE,

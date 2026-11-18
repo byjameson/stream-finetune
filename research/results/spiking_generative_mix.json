@@ -13,6 +13,7 @@
       "model": "checkpoints/spiking_4m_10k",
       "tinystories_bpb": 1.3024997051365534,
       "wikitext_bpb": 4.0033711806049945,
+      "world_facts_bpb": 3.94852306588045,
       "tinystories": {
         "loss": 3.7815673649311066,
         "ppl": 43.884771310902984,
@@ -26,6 +27,13 @@
         "bpb": 4.0033711806049945,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 7.573269307613373,
+        "ppl": 1945.4903020739125,
+        "bpb": 3.94852306588045,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -33,6 +41,7 @@
       "model": "checkpoints/spiking_21m",
       "tinystories_bpb": 1.2864752186701935,
       "wikitext_bpb": 4.02965505507574,
+      "world_facts_bpb": 3.9636295761794296,
       "tinystories": {
         "loss": 3.735043227672577,
         "ppl": 41.88983632409387,
@@ -46,6 +55,13 @@
         "bpb": 4.02965505507574,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 7.602243602275848,
+        "ppl": 2002.6840849357225,
+        "bpb": 3.9636295761794296,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -53,6 +69,7 @@
       "model": "checkpoints/spiking_50m",
       "tinystories_bpb": 1.2865808037179536,
       "wikitext_bpb": 4.030278272111837,
+      "world_facts_bpb": 3.963443707940071,
       "tinystories": {
         "loss": 3.7353497743606567,
         "ppl": 41.90267948309658,
@@ -66,6 +83,13 @@
         "bpb": 4.030278272111837,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 7.601887106895447,
+        "ppl": 2001.9702645554328,
+        "bpb": 3.963443707940071,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -73,6 +97,7 @@
       "model": "checkpoints/spiking_ts4m_3k",
       "tinystories_bpb": 1.5662441024360452,
       "wikitext_bpb": 4.454552569494684,
+      "world_facts_bpb": 4.548045034179229,
       "tinystories": {
         "loss": 4.5473005175590515,
         "ppl": 94.37729428318018,
@@ -86,6 +111,13 @@
         "bpb": 4.454552569494684,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 8.723152756690979,
+        "ppl": 6143.51760350785,
+        "bpb": 4.548045034179229,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -93,6 +125,7 @@
       "model": "checkpoints/spiking_mix25_4m",
       "tinystories_bpb": 1.6045083249369183,
       "wikitext_bpb": 2.9269196676099427,
+      "world_facts_bpb": 3.337313897850893,
       "tinystories": {
         "loss": 4.658393621444702,
         "ppl": 105.46652684108957,
@@ -106,6 +139,13 @@
         "bpb": 2.9269196676099427,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.4009698033332825,
+        "ppl": 602.4289923106421,
+        "bpb": 3.337313897850893,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -113,6 +153,7 @@
       "model": "checkpoints/spiking_mix25_4m_10k",
       "tinystories_bpb": 1.463805162674418,
       "wikitext_bpb": 2.7935814593970143,
+      "world_facts_bpb": 3.248676066120552,
       "tinystories": {
         "loss": 4.249887973070145,
         "ppl": 70.09755909247261,
@@ -126,6 +167,13 @@
         "bpb": 2.7935814593970143,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.23096239566803,
+        "ppl": 508.24438039192097,
+        "bpb": 3.248676066120552,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -133,6 +181,7 @@
       "model": "checkpoints/spiking_mix4m",
       "tinystories_bpb": 1.702473573052621,
       "wikitext_bpb": 2.9064039212898094,
+      "world_facts_bpb": 3.3339413262614586,
       "tinystories": {
         "loss": 4.9428176283836365,
         "ppl": 140.1646255238925,
@@ -146,6 +195,13 @@
         "bpb": 2.9064039212898094,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.394501209259033,
+        "ppl": 598.5447001993916,
+        "bpb": 3.3339413262614586,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -153,6 +209,7 @@
       "model": "checkpoints/spiking_mix75_4m",
       "tinystories_bpb": 1.7341210230679593,
       "wikitext_bpb": 2.8198793265990933,
+      "world_facts_bpb": 3.2966863513236033,
       "tinystories": {
         "loss": 5.034700155258179,
         "ppl": 153.65351350581187,
@@ -166,6 +223,13 @@
         "bpb": 2.8198793265990933,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.323046147823334,
+        "ppl": 557.2679301177906,
+        "bpb": 3.2966863513236033,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -173,6 +237,7 @@
       "model": "checkpoints/spiking_mix25_21m",
       "tinystories_bpb": 1.9103056372186027,
       "wikitext_bpb": 3.227806330342365,
+      "world_facts_bpb": 3.5590341658732987,
       "tinystories": {
         "loss": 5.546219646930695,
         "ppl": 256.26694290760366,
@@ -186,6 +251,13 @@
         "bpb": 3.227806330342365,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.826229393482208,
+        "ppl": 921.708850650697,
+        "bpb": 3.5590341658732987,
+        "tokens": 8192,
+        "bytes": 22668
       }
     },
     {
@@ -193,6 +265,7 @@
       "model": "checkpoints/spiking_mix25_21m_10k",
       "tinystories_bpb": 1.7741675655195126,
       "wikitext_bpb": 3.10752147876946,
+      "world_facts_bpb": 3.4654966037141044,
       "tinystories": {
         "loss": 5.15096789598465,
         "ppl": 172.59846685888579,
@@ -206,6 +279,13 @@
         "bpb": 3.10752147876946,
         "tokens": 8192,
         "bytes": 23460
+      },
+      "world_facts": {
+        "loss": 6.646824300289154,
+        "ppl": 770.3340872457499,
+        "bpb": 3.4654966037141044,
+        "tokens": 8192,
+        "bytes": 22668
       }
     }
   ],

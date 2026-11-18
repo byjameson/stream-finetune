@@ -59,6 +59,26 @@ general-text metric. It supports the pivot from task-specific binding to a
 token-level generative LM with broader data; it does not show general language
 competence.
 
+### Held-out world-facts transfer
+
+To test whether the WikiText gain is only WikiText-specific, 326 articles from
+the local world-facts corpus were tokenized with the same BPE-8k tokenizer
+(2.26M tokens), and evaluated with the same 8 x 8 x 128 fixed windows.
+
+| model | world-facts bpb |
+|---|---:|
+| 4.3M TinyStories-only 10k | 3.949 |
+| 21M TinyStories-only 10k | 3.964 |
+| 50M TinyStories-only | 3.963 |
+| 4.3M 25% mix 10k | **3.249** |
+| 21M 25% mix 10k (20.5M tokens) | 3.465 |
+
+The data-diversity gain transfers to this held-out article set: the 4.3M mix
+is 0.70 bpb better than the TinyStories-only 10k model, while the 21M mix is
+under-trained because it saw half the tokens. Caveat: these articles are also
+Wikipedia, so the style overlaps WikiText-2; they are held out from the training
+mix but not deduplicated against WikiText-2.
+
 ## Generation quality (weak/negative)
 
 bpb is a next-token metric, not a coherence metric. The same checkpoints were
