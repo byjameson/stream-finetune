@@ -592,8 +592,10 @@ TinyStories **+13.6%** and WikiText **+33.9%**. A safer recipe (70% replay from
 a 20M TinyStories + 5M WikiText old mix, LR 5e-5, 120 steps) gives target
 **2.19 -> 0.72**, TinyStories **+4.1%**, WikiText **-13.4%**. A second corpus
 (Nova) replicates it: target **2.05 -> 0.60**, TinyStories **+4.4%**, WikiText
-**-13.6%**. Both pass the **narrow story-lab gate**. This is not a general
-model; packaging/licence/model card and more seeds are still missing.
+**-13.6%**. A second seed per corpus also replicates (TinyStories +4.1-4.4%,
+WikiText -13.2-13.6%). The **narrow story-lab gate** passes on two corpora and
+two seeds. This is not a general model; packaging/licence/model card are still
+missing.
 [`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows

@@ -1,0 +1,71 @@
+{
+  "recipe": {
+    "steps": 120,
+    "batch": 16,
+    "seq": 128,
+    "lr": 5e-05,
+    "replay_fraction": 0.7,
+    "old_data": "20M TinyStories + 5M WikiText",
+    "rollback_fraction": 0.2
+  },
+  "baselines": {
+    "space": 2.187382743547073,
+    "nova": 2.0486537217557004,
+    "ts": 1.2864752186701935,
+    "wt": 4.02965505507574
+  },
+  "runs": [
+    {
+      "corpus": "space",
+      "seed": 0,
+      "target": 0.7201082612886714,
+      "ts": 1.3393958283198661,
+      "wt": 3.491320599678158,
+      "target_improvement": 0.670790005355469,
+      "ts_regression": 0.041136128299755104,
+      "wt_regression": -0.13359318553073118
+    },
+    {
+      "corpus": "space",
+      "seed": 1,
+      "target": 0.7140736976853301,
+      "ts": 1.3398188870558556,
+      "wt": 3.495746656740921,
+      "target_improvement": 0.6735488108828253,
+      "ts_regression": 0.041464979357163534,
+      "wt_regression": -0.13249481432965582
+    },
+    {
+      "corpus": "nova",
+      "seed": 0,
+      "target": 0.6011260576183968,
+      "ts": 1.3425527863471407,
+      "wt": 3.4806484696050592,
+      "target_improvement": 0.7065750784357883,
+      "ts_regression": 0.04359008775537365,
+      "wt_regression": -0.1362415834524482
+    },
+    {
+      "corpus": "nova",
+      "seed": 1,
+      "target": 0.5906568158602993,
+      "ts": 1.3397269851569058,
+      "wt": 3.4841966479269257,
+      "target_improvement": 0.7116853816788007,
+      "ts_regression": 0.041393542381451987,
+      "wt_regression": -0.13536106681433113
+    }
+  ],
+  "gate": {
+    "target_improves_10pct": true,
+    "old_within_5pct": true,
+    "general_within_5pct": true
+  },
+  "caveats": [
+    "synthetic 200/100 story corpora",
+    "target bpb 0.59-0.72 is near memorization",
+    "two seeds per corpus, one model size (21M)",
+    "samples remain repetitive",
+    "packaging/licence/model card missing"
+  ]
+}

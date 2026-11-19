@@ -45,8 +45,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   alpha ~0.7) but full eval shows TinyStories +13.6% and WikiText +33.9%. A
   safer recipe (70% replay from 20M TS + 5M WT, LR 5e-5, 120 steps) gives
   target 2.19 -> 0.72, TinyStories +4.1%, WikiText -13.4%. A second corpus
-  (Nova) replicates: 2.05 -> 0.60, +4.4%, -13.6%. Both pass the narrow
-  story-lab gate. Still not a general model.
+  (Nova) replicates: 2.05 -> 0.60, +4.4%, -13.6%. A second seed per corpus also
+  replicates (+4.1-4.4% TS, -13.2-13.6% WT). The narrow story-lab gate passes on
+  two corpora and two seeds. Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the

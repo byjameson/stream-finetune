@@ -60,10 +60,13 @@
   120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
   generation alpha 0.68-0.76. Passes the narrow story-lab gate.
 - Second story corpus (Nova) replicates the safe recipe: target 2.05 -> 0.60,
-  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77. Two-corpus
-  PASS_NARROW_STORY_LAB; still synthetic/near-memorization and not a general
-  model. Packaging/licence/model card/more seeds remain.
-- 166 tests;
+  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77.
+- Second seed per corpus replicates: target -67.1/-67.4% (space) and
+  -70.7/-71.2% (nova); TinyStories +4.11-4.36%; WikiText -13.25-13.62%.
+  Two corpora x two seeds PASS_NARROW_STORY_LAB. Still synthetic/
+  near-memorization and not a general model; packaging/licence/model card
+  remain.
+- 167 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -206,10 +209,13 @@
   120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
   generation alpha 0.68-0.76. Passes the narrow story-lab gate.
 - Second story corpus (Nova) replicates the safe recipe: target 2.05 -> 0.60,
-  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77. Two-corpus
-  PASS_NARROW_STORY_LAB; still synthetic/near-memorization and not a general
-  model. Packaging/licence/model card/more seeds remain.
-- 166 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77.
+- Second seed per corpus replicates: target -67.1/-67.4% (space) and
+  -70.7/-71.2% (nova); TinyStories +4.11-4.36%; WikiText -13.25-13.62%.
+  Two corpora x two seeds PASS_NARROW_STORY_LAB. Still synthetic/
+  near-memorization and not a general model; packaging/licence/model card
+  remain.
+- 167 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

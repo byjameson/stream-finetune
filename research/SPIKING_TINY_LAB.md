@@ -159,10 +159,22 @@ explorer, 200/100 stories, seed 1):
 | WikiText | 4.030 | 3.481 | **-13.6%** |
 
 Generation alpha is 0.73-0.77, no `=` spam and no replacement characters.
-`check_story_gate.py` now checks both corpora and returns
-**PASS_NARROW_STORY_LAB**. The recipe is not a one-corpus accident, but the
-caveats (synthetic data, near-memorization target bpb, one seed per corpus,
-repetitive samples) still apply.
+
+The recipe was then repeated with a second seed per corpus. The full
+fixed-window results are stable:
+
+| corpus | seed | target delta | TinyStories delta | WikiText delta |
+|---|---:|---:|---:|---:|
+| space | 0 | -67.1% | +4.11% | -13.36% |
+| space | 1 | -67.4% | +4.15% | -13.25% |
+| nova | 0 | -70.7% | +4.36% | -13.62% |
+| nova | 1 | -71.2% | +4.14% | -13.54% |
+
+`check_story_gate.py` now checks both corpora and both seeds and returns
+**PASS_NARROW_STORY_LAB**. The recipe is not a one-corpus/one-seed accident.
+The caveats still apply: synthetic data, target bpb 0.59-0.72 is near
+memorization, one model size (21M), repetitive samples, and no packaging or
+licence/model card yet.
 
 ## Release gate (two tracks)
 

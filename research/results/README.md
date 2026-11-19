@@ -119,6 +119,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_space_ingest.json` | `research/generate_space_demo.py` | naive 20% replay: target 2.19 -> 1.66; TS +13.6%, WT +33.9%; BLOCKED |
 | `spiking_space_safe2.json` | `research/check_story_gate.py` | safe 70% replay: target 2.19 -> 0.72; TS +4.1%, WT -13.4%; PASS narrow story lab |
 | `spiking_nova_safe.json` | same recipe, second corpus | target 2.05 -> 0.60; TS +4.4%, WT -13.6%; PASS narrow story lab |
+| `spiking_story_seedcheck.json` | two corpora x two seeds | target -67 to -71%; TS +4.1-4.4%; WT -13.2-13.6%; PASS narrow story lab |
 | `spiking_nova_generations.json` | `research/generate_nova_demo.py` | Nova before/after samples + alpha/format metrics |
 | `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
