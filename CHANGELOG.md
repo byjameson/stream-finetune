@@ -109,7 +109,8 @@
   removed and synthetic memory/task examples; same 21M/tokenizer/schedule.
   Result: clean chat bpb 2.199, alpha min 0.608, but 5/12 tag leaks and word
   salad; still **BLOCKED**. Data cleaning helps surface metrics but not
-  turn-level chat; next is 50M or 100M+ clean tokens.
+  turn-level chat. A 50.07M capacity probe (same clean data/tokenizer/schedule)
+  is running: bpb 2.304 at step 1500 vs 2.343 for 21M; checkpoint/resume ready.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

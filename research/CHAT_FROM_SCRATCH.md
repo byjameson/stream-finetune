@@ -140,6 +140,27 @@ Data cleaning improved the surface metrics but did not produce turn-level chat.
 The remaining bottleneck is token/parameter scale or the architecture, not the
 math/code filter. Evidence: `research/results/spiking_chat_en_clean_21m.json`.
 
+### 50M capacity probe (running)
+
+The next run changes only the model size: **50.07M** parameters (`dim=2040`,
+2 layers), same clean corpus, tokenizer, 12k steps, batch 16, seq 128.
+
+Early fixed-window results:
+
+| step | 21M clean bpb | 50M clean bpb |
+|---:|---:|---:|
+| 500 | 2.403 | 2.431 |
+| 1000 | 2.385 | 2.354 |
+| 1500 | 2.343 | 2.304 |
+
+The 50M model is slightly ahead at equal steps, but this is early and the
+samples are still not chat. It runs at ~1.0 s/step (~3 h total), with
+checkpoints every 2,000 steps. Resume command if interrupted:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en_50m.ps1
+```
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:
