@@ -121,6 +121,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_nova_safe.json` | same recipe, second corpus | target 2.05 -> 0.60; TS +4.4%, WT -13.6%; PASS narrow story lab |
 | `spiking_story_seedcheck.json` | two corpora x two seeds | target -67 to -71%; TS +4.1-4.4%; WT -13.2-13.6%; PASS narrow story lab |
 | `spiking_realstory_seedcheck.json` | `research/eval_real_story_gate.py` | real Alice/Oz, two seeds: target -11.7/-11.8%, TS +3.5%, WT -14.0%; generation alpha fails (0.534/0.259); BLOCKED |
+| `spiking_chat_tr_smoke.json` | `research/chat_eval.py` | Turkish-first 21M, 500 steps: chat 2.688 / wiki 2.918 / stories 2.820 bpb; Turkish fragments only |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `spiking_nova_generations.json` | `research/generate_nova_demo.py` | Nova before/after samples + alpha/format metrics |
 | `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |

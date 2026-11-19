@@ -80,7 +80,17 @@
   0.259/0.394 (seed 1) on `Dorothy opened the door`; base is 0.727-0.751.
   Gate BLOCKED: synthetic story-lab pass does not generalize to real text.
   Evidence: `research/results/spiking_realstory_seedcheck.json`.
-- 169 tests;
+- From-scratch chat pipeline: 27.55M-token Turkish-first corpus built first
+  (Turkish instructions, daily dialogues, Wikipedia, TinyStories); 500-step
+  21M smoke: chat 2.688, Wikipedia 2.918, TinyStories 2.820 bpb, fragments
+  only. Switched the active track to **English-first** for global release:
+  23.63M-token corpus from SmolTalk, UltraChat, OASST2, Dolly, Wikipedia and
+  TinyStories, fresh 8k BPE tokenizer. Turkish corpus retained for a later
+  language pack; 21M English run follows.
+- Spiking trainer saves/loads AdamW state (`optimizer.pt`) and merges
+  `training.json` on resume; 2+2-step fragment verified at step 4 with Adam
+  step 4. Long runs can be split into sessions.
+- 172 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

@@ -56,6 +56,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   `scripts/story_lab_demo.ps1`; local HTTP server verified (`/health` 200,
   `/generate` 200, alpha 0.708). Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
+- **From-scratch English-first chat (active):** 23.63M-token English chat
+  corpus (SmolTalk, UltraChat, OASST2, Dolly, Wikipedia, TinyStories) with a
+  fresh 8k BPE tokenizer; training a 21M spiking LM from scratch. The 27.55M
+  Turkish-first corpus is retained for a later language pack. No Qwen.
+  [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
   new-task gain on two seeds. Global rollback throws away all new learning.
@@ -243,6 +248,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `check_story_gate.py` | narrow story-lab release gate on both synthetic story corpora | ~1 s |
 | `make_real_story_corpus.py` | Alice/Oz public-domain train/valid passages from GITenberg | ~1 min |
 | `eval_real_story_gate.py` | real-corpus 2-seed bpb + generation gate (currently BLOCKED) | ~3 min |
+| `make_chat_corpus.py` | Turkish-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
+| `make_chat_corpus_en.py` | English-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
+| `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |
