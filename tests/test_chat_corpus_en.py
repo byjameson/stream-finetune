@@ -1,10 +1,16 @@
 import json
 from pathlib import Path
 
+import pytest
 import torch
 from tokenizers import Tokenizer
 
 ROOT = Path(__file__).resolve().parent.parent
+
+pytestmark = pytest.mark.skipif(
+    not (ROOT / "data/chat_en_meta.json").exists(),
+    reason="local English corpus artifact is not committed",
+)
 
 
 def test_english_chat_corpus_and_tokenizer_exist():
