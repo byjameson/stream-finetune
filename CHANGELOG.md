@@ -105,7 +105,10 @@
   3/12 samples leak `<|assistant|>`. bpb alone is not chat. A temp 0.3-0.7 /
   top-k 5-20 sweep still produces function-word loops, so decoding is not the
   fix. Next: cleaner dialogue-heavy mix and/or 50M.
-- 180 tests;
+- Clean-data control: filtered dialogue corpus (26.98M tokens) with code/math
+  removed and synthetic memory/task examples; same 21M/tokenizer/schedule,
+  12k-step run started to isolate data quality.
+- 181 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

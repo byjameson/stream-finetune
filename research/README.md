@@ -255,6 +255,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `eval_real_story_gate.py` | real-corpus 2-seed bpb + generation gate (currently BLOCKED) | ~3 min |
 | `make_chat_corpus.py` | Turkish-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
 | `make_chat_corpus_en.py` | English-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
+| `make_chat_corpus_clean.py` | filtered dialogue-heavy English control corpus | ~5 min |
 | `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
 | `chat_human.py` | JSON memory/task runtime around the chat model | ~1 s (no model) |
 | `crypto_paper.py` | BTCUSDT daily walk-forward paper baseline, fees included | ~2 min |
