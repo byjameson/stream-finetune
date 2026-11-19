@@ -108,7 +108,10 @@
 - Clean-data control: filtered dialogue corpus (26.98M tokens) with code/math
   removed and synthetic memory/task examples; same 21M/tokenizer/schedule,
   12k-step run started to isolate data quality.
-- 181 tests;
+- Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
+  BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
+  not a proven edge. No real money or keys.
+- 182 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
