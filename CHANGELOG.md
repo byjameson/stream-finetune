@@ -92,7 +92,11 @@
   step 4. Long runs can be split into sessions.
 - Virtual-human runtime scaffold: JSON persona/facts/episodes/tasks with
   deterministic memory and task commands; model only handles open-ended text.
-- 176 tests;
+- Crypto paper-trading baseline (no real money): BTCUSDT daily walk-forward,
+  0.10% fee + 0.05% slippage. Ridge 8.80x vs buy-hold 8.50x but worse Sharpe;
+  HGB 1.66x and logistic 1.56x. Only SMA-50 trend (36.0x, Sharpe 1.26) is a
+  CHECK result, not an ML edge. One asset/one history; parameter sweep next.
+- 177 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

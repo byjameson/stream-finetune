@@ -1,0 +1,81 @@
+{
+  "symbol": "BTCUSDT",
+  "interval": "1d",
+  "rows": 3332,
+  "start": "2017-10-05 00:00:00+00:00",
+  "end": "2026-11-18 00:00:00+00:00",
+  "costs": {
+    "fee_per_side": 0.001,
+    "slippage_per_side": 0.0005
+  },
+  "walk_forward": {
+    "train_days": 365,
+    "test_days": 30
+  },
+  "results": [
+    {
+      "model": "sma",
+      "test_days": 2967,
+      "total_return": 36.00789130863574,
+      "buy_hold_return": 8.50445246509385,
+      "cagr": 0.5593061435427296,
+      "sharpe": 1.2565206368705664,
+      "max_drawdown": -0.5847134577666557,
+      "buy_hold_max_drawdown": -0.7662925431645937,
+      "exposure": 0.5365689248399056,
+      "trades": 162,
+      "direction_accuracy": null,
+      "final_equity": 37.00789130863574
+    },
+    {
+      "model": "ridge",
+      "test_days": 2967,
+      "total_return": 8.797658909478912,
+      "buy_hold_return": 8.50445246509385,
+      "cagr": 0.32412124514218354,
+      "sharpe": 0.8225776801412996,
+      "max_drawdown": -0.6509338294156144,
+      "buy_hold_max_drawdown": -0.7662925431645937,
+      "exposure": 0.6029659588810246,
+      "trades": 584,
+      "direction_accuracy": 0.5089315807212673,
+      "final_equity": 9.797658909478912
+    },
+    {
+      "model": "hgb",
+      "test_days": 2967,
+      "total_return": 0.6627927979154642,
+      "buy_hold_return": 8.50445246509385,
+      "cagr": 0.0645534752141752,
+      "sharpe": 0.3659448858160524,
+      "max_drawdown": -0.5894183718330182,
+      "buy_hold_max_drawdown": -0.7662925431645937,
+      "exposure": 0.5766767778901247,
+      "trades": 818,
+      "direction_accuracy": 0.48938321536905965,
+      "final_equity": 1.6627927979154642
+    },
+    {
+      "model": "logistic",
+      "test_days": 2967,
+      "total_return": 0.5574079333349884,
+      "buy_hold_return": 8.50445246509385,
+      "cagr": 0.0560131324477926,
+      "sharpe": 0.37239072948275903,
+      "max_drawdown": -0.7629923358399151,
+      "buy_hold_max_drawdown": -0.7662925431645937,
+      "exposure": 0.6417256488035052,
+      "trades": 923,
+      "direction_accuracy": 0.5133131108864173,
+      "final_equity": 1.5574079333349884
+    }
+  ],
+  "verdict": "CHECK",
+  "caveats": [
+    "daily close-only simulation; no order book, funding or liquidation",
+    "long/flat only; no short, leverage or portfolio allocation",
+    "fixed 0.10% fee + 0.05% slippage per side",
+    "walk-forward test, but still one asset and one history",
+    "not financial advice; no real orders were placed"
+  ]
+}
