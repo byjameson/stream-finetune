@@ -1,0 +1,200 @@
+{
+  "tag": "clean_21m_12k",
+  "lang": "en",
+  "model": "checkpoints/spiking_chat_en_clean_21m",
+  "config": {
+    "vocab": 8192,
+    "dim": 1024,
+    "layers": 2,
+    "mode": "spike",
+    "adapt": 0.1,
+    "feedback": false,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": false,
+    "slots": 0,
+    "slot_heads": 1,
+    "slot_attr_keys": false,
+    "slot_conj": false,
+    "slot_factorized": false,
+    "query_color_copy": false,
+    "color_copy_init": 1.0,
+    "learned_boundaries": false,
+    "raw_boundaries": false,
+    "category_states": false,
+    "name_ids": [],
+    "color_ids": [],
+    "object_ids": [],
+    "write_token": -1,
+    "read_token": -1,
+    "mem_decay": 0.5,
+    "mem_read_pos": -1,
+    "dropout": 0.0,
+    "decay_syn": 0.9,
+    "decay_mem": 0.9,
+    "decay_out": 0.9,
+    "decay_trace": 0.9,
+    "threshold": 0.5,
+    "alpha": 4.0
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 6.531005024909973,
+      "ppl": 686.0874000354253,
+      "bpb": 2.1990615446002337,
+      "tokens": 8192,
+      "bytes": 35100
+    },
+    "wiki": {
+      "loss": 7.180014431476593,
+      "ppl": 1312.927205587178,
+      "bpb": 2.9251091135287774,
+      "tokens": 8192,
+      "bytes": 29010
+    },
+    "stories": {
+      "loss": 5.895236074924469,
+      "ppl": 363.302592408083,
+      "bpb": 2.186648719472031,
+      "tokens": 8192,
+      "bytes": 31863
+    },
+    "mixed": {
+      "loss": 6.4378222823143005,
+      "ppl": 625.044146920274,
+      "bpb": 2.2074322440661422,
+      "tokens": 8192,
+      "bytes": 34468
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "ing the. you is!! the it of can is about, and the for, . you can some, you to a in! your, it a and can you: the get with the or the the of,,'t it to. if have that this the, you I you a to you is'll your it to. more will you to is your to the with, the",
+      "chars": 251,
+      "alpha": 0.6853,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "the a. the B's H of and,er-.'s, and to, we of haveed, in your theed for the the ofy. .",
+      "chars": 86,
+      "alpha": 0.6512,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "how are you?",
+      "text": "the aing of and, I of, to the it, you some for I, the: your, your a we this is to that.'s a the thats me is to we that the can of to have've to.'s it it think the you're it's with the and to and a're. The is that, your you a a as is is but youing of",
+      "chars": 249,
+      "alpha": 0.6948,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "a, the of.es your, the for and the thes is's of the that it a You be for the.ed",
+      "chars": 79,
+      "alpha": 0.7089,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "the and a.ing Theing it a on to in to in. The.,'s to the's be a for,, the,, the the the,. there you is the it that of your,. and., a can't to the, so it to be a a or to.,'m you a a the of the and the of. I What the it to",
+      "chars": 220,
+      "alpha": 0.65,
+      "turkish_chars": 0,
+      "repeat3": 0.0169,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": ",'s Can I a a my. and of a to! I of it in I to about the,. about I 'm've is my an how but a of was've is a of.. a The, been to- hasing but to I the of to and our from in.-. was a and, I it the like a, of it have, in her",
+      "chars": 219,
+      "alpha": 0.6438,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "the I is- as, of of ofed to. an the and.:: a, has, the \"s at with, the are,,,ing, to and a for a, \"..\" are the a you the the, be?\", the,, with and,,\" can,. not \" the and the the anded the,.\" is said not it the",
+      "chars": 209,
+      "alpha": 0.6077,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "an you in a the.s, that it you I an's the the a to. and",
+      "chars": 55,
+      "alpha": 0.6727,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "'s What How to you at the of. of I?",
+      "chars": 35,
+      "alpha": 0.6571,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "my of and the.?, I this have can that the how in of Iing on the.- of I the be and the a or in. I're my, \" to' for' of is me've you the, I the that'll me just a me I' you to the you I I I a't we my'm my I I I't my I's me me",
+      "chars": 222,
+      "alpha": 0.6441,
+      "turkish_chars": 0,
+      "repeat3": 0.0154,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "can ining., a to -s is a to of of. the can as and your the the ( and and. \" is, are is not it that but the to can the not the the the is will the. if.",
+      "chars": 150,
+      "alpha": 0.6733,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "ed, that of on of and is., to a: the, the of of ofing, is as your and but with's I on but. is is for be the a it, or the is, for with is of or is. of're it. is be in that be on, to a noters'sing it to to and. the it a to the as",
+      "chars": 227,
+      "alpha": 0.6696,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    }
+  ]
+}

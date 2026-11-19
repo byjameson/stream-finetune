@@ -106,8 +106,10 @@
   top-k 5-20 sweep still produces function-word loops, so decoding is not the
   fix. Next: cleaner dialogue-heavy mix and/or 50M.
 - Clean-data control: filtered dialogue corpus (26.98M tokens) with code/math
-  removed and synthetic memory/task examples; same 21M/tokenizer/schedule,
-  12k-step run started to isolate data quality.
+  removed and synthetic memory/task examples; same 21M/tokenizer/schedule.
+  Result: clean chat bpb 2.199, alpha min 0.608, but 5/12 tag leaks and word
+  salad; still **BLOCKED**. Data cleaning helps surface metrics but not
+  turn-level chat; next is 50M or 100M+ clean tokens.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -118,7 +120,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 184 tests;
+- 185 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

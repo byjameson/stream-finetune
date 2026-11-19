@@ -58,10 +58,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **From-scratch English-first chat (21M BLOCKED):** 23.63M-token English chat
   corpus (SmolTalk, UltraChat, OASST2, Dolly, Wikipedia, TinyStories) with a
-  fresh 8k BPE tokenizer. The 21M/12k run reaches chat bpb 2.377, but generation
-  is word salad (alpha min 0.331, 3/12 tag leaks). Next: cleaner dialogue mix
-  and/or 50M. The 27.55M Turkish-first corpus is retained for a later language
-  pack. No Qwen. [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
+  fresh 8k BPE tokenizer. The broad 21M/12k run reaches chat bpb 2.377 with
+  word salad (alpha min 0.331, 3/12 tag leaks). A filtered clean-dialogue
+  control reaches 2.199 bpb and alpha min 0.608, but still has 5/12 tag leaks
+  and word salad: both **BLOCKED**. Next: 50M or 100M+ clean tokens. The 27.55M
+  Turkish-first corpus is retained for a later language pack. No Qwen.
+  [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
 - **Crypto paper-trading baseline:** BTCUSDT daily walk-forward with fees and
   slippage. Learned models show no reliable edge; a hand-coded SMA-50 trend
   rule is the only CHECK result. No API keys, orders or real money.
