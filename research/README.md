@@ -61,6 +61,10 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   fresh 8k BPE tokenizer; training a 21M spiking LM from scratch. The 27.55M
   Turkish-first corpus is retained for a later language pack. No Qwen.
   [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
+- **Crypto paper-trading baseline:** BTCUSDT daily walk-forward with fees and
+  slippage. Learned models show no reliable edge; a hand-coded SMA-50 trend
+  rule is the only CHECK result. No API keys, orders or real money.
+  [`CRYPTO_PAPER.md`](CRYPTO_PAPER.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
   new-task gain on two seeds. Global rollback throws away all new learning.
@@ -252,6 +256,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `make_chat_corpus_en.py` | English-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
 | `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
 | `chat_human.py` | JSON memory/task runtime around the chat model | ~1 s (no model) |
+| `crypto_paper.py` | BTCUSDT daily walk-forward paper baseline, fees included | ~2 min |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |

@@ -123,6 +123,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_realstory_seedcheck.json` | `research/eval_real_story_gate.py` | real Alice/Oz, two seeds: target -11.7/-11.8%, TS +3.5%, WT -14.0%; generation alpha fails (0.534/0.259); BLOCKED |
 | `spiking_chat_tr_smoke.json` | `research/chat_eval.py` | Turkish-first 21M, 500 steps: chat 2.688 / wiki 2.918 / stories 2.820 bpb; Turkish fragments only |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
+| `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `spiking_nova_generations.json` | `research/generate_nova_demo.py` | Nova before/after samples + alpha/format metrics |
 | `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
