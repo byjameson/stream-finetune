@@ -1,0 +1,64 @@
+{
+  "demo": "safe Nova story ingest (second corpus)",
+  "base_model": "checkpoints/spiking_21m",
+  "ingested_model": "checkpoints/spiking_nova_safe/versions/v0001",
+  "domain": {
+    "name": "synthetic Nova the explorer stories",
+    "train_stories": 200,
+    "valid_stories": 100
+  },
+  "config": {
+    "steps": 120,
+    "batch": 16,
+    "seq": 128,
+    "lr": 0.00005,
+    "replay_fraction": 0.7,
+    "old_data": "20M TinyStories + 5M WikiText",
+    "rollback_fraction": 0.2
+  },
+  "ingest_gate": {
+    "accepted": true,
+    "rolled_back": false,
+    "version": "v0001",
+    "before": {
+      "old_bpb_4096": 2.283466075676764,
+      "new_bpb_4096": 2.0446310212097103
+    },
+    "after": {
+      "old_bpb_4096": 2.118460260972529,
+      "new_bpb_4096": 0.5910866103944176
+    }
+  },
+  "full_eval": {
+    "target_bpb_before": 2.0486537217557004,
+    "target_bpb_after": 0.6011260576183968,
+    "old_ts_bpb_before": 1.2864752186701935,
+    "old_ts_bpb_after": 1.3425527863471407,
+    "general_wt_bpb_before": 4.02965505507574,
+    "general_wt_bpb_after": 3.4806484696050592,
+    "target_improvement": 0.7066,
+    "old_regression": 0.0436,
+    "general_regression": -0.1362
+  },
+  "generation": {
+    "base_alpha_ratio": [0.695, 0.750, 0.746],
+    "after_alpha_ratio": [0.767, 0.730, 0.748],
+    "after_equals_ratio": [0.0, 0.0, 0.0],
+    "after_replacement_count": [0, 0, 0],
+    "after_nova_count": [2, 1, 0],
+    "style_words": ["Nova", "explorer", "cave", "flower"]
+  },
+  "release_gate": {
+    "verdict": "PASS_NARROW_STORY_LAB",
+    "target_improves_10pct": true,
+    "old_within_5pct": true,
+    "general_within_5pct": true,
+    "generation_format": true,
+    "caveats": [
+      "Second synthetic corpus, same 200/100 split and one seed.",
+      "Target bpb 0.60 is close to memorization.",
+      "Samples are still repetitive; this is a style lab, not a general model.",
+      "Packaging, licence and model card are still missing."
+    ]
+  }
+}

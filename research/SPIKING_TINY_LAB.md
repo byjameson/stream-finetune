@@ -147,6 +147,23 @@ This is the first product-path pass, but only for a **narrow story-style lab**:
 200 synthetic stories, one seed, 21M model, repetitive samples, no packaging
 or licence/model card yet. It is not a general base model.
 
+### Second corpus (Nova): replication
+
+The same safe recipe was repeated on a second synthetic corpus (Nova the
+explorer, 200/100 stories, seed 1):
+
+| shard | before | after | delta |
+|---|---:|---:|---:|
+| Nova stories | 2.049 | **0.601** | -70.7% |
+| TinyStories | 1.286 | 1.343 | **+4.4%** |
+| WikiText | 4.030 | 3.481 | **-13.6%** |
+
+Generation alpha is 0.73-0.77, no `=` spam and no replacement characters.
+`check_story_gate.py` now checks both corpora and returns
+**PASS_NARROW_STORY_LAB**. The recipe is not a one-corpus accident, but the
+caveats (synthetic data, near-memorization target bpb, one seed per corpus,
+repetitive samples) still apply.
+
 ## Release gate (two tracks)
 
 - **General/fact Tiny Lab:** **BLOCKED** (domain ingest: old +3.29%, WikiText

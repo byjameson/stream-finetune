@@ -58,9 +58,12 @@
   blocked by retention.
 - Safe story-lab recipe: 70% replay from 20M TinyStories + 5M WikiText, LR 5e-5,
   120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
-  generation alpha 0.68-0.76. Passes the narrow story-lab gate; still not a
-  general model and needs packaging/licence/model card/more seeds.
-- 165 tests;
+  generation alpha 0.68-0.76. Passes the narrow story-lab gate.
+- Second story corpus (Nova) replicates the safe recipe: target 2.05 -> 0.60,
+  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77. Two-corpus
+  PASS_NARROW_STORY_LAB; still synthetic/near-memorization and not a general
+  model. Packaging/licence/model card/more seeds remain.
+- 166 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -201,9 +204,12 @@
   blocked by retention.
 - Safe story-lab recipe: 70% replay from 20M TinyStories + 5M WikiText, LR 5e-5,
   120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
-  generation alpha 0.68-0.76. Passes the narrow story-lab gate; still not a
-  general model and needs packaging/licence/model card/more seeds.
-- 165 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  generation alpha 0.68-0.76. Passes the narrow story-lab gate.
+- Second story corpus (Nova) replicates the safe recipe: target 2.05 -> 0.60,
+  TinyStories +4.4%, WikiText -13.6%, alpha 0.73-0.77. Two-corpus
+  PASS_NARROW_STORY_LAB; still synthetic/near-memorization and not a general
+  model. Packaging/licence/model card/more seeds remain.
+- 166 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
