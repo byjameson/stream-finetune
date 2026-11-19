@@ -1,0 +1,45 @@
+{
+  "prompt": "Once upon a time",
+  "rows": [
+    {
+      "model": "mix4m",
+      "device": "cuda",
+      "tokens": 80,
+      "sec": 0.068,
+      "tokens_per_s": 1171.17,
+      "peak_vram_mb": 24.8
+    },
+    {
+      "model": "ts21m",
+      "device": "cuda",
+      "tokens": 80,
+      "sec": 0.142,
+      "tokens_per_s": 563.34,
+      "peak_vram_mb": 88.3
+    },
+    {
+      "model": "story_safe",
+      "device": "cuda",
+      "tokens": 80,
+      "sec": 0.153,
+      "tokens_per_s": 523.2,
+      "peak_vram_mb": 88.3
+    },
+    {
+      "model": "mix4m",
+      "device": "cpu",
+      "tokens": 20,
+      "sec": 0.027,
+      "tokens_per_s": 729.52,
+      "peak_vram_mb": null
+    },
+    {
+      "model": "ts21m",
+      "device": "cpu",
+      "tokens": 20,
+      "sec": 0.098,
+      "tokens_per_s": 204.28,
+      "peak_vram_mb": null
+    }
+  ]
+}
