@@ -102,10 +102,15 @@ is. are your's a the that your- is", that the your. to have be to you you
 
 Verdict: **BLOCKED**. The 21M model learns token statistics but not turn-level
 chat. The broad corpus (especially math/code-heavy SmolTalk) makes it imitate
-fragments of prompts and equations. Next: 50M/300M-token run, and a cleaner
-dialogue-only mix before spending more compute.
+fragments of prompts and equations.
 
-Evidence: `research/results/spiking_chat_en_21m.json`.
+A decoding sweep at temperature 0.3/0.5/0.7 and top-k 5/10/20 does not fix it:
+all settings collapse into function-word loops (`a of the of a ...`). The
+problem is the model/data, not the sampler.
+
+Evidence: `research/results/spiking_chat_en_21m.json` and
+`research/results/spiking_chat_en_sampling.json`. Next: a cleaner
+dialogue-heavy mix and/or a 50M/100M-token run before spending more compute.
 
 ## Evaluation
 

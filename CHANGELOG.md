@@ -102,9 +102,10 @@
   money or API keys.
 - English-first 21M chat, 12k steps: chat bpb 2.377, Wikipedia 2.811,
   TinyStories 2.115. Generation **BLOCKED**: word salad, alpha min 0.331,
-  3/12 samples leak `<|assistant|>`. bpb alone is not chat. Next: cleaner
-  dialogue-heavy mix and/or 50M.
-- 179 tests;
+  3/12 samples leak `<|assistant|>`. bpb alone is not chat. A temp 0.3-0.7 /
+  top-k 5-20 sweep still produces function-word loops, so decoding is not the
+  fix. Next: cleaner dialogue-heavy mix and/or 50M.
+- 180 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

@@ -1,0 +1,132 @@
+{
+  "model": "checkpoints/spiking_chat_en_21m",
+  "step": 12000,
+  "settings": [
+    [
+      0.3,
+      5,
+      1.2
+    ],
+    [
+      0.5,
+      10,
+      1.1
+    ],
+    [
+      0.7,
+      20,
+      1.1
+    ]
+  ],
+  "rows": [
+    {
+      "temperature": 0.3,
+      "top_k": 5,
+      "repetition_penalty": 1.2,
+      "prompt": "hello",
+      "text": "a of, the a of a a the a of a of the of and. the of a the. is the a the the the the the of the of the of of the is of the the.. the is is the,",
+      "chars": 142,
+      "alpha": 0.669,
+      "repeat3": 0.225,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.3,
+      "top_k": 5,
+      "repetition_penalty": 1.2,
+      "prompt": "how are you?",
+      "text": "a of the of a of, a the a of a, the of of and, to a the. the the is the the the the the the the of the the the the the of the the the. of the is the,",
+      "chars": 149,
+      "alpha": 0.6846,
+      "repeat3": 0.425,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.3,
+      "top_k": 5,
+      "repetition_penalty": 1.2,
+      "prompt": "tell me a short story",
+      "text": "a of the of of of, and the a of a, the of of of of of of.. is,, a a the a of of of of of of, the, of the, the of of of, the,",
+      "chars": 124,
+      "alpha": 0.621,
+      "repeat3": 0.4,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.5,
+      "top_k": 10,
+      "repetition_penalty": 1.1,
+      "prompt": "hello",
+      "text": "a of, of a of a in, that of a, the of a and the of of.. and a is a a the a the of the of of of, the a of, the the of of of. the,",
+      "chars": 128,
+      "alpha": 0.6328,
+      "repeat3": 0.1351,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.5,
+      "top_k": 10,
+      "repetition_penalty": 1.1,
+      "prompt": "how are you?",
+      "text": "a of the- of\" a in the that of a, a of a is of of of. is and a, a a the a the of, a the of, the a of the the the. of of is the,",
+      "chars": 127,
+      "alpha": 0.6299,
+      "repeat3": 0.1081,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.5,
+      "top_k": 10,
+      "repetition_penalty": 1.1,
+      "prompt": "tell me a short story",
+      "text": "a of the of of. a in, that of a, the of a is the of of, a and the, the the the a the of the of of of. the is of:, the the of of: and,",
+      "chars": 133,
+      "alpha": 0.6466,
+      "repeat3": 0.1944,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.7,
+      "top_k": 20,
+      "repetition_penalty": 1.1,
+      "prompt": "hello",
+      "text": "a ofsing a for, in the that of a, for of a is the of of.s and in, the a as a the of the of and of in the is of the The.. of of is the,",
+      "chars": 134,
+      "alpha": 0.6716,
+      "repeat3": 0.027,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.7,
+      "top_k": 20,
+      "repetition_penalty": 1.1,
+      "prompt": "how are you?",
+      "text": "a ofsing a foring in the that of a, for of a is in of..s and can is a a as a the and, a a: in the a of the and the. of of is with,",
+      "chars": 130,
+      "alpha": 0.6692,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "temperature": 0.7,
+      "top_k": 20,
+      "repetition_penalty": 1.1,
+      "prompt": "tell me a short story",
+      "text": "a of ing a for a in a that of a,.. a is's to a thes and in, as a the a the and the a. the in the a of's The the of of of is with,",
+      "chars": 129,
+      "alpha": 0.6512,
+      "repeat3": 0.0263,
+      "stop": "max",
+      "tag_leak": 0
+    }
+  ],
+  "verdict": "DECODING_DOES_NOT_FIX_IT"
+}
