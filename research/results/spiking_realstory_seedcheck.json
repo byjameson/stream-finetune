@@ -1,0 +1,190 @@
+{
+  "demo": "real public-domain Alice/Oz safe ingest",
+  "base_model": "checkpoints/spiking_21m",
+  "domain": {
+    "name": "Alice in Wonderland (train) / Wizard of Oz (valid)",
+    "train_passages": 200,
+    "valid_passages": 100,
+    "license": "public domain (Project Gutenberg via GITenberg)"
+  },
+  "recipe": {
+    "steps": 120,
+    "batch": 16,
+    "seq": 128,
+    "lr": 5e-05,
+    "replay_fraction": 0.7,
+    "old_data": "20M TinyStories + 5M WikiText",
+    "rollback_fraction": 0.2
+  },
+  "baseline": {
+    "target": 2.7326343973535963,
+    "ts": 1.2864752186701935,
+    "wt": 4.02965505507574,
+    "generation_alpha_ratio": [
+      0.7375,
+      0.7554,
+      0.7568,
+      0.7138,
+      0.7331,
+      0.7133,
+      0.741,
+      0.7508,
+      0.727
+    ]
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "target_before": 2.7326343973535963,
+      "target_after": 2.4138020701871965,
+      "target_improvement": 0.11667580832443998,
+      "ts_before": 1.2864752186701935,
+      "ts_after": 1.3319907401710183,
+      "ts_regression": 0.035380021970320814,
+      "wt_before": 4.02965505507574,
+      "wt_after": 3.4663830001201266,
+      "wt_regression": -0.13978170519735136,
+      "generation": {
+        "alpha_ratio": [
+          0.721,
+          0.7148,
+          0.7435,
+          0.7179,
+          0.767,
+          0.7607,
+          0.5342,
+          0.6595,
+          0.7189
+        ],
+        "equals_ratio": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replacement_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "target_word_hits": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          1,
+          0,
+          1
+        ]
+      },
+      "worst_samples": [
+        {
+          "prompt": "Dorothy opened the door",
+          "seed": 0,
+          "alpha": 0.5342,
+          "text": " and her two was happy to to the what of was. \n Alice,'t that two she to put the a-- bear, said,,Oh at, the- is---le---aid!  is-,-T------------------------old---"
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "target_before": 2.7326343973535963,
+      "target_after": 2.410603716015205,
+      "target_improvement": 0.11784623718791655,
+      "ts_before": 1.2864752186701935,
+      "ts_after": 1.331152978350301,
+      "ts_regression": 0.03472881485139696,
+      "wt_before": 4.02965505507574,
+      "wt_after": 3.4598083981966643,
+      "wt_regression": -0.14141325971842159,
+      "generation": {
+        "alpha_ratio": [
+          0.7276,
+          0.7018,
+          0.7048,
+          0.745,
+          0.7033,
+          0.7257,
+          0.7247,
+          0.2593,
+          0.3939
+        ],
+        "equals_ratio": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replacement_count": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "target_word_hits": [
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          2,
+          3
+        ]
+      },
+      "worst_samples": [
+        {
+          "prompt": "Dorothy opened the door",
+          "seed": 1,
+          "alpha": 0.2593,
+          "text": " and of the -,  he she    ,    Alice      .     :   :      :   :  :    :   :  :    :   :  . Alice    of, the"
+        },
+        {
+          "prompt": "Dorothy opened the door",
+          "seed": 2,
+          "alpha": 0.3939,
+          "text": " and in the eyes  :   she  at the the     ,  Alice   ,   of Alice :,      !         and   , then  a, ,    :,    , ,  Alice then :,  "
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "target_improves_10pct": true,
+    "old_ts_within_5pct": true,
+    "general_wt_within_5pct": true,
+    "generation_alpha": false,
+    "generation_no_formatting": true,
+    "generation_no_replacement": true
+  },
+  "verdict": "BLOCKED",
+  "caveats": [
+    "one real corpus (two different books); 200 train / 100 valid passages",
+    "200-passage train set is small; improvement is adaption, not general skill",
+    "two seeds, one model size (21M)",
+    "outputs are still repetitive and locally ungrammatical"
+  ]
+}

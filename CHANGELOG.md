@@ -74,7 +74,13 @@
 - Local HTTP deployment of the safe story model verified: `/health` 200,
   `/generate` 200, alpha 0.708. Server defaults tightened to temp 0.5/top-k 10/
   repetition penalty 1.1; still repetitive and local-only.
-- 168 tests;
+- Real public-domain cross-book check (Alice train -> Oz valid, two seeds):
+  target 2.733 -> 2.414/2.411 (-11.7/-11.8%), TinyStories +3.5%, WikiText
+  -14.0/-14.1%, but generation alpha collapses to 0.534 (seed 0) and
+  0.259/0.394 (seed 1) on `Dorothy opened the door`; base is 0.727-0.751.
+  Gate BLOCKED: synthetic story-lab pass does not generalize to real text.
+  Evidence: `research/results/spiking_realstory_seedcheck.json`.
+- 169 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
