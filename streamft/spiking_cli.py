@@ -95,7 +95,8 @@ def train_cmd(args) -> int:
         from tokenizers import Tokenizer
         tok = Tokenizer.from_file(args.tokenizer)
         cfg = SpikingConfig(vocab=tok.get_vocab_size(), dim=args.dim,
-                            layers=args.layers, mode="spike", adapt=args.adapt)
+                            layers=args.layers, mode="spike", adapt=args.adapt,
+                            attention=args.attention)
         model = SpikingLM(cfg).to(device)
         meta = {}
         start_step = 0
@@ -126,6 +127,11 @@ def train_cmd(args) -> int:
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr,
                             weight_decay=0.01)
+    if args.resume:
+        opt_path = Path(args.resume) / "optimizer.pt"
+        if opt_path.exists():
+            opt.load_state_dict(torch.load(opt_path, map_location=device,
+                                           weights_only=False))
     total_steps = args.total_steps or (start_step + args.steps)
 
     def lr_at(step: int) -> float:
@@ -215,6 +221,7 @@ def train_cmd(args) -> int:
                 "lr_schedule": args.lr_schedule,
                 "source": "resume:" + args.resume if args.resume else "scratch",
             })
+            torch.save(opt.state_dict(), Path(args.out) / "optimizer.pt")
             print(json.dumps({"event": "checkpoint", "step": step,
                               "path": str(args.out)}), flush=True)
 
@@ -227,8 +234,22 @@ def train_cmd(args) -> int:
         "lr_schedule": args.lr_schedule,
         "source": "resume:" + args.resume if args.resume else "scratch",
     })
+    torch.save(opt.state_dict(), Path(args.out) / "optimizer.pt")
+    previous = []
+    for hist_dir in (Path(args.resume) if args.resume else None, Path(args.out)):
+        if hist_dir is None:
+            continue
+        hist_path = hist_dir / "training.json"
+        if hist_path.exists():
+            try:
+                previous = json.loads(hist_path.read_text(encoding="utf-8")
+                                      ).get("history", [])
+            except Exception:
+                previous = []
+            break
     (Path(args.out) / "training.json").write_text(
-        json.dumps({"history": history}, indent=2) + "\n", encoding="utf-8")
+        json.dumps({"history": previous + history}, indent=2) + "\n",
+        encoding="utf-8")
     print(json.dumps({"event": "saved", "path": str(args.out),
                       "step": start_step + args.steps}), flush=True)
     return 0
@@ -345,6 +366,8 @@ def main(argv=None) -> int:
     tr.add_argument("--total-steps", type=int, default=0,
                     help="absolute step count for the cosine schedule (0 = session end)")
     tr.add_argument("--adapt", type=float, default=0.1)
+    tr.add_argument("--attention", action="store_true",
+                    help="add causal attention over the recurrent history")
     tr.add_argument("--amp", action="store_true",
                     help="bf16 autocast on CUDA (params stay fp32)")
     tr.add_argument("--eval-every", type=int, default=100)

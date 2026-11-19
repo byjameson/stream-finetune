@@ -1,0 +1,126 @@
+{
+  "tag": "smoke500",
+  "model": "checkpoints/spiking_chat_tr_21m_smoke",
+  "config": {
+    "vocab": 8192,
+    "dim": 1024,
+    "layers": 2,
+    "mode": "spike",
+    "adapt": 0.1,
+    "feedback": false,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": false,
+    "slots": 0,
+    "slot_heads": 1,
+    "slot_attr_keys": false,
+    "slot_conj": false,
+    "slot_factorized": false,
+    "query_color_copy": false,
+    "color_copy_init": 1.0,
+    "learned_boundaries": false,
+    "raw_boundaries": false,
+    "category_states": false,
+    "name_ids": [],
+    "color_ids": [],
+    "object_ids": [],
+    "write_token": -1,
+    "read_token": -1,
+    "mem_decay": 0.5,
+    "mem_read_pos": -1,
+    "dropout": 0.0,
+    "decay_syn": 0.9,
+    "decay_mem": 0.9,
+    "decay_out": 0.9,
+    "decay_trace": 0.9,
+    "threshold": 0.5,
+    "alpha": 4.0
+  },
+  "step": 500,
+  "bpb": {
+    "chat": {
+      "loss": 7.675411760807037,
+      "ppl": 2154.7107284866916,
+      "bpb": 2.687851413129982,
+      "tokens": 8192,
+      "bytes": 33749
+    },
+    "wiki": {
+      "loss": 7.831015586853027,
+      "ppl": 2517.484800036217,
+      "bpb": 2.9182188286253665,
+      "tokens": 8192,
+      "bytes": 31715
+    },
+    "stories": {
+      "loss": 6.528591156005859,
+      "ppl": 684.4332722220058,
+      "bpb": 2.8197095368500125,
+      "tokens": 8192,
+      "bytes": 27364
+    },
+    "mixed": {
+      "loss": 7.686137318611145,
+      "ppl": 2177.9455836073216,
+      "bpb": 2.766447130171163,
+      "tokens": 8192,
+      "bytes": 32836
+    }
+  },
+  "samples": [
+    {
+      "prompt": "merhaba",
+      "text": "?<|user|>. ,.<|assistant|>in. bir da.'alen- ,,.-: ve,. olan, ve için ,..lar ve ve'ler - ve.ler - S olaraka,)lar'.",
+      "chars": 113,
+      "alpha": 0.5487,
+      "turkish_chars": 1,
+      "repeat3": 0.0,
+      "tag_leak": 2
+    },
+    {
+      "prompt": "nasılsın?",
+      "text": "olarak. -<|assistant|>. bir bir , Bir. olan",
+      "chars": 43,
+      "alpha": 0.6512,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "tag_leak": 1
+    },
+    {
+      "prompt": "adım Ali, beni hatırla",
+      "text": "ın bir için.ler. bir",
+      "chars": 20,
+      "alpha": 0.75,
+      "turkish_chars": 2,
+      "repeat3": 0.0,
+      "tag_leak": 0
+    },
+    {
+      "prompt": "bugün hava nasıl?",
+      "text": ".ler<|assistant|> veyaik.ları.,  ve.'d)ın.::<|assistant|>,ın \" olans' , ve ve.. ve), bu ve.in içinlar bir. için",
+      "chars": 111,
+      "alpha": 0.6216,
+      "turkish_chars": 5,
+      "repeat3": 0.0,
+      "tag_leak": 2
+    },
+    {
+      "prompt": "bana kısa bir hikaye anlat",
+      "text": ". için : ve",
+      "chars": 11,
+      "alpha": 0.5455,
+      "turkish_chars": 1,
+      "repeat3": 0.0,
+      "tag_leak": 0
+    },
+    {
+      "prompt": "görev ekle: süt al",
+      "text": ",, Bir., olan' için  Buin veuns.,,, ..,",
+      "chars": 39,
+      "alpha": 0.5128,
+      "turkish_chars": 1,
+      "repeat3": 0.0,
+      "tag_leak": 0
+    }
+  ]
+}
