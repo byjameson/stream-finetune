@@ -50,7 +50,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   two corpora and two seeds. Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 CPU,
   24.8 MB peak VRAM; 21M 563/204 tok/s, 88.3 MB. Model card:
   [`../docs/TINY_STORY_LAB.md`](../docs/TINY_STORY_LAB.md); demo:
-  `scripts/story_lab_demo.ps1`. Still not a general model.
+  `scripts/story_lab_demo.ps1`; local HTTP server verified (`/health` 200,
+  `/generate` 200, alpha 0.708). Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the

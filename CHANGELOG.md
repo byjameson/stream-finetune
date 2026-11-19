@@ -71,6 +71,9 @@
   benchmark.
 - Product packaging: model card `docs/TINY_STORY_LAB.md` and one-command demo
   `scripts/story_lab_demo.ps1`; licence/provenance review still required.
+- Local HTTP deployment of the safe story model verified: `/health` 200,
+  `/generate` 200, alpha 0.708. Server defaults tightened to temp 0.5/top-k 10/
+  repetition penalty 1.1; still repetitive and local-only.
 - 168 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
@@ -225,6 +228,9 @@
   benchmark.
 - Product packaging: model card `docs/TINY_STORY_LAB.md` and one-command demo
   `scripts/story_lab_demo.ps1`; licence/provenance review still required.
+- Local HTTP deployment of the safe story model verified: `/health` 200,
+  `/generate` 200, alpha 0.708. Server defaults tightened to temp 0.5/top-k 10/
+  repetition penalty 1.1; still repetitive and local-only.
 - 168 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
