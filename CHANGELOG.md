@@ -109,8 +109,16 @@
   removed and synthetic memory/task examples; same 21M/tokenizer/schedule.
   Result: clean chat bpb 2.199, alpha min 0.608, but 5/12 tag leaks and word
   salad; still **BLOCKED**. Data cleaning helps surface metrics but not
-  turn-level chat. A 50.07M capacity probe (same clean data/tokenizer/schedule)
-  is running: bpb 2.304 at step 1500 vs 2.343 for 21M; checkpoint/resume ready.
+  turn-level chat.
+- 50.07M capacity probe on the same clean data: chat bpb 2.192 vs 2.199 for
+  21M, alpha min 0.627, 1/12 tag leak, but still word salad; **BLOCKED**.
+  Parameter scaling alone is not the fix.
+- Conversation-length analysis: median 355 tokens; only 12.6% of conversations
+  fit a 128-token window (1.7% of tokens), while 59.5% fit 512. Fixed 128-token
+  windows rarely contain a full user -> assistant exchange.
+- Added `--start-token` to the trainer; a 21M turn-aligned run samples windows
+  starting at `<|user|>` with the same 12k-step budget. This tests whether
+  alignment, not scale, is the blocker.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -121,7 +129,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 185 tests;
+- 189 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

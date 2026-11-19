@@ -1,0 +1,49 @@
+{
+  "data": "data/chat_en_clean_train.pt",
+  "tokens": 26980372,
+  "conversations": 50924,
+  "percentiles": {
+    "p10": 108,
+    "p25": 182,
+    "p50": 355,
+    "p75": 914,
+    "p90": 1116,
+    "p95": 1227,
+    "p99": 1642
+  },
+  "caps": {
+    "64": {
+      "fraction_of_conversations": 0.05329510643311602,
+      "fraction_of_tokens_covered": 0.004056578612036928
+    },
+    "128": {
+      "fraction_of_conversations": 0.12563820595397063,
+      "fraction_of_tokens_covered": 0.017454095888670473
+    },
+    "192": {
+      "fraction_of_conversations": 0.2811444505537664,
+      "fraction_of_tokens_covered": 0.0656679233333032
+    },
+    "256": {
+      "fraction_of_conversations": 0.416012096457466,
+      "fraction_of_tokens_covered": 0.12170328859809643
+    },
+    "384": {
+      "fraction_of_conversations": 0.5237805357002592,
+      "fraction_of_tokens_covered": 0.18604606341232063
+    },
+    "512": {
+      "fraction_of_conversations": 0.5948472233131725,
+      "fraction_of_tokens_covered": 0.24440048491547856
+    },
+    "768": {
+      "fraction_of_conversations": 0.6900675516455895,
+      "fraction_of_tokens_covered": 0.362103420960986
+    },
+    "1024": {
+      "fraction_of_conversations": 0.8251315686120493,
+      "fraction_of_tokens_covered": 0.5958789967758784
+    }
+  },
+  "caveat": "conversations are packed; a window can still cut a boundary"
+}

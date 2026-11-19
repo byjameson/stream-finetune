@@ -43,16 +43,31 @@ def load_tokens(path: str, limit: int = 0) -> torch.Tensor:
 
 
 class RandomWindows:
-    def __init__(self, tokens, seq: int, batch: int, seed: int, device):
+    def __init__(self, tokens, seq: int, batch: int, seed: int, device,
+                 start_token: int = -1):
         self.tokens = tokens
         self.seq = seq
         self.batch = batch
         self.device = device
         self.gen = torch.Generator().manual_seed(seed)
+        self.starts = None
+        if start_token >= 0:
+            hi = len(tokens) - seq - 1
+            positions = (tokens == start_token).nonzero(as_tuple=False).flatten()
+            positions = positions[positions <= hi]
+            if len(positions) == 0:
+                raise ValueError(f"no windows start with token {start_token}")
+            self.starts = positions
 
     def next(self):
         hi = len(self.tokens) - self.seq - 1
-        starts = torch.randint(0, hi, (self.batch,), generator=self.gen).tolist()
+        if self.starts is not None:
+            idx = torch.randint(0, len(self.starts), (self.batch,),
+                                generator=self.gen)
+            starts = self.starts[idx].tolist()
+        else:
+            starts = torch.randint(0, hi, (self.batch,),
+                                   generator=self.gen).tolist()
         xs = torch.stack([self.tokens[s:s + self.seq] for s in starts])
         ys = torch.stack([self.tokens[s + 1:s + self.seq + 1] for s in starts])
         return xs.to(self.device), ys.to(self.device)
@@ -145,7 +160,8 @@ def train_cmd(args) -> int:
             1.0 + math.cos(math.pi * progress))
 
     sampler = RandomWindows(train_tokens, args.seq, args.batch,
-                            args.seed + start_step, device)
+                            args.seed + start_step, device,
+                            start_token=args.start_token)
     history = []
     print(json.dumps({
         "event": "start", "device": str(device), "params": count_params(model),
@@ -366,6 +382,9 @@ def main(argv=None) -> int:
     tr.add_argument("--total-steps", type=int, default=0,
                     help="absolute step count for the cosine schedule (0 = session end)")
     tr.add_argument("--adapt", type=float, default=0.1)
+    tr.add_argument("--start-token", type=int, default=-1,
+                    help="sample windows starting at this token id "
+                         "(e.g. 0 for <|user|>)")
     tr.add_argument("--attention", action="store_true",
                     help="add causal attention over the recurrent history")
     tr.add_argument("--amp", action="store_true",
