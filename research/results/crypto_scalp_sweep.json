@@ -1,0 +1,317 @@
+{
+  "symbol": "BTCUSDT",
+  "test_start": "2024-01-01",
+  "timeframes": [
+    "15m",
+    "1h",
+    "4h"
+  ],
+  "costs": {
+    "taker": {
+      "fee": 0.001,
+      "slip": 0.0005
+    },
+    "maker": {
+      "fee": 0.0002,
+      "slip": 0.0002
+    }
+  },
+  "rows": [
+    {
+      "timeframe": "15m",
+      "signal": "momentum",
+      "cost": "taker",
+      "trades": 5334,
+      "win_rate": 0.32977127859017624,
+      "avg_net": -0.003037990736062175,
+      "total_return": -0.9999951950172359,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.3753586988856506,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "15m",
+      "signal": "momentum",
+      "cost": "maker",
+      "trades": 5347,
+      "win_rate": 0.44136899195810736,
+      "avg_net": -0.000858403392945123,
+      "total_return": -0.9704703676037538,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.7558179472553853,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "15m",
+      "signal": "mean_reversion",
+      "cost": "taker",
+      "trades": 1130,
+      "win_rate": 0.38849557522123895,
+      "avg_net": -0.0033077573422721786,
+      "total_return": -0.9409183974482768,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.4101101061563902,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "15m",
+      "signal": "mean_reversion",
+      "cost": "maker",
+      "trades": 1117,
+      "win_rate": 0.4664279319606088,
+      "avg_net": -0.0011605510918644242,
+      "total_return": -0.630023183158303,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.7331687322616178,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "15m",
+      "signal": "breakout",
+      "cost": "taker",
+      "trades": 2272,
+      "win_rate": 0.3279049295774648,
+      "avg_net": -0.0031190067799400103,
+      "total_return": -0.995274934963219,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.3733821571027765,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "15m",
+      "signal": "breakout",
+      "cost": "maker",
+      "trades": 2276,
+      "win_rate": 0.4200351493848858,
+      "avg_net": -0.0009489948327643714,
+      "total_return": -0.8088697777682712,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.7384939324265435,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "15m",
+      "signal": "random",
+      "cost": "taker",
+      "trades": 3108,
+      "win_rate": 0.32786357786357784,
+      "avg_net": -0.003008502644402618,
+      "total_return": -0.9991445590143445,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.3623354700588909,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "15m",
+      "signal": "random",
+      "cost": "maker",
+      "trades": 3103,
+      "win_rate": 0.4485981308411215,
+      "avg_net": -0.000793016920614925,
+      "total_return": -0.8487859593334418,
+      "buy_hold_return": 0.4771290717379024,
+      "profit_factor": 0.762630371139207,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "1h",
+      "signal": "momentum",
+      "cost": "taker",
+      "trades": 2350,
+      "win_rate": 0.39191489361702125,
+      "avg_net": -0.002945331407678953,
+      "total_return": -0.994720845357373,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.4643559057181494,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "1h",
+      "signal": "momentum",
+      "cost": "maker",
+      "trades": 2360,
+      "win_rate": 0.45847457627118643,
+      "avg_net": -0.000824873705024354,
+      "total_return": -0.778555079936486,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.8066806532186915,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "1h",
+      "signal": "mean_reversion",
+      "cost": "taker",
+      "trades": 481,
+      "win_rate": 0.4178794178794179,
+      "avg_net": -0.0034536324538389247,
+      "total_return": -0.7160222535522552,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.44600026340542365,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "1h",
+      "signal": "mean_reversion",
+      "cost": "maker",
+      "trades": 478,
+      "win_rate": 0.47280334728033474,
+      "avg_net": -0.001356232046809166,
+      "total_return": -0.39213222611472953,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.7335111814113345,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "1h",
+      "signal": "breakout",
+      "cost": "taker",
+      "trades": 705,
+      "win_rate": 0.3900709219858156,
+      "avg_net": -0.003112734050253841,
+      "total_return": -0.8103807370063036,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.4617073869370374,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "1h",
+      "signal": "breakout",
+      "cost": "maker",
+      "trades": 707,
+      "win_rate": 0.44837340876944837,
+      "avg_net": -0.0009848224722005282,
+      "total_return": -0.41573366862725725,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.7831778272530597,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "1h",
+      "signal": "random",
+      "cost": "taker",
+      "trades": 1007,
+      "win_rate": 0.42105263157894735,
+      "avg_net": -0.002473240594223979,
+      "total_return": -0.8488228762301157,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.5136401938044876,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "1h",
+      "signal": "random",
+      "cost": "maker",
+      "trades": 1008,
+      "win_rate": 0.498015873015873,
+      "avg_net": -0.00034081410286581287,
+      "total_return": -0.2422120204854159,
+      "buy_hold_return": 0.47757316440664344,
+      "profit_factor": 0.9133813141667836,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "4h",
+      "signal": "momentum",
+      "cost": "taker",
+      "trades": 960,
+      "win_rate": 0.42291666666666666,
+      "avg_net": -0.0034673181607551974,
+      "total_return": -0.9198192288587218,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.46166212830858955,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "4h",
+      "signal": "momentum",
+      "cost": "maker",
+      "trades": 962,
+      "win_rate": 0.4521829521829522,
+      "avg_net": -0.0013555444748972723,
+      "total_return": -0.6330102498499182,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.7420655484252273,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "4h",
+      "signal": "mean_reversion",
+      "cost": "taker",
+      "trades": 143,
+      "win_rate": 0.3916083916083916,
+      "avg_net": -0.004584282336840252,
+      "total_return": -0.39115372667842574,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.37796180405661656,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "4h",
+      "signal": "mean_reversion",
+      "cost": "maker",
+      "trades": 143,
+      "win_rate": 0.4195804195804196,
+      "avg_net": -0.0023884423515851817,
+      "total_return": -0.22903154483374644,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.6066032968471253,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "4h",
+      "signal": "breakout",
+      "cost": "taker",
+      "trades": 223,
+      "win_rate": 0.4484304932735426,
+      "avg_net": -0.002801723074364028,
+      "total_return": -0.3779259295922974,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.5388953161531723,
+      "worst_trade": -0.012495000000000143
+    },
+    {
+      "timeframe": "4h",
+      "signal": "breakout",
+      "cost": "maker",
+      "trades": 223,
+      "win_rate": 0.484304932735426,
+      "avg_net": -0.0006835161988903806,
+      "total_return": -0.11303569074969444,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.8611399038598235,
+      "worst_trade": -0.01059800000000015
+    },
+    {
+      "timeframe": "4h",
+      "signal": "random",
+      "cost": "taker",
+      "trades": 266,
+      "win_rate": 0.37593984962406013,
+      "avg_net": -0.004153023338143812,
+      "total_return": -0.5666197038569811,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.3893882507392605,
+      "worst_trade": -0.012495000000000032
+    },
+    {
+      "timeframe": "4h",
+      "signal": "random",
+      "cost": "maker",
+      "trades": 266,
+      "win_rate": 0.42857142857142855,
+      "avg_net": -0.0019512594071704845,
+      "total_return": -0.32696791044457607,
+      "buy_hold_return": 0.4826254078325105,
+      "profit_factor": 0.6449763469528684,
+      "worst_trade": -0.01059800000000015
+    }
+  ],
+  "verdict": "NO_EDGE",
+  "caveats": [
+    "maker fill is assumed certain; real limit fills are not",
+    "15m bars are resampled; intrabar path is unknown",
+    "when TP and SL are both in one bar, SL is assumed first",
+    "no order book, funding or leverage",
+    "not financial advice; no orders were placed"
+  ]
+}

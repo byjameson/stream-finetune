@@ -34,6 +34,20 @@ baselines. The per-trade loss is small but repeated thousands of times, so the
 compounded equity collapses. This is a cost/win-rate problem, not a parameter
 tuning problem.
 
+## Horizon and cost sweep
+
+`research/crypto_scalp_sweep.py` repeats the test on 15m, 1h and 4h bars with
+taker costs (0.10% + 0.05%) and optimistic maker costs (0.02% + 0.02%).
+
+- all **24** signal/timeframe/cost combinations are negative after costs;
+- the best row is 4h breakout with maker costs: win rate 48.4%, average net
+  -0.068% per trade, total **-11.3%** versus buy-and-hold **+48.3%**;
+- at maker costs the break-even win rate is about 52%, so 48.4% is still short;
+- the 15m rows are the worst: thousands of trades and near-total equity loss.
+
+Verdict: **NO_EDGE** across horizons and cost assumptions. A shorter timeframe
+does not fix a low hit rate; it multiplies the cost drag.
+
 ## What would have to change
 
 - a signal with a genuinely higher hit rate (not a different TP/SL only),

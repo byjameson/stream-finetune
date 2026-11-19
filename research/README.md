@@ -262,6 +262,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200 robustness sweep, fees included | ~2 min |
 | `crypto_bootstrap.py` | 30-day block bootstrap + start-date table for the SMA-50 rule | ~1 min |
 | `crypto_scalp.py` | 15m BTC, 1% TP / 1% SL, costs and out-of-sample test | ~2 min |
+| `crypto_scalp_sweep.py` | 15m/1h/4h x taker/maker sensitivity for the 1% TP/SL rule | ~2 min |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |
