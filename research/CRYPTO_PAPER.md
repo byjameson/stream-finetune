@@ -42,6 +42,24 @@ Verdict: **CHECK**, not a profit claim.
 - One asset, one history, one arbitrary SMA window. Before believing it, sweep
   SMA-20/50/100/200 on BTC and ETH, vary start dates, and paper-trade forward.
 
+## Robustness sweep (BTC + ETH)
+
+`research/crypto_sma_sweep.py` repeats the trend rule on BTC and ETH with
+SMA-20/50/100/200. The common test window is 2018-04-22 to 2026-11-18 (2,768
+out-of-sample days).
+
+| asset | SMA-20 | SMA-50 | SMA-100 | SMA-200 | buy-and-hold |
+|---|---:|---:|---:|---:|---:|
+| BTC total return | 5.00x | **30.51x** | 19.06x | 8.01x | 10.77x |
+| ETH total return | 13.15x | **35.87x** | 6.79x | 13.67x | 9.42x |
+
+- SMA-50 beats buy-and-hold on both assets, with lower drawdowns.
+- The result is **window-sensitive**: SMA-20 loses on BTC, SMA-100 and SMA-200
+  lose on ETH. A single 50-day window on one history is not proof.
+- Second-half returns are positive but much smaller than first-half returns;
+  the edge is regime-dependent.
+- Verdict: **TREND_CANDIDATE**, not a deployable strategy.
+
 ## What this means for the spiking model
 
 - The chat model has no price input and no risk model; it cannot trade.
@@ -52,8 +70,9 @@ Verdict: **CHECK**, not a profit claim.
 
 ## Next experiments
 
-1. SMA parameter sweep and ETH replication.
-2. Start-date and subperiod robustness; bootstrap confidence intervals.
-3. Paper-trading ledger with daily marks, no exchange credentials.
+1. Bootstrap confidence intervals and start-date sensitivity.
+2. Forward paper-trading ledger with daily marks, no exchange credentials.
+3. Add order-book/funding data and execution-at-next-open instead of
+   close-only.
 4. Only if a robust edge survives: a tiny risk-managed allocation, still
    paper-only until reviewed.

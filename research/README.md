@@ -257,6 +257,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
 | `chat_human.py` | JSON memory/task runtime around the chat model | ~1 s (no model) |
 | `crypto_paper.py` | BTCUSDT daily walk-forward paper baseline, fees included | ~2 min |
+| `crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200 robustness sweep, fees included | ~2 min |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |
