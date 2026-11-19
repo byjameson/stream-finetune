@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MODELS = [
     ("base_21m", "checkpoints/spiking_21m"),
     ("space_v0001", "checkpoints/spiking_space_demo/versions/v0001"),
+    ("space_safe2", "checkpoints/spiking_space_safe2/versions/v0001"),
 ]
 PROMPTS = ["Zeta the robot", "Zeta saw a", "Zeta learned that"]
 MAX_NEW = 80

@@ -1,0 +1,64 @@
+{
+  "demo": "safe space-story ingest",
+  "base_model": "checkpoints/spiking_21m",
+  "ingested_model": "checkpoints/spiking_space_safe2/versions/v0001",
+  "domain": {
+    "name": "synthetic Zeta the robot stories",
+    "train_stories": 200,
+    "valid_stories": 100
+  },
+  "config": {
+    "steps": 120,
+    "batch": 16,
+    "seq": 128,
+    "lr": 0.00005,
+    "replay_fraction": 0.7,
+    "old_data": "20M TinyStories + 5M WikiText",
+    "rollback_fraction": 0.2
+  },
+  "ingest_gate": {
+    "accepted": true,
+    "rolled_back": false,
+    "version": "v0001",
+    "before": {
+      "old_bpb_4096": 2.283466075676764,
+      "new_bpb_4096": 2.2098107350944347
+    },
+    "after": {
+      "old_bpb_4096": 2.1297694561843645,
+      "new_bpb_4096": 0.7430126367634255
+    }
+  },
+  "full_eval": {
+    "target_bpb_before": 2.187382743547073,
+    "target_bpb_after": 0.7201082612886714,
+    "old_ts_bpb_before": 1.2864752186701935,
+    "old_ts_bpb_after": 1.3393958283198661,
+    "general_wt_bpb_before": 4.02965505507574,
+    "general_wt_bpb_after": 3.491320599678158,
+    "target_improvement": 0.6708,
+    "old_regression": 0.0411,
+    "general_regression": -0.1336
+  },
+  "generation": {
+    "base_alpha_ratio": [0.660, 0.731, 0.743],
+    "after_alpha_ratio": [0.710, 0.755, 0.678],
+    "after_equals_ratio": [0.0, 0.0, 0.0],
+    "after_replacement_count": [0, 0, 0],
+    "after_zeta_count": [0, 1, 0],
+    "style_words": ["robot", "station", "yellow", "curious"]
+  },
+  "release_gate": {
+    "verdict": "PASS_NARROW_STORY_LAB",
+    "target_improves_1pct": true,
+    "old_within_5pct": true,
+    "general_within_5pct": true,
+    "generation_format": true,
+    "caveats": [
+      "200 synthetic stories; target bpb 0.72 is close to memorization.",
+      "One seed, one small corpus, 21M model.",
+      "Samples are still repetitive; this is a style lab, not a general model.",
+      "Packaging, licence and model card are still missing."
+    ]
+  }
+}

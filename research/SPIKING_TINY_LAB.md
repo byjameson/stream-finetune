@@ -105,7 +105,57 @@ Verdict for this demo:
 - old TinyStories: ? (+13.6%)
 - general WikiText: ? (+33.9%)
 
-## Release gate (current verdict: BLOCKED)
+## Safe story-style ingest (positive, narrow gate)
+
+The fix is not a new architecture; it is a safer adaptation recipe:
+
+- old replay data: **20M TinyStories + 5M WikiText** (80/20);
+- old-valid: 50/50 TinyStories/WikiText;
+- **120 steps**, batch 16, LR **5e-5**, replay **70%**, rollback 0.20;
+- same 200/100 Zeta story split.
+
+Full fixed-window eval:
+
+| shard | before | after | delta |
+|---|---:|---:|---:|
+| space stories | 2.187 | **0.720** | -67.1% |
+| TinyStories | 1.286 | 1.339 | **+4.1%** |
+| WikiText | 4.030 | 3.491 | **-13.4%** |
+
+Generation after the update is still robot/space themed, alpha 0.68-0.76, no
+`=` spam and no replacement characters. The target bpb is close to
+memorization because the corpus is small, but the retention/general tradeoff is
+inside the narrow gate.
+
+`python research/check_story_gate.py`:
+
+```json
+{
+  "gate": "PASS_NARROW_STORY_LAB",
+  "checks": {
+    "target_improves_10pct": true,
+    "old_within_5pct": true,
+    "general_within_5pct": true,
+    "generation_alpha": true,
+    "generation_no_formatting": true,
+    "generation_no_replacement": true
+  }
+}
+```
+
+This is the first product-path pass, but only for a **narrow story-style lab**:
+200 synthetic stories, one seed, 21M model, repetitive samples, no packaging
+or licence/model card yet. It is not a general base model.
+
+## Release gate (two tracks)
+
+- **General/fact Tiny Lab:** **BLOCKED** (domain ingest: old +3.29%, WikiText
+  +7.1%, generation garbage).
+- **Narrow story-style lab:** **PASS_NARROW_STORY_LAB** with the safe recipe
+  above, but packaging/licence/model card and more seeds/corpora are still
+  required before a public release.
+
+The old release-gate text below applies to the general track:
 
 `python research/check_release_gate.py` currently reports:
 

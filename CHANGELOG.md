@@ -55,8 +55,12 @@
 - Space-story ingest demo: 21M TS base, 200 synthetic Zeta stories, 300 steps,
   20% replay + rollback. Target 2.19 -> 1.66 bpb and robot-themed samples
   (alpha ~0.7); full eval TinyStories +13.6%, WikiText +33.9%. Release still
-  BLOCKED by retention.
-- 164 tests;
+  blocked by retention.
+- Safe story-lab recipe: 70% replay from 20M TinyStories + 5M WikiText, LR 5e-5,
+  120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
+  generation alpha 0.68-0.76. Passes the narrow story-lab gate; still not a
+  general model and needs packaging/licence/model card/more seeds.
+- 165 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -194,8 +198,12 @@
 - Space-story ingest demo: 21M TS base, 200 synthetic Zeta stories, 300 steps,
   20% replay + rollback. Target 2.19 -> 1.66 bpb and robot-themed samples
   (alpha ~0.7); full eval TinyStories +13.6%, WikiText +33.9%. Release still
-  BLOCKED by retention.
-- 164 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+  blocked by retention.
+- Safe story-lab recipe: 70% replay from 20M TinyStories + 5M WikiText, LR 5e-5,
+  120 steps. Target 2.19 -> 0.72 bpb, TinyStories +4.1%, WikiText -13.4%,
+  generation alpha 0.68-0.76. Passes the narrow story-lab gate; still not a
+  general model and needs packaging/licence/model card/more seeds.
+- 165 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,
