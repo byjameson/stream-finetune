@@ -90,7 +90,9 @@
 - Spiking trainer saves/loads AdamW state (`optimizer.pt`) and merges
   `training.json` on resume; 2+2-step fragment verified at step 4 with Adam
   step 4. Long runs can be split into sessions.
-- 172 tests;
+- Virtual-human runtime scaffold: JSON persona/facts/episodes/tasks with
+  deterministic memory and task commands; model only handles open-ended text.
+- 176 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

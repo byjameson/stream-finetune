@@ -251,6 +251,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `make_chat_corpus.py` | Turkish-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
 | `make_chat_corpus_en.py` | English-first chat corpus + fresh 8k BPE tokenizer | ~5 min |
 | `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
+| `chat_human.py` | JSON memory/task runtime around the chat model | ~1 s (no model) |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |

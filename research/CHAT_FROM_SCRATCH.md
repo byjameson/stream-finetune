@@ -103,6 +103,20 @@ non-empty English samples, low tag leakage, and visible turn structure. A
 general assistant claim would require much more data, a larger model and a
 separate instruction-following evaluation.
 
+## Virtual-human runtime
+
+`research/chat_human.py` is the CPU-side layer around the language model:
+
+- JSON memory for persona, facts, episodes and tasks;
+- deterministic commands: `my name is ...`, `add task ...`, `list tasks`,
+  `complete task N`, `what do you remember`;
+- the model is only called for open-ended text, with a short memory context;
+- no model loaded is a valid mode (tests cover it).
+
+This keeps facts and actions out of the 21M weights. The runtime is tested
+independently of the model, so a weak checkpoint does not make memory or task
+commands fail.
+
 ## Quality expectation
 
 - 21M / 24.6M tokens: short fragments and simple patterns, not a chatbot.
