@@ -69,6 +69,8 @@
 - Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 tok/s CPU, 24.8 MB peak VRAM;
   21M 563/204 tok/s, 88.3 MB. Single prompt, no batching, not a production
   benchmark.
+- Product packaging: model card `docs/TINY_STORY_LAB.md` and one-command demo
+  `scripts/story_lab_demo.ps1`; licence/provenance review still required.
 - 168 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
@@ -221,6 +223,8 @@
 - Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 tok/s CPU, 24.8 MB peak VRAM;
   21M 563/204 tok/s, 88.3 MB. Single prompt, no batching, not a production
   benchmark.
+- Product packaging: model card `docs/TINY_STORY_LAB.md` and one-command demo
+  `scripts/story_lab_demo.ps1`; licence/provenance review still required.
 - 168 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
