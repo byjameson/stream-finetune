@@ -192,6 +192,22 @@ This is the small-model value: the 4.3M model runs at >700 tokens/s on CPU and
 uses <25 MB of VRAM in this probe. It is not a production benchmark (short
 generation, one prompt, no batching).
 
+## Local HTTP deployment
+
+The accepted safe story model serves locally:
+
+```bash
+python -m streamft.spiking_cli serve \
+  --model checkpoints/spiking_space_safe2/versions/v0001 \
+  --host 127.0.0.1 --port 8012
+```
+
+Verified: `/health` 200 (20.97M params), `/generate` 200 with
+`{"prompt":"Zeta the robot","max_new_tokens":60}`, alpha ratio 0.708. The server
+defaults were tightened to temperature 0.5, top-k 10 and repetition penalty
+1.1; without the penalty the tiny model degenerates into `Z Z Z` loops.
+This is a local demo, not a public deployment.
+
 ## Release gate (two tracks)
 
 - **General/fact Tiny Lab:** **BLOCKED** (domain ingest: old +3.29%, WikiText

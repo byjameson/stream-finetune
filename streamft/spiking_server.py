@@ -35,7 +35,7 @@ fetch('/health').then(r=>r.json()).then(j=>document.getElementById('m').textCont
 document.getElementById('g').onclick=async()=>{
   const o=document.getElementById('o'); o.textContent='...';
   const r=await fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:document.getElementById('p').value,max_new_tokens:64})});
+    body:JSON.stringify({prompt:document.getElementById('p').value,max_new_tokens:64,temperature:0.5,top_k:10,repetition_penalty:1.1})});
   const j=await r.json(); o.textContent=j.error ? ('error: '+j.error) : j.text;
 };
 </script>"""
@@ -98,12 +98,14 @@ class Handler(BaseHTTPRequestHandler):
                 prompt = str(req.get("prompt", ""))
                 max_new = int(req.get("max_new_tokens", 64))
             max_new = max(1, min(max_new, 256))
-            temperature = float(req.get("temperature", 0.8))
-            top_k = int(req.get("top_k", 50))
+            temperature = float(req.get("temperature", 0.5))
+            top_k = int(req.get("top_k", 10))
+            repetition_penalty = float(req.get("repetition_penalty", 1.1))
             with _lock:
                 text = generate(_state["model"], _state["tok"], prompt,
                                 max_new, _state["device"],
-                                temperature=temperature, top_k=top_k)
+                                temperature=temperature, top_k=top_k,
+                                repetition_penalty=repetition_penalty)
                 _state["metrics"]["requests"] += 1
                 _state["metrics"]["generated_tokens"] += max_new
             if self.path == "/generate":

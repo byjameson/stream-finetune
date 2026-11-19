@@ -77,6 +77,27 @@ Single prompt, no batching, 80 tokens CUDA / 20 CPU. Not a production benchmark.
 - The general/fact Tiny Lab remains **BLOCKED** (domain ingest lost 3.29%
   TinyStories and 7.1% WikiText, and fact-prompt generation is garbage).
 
+## Local deployment
+
+The accepted safe model serves locally over HTTP:
+
+```bash
+python -m streamft.spiking_cli serve \
+  --model checkpoints/spiking_space_safe2/versions/v0001 \
+  --host 127.0.0.1 --port 8012
+```
+
+Verified on this machine:
+
+- `GET /health` -> 200, 20.97M params
+- `POST /generate {"prompt":"Zeta the robot","max_new_tokens":60}` -> 200
+- alpha ratio 0.708; story-shaped output with some repetition
+- server defaults are now temperature 0.5, top-k 10, repetition penalty 1.1;
+  payloads can override them.
+
+This is a local demo, not a public deployment. It still produces repetitive text
+and has no safety filter.
+
 ## Reproduce
 
 ```bash
