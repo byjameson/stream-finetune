@@ -66,7 +66,10 @@
   Two corpora x two seeds PASS_NARROW_STORY_LAB. Still synthetic/
   near-memorization and not a general model; packaging/licence/model card
   remain.
-- 167 tests;
+- Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 tok/s CPU, 24.8 MB peak VRAM;
+  21M 563/204 tok/s, 88.3 MB. Single prompt, no batching, not a production
+  benchmark.
+- 168 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
@@ -215,7 +218,10 @@
   Two corpora x two seeds PASS_NARROW_STORY_LAB. Still synthetic/
   near-memorization and not a general model; packaging/licence/model card
   remain.
-- 167 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
+- Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 tok/s CPU, 24.8 MB peak VRAM;
+  21M 563/204 tok/s, 88.3 MB. Single prompt, no batching, not a production
+  benchmark.
+- 168 tests; `docs/LOCAL_ASSISTANT.md`, `research/SPIKING_REPLAY.md`,
   `research/SPIKING_REPLAY_ROLLBACK.md`, `research/SPIKING_REPLAY_EWC_21M.md`,
   `research/SPIKING_LONG_REPLAY.md`, `research/SPIKING_SEMANTIC.md`,
   `research/SPIKING_FEEDBACK.md`, `research/SPIKING_BINDING.md`,

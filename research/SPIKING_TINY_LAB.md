@@ -176,6 +176,22 @@ The caveats still apply: synthetic data, target bpb 0.59-0.72 is near
 memorization, one model size (21M), repetitive samples, and no packaging or
 licence/model card yet.
 
+## Efficiency
+
+Single-prompt generation, no batching (80 tokens on CUDA, 20 on CPU):
+
+| model | device | tokens/s | peak VRAM |
+|---|---|---:|---:|
+| 4.3M mix | CUDA | 1,171 | 24.8 MB |
+| 21M TinyStories | CUDA | 563 | 88.3 MB |
+| 21M story-safe | CUDA | 523 | 88.3 MB |
+| 4.3M mix | CPU | 730 | - |
+| 21M TinyStories | CPU | 204 | - |
+
+This is the small-model value: the 4.3M model runs at >700 tokens/s on CPU and
+uses <25 MB of VRAM in this probe. It is not a production benchmark (short
+generation, one prompt, no batching).
+
 ## Release gate (two tracks)
 
 - **General/fact Tiny Lab:** **BLOCKED** (domain ingest: old +3.29%, WikiText
