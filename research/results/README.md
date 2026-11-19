@@ -122,6 +122,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_story_seedcheck.json` | two corpora x two seeds | target -67 to -71%; TS +4.1-4.4%; WT -13.2-13.6%; PASS narrow story lab |
 | `spiking_realstory_seedcheck.json` | `research/eval_real_story_gate.py` | real Alice/Oz, two seeds: target -11.7/-11.8%, TS +3.5%, WT -14.0%; generation alpha fails (0.534/0.259); BLOCKED |
 | `spiking_chat_tr_smoke.json` | `research/chat_eval.py` | Turkish-first 21M, 500 steps: chat 2.688 / wiki 2.918 / stories 2.820 bpb; Turkish fragments only |
+| `spiking_chat_en_21m.json` | `research/chat_eval.py --lang en` | English-first 21M, 12k steps: chat 2.377 / wiki 2.811 / stories 2.115 bpb; alpha min 0.331, 3/12 tag leaks; BLOCKED |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `crypto_sma_sweep.json` | `research/crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200: SMA-50 30.5x/35.9x vs buy-hold 10.8x/9.4x; other windows fail; TREND_CANDIDATE |

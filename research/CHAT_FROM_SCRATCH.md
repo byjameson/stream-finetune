@@ -72,23 +72,40 @@ state step 4. A long run can therefore be split into 2-4 hour sessions; the
 machine does not need to stay on for days. The current 21M/24.6M-token run is
 only ~2 hours, so it does not need fragmentation.
 
-### Pause state
+### 21M final result (BLOCKED)
 
-The English 21M run was paused after **step 2000 / 12000**:
+The run was paused at step 2000 and resumed to **step 12000** with the same
+cosine schedule and optimizer state. Final fixed-window evaluation:
 
-- train loss 6.70, chat bpb **2.539**, step time ~0.62 s;
-- checkpoint and optimizer state saved in
-  `checkpoints/spiking_chat_en_21m/`;
-- GPU released.
+| shard | bpb |
+|---|---:|
+| chat valid | **2.377** |
+| Wikipedia | 2.811 |
+| TinyStories | 2.115 |
 
-Resume tomorrow with:
+- chat bpb passes the 2.5 smoke threshold (2.539 -> 2.377);
+- generation gate **fails**: minimum alpha **0.331**, and **3/12** samples leak
+  `<|assistant|>`;
+- samples are word salad with math/code fragments, not answers.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en.ps1
+Examples:
+
+```text
+the_) = an_n of and number function the. the, and a number we of are the,
+in function the( the the( of( +11. 2,n_2(( 2)2)) 1, the, 21, 5 61(,, 6 30
 ```
 
-The script reads the saved step, computes the remaining steps, and resumes with
-the same cosine schedule. About 10k steps remain (~2-2.5 h).
+```text
+a aing of and with I of, to the in, with a or of, the: your, your a is-
+is. are your's a the that your- is", that the your. to have be to you you
+```
+
+Verdict: **BLOCKED**. The 21M model learns token statistics but not turn-level
+chat. The broad corpus (especially math/code-heavy SmolTalk) makes it imitate
+fragments of prompts and equations. Next: 50M/300M-token run, and a cleaner
+dialogue-only mix before spending more compute.
+
+Evidence: `research/results/spiking_chat_en_21m.json`.
 
 ## Evaluation
 
@@ -119,8 +136,10 @@ commands fail.
 
 ## Quality expectation
 
-- 21M / 24.6M tokens: short fragments and simple patterns, not a chatbot.
-- 50M / 300M tokens: short, semi-fluent English on narrow topics.
+- **21M / 24.6M tokens: BLOCKED.** It learns token statistics and produces
+  word salad, not chat.
+- 50M / 300M tokens: unknown; the next controlled test. Use a cleaner
+  dialogue-heavy mix rather than the broad SmolTalk/UltraChat mixture.
 - 100M+ / 1B+ tokens: more fluent, but days-to-weeks on a 6 GB GPU.
 
 The virtual-human layer (memory, tasks, tools) must carry facts and actions;

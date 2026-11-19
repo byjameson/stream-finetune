@@ -1,0 +1,200 @@
+{
+  "tag": "chat_en_21m_12k",
+  "lang": "en",
+  "model": "checkpoints/spiking_chat_en_21m",
+  "config": {
+    "vocab": 8192,
+    "dim": 1024,
+    "layers": 2,
+    "mode": "spike",
+    "adapt": 0.1,
+    "feedback": false,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": false,
+    "slots": 0,
+    "slot_heads": 1,
+    "slot_attr_keys": false,
+    "slot_conj": false,
+    "slot_factorized": false,
+    "query_color_copy": false,
+    "color_copy_init": 1.0,
+    "learned_boundaries": false,
+    "raw_boundaries": false,
+    "category_states": false,
+    "name_ids": [],
+    "color_ids": [],
+    "object_ids": [],
+    "write_token": -1,
+    "read_token": -1,
+    "mem_decay": 0.5,
+    "mem_read_pos": -1,
+    "dropout": 0.0,
+    "decay_syn": 0.9,
+    "decay_mem": 0.9,
+    "decay_out": 0.9,
+    "decay_trace": 0.9,
+    "threshold": 0.5,
+    "alpha": 4.0
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 6.436481475830078,
+      "ppl": 624.2066452644524,
+      "bpb": 2.3767396172459216,
+      "tokens": 8192,
+      "bytes": 32006
+    },
+    "wiki": {
+      "loss": 6.899024665355682,
+      "ppl": 991.3073875092011,
+      "bpb": 2.8106350085624507,
+      "tokens": 8192,
+      "bytes": 29010
+    },
+    "stories": {
+      "loss": 5.756958782672882,
+      "ppl": 316.3846697723993,
+      "bpb": 2.114718405578933,
+      "tokens": 8192,
+      "bytes": 32174
+    },
+    "mixed": {
+      "loss": 6.430258572101593,
+      "ppl": 620.3343284278608,
+      "bpb": 2.3773385817352217,
+      "tokens": 8192,
+      "bytes": 31967
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": false,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "ing the and the is the of the it of to..  and the",
+      "chars": 49,
+      "alpha": 0.6939,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "hello",
+      "text": "the_) = an_n of and number function the. the, and a number we of are the, in function the( the the( of( +11. 2,n_2(( 2)2)) 1, the, 21, 5 61(,, 6 30 and,, 6 are 3,., *,s 7,,.",
+      "chars": 173,
+      "alpha": 0.4798,
+      "turkish_chars": 0,
+      "repeat3": 0.027,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "a aing of and with I of, to the in, with a or of, the: your, your a is- is. are your's a the that your- is\", that the your. to have be to you you it and your the you. a's should that your to and a're you with is. your your you a you your your you your you. I",
+      "chars": 258,
+      "alpha": 0.6977,
+      "turkish_chars": 0,
+      "repeat3": 0.0159,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "a, the of. is\", the of a the thes the of of the, it a and be a the.ed the the is of of the the and to are is and. to The",
+      "chars": 120,
+      "alpha": 0.675,
+      "turkish_chars": 0,
+      "repeat3": 0.0312,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "the and a.ing ofing the a \" Thee\" in. The was, the to the's the a for,, the,, the the the,. the of is the of that of and, of and.",
+      "chars": 129,
+      "alpha": 0.6589,
+      "turkish_chars": 0,
+      "repeat3": 0.0667,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": ",ing Can I a a my an andin a to the I of it in I from about the.\".! I  of I is my's! that a of was've is be of.. a I, I I on the the but my I the of to I our a I. you I you a and my I I. I it, we it have to my her",
+      "chars": 213,
+      "alpha": 0.6338,
+      "turkish_chars": 0,
+      "repeat3": 0.0312,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "the I is- as. of of of- the. ()0.::x, has $ the)s (00,(02 =2) +8000 $13$ +.36 the $ ${ $$frac$ $9 +, $$.$ $$.4 $ -$$ = $ $$,$.$ Therefore is is the: $ the",
+      "chars": 154,
+      "alpha": 0.3312,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "an for ins the thes, that a a least,'s the the a by of and and to are a.. is's: the an: the, of: the's: the:, of and for is your and the of. We. a iss the is the is are.. the in a of are the a the.. we of it the your and.",
+      "chars": 221,
+      "alpha": 0.6561,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "'sing and to a at a by. of., is the a of with:,. the a ' of the, is a. a, the of and with,, on the, to a of, at the, and, a,,ed and the,s wased. The. the in the the: an of and, on The, of, a an,",
+      "chars": 194,
+      "alpha": 0.6082,
+      "turkish_chars": 0,
+      "repeat3": 0.0204,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "my of and the\" the, with as in of that the. in was Iing on the the- of, of, and the a as in. thated my, of to the foring of is the and the the, the the that of that the a the I. be a the you the \" the a a\"\" the the, a in the the \" and\" and",
+      "chars": 239,
+      "alpha": 0.6736,
+      "turkish_chars": 0,
+      "repeat3": 0.0847,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "can in an to,, to tos a aers of of., can a the and your a the ( of 3. =/) The is the it the $ the, A the the the the the is a of of and. of are that the is and be you is as the. to is is The, of that is the the. can to which the have first:",
+      "chars": 240,
+      "alpha": 0.6625,
+      "turkish_chars": 0,
+      "repeat3": 0.0333,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "ed, that the on of and from., to a: the, the of of ofing of is as your and 3, 1 (. 22 is is for) the a it, is is is, the of is of or is. of (,. is is - that bes( to,2 ())2 can 0 0) the1 ( 1 the).x",
+      "chars": 196,
+      "alpha": 0.551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    }
+  ]
+}
