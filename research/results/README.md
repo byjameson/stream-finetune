@@ -120,6 +120,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_space_safe2.json` | `research/check_story_gate.py` | safe 70% replay: target 2.19 -> 0.72; TS +4.1%, WT -13.4%; PASS narrow story lab |
 | `spiking_nova_safe.json` | same recipe, second corpus | target 2.05 -> 0.60; TS +4.4%, WT -13.6%; PASS narrow story lab |
 | `spiking_story_seedcheck.json` | two corpora x two seeds | target -67 to -71%; TS +4.1-4.4%; WT -13.2-13.6%; PASS narrow story lab |
+| `spiking_realstory_seedcheck.json` | `research/eval_real_story_gate.py` | real Alice/Oz, two seeds: target -11.7/-11.8%, TS +3.5%, WT -14.0%; generation alpha fails (0.534/0.259); BLOCKED |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `spiking_nova_generations.json` | `research/generate_nova_demo.py` | Nova before/after samples + alpha/format metrics |
 | `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |

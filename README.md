@@ -593,11 +593,15 @@ a 20M TinyStories + 5M WikiText old mix, LR 5e-5, 120 steps) gives target
 **2.19 -> 0.72**, TinyStories **+4.1%**, WikiText **-13.4%**. A second corpus
 (Nova) replicates it: target **2.05 -> 0.60**, TinyStories **+4.4%**, WikiText
 **-13.6%**. A second seed per corpus also replicates (TinyStories +4.1-4.4%,
-WikiText -13.2-13.6%). The **narrow story-lab gate** passes on two corpora and
-two seeds. A small-model efficiency probe: 4.3M runs at **1,171 tok/s** on CUDA
-and **730 tok/s** on CPU with **24.8 MB** peak VRAM; 21M runs at 563/204 tok/s
-with 88.3 MB. This is not a general model; packaging/licence/model card are
-still missing.
+WikiText -13.2-13.6%). The **narrow story-lab gate** passes on two synthetic
+corpora and two seeds. **The real public-domain cross-book test fails**:
+Alice-train -> Oz-valid passes bpb (target **-11.7%**, TinyStories **+3.5%**,
+WikiText **-14.0%**) but generation alpha collapses on `Dorothy opened the
+door` (min **0.534** seed 0, **0.259** seed 1, versus base 0.727-0.751). Gate
+**BLOCKED**; the synthetic pass does not generalize to real text. A small-model
+efficiency probe: 4.3M runs at **1,171 tok/s** on CUDA and **730 tok/s** on CPU
+with **24.8 MB** peak VRAM; 21M runs at 563/204 tok/s with 88.3 MB. This is not
+a general model; packaging/licence/model card are still missing.
 [`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows

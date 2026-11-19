@@ -47,8 +47,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   target 2.19 -> 0.72, TinyStories +4.1%, WikiText -13.4%. A second corpus
   (Nova) replicates: 2.05 -> 0.60, +4.4%, -13.6%. A second seed per corpus also
   replicates (+4.1-4.4% TS, -13.2-13.6% WT). The narrow story-lab gate passes on
-  two corpora and two seeds. Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 CPU,
-  24.8 MB peak VRAM; 21M 563/204 tok/s, 88.3 MB. Model card:
+  two synthetic corpora and two seeds. **Real public-domain cross-book check
+  fails**: Alice-train -> Oz-valid gets target -11.7%, TS +3.5%, WT -14.0%,
+  but generation alpha drops to 0.534 (seed 0) and 0.259 (seed 1) on
+  `Dorothy opened the door`; gate BLOCKED. Efficiency probe: 4.3M 1,171 tok/s
+  CUDA / 730 CPU, 24.8 MB peak VRAM; 21M 563/204 tok/s, 88.3 MB. Model card:
   [`../docs/TINY_STORY_LAB.md`](../docs/TINY_STORY_LAB.md); demo:
   `scripts/story_lab_demo.ps1`; local HTTP server verified (`/health` 200,
   `/generate` 200, alpha 0.708). Still not a general model.
@@ -237,7 +240,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `check_release_gate.py` | hard bpb + generation release gate for the Tiny Spiking Lab | ~2 min |
 | `make_space_stories.py` | synthetic Zeta story corpus for the story-style ingest demo | ~1 s |
 | `generate_space_demo.py` | before/after space-style samples + alpha/replacement metrics | ~1 min |
-| `check_story_gate.py` | narrow story-lab release gate on both story corpora | ~1 s |
+| `check_story_gate.py` | narrow story-lab release gate on both synthetic story corpora | ~1 s |
+| `make_real_story_corpus.py` | Alice/Oz public-domain train/valid passages from GITenberg | ~1 min |
+| `eval_real_story_gate.py` | real-corpus 2-seed bpb + generation gate (currently BLOCKED) | ~3 min |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
 | `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |

@@ -176,6 +176,34 @@ The caveats still apply: synthetic data, target bpb 0.59-0.72 is near
 memorization, one model size (21M), repetitive samples, and no packaging or
 licence/model card yet.
 
+### Real public-domain corpus: cross-book test (negative)
+
+The synthetic pass does **not** generalize to real text. The same recipe was
+run on Project Gutenberg books:
+
+- train: 200 passages from *Alice's Adventures in Wonderland*;
+- valid: 100 held-out passages from *The Wonderful Wizard of Oz* (a different
+  book, not seen in training);
+- same 120 steps, batch 16, LR 5e-5, 70% replay, two seeds.
+
+| seed | target bpb | TinyStories | WikiText | generation alpha |
+|---:|---|---:|---:|---|
+| 0 | 2.733 -> **2.414** (-11.7%) | +3.54% | -13.98% | 8/9 >= 0.60; min **0.534** |
+| 1 | 2.733 -> **2.411** (-11.8%) | +3.47% | -14.14% | 7/9 >= 0.60; min **0.259** |
+
+The bpb gate passes, but the generation gate fails. On the cross-book prompt
+`Dorothy opened the door`, seed 0 emits a punctuation/spacing loop
+(alpha 0.534); seed 1 emits two degenerate samples (alpha 0.259 and 0.394).
+The base model is fine on the same prompt (alpha 0.727-0.751), so the
+regression is caused by the adaptation, not the prompt or tokenizer.
+Server-style decoding (temp 0.5 / top-k 10 / repetition penalty 1.1) does not
+fix it.
+
+Verdict: **BLOCKED**. Real-corpus bpb improvement does not imply usable
+generation, and cross-book generalization is not supported. Evidence:
+`research/results/spiking_realstory_seedcheck.json`. The synthetic story-lab
+pass remains valid only for the synthetic corpora and the narrow gate.
+
 ## Efficiency
 
 Single-prompt generation, no batching (80 tokens on CUDA, 20 on CPU):
@@ -212,9 +240,12 @@ This is a local demo, not a public deployment.
 
 - **General/fact Tiny Lab:** **BLOCKED** (domain ingest: old +3.29%, WikiText
   +7.1%, generation garbage).
-- **Narrow story-style lab:** **PASS_NARROW_STORY_LAB** with the safe recipe
-  above, but packaging/licence/model card and more seeds/corpora are still
-  required before a public release.
+- **Narrow story-style lab:** **PASS_NARROW_STORY_LAB** on the synthetic
+  Zeta/Nova corpora with the safe recipe above. **BLOCKED on real public-domain
+  cross-book text** (Alice train -> Oz valid): bpb passes but generation alpha
+  collapses, so the synthetic pass is not evidence of real-corpus
+  generalization. Packaging/licence/model card are still required before any
+  release.
 
 The old release-gate text below applies to the general track:
 
