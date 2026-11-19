@@ -111,7 +111,11 @@
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
-- 182 tests;
+- Short-term BTC paper test (15m, 1% TP / 1% SL, 0.75 position, 2024+):
+  momentum 32.98%, mean-reversion 38.85%, breakout 32.79%, random 32.79% win;
+  all negative after 0.10% fee + 0.05% slippage. Break-even win rate is 62.5%;
+  verdict NO_EDGE.
+- 183 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
