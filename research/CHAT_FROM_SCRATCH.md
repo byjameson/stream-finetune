@@ -109,8 +109,24 @@ all settings collapse into function-word loops (`a of the of a ...`). The
 problem is the model/data, not the sampler.
 
 Evidence: `research/results/spiking_chat_en_21m.json` and
-`research/results/spiking_chat_en_sampling.json`. Next: a cleaner
-dialogue-heavy mix and/or a 50M/100M-token run before spending more compute.
+`research/results/spiking_chat_en_sampling.json`.
+
+### Clean-data control (running)
+
+The next run changes **only the data mix**, not the tokenizer, model size or
+schedule:
+
+- `research/make_chat_corpus_clean.py` filters out code/math markers and
+  low-alpha messages, then mixes SmolTalk-curated, everyday conversations,
+  filtered UltraChat, OASST2, Dolly, synthetic memory/task dialogues and
+  TinyStories;
+- 26.98M training tokens, 497k chat-valid tokens;
+- same 21M, 8k tokenizer, 12k steps, batch 16, seq 128, LR 5e-4.
+
+If generation improves, data quality was a major factor; if it stays word
+salad, the bottleneck is token/parameter scale or the architecture, and the
+next run is 50M/100M tokens. Evidence will be
+`research/results/spiking_chat_en_clean_21m.json`.
 
 ## Evaluation
 
