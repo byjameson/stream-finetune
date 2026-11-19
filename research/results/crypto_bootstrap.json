@@ -1,0 +1,187 @@
+{
+  "costs": {
+    "fee_per_side": 0.001,
+    "slippage_per_side": 0.0005
+  },
+  "bootstrap": {
+    "block_days": 30,
+    "samples": 2000
+  },
+  "assets": {
+    "BTCUSDT": {
+      "days": 2918,
+      "bootstrap": {
+        "strat_total_p5": 3.186595907997727,
+        "strat_total_p50": 39.29269436569369,
+        "strat_total_p95": 490.7754665517648,
+        "bh_total_p50": 19.07515397422035,
+        "p_strat_beats_bh": 0.7355,
+        "strat_sharpe_p50": 1.2917895155663817,
+        "bh_sharpe_p50": 0.9249503550144604,
+        "p_strat_sharpe_beats_bh": 0.9275
+      },
+      "start_dates": [
+        {
+          "start": "2018-01-01",
+          "days": 2918,
+          "strat_return": 39.45446047925613,
+          "bh_return": 13.292595365797943,
+          "strat_sharpe": 1.2934700715846807,
+          "bh_sharpe": 0.8529835758997798,
+          "strat_max_dd": -0.5847134577666553,
+          "bh_max_dd": -0.7662925431645934,
+          "strat_wins": true
+        },
+        {
+          "start": "2019-01-01",
+          "days": 2879,
+          "strat_return": 39.45446047925613,
+          "bh_return": 15.639362783568636,
+          "strat_sharpe": 1.3022419441777355,
+          "bh_sharpe": 0.8941095006136899,
+          "strat_max_dd": -0.5847134577666553,
+          "bh_max_dd": -0.7662925431645935,
+          "strat_wins": true
+        },
+        {
+          "start": "2020-01-01",
+          "days": 2514,
+          "strat_return": 21.412235488667257,
+          "bh_return": 7.774240541047229,
+          "strat_sharpe": 1.3038965503267081,
+          "bh_sharpe": 0.8321722924988412,
+          "strat_max_dd": -0.5847134577666555,
+          "bh_max_dd": -0.7662925431645935,
+          "strat_wins": true
+        },
+        {
+          "start": "2021-01-01",
+          "days": 2148,
+          "strat_return": 4.373842732841762,
+          "bh_return": 1.1540521531490322,
+          "strat_sharpe": 0.9275902773455132,
+          "bh_sharpe": 0.5132277241081732,
+          "strat_max_dd": -0.5847134577666555,
+          "bh_max_dd": -0.766292543164594,
+          "strat_wins": true
+        },
+        {
+          "start": "2022-01-01",
+          "days": 1783,
+          "strat_return": 1.4252714417207808,
+          "bh_return": 0.32394135698667337,
+          "strat_sharpe": 0.7144329940899641,
+          "bh_sharpe": 0.3658739386331584,
+          "strat_max_dd": -0.5115447996393018,
+          "bh_max_dd": -0.6673056490171774,
+          "strat_wins": true
+        },
+        {
+          "start": "2023-01-01",
+          "days": 1418,
+          "strat_return": 3.9001452559599485,
+          "bh_return": 2.8023073103946468,
+          "strat_sharpe": 1.3757967060937986,
+          "bh_sharpe": 0.9737696411733286,
+          "strat_max_dd": -0.26791679568518323,
+          "bh_max_dd": -0.5297176591351063,
+          "strat_wins": true
+        }
+      ]
+    },
+    "ETHUSDT": {
+      "days": 2918,
+      "bootstrap": {
+        "strat_total_p5": 0.8452713200090041,
+        "strat_total_p50": 29.61128001781385,
+        "strat_total_p95": 679.4522555144495,
+        "bh_total_p50": 19.433900683997486,
+        "p_strat_beats_bh": 0.6035,
+        "strat_sharpe_p50": 1.037389132993086,
+        "bh_sharpe_p50": 0.8763691565892042,
+        "p_strat_sharpe_beats_bh": 0.731
+      },
+      "start_dates": [
+        {
+          "start": "2018-01-01",
+          "days": 2918,
+          "strat_return": 31.385991628135166,
+          "bh_return": 13.243001119820812,
+          "strat_sharpe": 1.0484071587805568,
+          "bh_sharpe": 0.820658775147076,
+          "strat_max_dd": -0.5518634048452067,
+          "bh_max_dd": -0.7930253453633336,
+          "strat_wins": true
+        },
+        {
+          "start": "2019-01-01",
+          "days": 2879,
+          "strat_return": 33.23510276546765,
+          "bh_return": 11.801294033069757,
+          "strat_sharpe": 1.0690318824096041,
+          "bh_sharpe": 0.8100336828967011,
+          "strat_max_dd": -0.5518634048452058,
+          "bh_max_dd": -0.7930253453633336,
+          "strat_wins": true
+        },
+        {
+          "start": "2020-01-01",
+          "days": 2514,
+          "strat_return": 34.098735312551696,
+          "bh_return": 12.616731666284299,
+          "strat_sharpe": 1.1960928624547627,
+          "bh_sharpe": 0.8799508460128989,
+          "strat_max_dd": -0.5518634048452065,
+          "bh_max_dd": -0.7930253453633336,
+          "strat_wins": true
+        },
+        {
+          "start": "2021-01-01",
+          "days": 2148,
+          "strat_return": 8.337337038941266,
+          "bh_return": 1.4429079035820442,
+          "strat_sharpe": 0.9776564576975796,
+          "bh_sharpe": 0.580597875970027,
+          "strat_max_dd": -0.5518634048452058,
+          "bh_max_dd": -0.7930253453633336,
+          "strat_wins": true
+        },
+        {
+          "start": "2022-01-01",
+          "days": 1783,
+          "strat_return": 2.029917230219124,
+          "bh_return": -0.5271169606484083,
+          "strat_sharpe": 0.7395232191011103,
+          "bh_sharpe": 0.11623219242678144,
+          "strat_max_dd": -0.3788089712831998,
+          "bh_max_dd": -0.7400575194539575,
+          "strat_wins": true
+        },
+        {
+          "start": "2023-01-01",
+          "days": 1418,
+          "strat_return": 3.380214054157121,
+          "bh_return": 0.48346301881133824,
+          "strat_sharpe": 1.0900102349471839,
+          "bh_sharpe": 0.47242831981568467,
+          "strat_max_dd": -0.3788089712831998,
+          "bh_max_dd": -0.675534501776671,
+          "strat_wins": true
+        }
+      ]
+    }
+  },
+  "summary": {
+    "btc_p_beats_bh": 0.7355,
+    "eth_p_beats_bh": 0.6035,
+    "start_date_wins": 12,
+    "start_date_total": 12
+  },
+  "verdict": "FRAGILE",
+  "caveats": [
+    "block bootstrap assumes a stationary return process",
+    "one history, two assets, no order book or funding",
+    "SMA-50 was chosen after looking at the same history",
+    "not financial advice; no orders were placed"
+  ]
+}

@@ -60,6 +60,22 @@ out-of-sample days).
   the edge is regime-dependent.
 - Verdict: **TREND_CANDIDATE**, not a deployable strategy.
 
+## Bootstrap and start-date robustness
+
+`research/crypto_bootstrap.py` uses a 30-day block bootstrap (2,000 samples) and
+six overlapping start dates (2018-2023).
+
+| asset | P(strategy > buy-hold) | P(strategy Sharpe > buy-hold) | start-date wins |
+|---|---:|---:|---:|
+| BTC | 0.736 | 0.928 | 6/6 |
+| ETH | 0.604 | 0.731 | 6/6 |
+
+- The start-date table looks perfect, but the windows overlap heavily and are
+  not independent.
+- The bootstrap probability that the strategy beats buy-and-hold is only
+  **0.60-0.74**, not the 0.90+ needed for a robust claim.
+- Verdict: **FRAGILE**. The SMA-50 result is a candidate, not a proven edge.
+
 ## What this means for the spiking model
 
 - The chat model has no price input and no risk model; it cannot trade.
@@ -70,9 +86,9 @@ out-of-sample days).
 
 ## Next experiments
 
-1. Bootstrap confidence intervals and start-date sensitivity.
-2. Forward paper-trading ledger with daily marks, no exchange credentials.
-3. Add order-book/funding data and execution-at-next-open instead of
+1. Forward paper-trading ledger with daily marks, no exchange credentials.
+2. Add order-book/funding data and execution-at-next-open instead of
    close-only.
+3. Test whether text/news features add anything beyond the trend rule.
 4. Only if a robust edge survives: a tiny risk-managed allocation, still
    paper-only until reviewed.

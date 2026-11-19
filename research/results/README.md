@@ -127,6 +127,7 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `crypto_sma_sweep.json` | `research/crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200: SMA-50 30.5x/35.9x vs buy-hold 10.8x/9.4x; other windows fail; TREND_CANDIDATE |
+| `crypto_bootstrap.json` | `research/crypto_bootstrap.py` | 30-day block bootstrap: P(SMA-50 > buy-hold) 0.736 BTC / 0.604 ETH; FRAGILE |
 | `spiking_nova_generations.json` | `research/generate_nova_demo.py` | Nova before/after samples + alpha/format metrics |
 | `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
