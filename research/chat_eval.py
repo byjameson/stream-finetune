@@ -22,16 +22,21 @@ TURKISH = set("çğıöşüÇĞİÖŞÜ")
 
 def chat_generate(model, tok, user: str, max_new_tokens: int = 80,
                   temperature: float = 0.8, top_k: int = 40,
-                  repetition_penalty: float = 1.1) -> str:
+                  repetition_penalty: float = 1.1,
+                  device=None) -> tuple[str, str]:
+    dev = device or DEVICE
     end_id = tok.token_to_id("<|end|>")
+    user_id = tok.token_to_id("<|user|>")
+    assistant_id = tok.token_to_id("<|assistant|>")
     prompt = f"<|user|> {user}<|end|><|assistant|>"
     ids = tok.encode(prompt).ids
-    state = model.init_state(1, DEVICE)
+    state = model.init_state(1, dev)
     last = None
     for tid in ids:
-        last, state = model.step(torch.tensor([tid], device=DEVICE), state)
+        last, state = model.step(torch.tensor([tid], device=dev), state)
     seen = set(ids)
     out = []
+    stop = "max"
     for _ in range(max_new_tokens):
         assert last is not None
         logits = last[0].float().clone()
@@ -50,15 +55,19 @@ def chat_generate(model, tok, user: str, max_new_tokens: int = 80,
         probs = torch.softmax(logits, dim=-1)
         nxt = int(torch.multinomial(probs, 1).item())
         if nxt == end_id:
+            stop = "end"
+            break
+        if nxt in (user_id, assistant_id):
+            stop = "tag"
             break
         out.append(nxt)
         seen.add(nxt)
-        last, state = model.step(torch.tensor([nxt], device=DEVICE), state)
+        last, state = model.step(torch.tensor([nxt], device=dev), state)
     text = tok.decode(out, skip_special_tokens=False)
-    return text.strip()
+    return text.strip(), stop
 
 
-def metrics(text: str) -> dict:
+def metrics(text: str, stop: str) -> dict:
     words = re.findall(r"\w+", text.lower())
     trigrams = list(zip(words, words[1:], words[2:]))
     repeat = (1 - len(set(trigrams)) / len(trigrams)) if trigrams else 0.0
@@ -69,7 +78,8 @@ def metrics(text: str) -> dict:
                        / max(len(text), 1), 4),
         "turkish_chars": sum(c in TURKISH for c in text),
         "repeat3": round(repeat, 4),
-        "tag_leak": text.count("<|"),
+        "stop": stop,
+        "tag_leak": int(stop == "tag" or "<|" in text),
     }
 
 
@@ -119,10 +129,16 @@ def main():
     for i, prompt in enumerate(prompts):
         for j in range(args.samples):
             torch.manual_seed(1000 + i * 10 + j)
-            text = chat_generate(model, tok, prompt)
-            rec = {"prompt": prompt, **metrics(text)}
+            text, stop = chat_generate(model, tok, prompt)
+            rec = {"prompt": prompt, **metrics(text, stop)}
             samples.append(rec)
 
+    gate = {
+        "chat_bpb_below_2_5": evals["chat"]["bpb"] < 2.5,
+        "samples_nonempty": all(s["chars"] > 0 for s in samples),
+        "alpha_at_least_0_5": all(s["alpha"] >= 0.5 for s in samples),
+        "no_tag_leak": all(s["tag_leak"] == 0 for s in samples),
+    }
     payload = {
         "tag": args.tag or Path(args.model).name,
         "lang": args.lang,
@@ -130,6 +146,8 @@ def main():
         "config": model.config.__dict__,
         "step": meta.get("step"),
         "bpb": evals,
+        "gate": gate,
+        "verdict": "PASS_CHAT_SMOKE" if all(gate.values()) else "BLOCKED",
         "samples": samples,
     }
     out = ROOT / args.out
