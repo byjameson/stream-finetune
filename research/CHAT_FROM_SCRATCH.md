@@ -111,9 +111,9 @@ problem is the model/data, not the sampler.
 Evidence: `research/results/spiking_chat_en_21m.json` and
 `research/results/spiking_chat_en_sampling.json`.
 
-### Clean-data control (running)
+### Clean-data control (BLOCKED)
 
-The next run changes **only the data mix**, not the tokenizer, model size or
+The clean run changes **only the data mix**, not the tokenizer, model size or
 schedule:
 
 - `research/make_chat_corpus_clean.py` filters out code/math markers and
@@ -123,10 +123,22 @@ schedule:
 - 26.98M training tokens, 497k chat-valid tokens;
 - same 21M, 8k tokenizer, 12k steps, batch 16, seq 128, LR 5e-4.
 
-If generation improves, data quality was a major factor; if it stays word
-salad, the bottleneck is token/parameter scale or the architecture, and the
-next run is 50M/100M tokens. Evidence will be
-`research/results/spiking_chat_en_clean_21m.json`.
+Final fixed-window evaluation on the clean validation shard:
+
+| shard | bpb |
+|---|---:|
+| clean chat valid | **2.199** |
+| Wikipedia (general) | 2.925 |
+| clean TinyStories | 2.187 |
+
+- minimum sample alpha is **0.608** (all samples pass the 0.5 alpha floor);
+- **5/12** samples still leak `<|assistant|>`;
+- samples are still word salad, just less math/code-heavy;
+- verdict: **BLOCKED**.
+
+Data cleaning improved the surface metrics but did not produce turn-level chat.
+The remaining bottleneck is token/parameter scale or the architecture, not the
+math/code filter. Evidence: `research/results/spiking_chat_en_clean_21m.json`.
 
 ## Evaluation
 

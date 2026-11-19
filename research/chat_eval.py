@@ -89,6 +89,10 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--tag", default="")
     ap.add_argument("--lang", choices=["tr", "en"], default="en")
+    ap.add_argument("--chat-valid", default="")
+    ap.add_argument("--wiki-valid", default="")
+    ap.add_argument("--stories-valid", default="")
+    ap.add_argument("--mixed-valid", default="")
     ap.add_argument("--samples", type=int, default=2)
     args = ap.parse_args()
 
@@ -98,10 +102,10 @@ def main():
                else "data/stories_en_valid_en.pt")
     evals = {}
     for name, rel in {
-        "chat": f"data/chat_{args.lang}_valid.pt",
-        "wiki": f"data/wiki_{args.lang}_valid.pt",
-        "stories": stories,
-        "mixed": f"data/chat_{args.lang}_valid_mixed.pt",
+        "chat": args.chat_valid or f"data/chat_{args.lang}_valid.pt",
+        "wiki": args.wiki_valid or f"data/wiki_{args.lang}_valid.pt",
+        "stories": args.stories_valid or stories,
+        "mixed": args.mixed_valid or f"data/chat_{args.lang}_valid_mixed.pt",
     }.items():
         tokens = load_tokens(str(ROOT / rel))
         batches = fixed_windows(tokens, 128, 8, 8, 0, DEVICE)
