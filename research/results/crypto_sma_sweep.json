@@ -1,0 +1,147 @@
+{
+  "costs": {
+    "fee_per_side": 0.001,
+    "slippage_per_side": 0.0005
+  },
+  "train_days": 365,
+  "assets": {
+    "BTCUSDT": {
+      "rows": 3133,
+      "start": "2018-04-22 00:00:00+00:00",
+      "end": "2026-11-18 00:00:00+00:00",
+      "results": [
+        {
+          "label": "sma20",
+          "test_days": 2768,
+          "total_return": 5.0037840813303225,
+          "buy_hold_return": 10.772740678795028,
+          "cagr": 0.2666200801398495,
+          "sharpe": 0.7735083035390503,
+          "max_drawdown": -0.6804799329935152,
+          "buy_hold_max_drawdown": -0.7662925431645934,
+          "first_half_return": 2.9549359504461217,
+          "second_half_return": 0.5180483720989455,
+          "exposure": 0.5267341040462428,
+          "trades": 320
+        },
+        {
+          "label": "sma50",
+          "test_days": 2768,
+          "total_return": 30.50677952285538,
+          "buy_hold_return": 10.772740678795028,
+          "cagr": 0.5761073321346366,
+          "sharpe": 1.2724234075824947,
+          "max_drawdown": -0.5847134577666555,
+          "buy_hold_max_drawdown": -0.7662925431645934,
+          "first_half_return": 7.887694913617656,
+          "second_half_return": 2.544988867088696,
+          "exposure": 0.5437138728323699,
+          "trades": 146
+        },
+        {
+          "label": "sma100",
+          "test_days": 2768,
+          "total_return": 19.060717837513618,
+          "buy_hold_return": 10.772740678795028,
+          "cagr": 0.4850217881038754,
+          "sharpe": 1.1190234045519987,
+          "max_drawdown": -0.3880031934215177,
+          "buy_hold_max_drawdown": -0.7662925431645934,
+          "first_half_return": 7.40558740716577,
+          "second_half_return": 1.3865932106555552,
+          "exposure": 0.5733381502890174,
+          "trades": 98
+        },
+        {
+          "label": "sma200",
+          "test_days": 2768,
+          "total_return": 8.011720928938535,
+          "buy_hold_return": 10.772740678795028,
+          "cagr": 0.33630293292277,
+          "sharpe": 0.8669335091003861,
+          "max_drawdown": -0.6437996294227352,
+          "buy_hold_max_drawdown": -0.7662925431645934,
+          "first_half_return": 2.556342182629916,
+          "second_half_return": 1.533985895101456,
+          "exposure": 0.5964595375722543,
+          "trades": 62
+        }
+      ]
+    },
+    "ETHUSDT": {
+      "rows": 3133,
+      "start": "2018-04-22 00:00:00+00:00",
+      "end": "2026-11-18 00:00:00+00:00",
+      "results": [
+        {
+          "label": "sma20",
+          "test_days": 2768,
+          "total_return": 13.153863527216988,
+          "buy_hold_return": 9.422179216514191,
+          "cagr": 0.4182708203503984,
+          "sharpe": 0.8990712521099792,
+          "max_drawdown": -0.5539942388047099,
+          "buy_hold_max_drawdown": -0.7930253453633339,
+          "first_half_return": 13.30469221998388,
+          "second_half_return": -0.010544001258283364,
+          "exposure": 0.5054190751445087,
+          "trades": 288
+        },
+        {
+          "label": "sma50",
+          "test_days": 2768,
+          "total_return": 35.87338601857335,
+          "buy_hold_return": 9.422179216514191,
+          "cagr": 0.609138030955813,
+          "sharpe": 1.123754457247789,
+          "max_drawdown": -0.551863404845206,
+          "buy_hold_max_drawdown": -0.7930253453633339,
+          "first_half_return": 10.143872175068907,
+          "second_half_return": 2.308848615570678,
+          "exposure": 0.5321531791907514,
+          "trades": 144
+        },
+        {
+          "label": "sma100",
+          "test_days": 2768,
+          "total_return": 6.787669132922361,
+          "buy_hold_return": 9.422179216514191,
+          "cagr": 0.3108249581559266,
+          "sharpe": 0.760244661766177,
+          "max_drawdown": -0.7496963394904537,
+          "buy_hold_max_drawdown": -0.7930253453633339,
+          "first_half_return": 3.5853684604552916,
+          "second_half_return": 0.6983736857973448,
+          "exposure": 0.5653901734104047,
+          "trades": 120
+        },
+        {
+          "label": "sma200",
+          "test_days": 2768,
+          "total_return": 13.674523674822707,
+          "buy_hold_return": 9.422179216514191,
+          "cagr": 0.42504305472140347,
+          "sharpe": 0.8911617870823692,
+          "max_drawdown": -0.7382776461014582,
+          "buy_hold_max_drawdown": -0.7930253453633339,
+          "first_half_return": 7.527300172403219,
+          "second_half_return": 0.7208874295657712,
+          "exposure": 0.5664739884393064,
+          "trades": 48
+        }
+      ]
+    }
+  },
+  "summary": {
+    "sma50_beats_bh_btc": true,
+    "sma50_beats_bh_eth": true,
+    "sma50_beats_bh_both": true
+  },
+  "verdict": "TREND_CANDIDATE",
+  "caveats": [
+    "window sweep on one historical path; still in-sample selection",
+    "daily close-only execution; no order book or funding",
+    "long/flat only; fees and slippage included",
+    "not financial advice; no orders were placed"
+  ]
+}

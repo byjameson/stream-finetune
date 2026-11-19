@@ -96,7 +96,11 @@
   0.10% fee + 0.05% slippage. Ridge 8.80x vs buy-hold 8.50x but worse Sharpe;
   HGB 1.66x and logistic 1.56x. Only SMA-50 trend (36.0x, Sharpe 1.26) is a
   CHECK result, not an ML edge. One asset/one history; parameter sweep next.
-- 177 tests;
+- Crypto robustness: BTC+ETH SMA-20/50/100/200 sweep. SMA-50 beats buy-and-hold
+  on both (30.5x/35.9x vs 10.8x/9.4x), but SMA-20 loses on BTC and SMA-100/200
+  lose on ETH. Verdict TREND_CANDIDATE; not a deployable strategy. No real
+  money or API keys.
+- 178 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
