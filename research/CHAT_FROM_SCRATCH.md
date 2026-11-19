@@ -72,6 +72,24 @@ state step 4. A long run can therefore be split into 2-4 hour sessions; the
 machine does not need to stay on for days. The current 21M/24.6M-token run is
 only ~2 hours, so it does not need fragmentation.
 
+### Pause state
+
+The English 21M run was paused after **step 2000 / 12000**:
+
+- train loss 6.70, chat bpb **2.539**, step time ~0.62 s;
+- checkpoint and optimizer state saved in
+  `checkpoints/spiking_chat_en_21m/`;
+- GPU released.
+
+Resume tomorrow with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en.ps1
+```
+
+The script reads the saved step, computes the remaining steps, and resumes with
+the same cosine schedule. About 10k steps remain (~2-2.5 h).
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:
