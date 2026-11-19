@@ -3,7 +3,9 @@ from pathlib import Path
 
 import pytest
 import torch
-from tokenizers import Tokenizer
+
+pytest.importorskip("tokenizers")
+from tokenizers import Tokenizer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
