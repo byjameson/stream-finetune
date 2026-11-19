@@ -48,7 +48,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   (Nova) replicates: 2.05 -> 0.60, +4.4%, -13.6%. A second seed per corpus also
   replicates (+4.1-4.4% TS, -13.2-13.6% WT). The narrow story-lab gate passes on
   two corpora and two seeds. Efficiency probe: 4.3M 1,171 tok/s CUDA / 730 CPU,
-  24.8 MB peak VRAM; 21M 563/204 tok/s, 88.3 MB. Still not a general model.
+  24.8 MB peak VRAM; 21M 563/204 tok/s, 88.3 MB. Model card:
+  [`../docs/TINY_STORY_LAB.md`](../docs/TINY_STORY_LAB.md); demo:
+  `scripts/story_lab_demo.ps1`. Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
@@ -236,6 +238,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `generate_space_demo.py` | before/after space-style samples + alpha/replacement metrics | ~1 min |
 | `check_story_gate.py` | narrow story-lab release gate on both story corpora | ~1 s |
 | `bench_spiking.py` | generation tokens/s and peak VRAM for 4.3M/21M/story-safe models | ~1 min |
+| `make_old_mix_valid.py` | 50/50 TinyStories/WikiText old-validation shard for the story lab | ~1 min |
 | `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |
 | `generate_nova_demo.py` | before/after Nova samples + alpha/replacement metrics | ~1 min |
 | `make_mixed_corpus.py` | 16M-token TinyStories + WikiText training shard for the generative experiment | ~1 min |
