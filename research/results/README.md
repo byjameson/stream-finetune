@@ -112,6 +112,13 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_binding_paraphrase_curr_seed1.json` | same, `--seed 1` | negative: old name read 0.597, new/held ~1.000 |
 | `spiking_binding_paraphrase_curr50c_seed0.json` | 16-pair paraphrase, template curriculum + 50% replay | seed 0 phase-A old 0.576; negative seed sensitivity |
 | `spiking_binding_paraphrase_curr50c_seed1.json` | same, `--seed 1` | seed 1 old/new/held 1.000; seed-sensitive positive |
+| `spiking_generative_mix.json` | `research/eval_generative_mix.py` | TinyStories/WikiText/world-facts bpb for TS-only, mix, curriculum, scale runs |
+| `spiking_generative_samples.json` | `research/eval_generative_samples.py` | 10 models x 3 prompts; repetition/alpha metrics |
+| `spiking_generative_sampling.json` | `research/eval_generative_sampling.py` | loose/tight/tightest sampling sweep |
+| `spiking_domain_ingest.json` | `research/check_release_gate.py` | tiny lab domain ingest: target 5.99 -> 4.45; full old +3.29%, WT +7.1%; BLOCKED |
+| `spiking_space_ingest.json` | `research/generate_space_demo.py` | naive 20% replay: target 2.19 -> 1.66; TS +13.6%, WT +33.9%; BLOCKED |
+| `spiking_space_safe2.json` | `research/check_story_gate.py` | safe 70% replay: target 2.19 -> 0.72; TS +4.1%, WT -13.4%; PASS narrow story lab |
+| `spiking_space_generations.json` | `research/generate_space_demo.py` | space-style before/after samples + alpha/format metrics |
 | `binding_attention_256.json` | `research/spiking_binding_conj.py` (`--attention`) | attention hurts: spike 0.364, rate 0.384 |
 
 ## Local assistant

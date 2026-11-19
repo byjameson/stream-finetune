@@ -53,6 +53,33 @@
       "equals_ratio": 0.0,
       "replacement_count": 0,
       "zeta_count": 0
+    },
+    {
+      "model": "space_safe2",
+      "prompt": "Zeta the robot",
+      "text": " wanted to a a small red station,. Zaa saw a yellow red near small green.et Z Zaaa wanted to to run run play.. One\nZa Za Za Z Z Z Z Zaack Z Z Z Z ZaZ Za Z Z Za ZZa Z Z ZZaa Zckck Z Za ZZ",
+      "alpha_ratio": 0.7096774193548387,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
+    },
+    {
+      "model": "space_safe2",
+      "prompt": "Zeta saw a",
+      "text": " small small blue,a thea yellowet.a Za felt very curious to. With a a small loudet,aeta started to run play. The Zetaa Za smiled.aa Z Zaaa a station. Z Zaaa Zaa Z Zaaa. Za Zaaa Zacka Z. ZZ",
+      "alpha_ratio": 0.7553191489361702,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 1
+    },
+    {
+      "model": "space_safe2",
+      "prompt": "Zeta learned that",
+      "text": " a is fun.\n\nOne the daya on a small box. The the big box, on theet a box. It a a yellow box. It a a star box. They look and a box. They can fix box.\n\n\"Wow, look the!\" box says. \"Maybe is is a box.\"\n\nThey to the box. They They to their box.",
+      "alpha_ratio": 0.6778242677824268,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "zeta_count": 0
     }
   ]
 }
