@@ -100,7 +100,11 @@
   on both (30.5x/35.9x vs 10.8x/9.4x), but SMA-20 loses on BTC and SMA-100/200
   lose on ETH. Verdict TREND_CANDIDATE; not a deployable strategy. No real
   money or API keys.
-- 178 tests;
+- English-first 21M chat, 12k steps: chat bpb 2.377, Wikipedia 2.811,
+  TinyStories 2.115. Generation **BLOCKED**: word salad, alpha min 0.331,
+  3/12 samples leak `<|assistant|>`. bpb alone is not chat. Next: cleaner
+  dialogue-heavy mix and/or 50M.
+- 179 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

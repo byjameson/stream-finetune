@@ -56,11 +56,12 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   `scripts/story_lab_demo.ps1`; local HTTP server verified (`/health` 200,
   `/generate` 200, alpha 0.708). Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
-- **From-scratch English-first chat (active):** 23.63M-token English chat
+- **From-scratch English-first chat (21M BLOCKED):** 23.63M-token English chat
   corpus (SmolTalk, UltraChat, OASST2, Dolly, Wikipedia, TinyStories) with a
-  fresh 8k BPE tokenizer; training a 21M spiking LM from scratch. The 27.55M
-  Turkish-first corpus is retained for a later language pack. No Qwen.
-  [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
+  fresh 8k BPE tokenizer. The 21M/12k run reaches chat bpb 2.377, but generation
+  is word salad (alpha min 0.331, 3/12 tag leaks). Next: cleaner dialogue mix
+  and/or 50M. The 27.55M Turkish-first corpus is retained for a later language
+  pack. No Qwen. [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
 - **Crypto paper-trading baseline:** BTCUSDT daily walk-forward with fees and
   slippage. Learned models show no reliable edge; a hand-coded SMA-50 trend
   rule is the only CHECK result. No API keys, orders or real money.
