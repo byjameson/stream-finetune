@@ -125,6 +125,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_chat_en_21m.json` | `research/chat_eval.py --lang en` | English-first 21M, 12k steps: chat 2.377 / wiki 2.811 / stories 2.115 bpb; alpha min 0.331, 3/12 tag leaks; BLOCKED |
 | `spiking_chat_en_sampling.json` | `research/chat_sampling_sweep.py` | temp 0.3/0.5/0.7 x top-k 5/10/20: all function-word loops; decoding does not fix it |
 | `spiking_chat_en_clean_21m.json` | `research/chat_eval.py --lang en` | clean 21M, 12k steps: clean chat 2.199 / wiki 2.925 / stories 2.187 bpb; alpha min 0.608, 5/12 tag leaks; BLOCKED |
+| `spiking_chat_en_clean_50m.json` | `research/chat_eval.py --lang en` | clean 50M, 12k steps: clean chat 2.192 / wiki 2.927 / stories 2.197 bpb; alpha min 0.627, 1/12 tag leak; BLOCKED |
+| `chat_en_clean_lengths.json` | `research/analyze_chat_lengths.py` | 50,924 conversations, median 355 tokens; only 12.6% fit 128; 59.5% fit 512 |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `crypto_sma_sweep.json` | `research/crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200: SMA-50 30.5x/35.9x vs buy-hold 10.8x/9.4x; other windows fail; TREND_CANDIDATE |

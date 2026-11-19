@@ -140,26 +140,45 @@ Data cleaning improved the surface metrics but did not produce turn-level chat.
 The remaining bottleneck is token/parameter scale or the architecture, not the
 math/code filter. Evidence: `research/results/spiking_chat_en_clean_21m.json`.
 
-### 50M capacity probe (running)
+### 50M capacity probe (BLOCKED)
 
 The next run changes only the model size: **50.07M** parameters (`dim=2040`,
 2 layers), same clean corpus, tokenizer, 12k steps, batch 16, seq 128.
 
-Early fixed-window results:
+| shard | 21M clean | 50M clean |
+|---|---:|---:|
+| clean chat bpb | 2.199 | **2.192** |
+| Wikipedia bpb | 2.925 | 2.927 |
+| clean TinyStories bpb | 2.187 | 2.197 |
+| alpha min | 0.608 | **0.627** |
+| tag leaks | 5/12 | **1/12** |
 
-| step | 21M clean bpb | 50M clean bpb |
-|---:|---:|---:|
-| 500 | 2.403 | 2.431 |
-| 1000 | 2.385 | 2.354 |
-| 1500 | 2.343 | 2.304 |
+The 50M model is marginally better on chat bpb (+0.3%) and tag leaks, but the
+samples are still word salad. Verdict: **BLOCKED**. Scaling parameters alone
+does not produce turn-level chat at this token budget.
+Evidence: `research/results/spiking_chat_en_clean_50m.json`.
 
-The 50M model is slightly ahead at equal steps, but this is early and the
-samples are still not chat. It runs at ~1.0 s/step (~3 h total), with
-checkpoints every 2,000 steps. Resume command if interrupted:
+### Why 128-token windows are the wrong unit
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en_50m.ps1
-```
+`research/analyze_chat_lengths.py` measures the conversations in the packed
+tensor:
+
+- median conversation: **355 tokens**;
+- only **12.6%** of conversations fit in 128 tokens, covering **1.7%** of
+  training tokens;
+- 41.6% fit in 256 tokens; 59.5% fit in 512; 82.5% fit in 1,024.
+
+A fixed 128-token window therefore almost never contains a complete
+user -> assistant exchange. The model learns local token statistics, not turn
+structure. This explains both the word salad and the `<|assistant|>` leaks.
+
+The first fix is cheaper than a 512-token run: `--start-token 0` makes every
+training window start at a `<|user|>` token, so each window begins with a real
+turn instead of a random mid-conversation position. The 21M turn-aligned run
+keeps 12k steps, batch 16, seq 128 and the same speed (~2 h). A 512-token
+control is the fallback if alignment alone fails.
+
+Evidence: `research/results/chat_en_clean_lengths.json`.
 
 ## Evaluation
 
