@@ -1,0 +1,58 @@
+{
+  "rows": [
+    {
+      "model": "base_21m",
+      "prompt": "Nova the explorer",
+      "text": ". I can to have a friend. I I't to a friend. I'm you to.\"\n\n\"I don't sorry,\" said Tom \".YouI are to to my friend. I you not back. You are is. selfish And you not not be. You hurt. You can have your nice and. You should go to your other. You will be share fun. You",
+      "alpha_ratio": 0.6946564885496184,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 0
+    },
+    {
+      "model": "base_21m",
+      "prompt": "Nova found a",
+      "text": " time. It was to a friend the, girl was the excited and. She said wanted to go to with the house, it but so started to to her it.\n\nThe girl went in the park with, the little girl and had a big little. She was happy to see the little girl in the park and she knew the girl. The was man old was very brave and that she",
+      "alpha_ratio": 0.75,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 0
+    },
+    {
+      "model": "base_21m",
+      "prompt": "Nova learned that",
+      "text": ", we is not important to to the selfish.Once upon a time, there was a little boy named Lily. He loved to play with her toys in toys with the his toy. One day, Timmy went to him to the house. He was so excited and saw the it car. He he't very happy and started to play with.\n\nBut Timmy's he friend said,,",
+      "alpha_ratio": 0.7458745874587459,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 0
+    },
+    {
+      "model": "nova_safe",
+      "prompt": "Nova the explorer",
+      "text": ". He wanted to a a place. One day,va found a a red flower near the cave. The Nova was excited and to to it run. Theva smiled began to. They\n smiled andvava learned a soft way. Nova can help a big explorer.vava lived a explorer near. adventures One,,vava found found a a shell green near the the stone",
+      "alpha_ratio": 0.7666666666666667,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 2
+    },
+    {
+      "model": "nova_safe",
+      "prompt": "Nova found a",
+      "text": " big of blue. It red a,vavava to to a a friends. They wanted to to play the. Theyva was to excited run to to explore.\n\nSuddenly,va a a big voice. \" Theva is a a big map. No isva worried. No can can find the map and. No can can find help the map. No Nova can find near",
+      "alpha_ratio": 0.7303370786516854,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 1
+    },
+    {
+      "model": "nova_safe",
+      "prompt": "Nova learned that",
+      "text": " that is is kind important to to the world.\n\nNo a way, lived near deep cave. One No,,vava sawva a a yellow river. Thevava wanted to explore a blue soft. Sheva soft and wanted to a a soft. Itvava smiled. Sheva felt soft happy and.\n\nvava to to the friends. One day,, found",
+      "alpha_ratio": 0.7481481481481481,
+      "equals_ratio": 0.0,
+      "replacement_count": 0,
+      "nova_count": 0
+    }
+  ]
+}

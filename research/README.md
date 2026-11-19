@@ -44,8 +44,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   story-style ingest demo adapts the target (2.19 -> 1.66 bpb, robot-themed,
   alpha ~0.7) but full eval shows TinyStories +13.6% and WikiText +33.9%. A
   safer recipe (70% replay from 20M TS + 5M WT, LR 5e-5, 120 steps) gives
-  target 2.19 -> 0.72, TinyStories +4.1%, WikiText -13.4%, and passes the
-  narrow story-lab gate. Still not a general model.
+  target 2.19 -> 0.72, TinyStories +4.1%, WikiText -13.4%. A second corpus
+  (Nova) replicates: 2.05 -> 0.60, +4.4%, -13.6%. Both pass the narrow
+  story-lab gate. Still not a general model.
   [`SPIKING_TINY_LAB.md`](SPIKING_TINY_LAB.md)
 - **Spiking sequential rollback:** after TinyStories -> WikiText, a 10% per-synapse
   Fisher shadow rollback recovers 95.0%/94.1% of old bpb while keeping 18.3% of the
@@ -231,7 +232,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `check_release_gate.py` | hard bpb + generation release gate for the Tiny Spiking Lab | ~2 min |
 | `make_space_stories.py` | synthetic Zeta story corpus for the story-style ingest demo | ~1 s |
 | `generate_space_demo.py` | before/after space-style samples + alpha/replacement metrics | ~1 min |
-| `check_story_gate.py` | narrow story-lab release gate (target, old/general retention, generation format) | ~1 s |
+| `check_story_gate.py` | narrow story-lab release gate on both story corpora | ~1 s |
+| `make_nova_stories.py` | second synthetic Nova story corpus for replication | ~1 s |
+| `generate_nova_demo.py` | before/after Nova samples + alpha/replacement metrics | ~1 min |
 | `make_mixed_corpus.py` | 16M-token TinyStories + WikiText training shard for the generative experiment | ~1 min |
 | `prep_spiking_shift.py` | tokenize WikiText-2 with the TinyStories BPE-8k tokenizer | ~1 min |
 | `spiking_shift.py` | TinyStories -> WikiText; no/global/importance shadow rollback; old/new bpb | ~4 min (300+300 steps) |
