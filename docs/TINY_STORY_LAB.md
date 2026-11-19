@@ -15,7 +15,7 @@ The intended workflow:
 4. keep the old/general distributions inside the release gate;
 5. inspect the before/after samples and bpb.
 
-## Verified result (two corpora x two seeds)
+## Verified result (synthetic, two corpora x two seeds)
 
 | corpus | target delta | TinyStories delta | WikiText delta |
 |---|---:|---:|---:|
@@ -26,11 +26,28 @@ The intended workflow:
 
 - Target bpb: 2.05-2.19 -> **0.59-0.72**
 - Generation alpha: **0.68-0.77**, no `=` formatting spam, no replacement chars
-- Gate: **PASS_NARROW_STORY_LAB**
-- Tests: **168 passed**; CI green.
+- Gate: **PASS_NARROW_STORY_LAB** (synthetic only)
+- Tests: **169 passed**; CI green.
 
 The safe recipe is the key: a naive 20% replay update adapted the target but
 showed **+13.6% TinyStories** and **+33.9% WikiText** forgetting.
+
+## Real public-domain check (blocked)
+
+The synthetic result does **not** generalize to real books. Training on 200
+passages from *Alice's Adventures in Wonderland* and validating on 100 held-out
+passages from *The Wonderful Wizard of Oz*, two seeds:
+
+| seed | target bpb | TinyStories | WikiText | worst generation alpha |
+|---:|---|---:|---:|---|
+| 0 | 2.733 -> 2.414 (-11.7%) | +3.54% | -13.98% | **0.534** |
+| 1 | 2.733 -> 2.411 (-11.8%) | +3.47% | -14.14% | **0.259** |
+
+bpb passes, but generation collapses on the cross-book prompt
+`Dorothy opened the door` (punctuation/spacing loops). The base model is
+healthy on the same prompt (alpha 0.727-0.751), so the adaptation causes the
+regression. Gate: **BLOCKED**. Evidence:
+`research/results/spiking_realstory_seedcheck.json`.
 
 ## Efficiency
 
@@ -74,6 +91,9 @@ Single prompt, no batching, 80 tokens CUDA / 20 CPU. Not a production benchmark.
 - Target bpb 0.59-0.72 is close to memorization on 200 synthetic stories.
 - Two synthetic corpora, two seeds, one model size.
 - No safety filter, no factuality guarantee, no instruction tuning.
+- The real public-domain cross-book check is **BLOCKED**: bpb improves but
+  generation degenerates for some seeds/prompts. Do not claim the synthetic
+  story lab generalizes to real text.
 - The general/fact Tiny Lab remains **BLOCKED** (domain ingest lost 3.29%
   TinyStories and 7.1% WikiText, and fact-prompt generation is garbage).
 
