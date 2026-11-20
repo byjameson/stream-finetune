@@ -11,9 +11,10 @@ import re
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 
 from streamft.spiking import evaluate_bpb, load_checkpoint
-from streamft.spiking_cli import fixed_windows, load_tokens
+from streamft.spiking_cli import fixed_windows, load_tokens, mask_user_labels
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -67,6 +68,29 @@ def chat_generate(model, tok, user: str, max_new_tokens: int = 80,
     return text.strip(), stop
 
 
+def evaluate_assistant(model, tok, batches) -> dict:
+    """Loss on assistant turns only, matching the SFT training objective."""
+    user_id = tok.token_to_id("<|user|>")
+    assistant_id = tok.token_to_id("<|assistant|>")
+    if user_id is None or assistant_id is None:
+        return {}
+    model.eval()
+    nll = 0.0
+    count = 0
+    for x, y in batches:
+        logits = model(x)
+        masked = mask_user_labels(y, user_id, assistant_id)
+        nll += float(F.cross_entropy(
+            logits.reshape(-1, model.vocab), masked.reshape(-1),
+            ignore_index=-100, reduction="sum"))
+        count += int((masked != -100).sum())
+    if count == 0:
+        return {}
+    loss = nll / count
+    return {"loss": loss, "ppl": float(torch.exp(torch.tensor(min(loss, 20.0)))),
+            "tokens": count}
+
+
 def metrics(text: str, stop: str) -> dict:
     words = re.findall(r"\w+", text.lower())
     trigrams = list(zip(words, words[1:], words[2:]))
@@ -110,6 +134,9 @@ def main():
         tokens = load_tokens(str(ROOT / rel))
         batches = fixed_windows(tokens, 128, 8, 8, 0, DEVICE)
         evals[name] = evaluate_bpb(model, tok, batches)
+        assistant = evaluate_assistant(model, tok, batches)
+        if assistant:
+            evals[name]["assistant"] = assistant
 
     prompts = {
         "tr": [
