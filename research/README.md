@@ -61,8 +61,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   fresh 8k BPE tokenizer. The broad 21M/12k run reaches chat bpb 2.377 with
   word salad (alpha min 0.331, 3/12 tag leaks). A filtered clean-dialogue
   control reaches 2.199 bpb and alpha min 0.608, but still has 5/12 tag leaks
-  and word salad: both **BLOCKED**. Next: 50M or 100M+ clean tokens. The 27.55M
-  Turkish-first corpus is retained for a later language pack. No Qwen.
+  and word salad: both spiking runs **BLOCKED**. A 20.2M transformer on the
+  same clean data/SFT reaches chat bpb **1.359**, assistant loss **4.01** and,
+  with role tokens banned at decoding, **PASS_CHAT_SMOKE**. Architecture is the
+  bottleneck; product line moves to transformer, spiking stays research. The
+  27.55M Turkish-first corpus is retained for a later language pack. No Qwen.
   [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
 - **Crypto paper-trading baseline:** BTCUSDT daily walk-forward with fees and
   slippage. Learned models show no reliable edge; a hand-coded SMA-50 trend

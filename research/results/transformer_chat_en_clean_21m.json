@@ -1,0 +1,507 @@
+{
+  "tag": "transformer_21m_sft",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 4.03614816069603,
+      "ppl": 56.60787788074934,
+      "bpb": 1.3590156759400058,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.011701190232938,
+        "ppl": 55.240760803222656,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 3.9010764360427856,
+      "ppl": 49.45565631429021,
+      "bpb": 1.446979168437248,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 3.9010764360427856,
+        "ppl": 49.455650329589844,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.404383420944214,
+      "ppl": 222.37906393096696,
+      "bpb": 2.2017241536876275,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.404383420944214,
+        "ppl": 222.37911987304688,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.932877242565155,
+      "ppl": 51.053660311793095,
+      "bpb": 1.3485243388966883,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 3.8589773607590376,
+        "ppl": 47.41683578491211,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Amy named Ben and Ben, who are a brother. One day they were playing on the sea. They wanted to eat their own. The two saw a lot of people who do not like it. They both get older and more. \"My wife said the children are going. We're going to the store that one was different.\" The little girl ran down and said, \"But I",
+      "chars": 317,
+      "alpha": 0.7539,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Here is the example. What are the main characters in your story?",
+      "chars": 64,
+      "alpha": 0.7969,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The little boy named Timmy. He was always fascinated by what he saw. The sun was so big and he loved to wear it all over his huttle. His mom gave me a special time. He thought the sun was very excited. So he said it was so excited and asked him to read his family. The little girl came so much! The little girl said, \"Wh",
+      "chars": 320,
+      "alpha": 0.7656,
+      "turkish_chars": 0,
+      "repeat3": 0.0308,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To determine what the weather is.",
+      "chars": 33,
+      "alpha": 0.8182,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Analyze the context of your story. It takes for a restless, unacceptable sunny day to be filled with dancier. The story includes a mysterious, a man who was hired by a grandmother who had been in the park. His friend, a young boy named Jack. He loved playing with his parents and he was looking at a nearby time. He made",
+      "chars": 320,
+      "alpha": 0.7875,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hello! How can I help with this?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "eline",
+      "chars": 5,
+      "alpha": 1.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task: go for a walk.",
+      "chars": 26,
+      "alpha": 0.7308,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "history": [
+    {
+      "event": "eval",
+      "step": 500,
+      "train_loss": 5.653140544891357,
+      "step_s": 0.10124504960002377,
+      "lr": 0.0002995696209491512,
+      "bpb": 1.9665725495762598,
+      "assistant": {
+        "loss": 5.806712539741277,
+        "ppl": 332.5242004394531,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1000,
+      "train_loss": 4.984210968017578,
+      "step_s": 0.09490995280002244,
+      "lr": 0.000296949457625412,
+      "bpb": 1.832439286350106,
+      "assistant": {
+        "loss": 5.398794405128924,
+        "ppl": 221.1396026611328,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1500,
+      "train_loss": 5.145077228546143,
+      "step_s": 0.0864145730000455,
+      "lr": 0.00029199453600058946,
+      "bpb": 1.7340315570849274,
+      "assistant": {
+        "loss": 5.103288145877856,
+        "ppl": 164.5621337890625,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2000,
+      "train_loss": 4.228935718536377,
+      "step_s": 0.08582368339993991,
+      "lr": 0.0002847925301326372,
+      "bpb": 1.6687079788476817,
+      "assistant": {
+        "loss": 4.9142645249986865,
+        "ppl": 136.2191162109375,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2500,
+      "train_loss": 4.005187511444092,
+      "step_s": 0.09110476180003024,
+      "lr": 0.0002754708747476028,
+      "bpb": 1.613677023112226,
+      "assistant": {
+        "loss": 4.728059914080017,
+        "ppl": 113.07595825195312,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3000,
+      "train_loss": 3.9845340251922607,
+      "step_s": 0.08913770739990287,
+      "lr": 0.00026419451036651406,
+      "bpb": 1.575291947011193,
+      "assistant": {
+        "loss": 4.60253033830446,
+        "ppl": 99.73637390136719,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3500,
+      "train_loss": 4.149226188659668,
+      "step_s": 0.08946970979985781,
+      "lr": 0.0002511629647920507,
+      "bpb": 1.5229430720783654,
+      "assistant": {
+        "loss": 4.4601551278289655,
+        "ppl": 86.50091552734375,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4000,
+      "train_loss": 3.793994665145874,
+      "step_s": 0.09116903520002961,
+      "lr": 0.00023660682259616522,
+      "bpb": 1.5059198477299491,
+      "assistant": {
+        "loss": 4.3994618916190795,
+        "ppl": 81.40704345703125,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4500,
+      "train_loss": 3.7207133769989014,
+      "step_s": 0.0895611139999237,
+      "lr": 0.00022078364507873105,
+      "bpb": 1.4807684240227794,
+      "assistant": {
+        "loss": 4.331199543358499,
+        "ppl": 76.03544616699219,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5000,
+      "train_loss": 3.6201224327087402,
+      "step_s": 0.08825089920009486,
+      "lr": 0.00020397341289084882,
+      "bpb": 1.4633736975749887,
+      "assistant": {
+        "loss": 4.264956042370988,
+        "ppl": 71.16178894042969,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5500,
+      "train_loss": 3.5754222869873047,
+      "step_s": 0.08893400799995288,
+      "lr": 0.00018647357196257473,
+      "bpb": 1.4393597798238338,
+      "assistant": {
+        "loss": 4.196671079627067,
+        "ppl": 66.4646987915039,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 6000,
+      "train_loss": 3.3649356365203857,
+      "step_s": 0.09281668399996124,
+      "lr": 0.0001685937703940996,
+      "bpb": 1.4299704676330558,
+      "assistant": {
+        "loss": 4.167780649501647,
+        "ppl": 64.5719985961914,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 6500,
+      "train_loss": 3.59133243560791,
+      "step_s": 0.09396082479995675,
+      "lr": 0.0001506503794376057,
+      "bpb": 1.4090517225792207,
+      "assistant": {
+        "loss": 4.094805696085429,
+        "ppl": 60.02767562866211,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 7000,
+      "train_loss": 3.3809242248535156,
+      "step_s": 0.09313699959986843,
+      "lr": 0.0001329608955173995,
+      "bpb": 1.3967817307969472,
+      "assistant": {
+        "loss": 4.061559394870638,
+        "ppl": 58.06477355957031,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 7500,
+      "train_loss": 3.3460748195648193,
+      "step_s": 0.09420787300006486,
+      "lr": 0.000115838322340869,
+      "bpb": 1.3821816982915387,
+      "assistant": {
+        "loss": 4.019860921953826,
+        "ppl": 55.69335174560547,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 8000,
+      "train_loss": 3.2911717891693115,
+      "step_s": 0.0917402794000227,
+      "lr": 9.958563250509224e-05,
+      "bpb": 1.3759560065816985,
+      "assistant": {
+        "loss": 3.9922524353848443,
+        "ppl": 54.17677688598633,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 8500,
+      "train_loss": 2.8447625637054443,
+      "step_s": 0.09328503739996813,
+      "lr": 8.44904065973023e-05,
+      "bpb": 1.3623713864235465,
+      "assistant": {
+        "loss": 3.954155413024629,
+        "ppl": 52.15163040161133,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 9000,
+      "train_loss": 3.2510907649993896,
+      "step_s": 0.09702709079999476,
+      "lr": 7.081974464677707e-05,
+      "bpb": 1.3602729256980466,
+      "assistant": {
+        "loss": 3.9516063399379027,
+        "ppl": 52.018856048583984,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 9500,
+      "train_loss": 3.11075758934021,
+      "step_s": 0.09709706320008263,
+      "lr": 5.881553996664327e-05,
+      "bpb": 1.3556959937774984,
+      "assistant": {
+        "loss": 3.9341501141877453,
+        "ppl": 51.118690490722656,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 10000,
+      "train_loss": 2.8213202953338623,
+      "step_s": 0.09643434579996392,
+      "lr": 4.869019901183617e-05,
+      "bpb": 1.3505730529850806,
+      "assistant": {
+        "loss": 3.917881131706751,
+        "ppl": 50.29376983642578,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 10500,
+      "train_loss": 3.277521848678589,
+      "step_s": 0.09690786399994977,
+      "lr": 4.0622882987494243e-05,
+      "bpb": 1.34915405927705,
+      "assistant": {
+        "loss": 3.9128143584247126,
+        "ppl": 50.03958511352539,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 11000,
+      "train_loss": 2.746051073074341,
+      "step_s": 0.09546744359983131,
+      "lr": 3.475633771004035e-05,
+      "bpb": 1.3486341166841247,
+      "assistant": {
+        "loss": 3.9178052140992854,
+        "ppl": 50.289947509765625,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 11500,
+      "train_loss": 3.173410177230835,
+      "step_s": 0.09161201979988255,
+      "lr": 3.119436781445904e-05,
+      "bpb": 1.3442917211442522,
+      "assistant": {
+        "loss": 3.899259592920141,
+        "ppl": 49.365882873535156,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 12000,
+      "train_loss": 2.771728277206421,
+      "step_s": 0.0913580304000061,
+      "lr": 2.9999999999999997e-05,
+      "bpb": 1.3445130490068011,
+      "assistant": {
+        "loss": 3.900963445415411,
+        "ppl": 49.4500732421875,
+        "tokens": 3568
+      }
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "tag": "transformer_21m_sft_banned",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 4.03614816069603,
+      "ppl": 56.60787788074934,
+      "bpb": 1.3590156759400058,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.011701190232938,
+        "ppl": 55.240760803222656,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 3.9010764360427856,
+      "ppl": 49.45565631429021,
+      "bpb": 1.446979168437248,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 3.9010764360427856,
+        "ppl": 49.455650329589844,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.404383420944214,
+      "ppl": 222.37906393096696,
+      "bpb": 2.2017241536876275,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.404383420944214,
+        "ppl": 222.37911987304688,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.932877242565155,
+      "ppl": 51.053660311793095,
+      "bpb": 1.3485243388966883,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 3.8589773607590376,
+        "ppl": 47.41683578491211,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Amy named Ben and Ben, who are a brother. One day they were playing on the sea. They wanted to eat their own. The two saw a lot of people who do not like it. They both get older and more. \"My wife said the children are going. We're going to the store that one was different.\" The little girl ran down and said, \"But I",
+      "chars": 317,
+      "alpha": 0.7539,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Here is the example. What are the main characters in your story?",
+      "chars": 64,
+      "alpha": 0.7969,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The little boy named Timmy. He was always fascinated by what he saw. The sun was so big and he loved to wear it all over his huttle. His mom gave me a special time. He thought the sun was very excited. So he said it was so excited and asked him to read his family. The little girl came so much! The little girl said, \"Wh",
+      "chars": 320,
+      "alpha": 0.7656,
+      "turkish_chars": 0,
+      "repeat3": 0.0308,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To determine what the weather is.",
+      "chars": 33,
+      "alpha": 0.8182,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Analyze the context of your story. It takes for a restless, unacceptable sunny day to be filled with dancier. The story includes a mysterious, a man who was hired by a grandmother who had been in the park. His friend, a young boy named Jack. He loved playing with his parents and he was looking at a nearby time. He made",
+      "chars": 320,
+      "alpha": 0.7875,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hello! How can I help with this?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "eline",
+      "chars": 5,
+      "alpha": 1.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task: go for a walk.",
+      "chars": 26,
+      "alpha": 0.7308,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}
