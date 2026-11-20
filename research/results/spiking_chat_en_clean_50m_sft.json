@@ -1,0 +1,220 @@
+{
+  "tag": "clean_50m_sft_12k",
+  "lang": "en",
+  "model": "checkpoints/spiking_chat_en_clean_50m_sft",
+  "config": {
+    "vocab": 8192,
+    "dim": 2040,
+    "layers": 2,
+    "mode": "spike",
+    "adapt": 0.1,
+    "feedback": false,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": false,
+    "slots": 0,
+    "slot_heads": 1,
+    "slot_attr_keys": false,
+    "slot_conj": false,
+    "slot_factorized": false,
+    "query_color_copy": false,
+    "color_copy_init": 1.0,
+    "learned_boundaries": false,
+    "raw_boundaries": false,
+    "category_states": false,
+    "name_ids": [],
+    "color_ids": [],
+    "object_ids": [],
+    "write_token": -1,
+    "read_token": -1,
+    "mem_decay": 0.5,
+    "mem_read_pos": -1,
+    "dropout": 0.0,
+    "decay_syn": 0.9,
+    "decay_mem": 0.9,
+    "decay_out": 0.9,
+    "decay_trace": 0.9,
+    "threshold": 0.5,
+    "alpha": 4.0
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 6.808647394180298,
+      "ppl": 905.6449974218153,
+      "bpb": 2.292546797648632,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 6.733984228668608,
+        "ppl": 840.4891357421875,
+        "tokens": 7341
+      }
+    },
+    "wiki": {
+      "loss": 7.230421245098114,
+      "ppl": 1380.8040385268728,
+      "bpb": 2.945644647449416,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 7.230421245098114,
+        "ppl": 1380.8038330078125,
+        "tokens": 8192
+      }
+    },
+    "stories": {
+      "loss": 6.310304284095764,
+      "ppl": 550.212344208505,
+      "bpb": 2.3406049574484027,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 6.310304284095764,
+        "ppl": 550.2122802734375,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 6.749135315418243,
+      "ppl": 853.3205902713578,
+      "bpb": 2.3141767916998233,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 6.639369258787473,
+        "ppl": 764.6127319335938,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": false,
+    "alpha_at_least_0_5": false,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "ing the!,,!! the it't to a about, and- on,,. you can some been you to the in on your, from. I can you to the get- the or youing get I,'t it'll. if have that it the, you I like a to you is'll your it to. I I'd to is help to the help, the",
+      "chars": 236,
+      "alpha": 0.6695,
+      "turkish_chars": 0,
+      "repeat3": 0.0169,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "the a., was was like of and,, to. they very and to, to of they very, in. to they for the was. they up to.. and, you I it't \" to that., him the, the, not and something he on in to,,. the a not to, was but. of the, a. that it, a was",
+      "chars": 230,
+      "alpha": 0.6522,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "have a have be and with I of, to the in, was I or I, the with I, your a what this is. are The's a the thats me do to, that the you out to my've my.'s it it of the of'm of's with, and to and a that I with is that me's our've a've.. my have'm I",
+      "chars": 242,
+      "alpha": 0.6777,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "a I  like. my have, can to a very the who. day a the that it a to be for in. a I  for",
+      "chars": 85,
+      "alpha": 0.6588,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "N meet toiceo..ora Leice Mia'm Sam",
+      "chars": 34,
+      "alpha": 0.7647,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": ",ice meet I Mia Sam .  Le that Mia remember I remember that..  remember remember will will",
+      "chars": 90,
+      "alpha": 0.7556,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "'s \": to a named named She She of girl, went, girl He she friends,., a She her the,. wanted. a,'t's't big,, on and, said., saw Lily \" ay, her,,ed said was, a was,. and. was up, said she to out and, on so, \", day He,",
+      "chars": 215,
+      "alpha": 0.6279,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "a is and the aer, a as in of that the. in was Iing on an. was of I the be but the a as in was Ied my. \" to' for' was is me and the the, the the a and that the a his I on be a the. He \" I a a, a got a, he in my?\" on anding and",
+      "chars": 225,
+      "alpha": 0.6533,
+      "turkish_chars": 0,
+      "repeat3": 0.0328,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "call tasked milkoed call to for go book book of ., there a - I there a theo to and.",
+      "chars": 83,
+      "alpha": 0.7229,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "ed Add mom tasked walked go. a to walk: the for mom to of of., aed",
+      "chars": 66,
+      "alpha": 0.7121,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    }
+  ]
+}
