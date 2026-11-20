@@ -86,7 +86,7 @@ class TransformerLM(nn.Module):
 @torch.no_grad()
 def generate(model, tok, prompt: str, max_new: int = 80,
              temperature: float = 0.8, top_k: int = 40,
-             repetition_penalty: float = 1.1):
+             repetition_penalty: float = 1.1, banned_ids=()):
     model.eval()
     end_id = tok.token_to_id("<|end|>")
     user_id = tok.token_to_id("<|user|>")
@@ -98,6 +98,8 @@ def generate(model, tok, prompt: str, max_new: int = 80,
     for _ in range(max_new):
         x = torch.tensor([ids[-model.max_seq:]], device=DEVICE)
         logits = model(x)[0, -1].float().clone()
+        if banned_ids:
+            logits[list(banned_ids)] = float("-inf")
         if repetition_penalty != 1.0:
             for tid in seen:
                 if logits[tid] > 0:

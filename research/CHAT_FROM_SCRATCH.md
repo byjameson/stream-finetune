@@ -216,19 +216,49 @@ Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`,
 `research/results/spiking_chat_en_sft_sampling.json`,
 `research/results/spiking_chat_en_clean_50m_sft.json`.
 
-### Transformer baseline (running)
+### Transformer result: architecture is the bottleneck
 
-The spiking runs cannot separate architecture from data. A **20.2M transformer**
-(`dim=512`, 5 layers, 8 heads) is training on the exact same clean corpus,
-tokenizer, start-token sampler and assistant-only loss.
+The spiking runs could not separate architecture from data. A **20.2M
+transformer** (`dim=512`, 5 layers, 8 heads) was trained on the exact same clean
+corpus, tokenizer, start-token sampler and assistant-only loss.
 
-- 12k steps, batch 16, seq 128;
-- measured **0.109 s/step**, so the run is ~25 minutes instead of ~2 hours;
-- diagnostic: if the transformer is much better, the spiking architecture is
-  the bottleneck; if it is also word salad, data/tokens are the bottleneck.
+- 12k steps in **~25 minutes** at 0.09-0.11 s/step;
+- chat bpb **1.359**, assistant loss **4.01** (ppl 55);
+- alpha min **0.731**, 0 empty samples;
+- with role tokens banned during generation: **0 tag leaks** and
+  **PASS_CHAT_SMOKE**;
+- without banning, 5/12 samples leak `<|assistant|>` and the gate is BLOCKED.
 
-This is a research baseline, not a product pivot. The spiking constraint stays
-in the research track.
+| model | chat bpb | assistant loss | alpha min | tag leak | verdict |
+|---|---:|---:|---:|---:|---|
+| spiking 21M SFT | 2.311 | 6.80 | 0.492 | 2/12 | BLOCKED |
+| spiking 50M SFT | 2.293 | 6.73 | 0.0 | 6/12 | BLOCKED |
+| transformer 20.2M | **1.359** | **4.01** | **0.731** | 0/12* | **PASS** |
+
+\* with `<|user|>`/`<|assistant|>` banned at generation time.
+
+Sample outputs:
+
+```text
+hello -> Hello! How can I help you today?
+what is the weather today? -> To determine what the weather is.
+add task: buy milk -> Added task: go for a walk.
+tell me a short story -> Analyze the context of your story. It takes for a
+restless, unacceptable sunny day to be filled with dancier. The story includes
+a mysterious, a man who was hired by a grandmother ...
+```
+
+This is a **smoke-gate pass, not a general assistant**. Responses are short,
+sometimes wrong (the task text is wrong) and repetitive; but they are
+grammatical English and turn-shaped. The spiking architecture is the
+bottleneck at this data scale.
+
+Implication: the **product line should use the transformer**; the spiking line
+stays as a separate research track. Next: 50M/100M transformer, memory/task
+curriculum, and the hybrid runtime.
+
+Evidence: `research/results/transformer_chat_en_clean_21m.json` and
+`research/results/transformer_chat_en_clean_21m_banned.json`.
 
 ## Evaluation
 
