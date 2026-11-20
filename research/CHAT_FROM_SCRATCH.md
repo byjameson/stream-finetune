@@ -216,6 +216,20 @@ Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`,
 `research/results/spiking_chat_en_sft_sampling.json`,
 `research/results/spiking_chat_en_clean_50m_sft.json`.
 
+### Transformer baseline (running)
+
+The spiking runs cannot separate architecture from data. A **20.2M transformer**
+(`dim=512`, 5 layers, 8 heads) is training on the exact same clean corpus,
+tokenizer, start-token sampler and assistant-only loss.
+
+- 12k steps, batch 16, seq 128;
+- measured **0.109 s/step**, so the run is ~25 minutes instead of ~2 hours;
+- diagnostic: if the transformer is much better, the spiking architecture is
+  the bottleneck; if it is also word salad, data/tokens are the bottleneck.
+
+This is a research baseline, not a product pivot. The spiking constraint stays
+in the research track.
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:
