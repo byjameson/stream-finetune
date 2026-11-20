@@ -199,12 +199,22 @@ tag leaks). This is the first run that looks like it learned a response shape.
 
 A sampling sweep at temperature 0.3/0.5/0.7 still collapses into function-word
 loops; the 0.8/top-k 40 regime used by `chat_eval` is the better one for this
-checkpoint. The 50M SFT run is now testing whether capacity improves the
-assistant loss and response shape.
+checkpoint.
+
+**50M SFT result (no improvement):**
+
+- assistant loss 6.73 (vs 6.80 at 21M), chat bpb 2.293;
+- **2 empty** samples, **6/12** tag leaks, alpha min **0.0**;
+- samples are less story-shaped than the 21M SFT run.
+
+Parameter scaling does not improve the response shape. The 21M SFT checkpoint
+remains the best qualitative result. Next: continue the 21M SFT optimization
+with more assistant-heavy tokens and a constant low LR, then revisit context
+length or architecture.
 
 Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`,
-`research/results/spiking_chat_en_sft_sampling.json`, and
-`research/results/spiking_chat_en_clean_50m_sft.json` (pending).
+`research/results/spiking_chat_en_sft_sampling.json`,
+`research/results/spiking_chat_en_clean_50m_sft.json`.
 
 ## Evaluation
 
