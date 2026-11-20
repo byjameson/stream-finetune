@@ -183,16 +183,22 @@ enough.
 The next run keeps start-token alignment and adds **SFT-style user-label
 masking** (`--mask-user`): loss is computed only on assistant turns, so the
 model spends its capacity learning responses instead of predicting the user
-prompt. Same 21M, 12k steps, batch 16, seq 128 (~2 h).
+prompt. Same 21M, 12k steps, batch 16, seq 128.
 
-Paused at **step 4000 / 12000** with checkpoint + optimizer state. Resume:
+**SFT result (first qualitative improvement, still BLOCKED):**
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en_sft.ps1
-```
+- assistant-only loss **6.80**, ppl 899 (still high);
+- all-token chat bpb 2.311 (not comparable: user labels are masked);
+- **0 empty** samples, **2/12** tag leaks, minimum alpha **0.492**;
+- samples now contain story structure, names and dialogue
+  (`"... named ... girl ... friends ... said Lily ..."`), not just
+  function-word loops.
 
-Evidence: `research/results/chat_en_clean_lengths.json` and
-`research/results/spiking_chat_en_clean_21m_turn.json`.
+The strict gate still fails (one sample just under the 0.5 alpha floor, two
+tag leaks). This is the first run that looks like it learned a response shape.
+Next: SFT sampling sweep, then a 50M SFT or more assistant-heavy tokens.
+
+Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`.
 
 ## Evaluation
 
