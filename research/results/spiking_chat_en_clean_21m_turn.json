@@ -1,0 +1,200 @@
+{
+  "tag": "clean_21m_turn_12k",
+  "lang": "en",
+  "model": "checkpoints/spiking_chat_en_clean_21m_turn",
+  "config": {
+    "vocab": 8192,
+    "dim": 1024,
+    "layers": 2,
+    "mode": "spike",
+    "adapt": 0.1,
+    "feedback": false,
+    "attention": false,
+    "pointer_offset": 0,
+    "memory": false,
+    "slots": 0,
+    "slot_heads": 1,
+    "slot_attr_keys": false,
+    "slot_conj": false,
+    "slot_factorized": false,
+    "query_color_copy": false,
+    "color_copy_init": 1.0,
+    "learned_boundaries": false,
+    "raw_boundaries": false,
+    "category_states": false,
+    "name_ids": [],
+    "color_ids": [],
+    "object_ids": [],
+    "write_token": -1,
+    "read_token": -1,
+    "mem_decay": 0.5,
+    "mem_read_pos": -1,
+    "dropout": 0.0,
+    "decay_syn": 0.9,
+    "decay_mem": 0.9,
+    "decay_out": 0.9,
+    "decay_trace": 0.9,
+    "threshold": 0.5,
+    "alpha": 4.0
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 6.556503176689148,
+      "ppl": 703.80630030621,
+      "bpb": 2.207647054000716,
+      "tokens": 8192,
+      "bytes": 35100
+    },
+    "wiki": {
+      "loss": 7.194360375404358,
+      "ppl": 1331.8981382679824,
+      "bpb": 2.930953593609669,
+      "tokens": 8192,
+      "bytes": 29010
+    },
+    "stories": {
+      "loss": 6.271774470806122,
+      "ppl": 529.4159780694622,
+      "bpb": 2.3263135591361865,
+      "tokens": 8192,
+      "bytes": 31863
+    },
+    "mixed": {
+      "loss": 6.462256073951721,
+      "ppl": 640.5044531653447,
+      "bpb": 2.215810223006848,
+      "tokens": 8192,
+      "bytes": 34468
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": false,
+    "alpha_at_least_0_5": false,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "are this in the that the of the its to is.",
+      "chars": 42,
+      "alpha": 0.7381,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "hello",
+      "text": "the the to the an to of of and. of the you's, and to, to of ofed, in your the the for the the ofy. .",
+      "chars": 100,
+      "alpha": 0.68,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "how are you?",
+      "text": "have aing of and with a of, to the in, in has or of, the: I, not a is the is. and.'s a the to the- the and, that the can is to have be to.'s it it of the you it it's with the and to and a that you with is get it your out a.  is",
+      "chars": 227,
+      "alpha": 0.6784,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "how are you?",
+      "text": "a a to of. a have, the of a the the who is a of the that it a a be a the as a. the is has aer the and to from is and on on from..",
+      "chars": 129,
+      "alpha": 0.6744,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "N meet to. to meet meet that to that that  to books.",
+      "chars": 52,
+      "alpha": 0.7308,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "meet you meet I that meet  remember I remember that to remember I remember that. I  like",
+      "chars": 88,
+      "alpha": 0.7841,
+      "turkish_chars": 0,
+      "repeat3": 0.1333,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "'s to a to a named a story. of I were is the girl of with and her. the a, a the, to a a a, it of a with a on on the,y's the your at \".. \"\" The,ed,\"?\"\"'s was are \" toing ' in,in,\" an of and, on The, \" and and' \"",
+      "chars": 210,
+      "alpha": 0.6,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "a of that the a of, with as in of that the. in was Iing on an a- of with of\" and the a. in. I me I with of to the for for of is me and the,, I the a and my the a as I. be I the you for \" I a a,,, a, a in my my on and, and",
+      "chars": 221,
+      "alpha": 0.6425,
+      "turkish_chars": 0,
+      "repeat3": 0.0484,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "call tasked call tasked task.:",
+      "chars": 30,
+      "alpha": 0.8,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "ed Add that tasked thated myed task to.: are, task of of ofing, is in  and are",
+      "chars": 78,
+      "alpha": 0.7308,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    }
+  ]
+}

@@ -42,6 +42,19 @@ def load_tokens(path: str, limit: int = 0) -> torch.Tensor:
     return t[:limit] if limit else t
 
 
+def mask_user_labels(y, user_id: int, assistant_id: int):
+    """Mask labels for user turns so SFT trains on assistant responses."""
+    out = y.clone()
+    in_user = torch.zeros(y.size(0), dtype=torch.bool, device=y.device)
+    for t in range(y.size(1)):
+        token = y[:, t]
+        is_user = token == user_id
+        is_assistant = token == assistant_id
+        in_user = (in_user | is_user) & ~is_assistant
+        out[:, t] = out[:, t].masked_fill(in_user, -100)
+    return out
+
+
 class RandomWindows:
     def __init__(self, tokens, seq: int, batch: int, seed: int, device,
                  start_token: int = -1):
@@ -162,6 +175,10 @@ def train_cmd(args) -> int:
     sampler = RandomWindows(train_tokens, args.seq, args.batch,
                             args.seed + start_step, device,
                             start_token=args.start_token)
+    user_id = tok.token_to_id("<|user|>")
+    assistant_id = tok.token_to_id("<|assistant|>")
+    if args.mask_user and (user_id is None or assistant_id is None):
+        raise SystemExit("--mask-user needs <|user|> and <|assistant|> tokens")
     history = []
     print(json.dumps({
         "event": "start", "device": str(device), "params": count_params(model),
@@ -179,10 +196,12 @@ def train_cmd(args) -> int:
             group["lr"] = current_lr
         t0 = time.perf_counter()
         x, y = sampler.next()
+        if args.mask_user:
+            y = mask_user_labels(y, user_id, assistant_id)
         with torch.autocast("cuda", dtype=torch.bfloat16, enabled=amp):
             logits = model(x)
             loss = F.cross_entropy(logits.reshape(-1, model.vocab),
-                                   y.reshape(-1))
+                                   y.reshape(-1), ignore_index=-100)
         opt.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -385,6 +404,8 @@ def main(argv=None) -> int:
     tr.add_argument("--start-token", type=int, default=-1,
                     help="sample windows starting at this token id "
                          "(e.g. 0 for <|user|>)")
+    tr.add_argument("--mask-user", action="store_true",
+                    help="mask user-turn labels and train on assistant turns")
     tr.add_argument("--attention", action="store_true",
                     help="add causal attention over the recurrent history")
     tr.add_argument("--amp", action="store_true",

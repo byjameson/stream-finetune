@@ -174,11 +174,19 @@ structure. This explains both the word salad and the `<|assistant|>` leaks.
 
 The first fix is cheaper than a 512-token run: `--start-token 0` makes every
 training window start at a `<|user|>` token, so each window begins with a real
-turn instead of a random mid-conversation position. The 21M turn-aligned run
-keeps 12k steps, batch 16, seq 128 and the same speed (~2 h). A 512-token
-control is the fallback if alignment alone fails.
+turn instead of a random mid-conversation position.
 
-Evidence: `research/results/chat_en_clean_lengths.json`.
+Turn-aligned 21M result: chat bpb **2.208**, but **9/12** tag leaks, **2 empty**
+samples and minimum alpha **0.0**. Verdict: **BLOCKED**; alignment alone is not
+enough.
+
+The next run keeps start-token alignment and adds **SFT-style user-label
+masking** (`--mask-user`): loss is computed only on assistant turns, so the
+model spends its capacity learning responses instead of predicting the user
+prompt. Same 21M, 12k steps, batch 16, seq 128 (~2 h).
+
+Evidence: `research/results/chat_en_clean_lengths.json` and
+`research/results/spiking_chat_en_clean_21m_turn.json`.
 
 ## Evaluation
 
