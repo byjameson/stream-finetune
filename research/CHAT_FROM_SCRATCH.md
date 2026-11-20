@@ -196,9 +196,15 @@ prompt. Same 21M, 12k steps, batch 16, seq 128.
 
 The strict gate still fails (one sample just under the 0.5 alpha floor, two
 tag leaks). This is the first run that looks like it learned a response shape.
-Next: SFT sampling sweep, then a 50M SFT or more assistant-heavy tokens.
 
-Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`.
+A sampling sweep at temperature 0.3/0.5/0.7 still collapses into function-word
+loops; the 0.8/top-k 40 regime used by `chat_eval` is the better one for this
+checkpoint. The 50M SFT run is now testing whether capacity improves the
+assistant loss and response shape.
+
+Evidence: `research/results/spiking_chat_en_clean_21m_sft.json`,
+`research/results/spiking_chat_en_sft_sampling.json`, and
+`research/results/spiking_chat_en_clean_50m_sft.json` (pending).
 
 ## Evaluation
 
