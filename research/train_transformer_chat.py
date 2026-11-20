@@ -140,6 +140,9 @@ def main():
     ap.add_argument("--valid", default="data/chat_en_clean_valid.pt")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--out", default="checkpoints/transformer_chat_en_clean_21m")
+    ap.add_argument("--tag", default="transformer_21m_sft")
+    ap.add_argument("--result",
+                    default="research/results/transformer_chat_en_clean_21m.json")
     ap.add_argument("--steps", type=int, default=12000)
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--seq", type=int, default=128)
@@ -256,12 +259,12 @@ def main():
         "alpha_at_least_0_5": all(s["alpha"] >= 0.5 for s in samples),
         "no_tag_leak": all(s["tag_leak"] == 0 for s in samples),
     }
-    payload = {"tag": "transformer_21m_sft", "arch": "transformer",
+    payload = {"tag": args.tag, "arch": "transformer",
                "config": config, "step": args.steps, "bpb": evals,
                "gate": gate,
                "verdict": "PASS_CHAT_SMOKE" if all(gate.values())
                else "BLOCKED", "samples": samples, "history": history}
-    result = ROOT / "research/results/transformer_chat_en_clean_21m.json"
+    result = ROOT / args.result
     result.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
                       encoding="utf-8")
     print(json.dumps({"event": "done", "result": str(result),

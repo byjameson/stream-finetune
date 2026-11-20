@@ -17,8 +17,12 @@ import torch
 
 try:
     from research.chat_eval import chat_generate
+    from research.train_transformer_chat import (
+        TransformerLM, generate as transformer_generate)
 except ImportError:  # running as `python research/chat_human.py`
     from chat_eval import chat_generate
+    from train_transformer_chat import (
+        TransformerLM, generate as transformer_generate)
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MEMORY = ROOT / "data/chat_human_memory.json"
@@ -48,11 +52,12 @@ def _tokens(text: str) -> set[str]:
 
 class ChatHuman:
     def __init__(self, memory_path: str | Path = DEFAULT_MEMORY,
-                 model=None, tokenizer=None, device=None):
+                 model=None, tokenizer=None, device=None, arch="spiking"):
         self.path = Path(memory_path)
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
+        self.arch = arch
         self.data = self._load()
 
     def _load(self) -> dict:
@@ -147,11 +152,23 @@ class ChatHuman:
     def _generate(self, user_text: str) -> str:
         if self.model is None or self.tokenizer is None:
             return "I do not have a language model loaded yet."
-        prompt = f"{self.memory_context()}\n{user_text}"
-        text, _ = chat_generate(
-            self.model, self.tokenizer, prompt, max_new_tokens=64,
-            temperature=0.7, top_k=20, repetition_penalty=1.1,
-            device=self.device)
+        # The 20M model was trained on plain chat turns; injecting a long
+        # persona/fact block into the user turn is out of distribution.
+        prompt = user_text
+        if self.arch == "transformer":
+            user_id = self.tokenizer.token_to_id("<|user|>")
+            assistant_id = self.tokenizer.token_to_id("<|assistant|>")
+            text, _ = transformer_generate(
+                self.model, self.tokenizer,
+                f"<|user|> {prompt}<|end|><|assistant|>",
+                max_new=64, temperature=0.7, top_k=20,
+                repetition_penalty=1.1,
+                banned_ids=(user_id, assistant_id))
+        else:
+            text, _ = chat_generate(
+                self.model, self.tokenizer, prompt, max_new_tokens=64,
+                temperature=0.7, top_k=20, repetition_penalty=1.1,
+                device=self.device)
         return text or "I am not sure what to say yet."
 
     def respond(self, text: str) -> str:
@@ -194,7 +211,19 @@ class ChatHuman:
         return reply
 
 
-def load_model(path: str, device):
+def load_model(path: str, device, arch: str = "spiking",
+               tokenizer_path: str = "data/chat_en_bpe8k.json"):
+    if arch == "transformer":
+        ck = torch.load(Path(path) / "model.pt", map_location="cpu",
+                        weights_only=False)
+        cfg = ck["config"]
+        model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
+                              cfg["heads"], cfg["ff"]).to(device)
+        model.load_state_dict(ck["state"])
+        model.eval()
+        from tokenizers import Tokenizer
+        tokenizer = Tokenizer.from_file(str(ROOT / tokenizer_path))
+        return model, tokenizer
     from streamft.spiking import load_checkpoint
     model, tokenizer, _ = load_checkpoint(path)
     model.to(device)
@@ -205,14 +234,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--memory", default=str(DEFAULT_MEMORY))
     ap.add_argument("--model", default="")
+    ap.add_argument("--arch", choices=["spiking", "transformer"],
+                    default="spiking")
+    ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--message", default="")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = tokenizer = None
     if args.model:
-        model, tokenizer = load_model(args.model, device)
-    human = ChatHuman(args.memory, model, tokenizer, device)
+        model, tokenizer = load_model(args.model, device, args.arch,
+                                      args.tokenizer)
+    human = ChatHuman(args.memory, model, tokenizer, device, args.arch)
 
     if args.message:
         print(human.respond(args.message))

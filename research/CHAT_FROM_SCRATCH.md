@@ -280,10 +280,19 @@ separate instruction-following evaluation.
 - JSON memory for persona, facts, episodes and tasks;
 - deterministic commands: `my name is ...`, `add task ...`, `list tasks`,
   `complete task N`, `what do you remember`;
-- the model is only called for open-ended text, with a short memory context;
+- the model is only called for open-ended text; the transformer prompt is a
+  plain chat turn because the 20M model was not trained on a long persona block;
+- supports both `--arch spiking` and `--arch transformer`;
 - no model loaded is a valid mode (tests cover it).
 
-This keeps facts and actions out of the 21M weights. The runtime is tested
+Verified with the 20M transformer:
+
+```text
+you> hello
+tiny> Hello! How can I help you today?
+```
+
+This keeps facts and actions out of the weights. The runtime is tested
 independently of the model, so a weak checkpoint does not make memory or task
 commands fail.
 
