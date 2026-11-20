@@ -123,7 +123,9 @@
 - Added `--mask-user` SFT loss masking: loss only on assistant turns, windows
   start at `<|user|>`. 21M 12k result: assistant loss 6.80, chat bpb 2.311,
   alpha min 0.492, 2/12 tag leaks, 0 empty; samples show story structure/names
-  but the strict gate is still **BLOCKED** (alpha, tag leak).
+  but the strict gate is still **BLOCKED** (alpha, tag leak). A temp 0.3-0.7
+  sweep still loops; 0.8/top-k 40 remains the better sampling regime. A 50M
+  SFT run is in progress.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -134,7 +136,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 192 tests;
+- 193 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
