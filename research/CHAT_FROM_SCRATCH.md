@@ -185,6 +185,12 @@ masking** (`--mask-user`): loss is computed only on assistant turns, so the
 model spends its capacity learning responses instead of predicting the user
 prompt. Same 21M, 12k steps, batch 16, seq 128 (~2 h).
 
+Paused at **step 4000 / 12000** with checkpoint + optimizer state. Resume:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/resume_chat_en_sft.ps1
+```
+
 Evidence: `research/results/chat_en_clean_lengths.json` and
 `research/results/spiking_chat_en_clean_21m_turn.json`.
 
