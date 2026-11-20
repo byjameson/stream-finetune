@@ -82,7 +82,7 @@ def evaluate_assistant(model, tok, batches) -> dict:
         masked = mask_user_labels(y, user_id, assistant_id)
         nll += float(F.cross_entropy(
             logits.reshape(-1, model.vocab), masked.reshape(-1),
-            ignore_index=-100, reduction="sum"))
+            ignore_index=-100, reduction="sum").detach())
         count += int((masked != -100).sum())
     if count == 0:
         return {}

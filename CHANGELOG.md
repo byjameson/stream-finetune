@@ -127,7 +127,12 @@
   sweep still loops; 0.8/top-k 40 remains the better sampling regime.
 - 50M SFT does not improve: assistant loss 6.73, chat bpb 2.293, 2 empty,
   6/12 tag leaks, alpha min 0.0. The 21M SFT remains the best qualitative
-  result; capacity is not the lever.
+  result; capacity is not the lever. The 21M SFT continuation was stopped at
+  step 16000 with a checkpoint.
+- Added a **20.2M transformer diagnostic baseline** on the same clean data,
+  tokenizer, start-token sampler and assistant-only loss. It runs at
+  0.109 s/step (~25 min for 12k steps); this tests whether the spiking
+  architecture, rather than data, is the bottleneck.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
