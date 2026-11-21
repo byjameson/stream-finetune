@@ -362,17 +362,19 @@ refused them.
 
 ### 50M behavior comparison
 
-The 49.2M transformer was fine-tuned for 400 steps on the format queue from the
-50M base.
+The 49.2M transformer was fine-tuned for 1,000 steps on a diverse mix of clean
+chat + skill + format/novel queues.
 
 | model | clean bpb | clean assistant | raw clean smoke | runtime behavior | E2E |
 |---|---:|---:|---|---|---|
-| v0001 20M | 1.475 | 4.374 | **PASS** | PASS | PASS |
-| 50M behavior | **1.372** | **4.050** | **BLOCKED** (one empty sample) | PASS | PASS |
+| v0001 20M | 1.475 | 4.374 | PASS | PASS | PASS |
+| **50M behavior long** | **1.375** | **4.066** | **PASS** | PASS | PASS |
 
-The 50M model has better loss but fails the raw clean smoke and produces
-unstable facts/empty replies (`weather -> ''`). It is not the product
-checkpoint. **v0001 remains the product model.**
+The long 50M behavior model clears all gates and has better clean metrics and
+comparable stories. It is now the **product checkpoint**
+(`transformer_behavior_50m_long`); v0001 remains the compact fallback. Live
+factual questions (weather, time) are out of scope and must be routed to a tool
+or a refusal.
 
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 

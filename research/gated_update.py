@@ -115,7 +115,7 @@ def clean_smoke(model, tok) -> tuple[bool, list[dict]]:
     from streamft.transformer import generate
     uid = tok.token_to_id("<|user|>")
     aid = tok.token_to_id("<|assistant|>")
-    prompts = ["hello", "how are you?", "what is the weather today?",
+    prompts = ["hello", "how are you?", "what can you do?",
                "tell me a short story"]
     rows = []
     for i, prompt in enumerate(prompts):

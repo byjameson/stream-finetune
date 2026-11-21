@@ -1,0 +1,260 @@
+{
+  "tag": "behavior_50m_long",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 1000,
+  "bpb": {
+    "chat": {
+      "loss": 4.08344891667366,
+      "ppl": 59.34980982023201,
+      "bpb": 1.374942363043169,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.066105239674857,
+        "ppl": 58.329349517822266,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.2879087924957275,
+      "ppl": 72.81403990860223,
+      "bpb": 1.5904622225741445,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.2879087924957275,
+        "ppl": 72.81402587890625,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.518362939357758,
+      "ppl": 249.22670381982354,
+      "bpb": 2.2481589528442236,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.518362939357758,
+        "ppl": 249.22671508789062,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 4.064062774181366,
+      "ppl": 58.21032672769333,
+      "bpb": 1.393505880751317,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 4.0007684534810775,
+        "ppl": 54.640132904052734,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": false,
+    "alpha_at_least_0_5": false,
+    "no_tag_leak": true
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you, Alex. I will remember your name.",
+      "chars": 50,
+      "alpha": 0.76,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The weather is sunset.",
+      "chars": 22,
+      "alpha": 0.8182,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "It will take a few days to complete the week.",
+      "chars": 45,
+      "alpha": 0.7778,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Nora was a curious fox who lived near the forest. One day Nora found a red ball. Nora wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 168,
+      "alpha": 0.7857,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Olga was a curious turtle who lived near the village. One day Olga found a blue kite. the fact that they walked together the forest, and they played until sunset.",
+      "chars": 162,
+      "alpha": 0.7963,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 2: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 2: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "history": [
+    {
+      "event": "eval",
+      "step": 200,
+      "train_loss": 1.3348054885864258,
+      "step_s": 0.13953875500010327,
+      "lr": 9.728616793536588e-06,
+      "bpb": 1.204175044778728,
+      "assistant": {
+        "loss": 2.8810920836433533,
+        "ppl": 17.833738327026367,
+        "tokens": 3465
+      }
+    },
+    {
+      "event": "eval",
+      "step": 400,
+      "train_loss": 0.3898630142211914,
+      "step_s": 0.13987469899991992,
+      "lr": 7.75e-06,
+      "bpb": 1.1692669833794287,
+      "assistant": {
+        "loss": 2.81059461100965,
+        "ppl": 16.619796752929688,
+        "tokens": 3465
+      }
+    },
+    {
+      "event": "eval",
+      "step": 600,
+      "train_loss": 0.1842011660337448,
+      "step_s": 0.14041193199984264,
+      "lr": 4.7185832004988135e-06,
+      "bpb": 1.1620345389972457,
+      "assistant": {
+        "loss": 2.8112754040122203,
+        "ppl": 16.63111686706543,
+        "tokens": 3465
+      }
+    },
+    {
+      "event": "eval",
+      "step": 800,
+      "train_loss": 0.4616340398788452,
+      "step_s": 0.14083863550040404,
+      "lr": 2.0528000059645994e-06,
+      "bpb": 1.1625771103904545,
+      "assistant": {
+        "loss": 2.8172894190228175,
+        "ppl": 16.731435775756836,
+        "tokens": 3465
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1000,
+      "train_loss": 0.7495974898338318,
+      "step_s": 0.14163954549992921,
+      "lr": 1.0000000000000002e-06,
+      "bpb": 1.1611669202416803,
+      "assistant": {
+        "loss": 2.815634247750947,
+        "ppl": 16.703765869140625,
+        "tokens": 3465
+      }
+    }
+  ]
+}

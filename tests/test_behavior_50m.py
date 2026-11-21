@@ -15,8 +15,9 @@ def test_v0001_passes_corrected_clean_smoke_and_50m_does_not():
     assert all(small["gate"].values())
     assert small["bpb"]["chat"]["bpb"] < 1.5
     assert small["bpb"]["chat"]["assistant"]["loss"] < 4.4
-    # The 50M model has better loss but one empty raw sample; v0001 remains
-    # the product checkpoint.
+    # The short 400-step 50M run has better loss but one empty raw sample.
+    # The longer 50M run is the product checkpoint; see
+    # test_behavior_50m_long.py.
     assert big["bpb"]["chat"]["bpb"] < small["bpb"]["chat"]["bpb"]
     assert big["verdict"] == "BLOCKED"
     assert not big["gate"]["samples_nonempty"]
