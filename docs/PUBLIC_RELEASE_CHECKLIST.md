@@ -32,9 +32,11 @@ exists, not that the release is approved.
 
 ## 3. Safety and abuse
 
-- [ ] Output filter for sexual content involving minors, self-harm, violence,
-      hate, harassment and illegal instructions.
-- [ ] Refusal/redirect behaviour tested on a red-team set.
+- [x] Opt-in output/input filter for sexual content involving minors,
+      self-harm, violence, hate, harassment, illegal instructions, privacy and
+      malware (`docs/SAFETY.md`).
+- [x] Refusal/redirect behaviour tested on a red-team set: filter 30/30,
+      output 4/4, agent 30/30 (`research/results/redteam_safety_*.json`).
 - [ ] PII handling and user deletion path.
 - [ ] Prompt-injection and jailbreak tests.
 - [ ] Rate limits and API authentication if hosted.

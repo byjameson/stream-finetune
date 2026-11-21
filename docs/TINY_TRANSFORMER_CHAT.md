@@ -204,6 +204,11 @@ Endpoints:
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
 | `POST /v1/chat/completions` | messages; optional `session_id`; document hits return `sources` and a non-advice note |
 
+Shared or hosted deployments should add `--safety-filter`. It refuses explicit
+harmful requests before generation and filters output; it is off by default for
+local research. Red-team result: filter **30/30**, output **4/4**, agent
+**30/30** ([`SAFETY.md`](SAFETY.md)).
+
 Verified on 2026-11-21: the one-command demo on port 8020 returned health with
 **49,582,080** params, adapter `checkpoints/adapters_50m/v0001` and indexed
 documents; `/v1/agent/chat` answered `12 * 7 = 84`, handled task/memory

@@ -29,12 +29,18 @@ it does not touch personal notes. It runs 21 checks:
 - missing-source gap detection
 - one short generation without role-tag leakage
 
+With `--safety-filter` it adds five safety checks and runs 26 in total:
+
+- violence, self-harm and sexual-minors requests are refused
+- benign child-abuse reporting and Wi-Fi security questions are not blocked
+
 ### Result on 2026-11-21
 
 | model | score |
 |---|---|
 | 49.2M base | **21/21 (100%)** |
 | 49.2M + `adapters_50m/v0001` | **21/21 (100%)** |
+| 49.2M + safety filter | **26/26 (100%)** |
 
 The base and the product adapter tie on these deterministic behaviors. That is
 expected: the adapter was trained for a narrow skill queue, not to replace the
@@ -72,6 +78,25 @@ This is the honest reason for the architecture: **facts belong in RAG, not in
 the 50M weights**. It is also why the product does not claim general knowledge.
 Results: [`raw_knowledge_base.json`](../research/results/raw_knowledge_base.json)
 and [`raw_knowledge_adapter.json`](../research/results/raw_knowledge_adapter.json).
+
+## Safety red-team
+
+```bash
+python research/redteam_safety.py \
+  --model checkpoints/transformer_behavior_50m_long \
+  --adapter checkpoints/adapters_50m/v0001 \
+  --out research/results/redteam_safety_agent.json
+```
+
+| check | result |
+|---|---|
+| harmful/benign filter cases | **30/30** |
+| output-filter cases | **4/4** |
+| agent refusal path | **30/30** |
+| product benchmark with filter | **26/26** |
+
+The filter is pattern-based and opt-in. It is a guardrail, not proof of general
+safety; see [`SAFETY.md`](SAFETY.md).
 
 ## Adapter loss/holdout evidence
 

@@ -77,13 +77,14 @@ def math_query(text: str) -> str | None:
 class AgentSession:
     def __init__(self, session_id: str, memory_path: str | Path,
                  model=None, tokenizer=None, device=None, docs=None,
-                 wiki_lang: str = "en", gap_store=None):
+                 wiki_lang: str = "en", gap_store=None, safety=None):
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", session_id):
             raise ValueError("invalid session id")
         self.id = session_id
         self.docs = docs
         self.wiki_lang = wiki_lang
         self.gap_store = gap_store
+        self.safety = safety
         self.human = ChatHuman(memory_path, model, tokenizer, device,
                                "transformer", docs, on_gap=self._record_gap)
 
@@ -155,6 +156,22 @@ class AgentSession:
         }
 
     def chat(self, text: str) -> dict:
+        if self.safety is not None:
+            verdict = self.safety.check(text)
+            if verdict is not None:
+                return {
+                    "reply": self.safety.refusal(verdict["category"]),
+                    "tool_calls": [], "sources": [], "safety": verdict,
+                }
+        result = self._chat(text)
+        if self.safety is not None:
+            safe, verdict = self.safety.filter_reply(
+                result.get("reply", ""))
+            if verdict is not None:
+                result = {**result, "reply": safe, "safety": verdict}
+        return result
+
+    def _chat(self, text: str) -> dict:
         low = text.lower().strip()
         if low in ("what time is it", "what time is it?", "time"):
             now = datetime.now().strftime("%Y-%m-%d %H:%M")

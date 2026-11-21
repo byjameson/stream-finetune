@@ -4,6 +4,7 @@ param(
     [string]$Adapter = "",
     [string]$Docs = "",
     [string]$Queue = "data/learning_queue.jsonl",
+    [switch]$SafetyFilter,
     [switch]$NoBrowser
 )
 $ErrorActionPreference = "Stop"
@@ -12,6 +13,7 @@ $extra = ""
 if ($Adapter) { $extra += " --adapter $Adapter" }
 if ($Docs) { $extra += " --docs $Docs" }
 if ($Queue) { $extra += " --queue $Queue" }
+if ($SafetyFilter) { $extra += " --safety-filter" }
 
 Start-Process powershell -ArgumentList @(
     "-NoExit",

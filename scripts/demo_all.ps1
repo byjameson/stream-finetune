@@ -1,5 +1,6 @@
 param(
     [int]$Port = 8013,
+    [switch]$SafetyFilter,
     [switch]$NoBrowser
 )
 $ErrorActionPreference = "Stop"
@@ -25,4 +26,5 @@ python -m streamft.doc_memory add examples/demo_note.txt --db $docs --title "Dem
 Write-Host "Starting Atom Zero demo..."
 & (Join-Path $PSScriptRoot "chat_demo.ps1") `
     -Port $Port -Model $model -Adapter $adapter -Docs $docs `
-    -Queue "data/learning_queue.jsonl" -NoBrowser:$NoBrowser
+    -Queue "data/learning_queue.jsonl" -SafetyFilter:$SafetyFilter `
+    -NoBrowser:$NoBrowser

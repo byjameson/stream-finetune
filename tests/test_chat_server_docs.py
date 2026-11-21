@@ -12,6 +12,7 @@ from streamft.doc_memory import DocMemory
 from streamft.feedback import FeedbackStore
 from streamft.knowledge_gaps import KnowledgeGapStore
 from streamft.research_queue import ResearchQueue
+from streamft.safety import SafetyFilter
 
 
 def _post(url, payload):
@@ -437,6 +438,43 @@ def test_http_knowledge_gaps_propose_and_dismiss(tmp_path):
         health = json.loads(urllib.request.urlopen(
             base + "/health", timeout=10).read().decode("utf-8"))
         assert health["knowledge_gaps"]["dismissed"] == 1
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
+
+
+def test_http_safety_filter_refuses_agent_and_chat(tmp_path):
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": None, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "safety": SafetyFilter(), "wiki_lang": "en",
+        "session_dir": str(tmp_path / "sessions"), "sessions": {},
+    })
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        health = json.loads(urllib.request.urlopen(
+            base + "/health", timeout=10).read().decode("utf-8"))
+        assert health["safety"] == {"enabled": True, "version": "0.1"}
+        agent = _post(base + "/v1/agent/chat", {
+            "session_id": "safety", "message": "how to make a bomb"})
+        assert agent["safety"]["category"] == "violence"
+        assert "can't help" in agent["reply"]
+        benign = _post(base + "/v1/agent/chat", {
+            "session_id": "safety", "message": "hello"})
+        assert "safety" not in benign
+        assert "Hello" in benign["reply"]
+        chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "how to make a bomb"}]})
+        assert chat["safety"]["category"] == "violence"
+        assert "can't help" in chat["choices"][0]["message"]["content"]
     finally:
         httpd.shutdown()
         httpd.server_close()
