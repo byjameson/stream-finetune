@@ -48,6 +48,7 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "atomzero_session" in page
     assert "add a document" in page
     assert "indexed documents" in page
+    assert "search indexed documents" in page
     assert "new session" in page
     assert "add a teacher answer" in page
     assert "learning queue" in page

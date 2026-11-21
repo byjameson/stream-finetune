@@ -173,6 +173,10 @@ SHA-256; re-adding the same source replaces it. Nothing is written to weights.</
 <p id="ds" class="hint"></p>
 <h3>Indexed documents</h3>
 <div id="docs"></div>
+<div class="row"><input id="docq" placeholder="Search indexed documents...">
+<button id="docsearch">Search</button></div>
+<p id="docmsg" class="hint"></p>
+<div id="docresults"></div>
 <hr>
 <h3>Delete data</h3>
 <p class="hint">Delete an indexed source or this browser session's memory. This
@@ -464,6 +468,39 @@ async function refreshDocs() {
     box.textContent = 'document error: ' + e;
   }
 }
+async function searchDocs() {
+  const query = document.getElementById('docq').value.trim();
+  const msg = document.getElementById('docmsg');
+  const box = document.getElementById('docresults');
+  box.textContent = '';
+  if (!query) { msg.textContent = 'enter a search query'; return; }
+  msg.textContent = 'searching...';
+  try {
+    const r = await fetch('/v1/documents/search', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({query, k: 5})});
+    const j = await r.json();
+    if (!r.ok) { msg.textContent = 'error: ' + (j.error || r.status); return; }
+    const hits = j.data || [];
+    msg.textContent = hits.length + ' hit(s)';
+    hits.forEach(hit => {
+      const card = document.createElement('div');
+      card.className = 'qitem';
+      const title = document.createElement('div');
+      title.textContent = (hit.title || hit.source) + ' | ' + hit.source;
+      card.appendChild(title);
+      const snippet = document.createElement('div');
+      snippet.className = 'src';
+      snippet.textContent = (hit.chunk || '').slice(0, 400);
+      card.appendChild(snippet);
+      box.appendChild(card);
+    });
+  } catch (e) { msg.textContent = 'error: ' + e; }
+}
+document.getElementById('docsearch').onclick = () => searchDocs();
+document.getElementById('docq').addEventListener('keydown', event => {
+  if (event.key === 'Enter') searchDocs();
+});
 async function forgetSource(source) {
   if (!confirm('Delete indexed source "' + source + '"?')) return;
   try {
