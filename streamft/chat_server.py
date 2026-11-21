@@ -9,6 +9,8 @@ Endpoints:
   GET  /health
   GET  /v1/models
   GET  /v1/documents
+  POST /v1/documents
+  POST /v1/documents/upload?source=...&title=...
   POST /v1/documents/search
   POST /v1/teach
   POST /v1/research
@@ -20,10 +22,12 @@ Endpoints:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import threading
 import time
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -33,6 +37,50 @@ from streamft.transformer import TransformerLM, generate
 
 _lock = threading.Lock()
 _state: dict = {}
+
+MAX_BODY_BYTES = 2_000_000
+MAX_DOC_BYTES = 1_000_000
+MAX_SOURCE_CHARS = 512
+MAX_TITLE_CHARS = 200
+
+
+class DocumentTooLarge(ValueError):
+    pass
+
+
+def ingest_document(docs, source, text, title: str = "") -> dict:
+    """Validate and index a text document, returning its provenance."""
+    if docs is None:
+        raise ValueError("no document memory configured")
+    source = str(source or "").strip()
+    title = str(title or "").strip()
+    if not source:
+        raise ValueError("source is required")
+    if len(source) > MAX_SOURCE_CHARS:
+        raise ValueError(f"source is too long (max {MAX_SOURCE_CHARS} chars)")
+    if len(title) > MAX_TITLE_CHARS:
+        raise ValueError(f"title is too long (max {MAX_TITLE_CHARS} chars)")
+    if any(ord(ch) < 32 for ch in source + title):
+        raise ValueError("source/title contains control characters")
+    if not isinstance(text, str):
+        raise ValueError("text must be a string")
+    text = text.strip()
+    if not text:
+        raise ValueError("text is empty")
+    raw = text.encode("utf-8")
+    if len(raw) > MAX_DOC_BYTES:
+        raise DocumentTooLarge(
+            f"document is too large (max {MAX_DOC_BYTES} bytes)")
+    chunks = docs.add_text(source, text, title=title)
+    return {
+        "source": source,
+        "title": title or Path(source).stem,
+        "chunks": chunks,
+        "bytes": len(raw),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "replace": True,
+    }
+
 
 PAGE = """<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -45,6 +93,7 @@ h1{margin:0 0 4px}.hint{color:#666;font-size:14px}
 .user{align-self:flex-end;background:#e8f0fe}.bot{align-self:flex-start;background:#f4f4f4}
 .meta{font-size:12px;color:#666;margin-top:4px}.err{background:#fde8e8}
 .row{display:flex;gap:8px}.row input{flex:1;padding:10px;font:inherit}
+textarea{width:100%;min-height:100px;padding:10px;font:inherit;box-sizing:border-box}
 input,button{font:inherit}button{padding:8px 12px;cursor:pointer}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 18px}
 .chips button{font-size:13px;background:#fff;border:1px solid #ccc;border-radius:999px}
@@ -70,6 +119,16 @@ change model weights.</p>
 <div class="row"><input id="f" placeholder="The project codename is Blue Lantern.">
 <button id="t">Teach fact</button></div>
 <p id="s" class="hint"></p>
+<hr>
+<h3>Add a document</h3>
+<p class="hint">Text only (.txt/.md), max 1 MB. Stored with source, title and
+SHA-256; re-adding the same source replaces it. Nothing is written to weights.</p>
+<div class="row"><input id="src" value="my-note.txt" placeholder="Source (required)">
+<input id="ttl" placeholder="Title (optional)"></div>
+<textarea id="txt" placeholder="Paste text or choose a file..."></textarea>
+<div class="row"><input id="file" type="file" accept=".txt,.md,text/plain">
+<button id="add">Add document</button></div>
+<p id="ds" class="hint"></p>
 <script>
 const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
 const chat = document.getElementById('chat');
@@ -130,6 +189,49 @@ document.getElementById('t').onclick = async () => {
                            : ('error: ' + (j.error || r.status));
     if (r.ok) {
       document.getElementById('f').value = '';
+      refreshHealth();
+    }
+  } catch (e) { out.textContent = 'error: ' + e; }
+};
+document.getElementById('file').onchange = () => {
+  const file = document.getElementById('file').files[0];
+  if (!file) return;
+  const out = document.getElementById('ds');
+  if (file.size > 1000000) {
+    out.textContent = 'file is too large (max 1 MB)';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById('txt').value = reader.result;
+    const src = document.getElementById('src');
+    if (!src.value.trim() || src.value === 'my-note.txt') src.value = file.name;
+    const title = document.getElementById('ttl');
+    if (!title.value.trim()) title.value = file.name;
+  };
+  reader.readAsText(file);
+};
+document.getElementById('add').onclick = async () => {
+  const source = document.getElementById('src').value.trim();
+  const text = document.getElementById('txt').value;
+  const out = document.getElementById('ds');
+  if (!source || !text.trim()) {
+    out.textContent = 'source and text are required';
+    return;
+  }
+  try {
+    const r = await fetch('/v1/documents', {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({source, title: document.getElementById('ttl').value,
+                            text})});
+    const j = await r.json();
+    out.textContent = r.ok
+      ? ('Indexed ' + j.chunks + ' chunk(s) from ' + j.source +
+         ' | sha256 ' + j.sha256.slice(0, 12) + '...')
+      : ('error: ' + (j.error || r.status));
+    if (r.ok) {
+      document.getElementById('txt').value = '';
+      document.getElementById('file').value = '';
       refreshHealth();
     }
   } catch (e) { out.textContent = 'error: ' + e; }
@@ -229,10 +331,13 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {"error": "not found"})
 
     def do_POST(self):
-        if self.path not in ("/generate", "/v1/chat/completions",
-                             "/v1/documents/search", "/v1/teach",
-                             "/v1/learn_url", "/v1/research",
-                             "/v1/agent/chat"):
+        parsed = urllib.parse.urlparse(self.path)
+        route = parsed.path
+        if route not in ("/generate", "/v1/chat/completions",
+                         "/v1/documents", "/v1/documents/search",
+                         "/v1/documents/upload", "/v1/teach",
+                         "/v1/learn_url", "/v1/research",
+                         "/v1/agent/chat"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
         if key:
@@ -241,7 +346,24 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(401, {"error": "unauthorized"})
         try:
             n = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            return self._json(400, {"error": "invalid Content-Length"})
+        if n < 0:
+            return self._json(400, {"error": "invalid Content-Length"})
+        if n > MAX_BODY_BYTES:
+            self.close_connection = True
+            return self._json(413, {"error": "request body is too large"})
+        if route == "/v1/documents/upload":
+            return self._upload(parsed.query, n)
+        try:
             req = json.loads(self.rfile.read(n) or b"{}")
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return self._json(400, {"error": "invalid JSON"})
+        if not isinstance(req, dict):
+            return self._json(400, {"error": "JSON object required"})
+        try:
+            if route == "/v1/documents":
+                return self._ingest(req)
             if self.path == "/v1/documents/search":
                 docs = _state.get("docs")
                 query = str(req.get("query", ""))
@@ -375,6 +497,40 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
 
+    def _ingest(self, req: dict):
+        try:
+            result = ingest_document(
+                _state.get("docs"),
+                req.get("source") or req.get("filename"),
+                req.get("text") or req.get("content") or "",
+                req.get("title", ""))
+        except DocumentTooLarge as exc:
+            return self._json(413, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        metrics = _state.get("metrics")
+        if isinstance(metrics, dict):
+            metrics["documents"] = metrics.get("documents", 0) + 1
+        return self._json(200, result)
+
+    def _upload(self, query: str, n: int):
+        params = urllib.parse.parse_qs(query)
+        source = (params.get("source", [""])[0]
+                  or params.get("filename", [""])[0])
+        title = params.get("title", [""])[0]
+        if n > MAX_DOC_BYTES:
+            self.close_connection = True
+            return self._json(413, {
+                "error": f"document is too large (max {MAX_DOC_BYTES} bytes)"})
+        raw = self.rfile.read(n)
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return self._json(400, {
+                "error": "document must be UTF-8 text"})
+        return self._ingest({"source": source, "title": title,
+                             "text": text})
+
     def _session(self, session_id: str):
         from streamft.agent_runtime import AgentSession
         sessions = _state.setdefault("sessions", {})
@@ -461,7 +617,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "api_key": api_key or os.environ.get("CHAT_API_KEY", ""),
         "user_id": tok.token_to_id("<|user|>"),
         "assistant_id": tok.token_to_id("<|assistant|>"),
-        "metrics": {"requests": 0, "generated_tokens": 0},
+        "metrics": {"requests": 0, "generated_tokens": 0, "documents": 0},
     })
     httpd = ThreadingHTTPServer((host, port), Handler)
     print(f"streamft local assistant serving {model_path} at http://{host}:{port}",

@@ -21,6 +21,29 @@ python -m streamft.doc_memory list --db data/docs.db
 Each chunk keeps its **source path**, title and hash. Re-adding a source
 replaces its chunks, so updates do not create duplicates.
 
+### HTTP ingestion (no CLI)
+
+Paste text:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/documents \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"notes.txt","title":"Notes","text":"The launch code is ORANGE-42."}'
+```
+
+Upload a UTF-8 text file as the raw body:
+
+```bash
+curl -X POST "http://127.0.0.1:8013/v1/documents/upload?source=notes.txt&title=Notes" \
+  -H 'Content-Type: text/plain' \
+  --data-binary @notes.txt
+```
+
+`source` is required. Limits are **1,000,000 bytes** per document and 2 MB per
+request. The response returns `chunks`, `bytes` and `sha256`; re-adding the same
+source replaces it. The browser demo includes paste and file-picker inputs.
+Documents are stored in SQLite FTS5, not in model weights.
+
 Use it from the runtime:
 
 ```bash
