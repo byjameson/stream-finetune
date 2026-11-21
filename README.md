@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![release](https://img.shields.io/badge/release-0.8.1-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.2-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -11,11 +11,11 @@
 ```powershell
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
-pip install streamft==0.8.1
+pip install streamft==0.8.2
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The package is on PyPI: <https://pypi.org/project/streamft/0.8.1/>. The demo
+The package is on PyPI: <https://pypi.org/project/streamft/0.8.2/>. The demo
 checkpoint still comes from the repository/tag.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
@@ -57,11 +57,19 @@ The 21/21 is the **product**, not the bare model. See the [model card](docs/MODE
 
 ## Published
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.1>
-- PyPI: <https://pypi.org/project/streamft/0.8.1/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.2>
+- PyPI: <https://pypi.org/project/streamft/0.8.2/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
+
+## Contact
+
+Questions, bug reports and collaboration:
+
+- **Email:** gokhancava@gmail.com
+- **LinkedIn:** <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
+- **GitHub issues:** <https://github.com/byjameson/stream-finetune/issues>
 
 ## streamft: fine-tune a 32B model on a 6 GB laptop GPU
 

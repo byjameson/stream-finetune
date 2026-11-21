@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2 - contact metadata (2026-11-22)
+
+- Added `gokhancava@gmail.com` and the LinkedIn profile to the README, model
+  card, package metadata and Medium draft.
+- Package `streamft 0.8.2`; model weights and benchmarks unchanged.
+
 ## 0.8.1 - PyPI README image fix (2026-11-22)
 
 - Fixed the broken architecture image on the PyPI project page: the README now

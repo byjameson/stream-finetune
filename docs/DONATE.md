@@ -14,3 +14,6 @@ investment offer. Donations do not buy influence over results or reviews.
 
 Double-check the network and the full address before sending; crypto
 transfers are irreversible. The EVM address is checksum-cased; copy it exactly.
+
+Questions or collaboration: **gokhancava@gmail.com** ·
+[LinkedIn](https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/).

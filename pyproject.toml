@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamft"
-version = "0.8.1"
+version = "0.8.2"
 description = "Fine-tune models that do not fit: stream NF4 weights from disk, one transformer block at a time."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "Gokhan Cava", email = "byjameson@users.noreply.github.com" }]
+authors = [{ name = "Gokhan Cava", email = "gokhancava@gmail.com" }]
 keywords = ["fine-tuning", "qlora", "nf4", "low-vram", "lora", "llm"]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -38,6 +38,7 @@ streamft = "streamft.__main__:main"
 [project.urls]
 Homepage = "https://github.com/byjameson/stream-finetune"
 Issues = "https://github.com/byjameson/stream-finetune/issues"
+LinkedIn = "https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/"
 
 [tool.setuptools]
 packages = ["streamft"]

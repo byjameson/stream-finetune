@@ -131,7 +131,7 @@ The closest description is: a compact **agent harness** with a small language mo
 ## Try it
 
 ```powershell
-pip install streamft==0.8.1
+pip install streamft==0.8.2
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
@@ -169,7 +169,7 @@ The honest gaps are model capability, tool planning, multilingual quality and a 
 If you want to inspect the claims:
 
 - GitHub: https://github.com/byjameson/stream-finetune
-- PyPI: https://pypi.org/project/streamft/0.8.1/
+- PyPI: https://pypi.org/project/streamft/0.8.2/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - Model card: https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md
@@ -181,3 +181,5 @@ Apache-2.0 for code and weights. Built on a 6 GB RTX 3050 laptop.
 ---
 
 *If you build local RAG or small-model agents, I would like to hear what breaks first. The most useful feedback is a failing question with a source and an expected answer.*
+
+**Contact:** gokhancava@gmail.com · [LinkedIn](https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/) · [GitHub](https://github.com/byjameson/stream-finetune)
