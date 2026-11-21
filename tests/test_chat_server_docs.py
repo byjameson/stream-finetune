@@ -323,7 +323,8 @@ def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
         chunks = memory.add_text(
             source, "Ankara is the capital of Turkey.", title="Ankara")
         return [{"source": source, "title": "Ankara", "chunks": chunks,
-                 "preview": "Ankara is the capital of Turkey."}]
+                 "preview": "Ankara is the capital of Turkey.",
+                 "context": "Ankara is the capital of Turkey. It is in Anatolia."}]
 
     import streamft.web_research as wr
     monkeypatch.setattr(wr, "wikipedia_research", fake_research)
@@ -344,10 +345,23 @@ def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
         approved = _post(base + "/v1/research/queue/approve",
                          {"id": item["id"]})
         assert approved["status"] == "approved"
+
+        class FakeTeacher:
+            label = "fake"
+            model = "fake-1"
+            host = "fake"
+
+            def ask(self, prompt, system="", max_tokens=512):
+                assert "https://en.wikipedia.org/?curid=9" in prompt
+                return "Teacher synthesis: Ankara is the capital of Turkey."
+
+        chat_server._state["teacher"] = FakeTeacher()
         ran = _post(base + "/v1/research/queue/run", {"limit": 1})
         assert ran["ran"][0]["status"] == "done"
         assert calls == ["Ankara"]
         assert ran["ran"][0]["sources"][0]["source"].startswith("https://")
+        assert ran["ran"][0]["teacher"]["verified"] is False
+        assert ran["ran"][0]["teacher"]["source"].startswith("teacher://fake/")
         assert "Ankara" in _post(
             base + "/v1/documents/search",
             {"query": "capital Turkey"})["data"][0]["chunk"]
@@ -357,7 +371,15 @@ def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
             "max_tokens": 20,
         })
         assert "Ankara" in chat["choices"][0]["message"]["content"]
-        assert chat["sources"][0]["source"].startswith("https://")
+        assert any(source["source"].startswith("https://")
+                   for source in chat["sources"])
+        teacher_chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the teacher synthesis?"}],
+            "max_tokens": 20,
+        })
+        assert "Teacher synthesis" in teacher_chat["choices"][0]["message"]["content"]
+        assert "unverified teacher-derived note" in teacher_chat["choices"][0]["message"]["content"]
         health = json.loads(urllib.request.urlopen(
             base + "/health", timeout=10).read().decode("utf-8"))
         assert health["research_queue"]["done"] == 1

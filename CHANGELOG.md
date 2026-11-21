@@ -263,7 +263,14 @@
   **Ask provider** button. Output uses the same unverified teacher-note path.
   Live browser test used a local fake provider (no external API/key) and cited
   `P-9001` with the warning.
-- 244 tests;
+- Queue + teacher synthesis: an approved topic now fetches Wikipedia lead
+  context, sends the context plus source URLs to the configured provider, and
+  stores the synthesis as an unverified teacher note. The queue item records
+  `teacher://...`, a preview and any provider error; a failed synthesis keeps
+  the Wikipedia pages. CLI and `run_research.ps1` accept `--teacher-*` /
+  `-Teacher*`. Browser E2E on port 8036: Ankara (3 chunks, `curid=802`) ->
+  fake local synthesis `P-9001` -> chat warning. No external API/key.
+- 246 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

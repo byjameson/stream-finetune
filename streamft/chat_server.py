@@ -32,7 +32,6 @@ import argparse
 import hashlib
 import json
 import os
-import re
 import threading
 import time
 import urllib.parse
@@ -43,6 +42,7 @@ import torch
 
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
+from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
 from streamft.teacher_provider import TeacherProvider, TeacherProviderError
 from streamft.transformer import TransformerLM, generate
 
@@ -53,10 +53,6 @@ MAX_BODY_BYTES = 2_000_000
 MAX_DOC_BYTES = 1_000_000
 MAX_SOURCE_CHARS = 512
 MAX_TITLE_CHARS = 200
-MAX_TEACHER_BYTES = 200_000
-MAX_TEACHER_TOPIC = 300
-MAX_TEACHER_LABEL = 100
-MAX_SOURCE_URL = 2048
 
 
 class DocumentTooLarge(ValueError):
@@ -94,65 +90,6 @@ def ingest_document(docs, source, text, title: str = "") -> dict:
         "bytes": len(raw),
         "sha256": hashlib.sha256(raw).hexdigest(),
         "replace": True,
-    }
-
-
-def add_teacher_note(docs, teacher, model, topic, answer,
-                     source_url: str = "") -> dict:
-    """Store a manually supplied teacher answer as unverified RAG data."""
-    if docs is None:
-        raise ValueError("no document memory configured")
-    teacher = str(teacher or "manual").strip() or "manual"
-    model = str(model or "").strip()
-    topic = str(topic or "").strip()
-    answer = str(answer or "").strip()
-    source_url = str(source_url or "").strip()
-    for label, value, limit in (
-            ("teacher", teacher, MAX_TEACHER_LABEL),
-            ("model", model, MAX_TEACHER_LABEL),
-            ("topic", topic, MAX_TEACHER_TOPIC)):
-        if len(value) > limit:
-            raise ValueError(f"{label} is too long (max {limit} chars)")
-        if any(ord(ch) < 32 for ch in value):
-            raise ValueError(f"{label} contains control characters")
-    if not answer:
-        raise ValueError("answer is required")
-    if source_url:
-        if len(source_url) > MAX_SOURCE_URL:
-            raise ValueError(
-                f"source_url is too long (max {MAX_SOURCE_URL} chars)")
-        parsed = urllib.parse.urlparse(source_url)
-        if parsed.scheme not in ("http", "https") or not parsed.hostname:
-            raise ValueError("source_url must be an http(s) URL")
-    text = f"Topic: {topic}\n\n{answer}" if topic else answer
-    raw = text.encode("utf-8")
-    if len(raw) > MAX_TEACHER_BYTES:
-        raise DocumentTooLarge(
-            f"teacher note is too large (max {MAX_TEACHER_BYTES} bytes)")
-    safe = re.sub(r"[^A-Za-z0-9_.-]+", "-", teacher).strip("-")[:48]
-    digest = hashlib.sha256(raw).hexdigest()
-    source = f"teacher://{safe or 'manual'}/{digest[:16]}"
-    title = (f"Teacher note: {topic}" if topic
-             else f"Teacher note ({teacher})")
-    chunks = docs.add_text(source, text, title=title, meta={
-        "kind": "teacher",
-        "source_url": source_url,
-        "teacher": teacher,
-        "model": model,
-        "verified": False,
-    })
-    return {
-        "source": source,
-        "title": title,
-        "chunks": chunks,
-        "bytes": len(raw),
-        "sha256": digest,
-        "kind": "teacher",
-        "verified": False,
-        "source_url": source_url,
-        "teacher": teacher,
-        "model": model,
-        "note": "teacher-derived and unverified",
     }
 
 
@@ -470,6 +407,20 @@ function renderQueue(data, stats) {
                          source.chunks + ' chunks | ' + source.source;
       card.appendChild(line);
     });
+    if (item.teacher && (item.teacher.source || item.teacher.error)) {
+      const line = document.createElement('div');
+      line.className = 'src';
+      line.textContent = 'teacher: ' +
+        (item.teacher.source || 'no note') +
+        (item.teacher.error ? ' | ' + item.teacher.error : ' | unverified');
+      card.appendChild(line);
+      if (item.teacher.answer_preview) {
+        const preview = document.createElement('div');
+        preview.className = 'src';
+        preview.textContent = 'synthesis: ' + item.teacher.answer_preview;
+        card.appendChild(preview);
+      }
+    }
     if (item.status === 'done' && !(item.sources || []).length) {
       const none = document.createElement('div');
       none.className = 'src';
@@ -923,7 +874,8 @@ class Handler(BaseHTTPRequestHandler):
             queue = self._queue()
             from streamft.web_research import wikipedia_research
             ran = queue.run_approved(
-                docs, req.get("limit", 1), wikipedia_research)
+                docs, req.get("limit", 1), wikipedia_research,
+                _state.get("teacher"))
         except ResearchQueueError as exc:
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"ran": ran, "stats": queue.stats()})
@@ -954,7 +906,7 @@ class Handler(BaseHTTPRequestHandler):
                 _state.get("docs"), req.get("teacher") or provider.label,
                 provider.model, topic or "Provider answer", answer,
                 req.get("source_url", ""))
-        except DocumentTooLarge as exc:
+        except TeacherNoteTooLarge as exc:
             return self._json(413, {"error": str(exc)})
         except ValueError as exc:
             return self._json(400, {"error": str(exc)})
@@ -970,7 +922,7 @@ class Handler(BaseHTTPRequestHandler):
                 req.get("model", ""),
                 req.get("topic") or req.get("question", ""),
                 req.get("answer", ""), req.get("source_url", ""))
-        except DocumentTooLarge as exc:
+        except TeacherNoteTooLarge as exc:
             return self._json(413, {"error": str(exc)})
         except ValueError as exc:
             return self._json(400, {"error": str(exc)})

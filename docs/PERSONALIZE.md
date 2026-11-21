@@ -158,12 +158,22 @@ rejected` items. Pending and rejected topics are never fetched. Each fetched
 item stores its Wikipedia source URLs and titles; normal document search and
 chat cite them.
 
+If the server has a teacher provider configured, `run` also sends the fetched
+lead context and source URLs to it. The answer is stored as an unverified
+teacher note; the queue item has a `teacher` block with its source/preview/error.
+A teacher failure leaves the Wikipedia pages intact.
+
 CLI:
 
 ```bash
 python research/research_queue.py --queue data/research_queue.json add "Ankara" --pages 1
 python research/research_queue.py --queue data/research_queue.json approve r0001
 python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+
+# With synthesis (local Ollama example).
+python research/research_queue.py --queue data/research_queue.json run \
+  --db data/docs.db --limit 1 \
+  --teacher-url http://127.0.0.1:11434/v1 --teacher-model llama3.2:3b
 ```
 
 The browser page has the same queue controls: add, approve, reject and run.
@@ -171,6 +181,13 @@ For a scheduled worker, use the wrapper:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/run_research.ps1 -Limit 1
+```
+
+With teacher synthesis:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run_research.ps1 `
+  -Limit 1 -TeacherUrl http://127.0.0.1:11434/v1 -TeacherModel llama3.2:3b
 ```
 
 Windows Task Scheduler:
