@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.0 - open-source scaled assistant
+## 0.8.0 - open-source scaled assistant (2026-11-22)
 
 - Scaled 50M data run: 175.37M clean tokens + replay; 25k candidate promoted,
   old valid bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502.

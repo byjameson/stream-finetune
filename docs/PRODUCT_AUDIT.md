@@ -161,9 +161,9 @@ recommended.
 ## 8. Release state
 
 - No PyPI/GitHub model release in this step.
-- `pyproject.toml` is **0.8.0.dev0**; no release will be tagged/published until
-  the product is complete and the owner supplies a fresh token.
-- PyPI token must be supplied by the owner at publication time.
+- `pyproject.toml` is **0.8.0**; the owner approved publication.
+- A GitHub source tag/release can be created now; PyPI upload still requires
+  the owner's token.
 - Open-source: anyone may host; this project does not operate a service.
 
 ## Priority gaps

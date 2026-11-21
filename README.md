@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![local only](https://img.shields.io/badge/local-100%25-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.0-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -922,7 +922,8 @@ the self-supervised matching-attention loss at this budget.
 
 This project is developed on a 6 GB laptop GPU. If you find it useful and want
 to support further experiments, donations go toward more compute and larger
-runs. There is no paid support, token, or investment offer.
+runs. There is no paid support, token, or investment offer. Canonical addresses
+and network warnings: [`docs/DONATE.md`](docs/DONATE.md).
 
 - **EVM-compatible networks** (Ethereum, BNB Smart Chain, Polygon, Optimism,
   Arbitrum One, Base, Avalanche C-Chain):

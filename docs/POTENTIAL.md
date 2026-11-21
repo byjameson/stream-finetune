@@ -1,7 +1,7 @@
 # Atom Zero: Capability and Potential
 
-Status: 2026-11-21, development build `0.8.0.dev0`. This is an honest capability
-assessment, not a release claim.
+Status: 2026-11-21, release `0.8.0`. This is an honest capability assessment,
+not a general-model claim.
 
 ## Short answer
 

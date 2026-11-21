@@ -1,10 +1,9 @@
-# Atom Zero 0.8.0 — open-source scaled assistant
+# Atom Zero 0.8.0 — open-source scaled assistant (2026-11-22)
 
-Status: **development candidate; not released**. `pyproject.toml` is
-`0.8.0.dev0`; PyPI upload waits for the owner's fresh token and a final
-completeness sign-off. The project is open source under Apache-2.0. No hosted
-service is operated; third-party hosts are responsible for their own deployment
-controls.
+Status: **released source version 0.8.0**. The owner approved publication;
+PyPI upload still waits for the owner's token. The project is open source under
+Apache-2.0. No hosted service is operated; third-party hosts are responsible
+for their own deployment controls.
 
 ## What changed
 
@@ -81,13 +80,20 @@ Or:
 powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1 -SafetyFilter
 ```
 
+## Support
+
+Canonical donation addresses and network warnings:
+[`DONATE.md`](DONATE.md). There is no paid support, token, or investment offer;
+donations do not buy influence over results or reviews.
+
 ## Known limits
 
 - 50M is narrow; general reasoning/coding and reliable unaided facts are out
-  of reach. The raw probe is 1-2/10.
+  of reach. The raw probe is **2/10**.
 - The safety filter is a small local ML head over frozen MiniLM embeddings
   plus exact rules, not a full moderation system; it is off by default.
 - The optional provider is text-only, does not plan tools, and unsourced
   answers are not fact-checked.
-- The 60k scaled run is still being evaluated; 25k is the promoted candidate.
-- Public release still needs the owner's PyPI token and final sign-off.
+- The 40k checkpoint is the product; the 60k resume did not beat it materially.
+- PyPI publication still needs the owner's token; the GitHub tag/source
+  release can be created without it.

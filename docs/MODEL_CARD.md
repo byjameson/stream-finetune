@@ -1,7 +1,7 @@
 # Atom Zero model card (draft, unreleased)
 
-Version: `0.8.0.dev0`  
-Last updated: 2026-11-21  
+Version: `0.8.0`<br>
+Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
 
 ## Model
