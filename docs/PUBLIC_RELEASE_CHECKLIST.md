@@ -60,7 +60,7 @@ evidence is linked. Current status: **not approved**.
 
 ## 7. Go/no-go
 
-- [ ] Product name and trademark checked.
+- [ ] Product name: Atom Zero (working name); domain and trademark checked.
 - [ ] Disclaimer: not professional advice; no guaranteed accuracy.
 - [ ] Release owner signs off with date and commit hash.
 - [ ] Post-release monitoring and takedown process.

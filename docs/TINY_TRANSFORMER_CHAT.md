@@ -1,9 +1,10 @@
-# Tiny Transformer Chat — model card
+# Atom Zero — local assistant model card
 
 ## What this is
 
-A tiny transformer language model trained from scratch for short English
-daily-assistant turns. The **20.2M** checkpoint is the compact fallback; the
+**Atom Zero** is a tiny transformer language model trained from scratch for
+short English daily-assistant turns. The Python package and CLI remain
+`streamft`; Atom Zero is the product name. The **20.2M** checkpoint is the compact fallback; the
 current product checkpoint is the **49.2M behavior variant**
 (`transformer_behavior_50m_long`). It is **not** a general assistant and not a
 factual model; facts belong in the document index, not in the weights.

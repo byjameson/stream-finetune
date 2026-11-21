@@ -31,6 +31,7 @@ def _post_raw(url, body):
 
 def test_demo_page_uses_daily_agent_endpoint():
     page = chat_server.PAGE.lower()
+    assert "atom zero" in page
     assert "/v1/agent/chat" in page
     assert "/v1/documents" in page
     assert "/v1/research/queue" in page

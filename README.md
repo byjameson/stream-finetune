@@ -15,9 +15,10 @@ measured speed where a measurement exists (and says so where it doesn't).
 `/v1/chat/completions`](docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
 3.14 s. This is the concrete “it works” scenario, not a benchmark.
 
-**Local daily assistant (from scratch, 50M):** [tasks, personal notes and
-source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start with
-`powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. Paste or
+**Atom Zero — local daily assistant (from scratch, 50M):** [tasks, personal
+notes and source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start
+with `powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. The
+Python package and CLI remain `streamft`; Atom Zero is the product name. Paste or
 upload your own UTF-8 documents over HTTP; the response keeps source, title and
 sha256. A reviewed research queue (browser + API/CLI) fetches only
 user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be

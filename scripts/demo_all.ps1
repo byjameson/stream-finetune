@@ -22,6 +22,7 @@ if (!(Test-Path "$adapter/adapter.pt")) {
 # Always refresh the demo note; other indexed sources are untouched.
 python -m streamft.doc_memory add examples/demo_note.txt --db $docs --title "Demo note"
 
+Write-Host "Starting Atom Zero demo..."
 & (Join-Path $PSScriptRoot "chat_demo.ps1") `
     -Port $Port -Model $model -Adapter $adapter -Docs $docs `
     -Queue "data/learning_queue.jsonl" -NoBrowser:$NoBrowser

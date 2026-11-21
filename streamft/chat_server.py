@@ -1,4 +1,4 @@
-"""Local HTTP server for the tiny transformer daily assistant.
+"""Local HTTP server for Atom Zero, the tiny transformer daily assistant.
 
     python -m streamft.chat_server \
       --model checkpoints/transformer_behavior_50m_long \
@@ -113,7 +113,7 @@ def resolve_adapter(adapter: str,
 
 PAGE = """<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>streamft local assistant</title>
+<title>Atom Zero - local assistant</title>
 <style>
 body{font:16px/1.5 system-ui;max-width:820px;margin:32px auto;padding:0 20px;color:#111}
 h1{margin:0 0 4px}.hint{color:#666;font-size:14px}
@@ -136,7 +136,8 @@ select{padding:8px;font:inherit;max-width:120px}
 .msg .actions button{font-size:12px;padding:4px 8px}
 hr{border:0;border-top:1px solid #ddd;margin:22px 0}
 </style>
-<h1>Local assistant</h1>
+<h1>Atom Zero</h1>
+<p class="hint">local-first personal assistant</p>
 <p id="m" class="hint">loading...</p>
 <div id="chat"></div>
 <div class="row"><input id="p" placeholder="Ask, add a task, search your notes...">
@@ -799,7 +800,7 @@ function refreshHealth() {
   fetch('/health').then(r => r.json()).then(j => {
     const docs = j.documents ? j.documents.chunks : 0;
     document.getElementById('m').textContent =
-      'model: ' + j.model + ' | params: ' + j.params + ' | step: ' + j.step +
+      'Atom Zero | model: ' + j.model + ' | params: ' + j.params + ' | step: ' + j.step +
       ' | adapter: ' + (j.adapter ? 'yes' : 'none') + ' | doc chunks: ' + docs +
       ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia') +
       ' | teacher: ' + (j.teacher && j.teacher.enabled ? j.teacher.model : 'off');
@@ -1478,7 +1479,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
                     "teacher_notes": 0},
     })
     httpd = ThreadingHTTPServer((host, port), Handler)
-    print(f"streamft local assistant serving {model_path} at http://{host}:{port}",
+    print(f"Atom Zero serving {model_path} at http://{host}:{port}",
           flush=True)
     try:
         httpd.serve_forever()

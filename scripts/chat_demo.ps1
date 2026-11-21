@@ -32,4 +32,4 @@ if (-not $ready) {
 if (-not $NoBrowser) {
     Start-Process "http://127.0.0.1:$Port/"
 }
-Write-Host "Local assistant: http://127.0.0.1:$Port/"
+Write-Host "Atom Zero: http://127.0.0.1:$Port/"

@@ -285,6 +285,11 @@
   queue gain, clean bpb +1.58%, assistant +1.54%, behavior and smoke PASS; the
   adapter improved target loss but did not reliably memorize an exact fact, so
   facts remain in RAG. `scripts/run_learning.ps1` schedules the reviewed job.
+- Product branding: the local assistant now presents as **Atom Zero** in the
+  browser title/header, README, model card, demo output and health-facing
+  status text. The Python package/CLI and PyPI project remain `streamft` for
+  compatibility. Public-release naming still needs final domain/trademark
+  verification.
 - 253 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
