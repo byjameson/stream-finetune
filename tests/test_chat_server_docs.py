@@ -241,6 +241,39 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         assert "unverified teacher-derived note" in teacher_text
         assert teacher_chat["sources"][0]["verified"] is False
         assert teacher_chat["sources"][0]["source_url"] == "https://example.com/chat"
+        with pytest.raises(urllib.error.HTTPError) as no_provider:
+            _post(base + "/v1/teacher/ask", {"prompt": "hello"})
+        assert no_provider.value.code == 400
+
+        class FakeProvider:
+            label = "fake"
+            model = "fake-1"
+            host = "fake"
+
+            def ask(self, prompt, system="", max_tokens=512):
+                return "The provider answer is P-777."
+
+        chat_server._state["teacher"] = FakeProvider()
+        provider_note = _post(base + "/v1/teacher/ask", {
+            "prompt": "What is the provider answer?",
+            "topic": "Provider code",
+            "source_url": "https://example.com/provider",
+        })
+        assert provider_note["kind"] == "teacher"
+        assert provider_note["verified"] is False
+        assert provider_note["source"].startswith("teacher://fake/")
+        assert "P-777" in _post(
+            base + "/v1/documents/search",
+            {"query": "provider answer"})["data"][0]["chunk"]
+        provider_chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the provider answer?"}],
+            "max_tokens": 20,
+        })
+        provider_text = provider_chat["choices"][0]["message"]["content"]
+        assert "P-777" in provider_text
+        assert "unverified teacher-derived note" in provider_text
+        chat_server._state.pop("teacher", None)
         learned = _post(base + "/v1/learn_url",
                         {"url": "https://example.com/page"})
         assert learned["title"] == "T"

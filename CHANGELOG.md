@@ -257,7 +257,13 @@
   provenance metadata; search/chat label it `teacher note, unverified` and add
   a warning. No API key, provider call or browser scraping. Live browser:
   pasted answer saved, retrieved, and cited with the warning.
-- 242 tests;
+- Optional teacher provider: `--teacher-url`/`--teacher-model` points at a local
+  Ollama or OpenAI-compatible server; `TEACHER_API_KEY` is env-only. Off by
+  default, called only by explicit `POST /v1/teacher/ask` or the browser's
+  **Ask provider** button. Output uses the same unverified teacher-note path.
+  Live browser test used a local fake provider (no external API/key) and cited
+  `P-9001` with the warning.
+- 244 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

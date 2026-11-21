@@ -13,6 +13,7 @@ Endpoints:
   POST /v1/documents/upload?source=...&title=...
   POST /v1/documents/search
   POST /v1/teacher/notes
+  POST /v1/teacher/ask
   POST /v1/teach
   POST /v1/research
   GET  /v1/research/queue
@@ -42,6 +43,7 @@ import torch
 
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
+from streamft.teacher_provider import TeacherProvider, TeacherProviderError
 from streamft.transformer import TransformerLM, generate
 
 _lock = threading.Lock()
@@ -216,6 +218,10 @@ and does not change model weights.</p>
 <input id="tm" placeholder="Model (optional)"></div>
 <div class="row"><input id="tp" placeholder="Topic/question">
 <input id="tu" placeholder="Source URL (optional)"></div>
+<div class="row"><input id="tq" placeholder="Question for the configured provider">
+<button id="task" disabled>Ask provider</button></div>
+<p id="tstatus" class="hint"></p>
+<p id="tamsg" class="hint"></p>
 <textarea id="ta" placeholder="Paste the teacher answer..."></textarea>
 <button id="tnote">Save teacher note</button>
 <p id="tmsg" class="hint"></p>
@@ -374,6 +380,40 @@ document.getElementById('tnote').onclick = async () => {
       refreshHealth();
     }
   } catch (e) { out.textContent = 'error: ' + e; }
+};
+document.getElementById('task').onclick = async () => {
+  const prompt = document.getElementById('tq').value.trim();
+  const out = document.getElementById('tamsg');
+  if (!prompt) {
+    out.textContent = 'question is required';
+    return;
+  }
+  const button = document.getElementById('task');
+  button.disabled = true;
+  out.textContent = 'asking provider...';
+  try {
+    const r = await fetch('/v1/teacher/ask', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        prompt,
+        topic: document.getElementById('tp').value,
+        source_url: document.getElementById('tu').value,
+        max_tokens: 512,
+      })});
+    const j = await r.json();
+    out.textContent = r.ok
+      ? ('Saved as unverified teacher note: ' + j.source +
+         ' (' + j.chunks + ' chunk(s))')
+      : ('error: ' + (j.error || r.status));
+    if (r.ok) {
+      document.getElementById('tq').value = '';
+      refreshHealth();
+    }
+  } catch (e) {
+    out.textContent = 'error: ' + e;
+  } finally {
+    button.disabled = false;
+  }
 };
 function qmsg(text, isError) {
   const el = document.getElementById('rmsg');
@@ -538,7 +578,14 @@ function refreshHealth() {
     document.getElementById('m').textContent =
       'model: ' + j.model + ' | params: ' + j.params + ' | step: ' + j.step +
       ' | adapter: ' + (j.adapter ? 'yes' : 'none') + ' | doc chunks: ' + docs +
-      ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia');
+      ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia') +
+      ' | teacher: ' + (j.teacher && j.teacher.enabled ? j.teacher.model : 'off');
+    const teacher = j.teacher || {enabled: false};
+    document.getElementById('task').disabled = !teacher.enabled;
+    document.getElementById('tstatus').textContent = teacher.enabled
+      ? ('Provider: ' + (teacher.label || 'openai-compatible') + ' / ' +
+         teacher.model + ' @ ' + teacher.host)
+      : 'No teacher provider configured; use manual paste.';
   }).catch(() => { document.getElementById('m').textContent = 'server not ready'; });
 }
 refreshHealth();
@@ -628,6 +675,12 @@ class Handler(BaseHTTPRequestHandler):
                 "research_queue": (
                     _state["research_queue"].stats()
                     if _state.get("research_queue") else None),
+                "teacher": (
+                    {"enabled": True,
+                     "model": _state["teacher"].model,
+                     "host": _state["teacher"].host,
+                     "label": _state["teacher"].label}
+                    if _state.get("teacher") else {"enabled": False}),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -657,7 +710,8 @@ class Handler(BaseHTTPRequestHandler):
         if route not in ("/generate", "/v1/chat/completions",
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/teacher/notes",
-                         "/v1/teach", "/v1/learn_url", "/v1/research",
+                         "/v1/teacher/ask", "/v1/teach",
+                         "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
                          "/v1/research/queue/reject",
@@ -691,6 +745,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._ingest(req)
             if route == "/v1/teacher/notes":
                 return self._teacher_note(req)
+            if route == "/v1/teacher/ask":
+                return self._teacher_ask(req)
             if route == "/v1/research/queue":
                 return self._queue_add(req)
             if route == "/v1/research/queue/approve":
@@ -872,6 +928,41 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"ran": ran, "stats": queue.stats()})
 
+    def _teacher_ask(self, req: dict):
+        provider = _state.get("teacher")
+        if provider is None:
+            return self._json(400, {
+                "error": "teacher provider is not configured"})
+        prompt = str(req.get("prompt") or "").strip()
+        topic = str(req.get("topic") or "").strip()
+        if not prompt and topic:
+            prompt = f"Give a concise, factual summary of: {topic}"
+        if not prompt:
+            return self._json(400, {"error": "prompt or topic is required"})
+        if len(prompt) > 20000:
+            return self._json(400, {"error": "prompt is too long"})
+        try:
+            answer = provider.ask(
+                prompt,
+                system=("You are a concise research assistant. "
+                        "If you are unsure, say so."),
+                max_tokens=req.get("max_tokens", 512))
+        except TeacherProviderError as exc:
+            return self._json(502, {"error": str(exc)})
+        try:
+            result = add_teacher_note(
+                _state.get("docs"), req.get("teacher") or provider.label,
+                provider.model, topic or "Provider answer", answer,
+                req.get("source_url", ""))
+        except DocumentTooLarge as exc:
+            return self._json(413, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        metrics = _state.get("metrics")
+        if isinstance(metrics, dict):
+            metrics["teacher_notes"] = metrics.get("teacher_notes", 0) + 1
+        return self._json(200, result)
+
     def _teacher_note(self, req: dict):
         try:
             result = add_teacher_note(
@@ -972,7 +1063,10 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           queue_path: str = "data/learning_queue.jsonl",
           allow_url_fetch: bool = False, wiki_lang: str = "en",
           session_dir: str = "data/sessions",
-          research_queue_path: str = "data/research_queue.json") -> int:
+          research_queue_path: str = "data/research_queue.json",
+          teacher_url: str = "", teacher_model: str = "",
+          teacher_timeout: int = 60,
+          teacher_label: str = "openai-compatible") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -997,12 +1091,22 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
             research_queue = ResearchQueue(research_queue_path)
         except ResearchQueueError as exc:
             print(f"warning: research queue disabled: {exc}", flush=True)
+    teacher = None
+    if teacher_url or teacher_model:
+        try:
+            teacher = TeacherProvider(
+                teacher_url, teacher_model,
+                os.environ.get("TEACHER_API_KEY", ""),
+                teacher_timeout, teacher_label)
+        except TeacherProviderError as exc:
+            print(f"warning: teacher provider disabled: {exc}", flush=True)
     _state.update({
         "model": model,
         "tok": tok,
         "docs": docs,
         "research_queue": research_queue,
         "research_queue_path": research_queue_path,
+        "teacher": teacher,
         "adapter": adapter,
         "queue_path": queue_path,
         "allow_url_fetch": allow_url_fetch,
@@ -1047,11 +1151,16 @@ def main():
     ap.add_argument("--wiki-lang", default="en")
     ap.add_argument("--session-dir", default="data/sessions")
     ap.add_argument("--research-queue", default="data/research_queue.json")
+    ap.add_argument("--teacher-url", default="")
+    ap.add_argument("--teacher-model", default="")
+    ap.add_argument("--teacher-timeout", type=int, default=60)
+    ap.add_argument("--teacher-label", default="openai-compatible")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
                  args.api_key, args.adapter, args.docs, args.queue,
                  args.allow_url_fetch, args.wiki_lang, args.session_dir,
-                 args.research_queue)
+                 args.research_queue, args.teacher_url, args.teacher_model,
+                 args.teacher_timeout, args.teacher_label)
 
 
 if __name__ == "__main__":
