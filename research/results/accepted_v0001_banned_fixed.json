@@ -1,0 +1,154 @@
+{
+  "tag": "accepted_v0001_fixed",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 300,
+  "bpb": {
+    "chat": {
+      "loss": 4.381392657756805,
+      "ppl": 79.94929792030621,
+      "bpb": 1.4752633122648096,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.3736661893602715,
+        "ppl": 79.3339614868164,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.22660356760025,
+      "ppl": 68.48423464423286,
+      "bpb": 1.567723015897615,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.22660356760025,
+        "ppl": 68.4842300415039,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.831357181072235,
+      "ppl": 340.82092103082283,
+      "bpb": 2.3756715529453296,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.831357181072235,
+        "ppl": 340.82086181640625,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 4.2579346895217896,
+      "ppl": 70.6638897698255,
+      "bpb": 1.45998163891522,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 4.191477750218309,
+        "ppl": 66.12042999267578,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The weather today typically involves air quality and a highway in the park. The weather today is often the sunset.",
+      "chars": 114,
+      "alpha": 0.8158,
+      "turkish_chars": 0,
+      "repeat3": 0.0556,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The weather today was sunny and sunset.",
+      "chars": 39,
+      "alpha": 0.8205,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Jack was a curious rabbit who lived near the garden. One day Jack found a small map. Jack wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 172,
+      "alpha": 0.7907,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Mia the dog found a paper boat. Mia the dog took an attention of their experiences and Is there another one.",
+      "chars": 108,
+      "alpha": 0.7963,
+      "turkish_chars": 0,
+      "repeat3": 0.0526,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

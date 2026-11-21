@@ -360,6 +360,20 @@ fast path in `chat_human.py`; the model handles stories/open-ended text.
 Earlier 55-example runs were rejected at 2.07% target gain; the gate correctly
 refused them.
 
+### 50M behavior comparison
+
+The 49.2M transformer was fine-tuned for 400 steps on the format queue from the
+50M base.
+
+| model | clean bpb | clean assistant | raw clean smoke | runtime behavior | E2E |
+|---|---:|---:|---|---|---|
+| v0001 20M | 1.475 | 4.374 | **PASS** | PASS | PASS |
+| 50M behavior | **1.372** | **4.050** | **BLOCKED** (one empty sample) | PASS | PASS |
+
+The 50M model has better loss but fails the raw clean smoke and produces
+unstable facts/empty replies (`weather -> ''`). It is not the product
+checkpoint. **v0001 remains the product model.**
+
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 
 ## Evaluation

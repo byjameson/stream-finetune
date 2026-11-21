@@ -177,6 +177,13 @@
   v0002/v0003 format updates were rejected by the clean smoke; v0001 remains
   the product checkpoint. Exact format skills use deterministic fast paths;
   the model handles stories/open-ended text.
+- Corrected-format revalidation: v0001 clean smoke **PASS**, E2E **PASS**,
+  runtime behavior **PASS**. The earlier empty sample was the runtime-handled
+  `my name is Alex, remember me` command; clean smoke now tests open-ended
+  prompts only.
+- 49.2M behavior comparison: clean bpb 1.372 / assistant 4.050 (better than
+  v0001) but raw clean smoke **BLOCKED** (one empty sample, unstable weather).
+  Runtime behavior and E2E pass, but v0001 remains the product model.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -187,7 +194,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 212 tests;
+- 213 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
