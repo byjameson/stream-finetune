@@ -114,6 +114,14 @@ The honest potential is a ladder, not a single “AGI” claim:
 
 The practical shortcut is the optional provider: keep RAG, tools and memory local, and let a stronger local model handle free-form chat. The core 49M model remains the default; the provider is not a hidden upgrade.
 
+## The full project map
+
+If you want every layer rather than the short version, the canonical map is here:
+
+**https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md**
+
+It covers the 49.2M model and 40k training run, the FTS + MiniLM retrieval stack, the prewarmed matrix and IVF ANN/exact fallback, deterministic tools, sessions/export/delete, the approved research worker and Ollama teacher, the curiosity approval gate, the RAG → LoRA → full-training ladder, the optional provider, the optional rules+ML safety layer, privacy/SSRF/deletion, every benchmark with caveats, packaging and the honest limits.
+
 ## What makes it different?
 
 It is not a smaller version of a frontier chatbot. The differences are architectural:
@@ -131,7 +139,7 @@ The closest description is: a compact **agent harness** with a small language mo
 ## Try it
 
 ```powershell
-pip install streamft==0.8.2
+pip install streamft==0.8.3
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
@@ -169,7 +177,7 @@ The honest gaps are model capability, tool planning, multilingual quality and a 
 If you want to inspect the claims:
 
 - GitHub: https://github.com/byjameson/stream-finetune
-- PyPI: https://pypi.org/project/streamft/0.8.2/
+- PyPI: https://pypi.org/project/streamft/0.8.3/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - Model card: https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.3 - full project map (2026-11-22)
+
+- Added `docs/PROJECT_OVERVIEW.md`, a canonical description of the model,
+  retrieval, tools, memory, research, curiosity, self-learning, provider,
+  safety, privacy, benchmarks and release.
+- Linked it from README, model card and Medium draft; package `0.8.3`;
+  weights/benchmarks unchanged.
+
 ## 0.8.2 - contact metadata (2026-11-22)
 
 - Added `gokhancava@gmail.com` and the LinkedIn profile to the README, model

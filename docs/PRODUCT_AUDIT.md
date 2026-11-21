@@ -162,13 +162,14 @@ recommended.
 - GitHub releases **v0.8.0** (`abe47b4`), **v0.8.1** (`0e151b5`, PyPI
   README image fix) and **v0.8.2** (`3ebe0a5`, contact metadata) published;
   repository description/topics updated.
-- PyPI package **0.8.2** current; wheel and sdist twine-checked.
+- PyPI package **0.8.3** current; wheel and sdist twine-checked.
+- Canonical full project map: `docs/PROJECT_OVERVIEW.md`.
 - Public contact: **gokhancava@gmail.com** and
   <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>.
 - PyPI **streamft 0.8.0** published; **0.8.1** fixed the README image;
   **0.8.2** adds contact metadata:
   `https://pypi.org/project/streamft/0.8.2/`.
-- `pyproject.toml` is **0.8.2** (contact metadata); model weights remain
+- `pyproject.toml` is **0.8.3** (full project map); model weights remain
   `0.8.0`.
 - Hugging Face and ModelScope weights published:
   `byjameson/atom-zero-49m` on both platforms; dev.to launch article published.

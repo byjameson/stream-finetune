@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![release](https://img.shields.io/badge/release-0.8.2-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -11,11 +11,11 @@
 ```powershell
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
-pip install streamft==0.8.2
+pip install streamft==0.8.3
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The package is on PyPI: <https://pypi.org/project/streamft/0.8.2/>. The demo
+The package is on PyPI: <https://pypi.org/project/streamft/0.8.3/>. The demo
 checkpoint still comes from the repository/tag.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
@@ -32,6 +32,31 @@ Optional stronger local chat (RAG/tools stay local):
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
 ```
+
+## Full project map
+
+The canonical deep dive is
+[`docs/PROJECT_OVERVIEW.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md).
+It covers every layer:
+
+- **Model:** 49.2M decoder-only transformer, BPE-8k, 6 layers, 768 dim, 40k steps.
+- **Training:** 175.37M clean tokens + 214.8M replay; clean-valid bpb 1.3815.
+- **RAG:** SQLite FTS5 + hashed/MiniLM embeddings, hybrid candidates, reranking,
+  cached vectors, prewarmed matrix, IVF ANN + exact fallback.
+- **Runtime:** deterministic tools, arithmetic, time, tasks, name/likes memory.
+- **Sessions/UI:** transcript restore, export/import, Forget, document search,
+  adapter history, health.
+- **Research:** approved Wikipedia fetch, local Ollama teacher, unverified notes,
+  reviewer verification.
+- **Curiosity:** gaps -> pending topics -> human approval -> teacher -> RAG;
+  weights unchanged.
+- **Self-learning:** RAG memory vs reviewed LoRA gate vs manual full training.
+- **Provider:** optional local OpenAI-compatible free-form chat; RAG stays local.
+- **Safety:** optional rules + local ML head; off by default.
+- **Privacy/security:** localhost, no telemetry, deletion, SSRF guard, caps.
+- **Benchmarks:** raw 2/10, product 21/21, behavior 16/16, retrieval 1.000,
+  safety 26/26, 392 tests.
+- **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium draft.
 
 ## What it is
 
@@ -57,8 +82,8 @@ The 21/21 is the **product**, not the bare model. See the [model card](docs/MODE
 
 ## Published
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.2>
-- PyPI: <https://pypi.org/project/streamft/0.8.2/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.3>
+- PyPI: <https://pypi.org/project/streamft/0.8.3/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
