@@ -181,7 +181,9 @@ Endpoints:
 | `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
 | `POST /v1/documents/upload?source=...&title=...` | raw UTF-8 text body; same limits as JSON |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
+| `GET /v1/teacher/notes` | teacher notes with verified/unverified stats |
 | `POST /v1/teacher/notes` | `{"teacher","model","topic","answer","source_url"}`; stores a **derived/unverified** note |
+| `POST /v1/teacher/notes/verify` | `{"source","reviewer"}`; marks a note verified with a timestamp |
 | `POST /v1/teacher/ask` | `{"prompt","topic","source_url"}`; explicit call to the configured teacher provider, then stores an unverified note |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; directly fetches Wikipedia lead extracts with sources |
@@ -228,6 +230,11 @@ Queue + teacher synthesis was verified in the browser on port 8036: approving
 provider synthesized it, the queue item recorded `teacher://fake/...` plus a
 `P-9001` synthesis preview, and chat returned the note with a Wikipedia source
 URL and the unverified warning.
+
+Teacher-note review was verified in the browser on port 8037: the pasted
+`T-9000` note showed the unverified warning, **Verify** with reviewer
+`local-reviewer` changed the list to `VERIFIED` with a timestamp, and the next
+chat reply used `teacher note, verified by local-reviewer` with no warning.
 
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
@@ -276,6 +283,21 @@ The note is stored with `kind=teacher`, `verified=false`, a unique
 **derived, unverified data**, not a fact and not a weight update. Search and
 chat label it `teacher note, unverified` and append a warning. A missing source
 URL is allowed but remains unverified.
+
+A reviewer can verify a note after checking it:
+
+```bash
+curl http://127.0.0.1:8013/v1/teacher/notes
+curl -X POST http://127.0.0.1:8013/v1/teacher/notes/verify \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"teacher://chatgpt-web/...","reviewer":"reviewer-1"}'
+```
+
+The response stores the reviewer and verification timestamp. The browser page
+lists teacher notes and has a **Verify** button. After verification, citations
+show `teacher note, verified by reviewer-1` and the unverified warning is gone.
+This is a human review record, not a factuality guarantee. The note starts
+unverified again if it is re-created.
 
 #### Optional provider (off by default)
 
@@ -350,7 +372,8 @@ If the server was started with `--teacher-url`/`--teacher-model`, `run` also
 sends the fetched lead context and source URLs to that provider and stores the
 answer as an **unverified teacher note**. The queue item gets a `teacher` block
 with its `teacher://...` source, preview and any error; chat labels it
-`teacher note, unverified`. Teacher failure does not discard the Wikipedia
+`teacher note, unverified`. The synthesized note can later be reviewed with
+`POST /v1/teacher/notes/verify`. Teacher failure does not discard the Wikipedia
 pages.
 
 CLI and scheduling:
@@ -474,9 +497,10 @@ python research/train_transformer_chat.py \
 - The smoke gate is narrow; it does not prove general chat quality.
 - No autonomous web crawler: research is user-triggered (Wikipedia or opt-in
   URL ingestion). Facts are never written into weights automatically.
-- Teacher notes are always unverified. The optional provider is explicit and
-  off by default; there is no browser-scraping integration, and teacher output
-  is not a source by itself.
+- Teacher notes start unverified. A reviewer can mark them verified with a
+  reviewer name and timestamp, but that records review, not factual truth. The
+  optional provider is explicit and off by default; there is no
+  browser-scraping integration, and teacher output is not a source by itself.
 - The HTTP API is a small OpenAI-compatible subset, not full tool calling,
   streaming or multimodal support.
 

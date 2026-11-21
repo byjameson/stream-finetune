@@ -2,7 +2,8 @@ import json
 
 import pytest
 
-from streamft.doc_memory import DocMemory, _chunks, main
+from streamft.doc_memory import (
+    DocMemory, SourceNotFound, _chunks, main)
 
 
 def test_doc_memory_indexes_and_searches_with_source(tmp_path):
@@ -65,6 +66,38 @@ def test_teacher_metadata_is_returned(tmp_path):
     source = mem.sources()[0]
     assert source["kind"] == "teacher"
     assert source["verified"] is False
+    mem.close()
+
+
+def test_verify_teacher_note_records_reviewer_and_timestamp(tmp_path):
+    try:
+        mem = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    source = "teacher://chatgpt-web/verify"
+    mem.add_text(
+        source, "Topic: Ankara\n\nAnkara is in Turkey.",
+        title="Teacher note: Ankara",
+        meta={"kind": "teacher", "source_url": "https://example.com/chat",
+              "teacher": "chatgpt-web", "model": "gpt-5", "verified": False})
+    with pytest.raises(SourceNotFound):
+        mem.verify_source("teacher://missing", "reviewer")
+    with pytest.raises(ValueError):
+        mem.verify_source(source, "")
+    mem.add_text("notes.txt", "A normal document.", title="Notes")
+    with pytest.raises(ValueError):
+        mem.verify_source("notes.txt", "reviewer")
+    note = mem.verify_source(source, "reviewer-1")
+    assert note["verified"] is True
+    assert note["reviewer"] == "reviewer-1"
+    assert note["verified_at"]
+    hit = mem.search("Ankara")[0]
+    assert hit["verified"] is True
+    assert hit["reviewer"] == "reviewer-1"
+    listed = next(item for item in mem.sources()
+                  if item["source"] == source)
+    assert listed["verified"] is True
+    assert listed["verified_at"] == note["verified_at"]
     mem.close()
 
 

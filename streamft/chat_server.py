@@ -12,7 +12,9 @@ Endpoints:
   POST /v1/documents
   POST /v1/documents/upload?source=...&title=...
   POST /v1/documents/search
+  GET  /v1/teacher/notes
   POST /v1/teacher/notes
+  POST /v1/teacher/notes/verify
   POST /v1/teacher/ask
   POST /v1/teach
   POST /v1/research
@@ -40,6 +42,7 @@ from pathlib import Path
 
 import torch
 
+from streamft.doc_memory import SourceNotFound
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
@@ -162,6 +165,10 @@ and does not change model weights.</p>
 <textarea id="ta" placeholder="Paste the teacher answer..."></textarea>
 <button id="tnote">Save teacher note</button>
 <p id="tmsg" class="hint"></p>
+<div class="row"><input id="trev" value="local-reviewer" placeholder="Reviewer">
+<button id="trefresh">Refresh teacher notes</button></div>
+<p id="tvmsg" class="hint"></p>
+<div id="tnotes"></div>
 <hr>
 <h3>Research queue</h3>
 <p class="hint">A topic enters as pending and is not fetched. Approve it, then
@@ -199,9 +206,15 @@ function extra(result) {
   const tools = result.tool_calls || [];
   if (tools.length) parts.push('tools: ' + tools.map(t => t.name).join(', '));
   const sources = result.sources || [];
-  if (sources.length) parts.push('sources: ' + sources.map(s =>
-    s.title + ' (' + (s.source_url || s.source) + ')' +
-    (s.verified === false ? ' [unverified]' : '')).join('; '));
+  if (sources.length) parts.push('sources: ' + sources.map(s => {
+    let status = '';
+    if (s.kind === 'teacher') {
+      status = s.verified
+        ? (s.reviewer ? ' [verified: ' + s.reviewer + ']' : ' [verified]')
+        : ' [unverified]';
+    }
+    return s.title + ' (' + (s.source_url || s.source) + ')' + status;
+  }).join('; '));
   return parts.join(' | ');
 }
 async function send(message) {
@@ -315,6 +328,7 @@ document.getElementById('tnote').onclick = async () => {
       document.getElementById('tp').value = '';
       document.getElementById('tu').value = '';
       refreshHealth();
+      refreshTeacherNotes();
     }
   } catch (e) { out.textContent = 'error: ' + e; }
 };
@@ -345,6 +359,7 @@ document.getElementById('task').onclick = async () => {
     if (r.ok) {
       document.getElementById('tq').value = '';
       refreshHealth();
+      refreshTeacherNotes();
     }
   } catch (e) {
     out.textContent = 'error: ' + e;
@@ -352,6 +367,97 @@ document.getElementById('task').onclick = async () => {
     button.disabled = false;
   }
 };
+async function refreshTeacherNotes() {
+  const box = document.getElementById('tnotes');
+  try {
+    const r = await fetch('/v1/teacher/notes');
+    const j = await r.json();
+    if (!r.ok) {
+      box.textContent = 'teacher notes error: ' + (j.error || r.status);
+      return;
+    }
+    renderTeacherNotes(j.data || [], j.stats || {});
+  } catch (e) {
+    box.textContent = 'teacher notes error: ' + e;
+  }
+}
+function renderTeacherNotes(data, stats) {
+  const box = document.getElementById('tnotes');
+  box.textContent = '';
+  const summary = document.createElement('div');
+  summary.className = 'hint';
+  summary.textContent =
+    'teacher notes: ' + (stats.total || 0) + ' total, ' +
+    (stats.unverified || 0) + ' unverified, ' +
+    (stats.verified || 0) + ' verified';
+  box.appendChild(summary);
+  if (!data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No teacher notes yet.';
+    box.appendChild(empty);
+    return;
+  }
+  data.forEach(note => {
+    const card = document.createElement('div');
+    card.className = 'qitem';
+    const title = document.createElement('div');
+    title.textContent = (note.verified ? 'VERIFIED' : 'UNVERIFIED') +
+                        ' | ' + (note.title || note.source);
+    card.appendChild(title);
+    const meta = document.createElement('div');
+    meta.className = 'src';
+    meta.textContent = 'teacher: ' + (note.teacher || '') +
+                       ' / ' + (note.model || '') +
+                       ' | ' + (note.source || '');
+    card.appendChild(meta);
+    if (note.source_url) {
+      const url = document.createElement('div');
+      url.className = 'src';
+      url.textContent = 'source_url: ' + note.source_url;
+      card.appendChild(url);
+    }
+    if (note.verified) {
+      const reviewed = document.createElement('div');
+      reviewed.className = 'src';
+      reviewed.textContent = 'reviewed by ' + (note.reviewer || 'unknown') +
+                             ' at ' + (note.verified_at || 'unknown');
+      card.appendChild(reviewed);
+    } else {
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.appendChild(qbutton('Verify',
+        () => verifyTeacherNote(note.source)));
+      card.appendChild(actions);
+    }
+    box.appendChild(card);
+  });
+}
+async function verifyTeacherNote(source) {
+  const reviewer = document.getElementById('trev').value.trim();
+  const out = document.getElementById('tvmsg');
+  if (!reviewer) {
+    out.textContent = 'reviewer is required';
+    return;
+  }
+  out.textContent = 'verifying...';
+  try {
+    const r = await fetch('/v1/teacher/notes/verify', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({source, reviewer})});
+    const j = await r.json();
+    out.textContent = r.ok
+      ? ('Verified ' + j.source + ' by ' + j.reviewer)
+      : ('error: ' + (j.error || r.status));
+    if (r.ok) {
+      await refreshTeacherNotes();
+      refreshHealth();
+    }
+  } catch (e) {
+    out.textContent = 'error: ' + e;
+  }
+}
+document.getElementById('trefresh').onclick = () => refreshTeacherNotes();
 function qmsg(text, isError) {
   const el = document.getElementById('rmsg');
   el.textContent = text;
@@ -410,9 +516,15 @@ function renderQueue(data, stats) {
     if (item.teacher && (item.teacher.source || item.teacher.error)) {
       const line = document.createElement('div');
       line.className = 'src';
+      const teacherStatus = item.teacher.error
+        ? item.teacher.error
+        : (item.teacher.verified
+           ? (item.teacher.reviewer
+              ? 'verified by ' + item.teacher.reviewer
+              : 'verified')
+           : 'unverified');
       line.textContent = 'teacher: ' +
-        (item.teacher.source || 'no note') +
-        (item.teacher.error ? ' | ' + item.teacher.error : ' | unverified');
+        (item.teacher.source || 'no note') + ' | ' + teacherStatus;
       card.appendChild(line);
       if (item.teacher.answer_preview) {
         const preview = document.createElement('div');
@@ -541,6 +653,7 @@ function refreshHealth() {
 }
 refreshHealth();
 refreshQueue();
+refreshTeacherNotes();
 </script>"""
 
 
@@ -555,14 +668,21 @@ def doc_answer(text: str, docs) -> dict | None:
     sources = []
     unverified = False
     for hit in hits[:3]:
+        teacher = hit.get("kind") == "teacher"
         verified = bool(hit.get("verified", True))
-        label = ("teacher note, unverified"
-                 if hit.get("kind") == "teacher" and not verified
-                 else "source")
+        if teacher and not verified:
+            label = "teacher note, unverified"
+        elif teacher:
+            reviewer = str(hit.get("reviewer", "")).strip()
+            label = (f"teacher note, verified by {reviewer}"
+                     if reviewer else "teacher note, verified")
+        else:
+            label = "source"
         location = hit.get("source_url") or hit["source"]
         notes.append(f"- {hit['chunk']} ({label}: {location})")
         source = {"source": hit["source"], "title": hit["title"]}
-        for key in ("kind", "source_url", "teacher", "model", "verified"):
+        for key in ("kind", "source_url", "teacher", "model", "verified",
+                    "reviewer", "verified_at"):
             if key in hit:
                 source[key] = hit[key]
         if not verified:
@@ -644,12 +764,28 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/v1/documents":
             docs = _state.get("docs")
             self._json(200, {"data": docs.sources() if docs else []})
+        elif self.path == "/v1/teacher/notes":
+            docs = _state.get("docs")
+            notes = ([source for source in docs.sources()
+                      if source.get("kind") == "teacher"]
+                     if docs else [])
+            self._json(200, {
+                "data": notes,
+                "stats": {
+                    "total": len(notes),
+                    "verified": sum(1 for note in notes
+                                    if note.get("verified")),
+                    "unverified": sum(1 for note in notes
+                                      if not note.get("verified")),
+                },
+            })
         elif self.path == "/v1/research/queue":
             queue = _state.get("research_queue")
             if queue is None:
                 return self._json(400, {
                     "error": "research queue is not configured"})
-            self._json(200, {"data": queue.list(), "stats": queue.stats()})
+            self._json(200, {"data": self._queue_items(queue),
+                             "stats": queue.stats()})
         elif self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
         else:
@@ -661,7 +797,8 @@ class Handler(BaseHTTPRequestHandler):
         if route not in ("/generate", "/v1/chat/completions",
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/teacher/notes",
-                         "/v1/teacher/ask", "/v1/teach",
+                         "/v1/teacher/notes/verify", "/v1/teacher/ask",
+                         "/v1/teach",
                          "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
@@ -696,6 +833,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._ingest(req)
             if route == "/v1/teacher/notes":
                 return self._teacher_note(req)
+            if route == "/v1/teacher/notes/verify":
+                return self._teacher_verify(req)
             if route == "/v1/teacher/ask":
                 return self._teacher_ask(req)
             if route == "/v1/research/queue":
@@ -845,6 +984,24 @@ class Handler(BaseHTTPRequestHandler):
             raise ResearchQueueError("research queue is not configured")
         return queue
 
+    def _queue_items(self, queue) -> list[dict]:
+        items = queue.list()
+        docs = _state.get("docs")
+        if docs is None:
+            return items
+        notes = {source["source"]: source for source in docs.sources()
+                 if source.get("kind") == "teacher"}
+        for item in items:
+            teacher = item.get("teacher")
+            if not isinstance(teacher, dict):
+                continue
+            note = notes.get(teacher.get("source", ""))
+            if note is not None:
+                teacher["verified"] = bool(note.get("verified"))
+                teacher["reviewer"] = note.get("reviewer", "")
+                teacher["verified_at"] = note.get("verified_at", "")
+        return items
+
     def _queue_add(self, req: dict):
         try:
             item = self._queue().add(
@@ -879,6 +1036,19 @@ class Handler(BaseHTTPRequestHandler):
         except ResearchQueueError as exc:
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"ran": ran, "stats": queue.stats()})
+
+    def _teacher_verify(self, req: dict):
+        docs = _state.get("docs")
+        if docs is None:
+            return self._json(400, {"error": "no document memory configured"})
+        try:
+            note = docs.verify_source(
+                req.get("source", ""), req.get("reviewer", ""))
+        except SourceNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {"ok": True, **note})
 
     def _teacher_ask(self, req: dict):
         provider = _state.get("teacher")

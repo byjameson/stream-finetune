@@ -18,6 +18,12 @@ import time
 from pathlib import Path
 
 MAX_CHARS = 900
+
+
+class SourceNotFound(ValueError):
+    pass
+
+
 STOPWORDS = frozenset({
     "a", "an", "and", "are", "as", "at", "be", "been", "being", "but",
     "by", "can", "could", "did", "do", "does", "for", "from", "had", "has",
@@ -84,7 +90,16 @@ class DocMemory:
             "source TEXT PRIMARY KEY, kind TEXT NOT NULL, "
             "source_url TEXT NOT NULL, teacher TEXT NOT NULL, "
             "model TEXT NOT NULL, verified INTEGER NOT NULL, "
-            "created TEXT NOT NULL)")
+            "created TEXT NOT NULL, reviewer TEXT NOT NULL DEFAULT '', "
+            "verified_at TEXT NOT NULL DEFAULT '')")
+        columns = {row[1] for row in self.con.execute(
+            "PRAGMA table_info(doc_meta)")}
+        for name, ddl in (
+                ("reviewer", "TEXT NOT NULL DEFAULT ''"),
+                ("verified_at", "TEXT NOT NULL DEFAULT ''")):
+            if name not in columns:
+                self.con.execute(
+                    f"ALTER TABLE doc_meta ADD COLUMN {name} {ddl}")
         self.con.commit()
 
     def add_text(self, source: str, text: str, title: str = "",
@@ -97,6 +112,8 @@ class DocMemory:
         model = str(meta.get("model", ""))
         verified = 1 if meta.get("verified", True) else 0
         created = str(meta.get("created", int(time.time())))
+        reviewer = str(meta.get("reviewer", ""))
+        verified_at = str(meta.get("verified_at", ""))
         with self._lock:
             if replace:
                 self.con.execute("DELETE FROM docs WHERE source = ?",
@@ -111,9 +128,11 @@ class DocMemory:
                 added += 1
             self.con.execute(
                 "INSERT OR REPLACE INTO doc_meta("
-                "source, kind, source_url, teacher, model, verified, created) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (source, kind, source_url, teacher, model, verified, created))
+                "source, kind, source_url, teacher, model, verified, created, "
+                "reviewer, verified_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (source, kind, source_url, teacher, model, verified, created,
+                 reviewer, verified_at))
             self.con.commit()
         return added
 
@@ -130,15 +149,19 @@ class DocMemory:
         placeholders = ",".join("?" for _ in sources)
         rows = self.con.execute(
             "SELECT source, kind, source_url, teacher, model, verified, "
-            f"created FROM doc_meta WHERE source IN ({placeholders})",
+            f"created, reviewer, verified_at FROM doc_meta "
+            f"WHERE source IN ({placeholders})",
             tuple(sources)).fetchall()
         return {row[0]: {
+            "source": row[0],
             "kind": row[1],
             "source_url": row[2],
             "teacher": row[3],
             "model": row[4],
             "verified": bool(row[5]),
             "created": row[6],
+            "reviewer": row[7],
+            "verified_at": row[8],
         } for row in rows}
 
     def search(self, query: str, k: int = 5) -> list[dict]:
@@ -161,9 +184,10 @@ class DocMemory:
             "source": row[1],
             "title": row[2],
             "score": float(row[3]),
-            **metas.get(row[1], {"kind": "document", "source_url": "",
-                                 "teacher": "", "model": "",
-                                 "verified": True, "created": ""}),
+            **metas.get(row[1], {"source": row[1], "kind": "document",
+                                 "source_url": "", "teacher": "",
+                                 "model": "", "verified": True, "created": "",
+                                 "reviewer": "", "verified_at": ""}),
         } for row in rows]
 
     def sources(self) -> list[dict]:
@@ -176,10 +200,40 @@ class DocMemory:
             "source": row[0],
             "title": row[1],
             "chunks": row[2],
-            **metas.get(row[0], {"kind": "document", "source_url": "",
-                                 "teacher": "", "model": "",
-                                 "verified": True, "created": ""}),
+            **metas.get(row[0], {"source": row[0], "kind": "document",
+                                 "source_url": "", "teacher": "",
+                                 "model": "", "verified": True, "created": "",
+                                 "reviewer": "", "verified_at": ""}),
         } for row in rows]
+
+    def verify_source(self, source: str, reviewer: str) -> dict:
+        """Mark a teacher note verified with reviewer and timestamp."""
+        source = str(source or "").strip()
+        reviewer = str(reviewer or "").strip()
+        if not source:
+            raise ValueError("source is required")
+        if not reviewer:
+            raise ValueError("reviewer is required")
+        if len(reviewer) > 100:
+            raise ValueError("reviewer is too long (max 100 chars)")
+        if any(ord(ch) < 32 for ch in reviewer):
+            raise ValueError("reviewer contains control characters")
+        with self._lock:
+            row = self.con.execute(
+                "SELECT kind FROM doc_meta WHERE source = ?",
+                (source,)).fetchone()
+            if row is None:
+                raise SourceNotFound(f"source not found: {source}")
+            if row[0] != "teacher":
+                raise ValueError("only teacher notes can be verified")
+            verified_at = time.strftime("%Y-%m-%dT%H:%M:%S")
+            self.con.execute(
+                "UPDATE doc_meta SET verified = 1, reviewer = ?, "
+                "verified_at = ? WHERE source = ?",
+                (reviewer, verified_at, source))
+            self.con.commit()
+            meta = self._meta_map([source]).get(source, {})
+            return {"source": source, **meta}
 
     def stats(self) -> dict:
         with self._lock:

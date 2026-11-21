@@ -34,9 +34,12 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/documents" in page
     assert "/v1/research/queue" in page
     assert "/v1/teacher/notes" in page
+    assert "/v1/teacher/notes/verify" in page
     assert "add a document" in page
     assert "add a teacher answer" in page
     assert "unverified" in page
+    assert "reviewer" in page
+    assert "verify" in page
     assert "research queue" in page
     assert "run approved" in page
     assert "teach a fact" in page
@@ -241,6 +244,34 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         assert "unverified teacher-derived note" in teacher_text
         assert teacher_chat["sources"][0]["verified"] is False
         assert teacher_chat["sources"][0]["source_url"] == "https://example.com/chat"
+        verified_note = _post(base + "/v1/teacher/notes/verify", {
+            "source": teacher["source"], "reviewer": "reviewer-1"})
+        assert verified_note["ok"] is True
+        assert verified_note["verified"] is True
+        assert verified_note["reviewer"] == "reviewer-1"
+        assert verified_note["verified_at"]
+        notes = json.loads(urllib.request.urlopen(
+            base + "/v1/teacher/notes", timeout=10).read().decode("utf-8"))
+        verified_listed = next(
+            item for item in notes["data"]
+            if item["source"] == teacher["source"])
+        assert verified_listed["verified"] is True
+        assert verified_listed["reviewer"] == "reviewer-1"
+        assert notes["stats"]["verified"] == 1
+        verified_chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the teacher code?"}],
+            "max_tokens": 20,
+        })
+        verified_text = verified_chat["choices"][0]["message"]["content"]
+        assert "teacher note, verified by reviewer-1" in verified_text
+        assert "unverified teacher-derived note" not in verified_text
+        assert verified_chat["sources"][0]["verified"] is True
+        assert verified_chat["sources"][0]["reviewer"] == "reviewer-1"
+        with pytest.raises(urllib.error.HTTPError) as missing_note:
+            _post(base + "/v1/teacher/notes/verify",
+                  {"source": "teacher://missing", "reviewer": "r"})
+        assert missing_note.value.code == 404
         with pytest.raises(urllib.error.HTTPError) as no_provider:
             _post(base + "/v1/teacher/ask", {"prompt": "hello"})
         assert no_provider.value.code == 400
@@ -383,6 +414,13 @@ def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
         health = json.loads(urllib.request.urlopen(
             base + "/health", timeout=10).read().decode("utf-8"))
         assert health["research_queue"]["done"] == 1
+        queue_note = ran["ran"][0]["teacher"]["source"]
+        _post(base + "/v1/teacher/notes/verify", {
+            "source": queue_note, "reviewer": "queue-reviewer"})
+        queue_view = json.loads(urllib.request.urlopen(
+            base + "/v1/research/queue", timeout=10).read().decode("utf-8"))
+        assert queue_view["data"][0]["teacher"]["verified"] is True
+        assert queue_view["data"][0]["teacher"]["reviewer"] == "queue-reviewer"
         second = _post(base + "/v1/research/queue", {"topic": "Izmir"})
         rejected = _post(base + "/v1/research/queue/reject",
                          {"id": second["id"]})
