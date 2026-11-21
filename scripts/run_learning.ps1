@@ -5,6 +5,8 @@ param(
     [string]$Out = "checkpoints/adapters_feedback",
     [string]$History = "data/adapter_history.jsonl",
     [string]$Active = "data/active_adapter.json",
+    [double]$Holdout = 0.0,
+    [string]$HoldoutOut = "data/feedback_holdout.jsonl",
     [int]$Steps = 100
 )
 $ErrorActionPreference = "Stop"
@@ -15,4 +17,5 @@ $env:PYTHONIOENCODING = "utf-8"
 
 python research/learning_loop.py `
     --store $Store --out-queue $OutQueue --history $History `
-    run --base $Base --out $Out --steps $Steps --active-file $Active
+    run --base $Base --out $Out --steps $Steps --active-file $Active `
+    --holdout $Holdout --holdout-out $HoldoutOut

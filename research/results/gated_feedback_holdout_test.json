@@ -1,0 +1,153 @@
+{
+  "mode": "lora",
+  "base": "checkpoints/transformer_behavior_50m_long",
+  "candidate": "checkpoints\\adapters\\candidate",
+  "queue": {
+    "queued": 6,
+    "train": 4,
+    "valid": 2,
+    "queue_train_tokens": 73,
+    "queue_valid_tokens": 38,
+    "sha256": "9806d7010a0f487c0995f0c7d328db5951770ec3fd04a95d6b046509522be673"
+  },
+  "base_metrics": {
+    "clean": {
+      "bpb": 1.374942363043169,
+      "assistant_loss": 4.066105239674857
+    },
+    "queue": {
+      "bpb": 3.2304330347930432,
+      "assistant_loss": 5.2353989737374445
+    }
+  },
+  "candidate_metrics": {
+    "clean": {
+      "bpb": 1.3976702969500598,
+      "assistant_loss": 4.131133114474782
+    },
+    "queue": {
+      "bpb": 3.0190836031428967,
+      "assistant_loss": 4.770016261509487
+    }
+  },
+  "behavior": {
+    "checks": {
+      "greeting": true,
+      "small_talk": true,
+      "name": true,
+      "likes": true,
+      "task_add": true,
+      "task_list": true,
+      "task_complete": true,
+      "task_list_after": true,
+      "remember": true,
+      "story": true,
+      "count": true,
+      "brief": true,
+      "polite": true,
+      "summarize": true,
+      "echo": true,
+      "colors": true
+    },
+    "passed": true,
+    "replies": {
+      "hello": "Hello! How can I help you today?",
+      "my name is Alex": "I will remember that.",
+      "remember that I like green tea": "I will remember that.",
+      "what is my name?": "Your name is Alex.",
+      "what do I like?": "You like green tea.",
+      "add task buy milk": "Added task 1: buy milk",
+      "add task call mom": "Added task 2: call mom",
+      "list tasks": "Open tasks: 2 call mom",
+      "complete task 1": "Completed task 1.",
+      "what do you remember?": "I remember: name is Alex; likes is green tea; note is I like green tea",
+      "how are you?": "I am doing well, thank you. How are you?",
+      "tell me a short story": "Jack was a curious fox who lived near the hill. One day Jack found a blue kite. Jack wanted to share it with a friend, so they walked together and played until sunset."
+    },
+    "generated": {
+      "count": "One, two, three, four, five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Blue and green."
+    },
+    "raw_generated": {
+      "count": "One, Two, Three, Four, Five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Blue and yellow."
+    },
+    "story_repeat3": 0.0
+  },
+  "clean_smoke": {
+    "passed": true,
+    "rows": [
+      {
+        "prompt": "hello",
+        "text": "Hello! How can I help you today?",
+        "alpha": 0.75,
+        "stop": "end"
+      },
+      {
+        "prompt": "hello",
+        "text": "Hello! How can I help you today?",
+        "alpha": 0.75,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Jack was a curious fox who lived near the garden. One day Jack found a red ball. Jack wanted to share it with a friend, so they met a new friend near the garden. The word \"sound out\" and walked home together.",
+        "alpha": 0.7692307692307693,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Mia was a curious turtle who lived near the beach. One day Mia found a red ball. Mia wanted to share it with a friend, so they walked together and played until sunset.",
+        "alpha": 0.7844311377245509,
+        "stop": "end"
+      }
+    ]
+  },
+  "decision": {
+    "accepted": true,
+    "checks": {
+      "target_gain": true,
+      "clean_bpb": true,
+      "clean_assistant": true,
+      "behavior": true,
+      "clean_smoke": true
+    },
+    "target_gain": 0.08889154667342003,
+    "clean_bpb_reg": 0.01653009938292027,
+    "clean_assistant_reg": 0.015992668897356177
+  },
+  "created": "2026-11-21T19:32:17",
+  "accepted_to": "checkpoints\\adapters_feedback_holdout_test\\v0001"
+}

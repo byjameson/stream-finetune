@@ -289,16 +289,20 @@
   versions and to `data/adapter_history.jsonl` with queue sha256, gate metrics
   and the result path; `python research/learning_loop.py history` lists them and
   `activate vNNNN` rolls back after checking the adapter files, recording the
-  previous version in the active file. `research/compare_adapters.py` scores assistant-turn cross-entropy per row and
-  reports deltas vs base. A fresh 8-example run accepted `v0001` at +16.74%
-  target gain; comparison on the same rows was base 3.826 vs feedback adapter
-  1.640 (in-sample fit, not a generalization claim).
+  previous version in the active file. `research/compare_adapters.py` scores
+  assistant-turn cross-entropy per row and reports deltas vs base. A fresh
+  8-example run accepted `v0001` at +16.74% target gain; comparison on the same
+  rows was base 3.826 vs feedback adapter 1.640 (in-sample fit, not a
+  generalization claim). `run --holdout 0.2` keeps a deterministic slice out of
+  training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
+  from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
+  directional only.
 - Product branding: the local assistant now presents as **Atom Zero** in the
   browser title/header, README, model card, demo output and health-facing
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 258 tests;
+- 260 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
