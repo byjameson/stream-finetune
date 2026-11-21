@@ -1,148 +1,140 @@
-"""Minimal hand-rolled LoRA for the frozen base model (no peft dependency).
-
-LoRALinear wraps an existing nn.Linear and adds a low-rank update
-    y = base(x) + scale * (x @ A^T @ B^T),   scale = alpha / r
-B starts at zero so the wrapped module is an identity at init.
-A/B are kept in fp32 even when the base is fp16 (fp16 updates would vanish
-below resolution); the low-rank path is cheap.
-
-merge() folds the update into the base weight (in-place) so that inference
-runs at zero extra cost. Call it once, after training.
-"""
+"""Low-rank adapters (LoRA) for HF transformers and the tiny LM."""
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import torch
 import torch.nn as nn
 
+ATTN_SUFFIXES = (".q_proj", ".k_proj", ".v_proj", ".o_proj", ".out_proj",
+                 ".query", ".key", ".value", ".dense")
+MLP_SUFFIXES = (".mlp", ".fc1", ".fc2", ".gate_proj", ".up_proj",
+                ".down_proj", ".c_fc", ".c_proj", ".mlp.0", ".mlp.2",
+                "mlp.0", "mlp.2")
+_TARGET_SUFFIXES = ("mlp.0", "mlp.2")
+
 
 class LoRALinear(nn.Module):
-    def __init__(self, base: nn.Linear, r: int = 16, alpha: int = 16, dropout: float = 0.0):
+    def __init__(self, base: nn.Linear, r: int = 8, alpha: int = 16):
         super().__init__()
         self.base = base
-        for p in self.base.parameters():
-            p.requires_grad_(False)
+        for param in self.base.parameters():
+            param.requires_grad = False
         self.r = r
-        self.scale = alpha / r
-        w = base.weight
-        # Use in_features/out_features, not weight.shape: bitsandbytes 4-bit layers
-        # store a packed weight whose shape is not (out, in).
-        self.A = nn.Parameter(torch.randn(r, base.in_features, device=w.device,
-                                          dtype=torch.float32) / math.sqrt(base.in_features))
-        self.B = nn.Parameter(torch.zeros(base.out_features, r, device=w.device, dtype=torch.float32))
-        self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
-        self.fast_dtype = None  # inference-only bf16/fp16 path; training stays fp32
+        self.scaling = alpha / r
+        self.A = nn.Parameter(torch.empty(r, base.in_features))
+        self.B = nn.Parameter(torch.zeros(base.out_features, r))
+        nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))
+        self._fast_dtype = None
+
+    def set_fast(self, dtype):
+        self._fast_dtype = dtype
 
     def forward(self, x):
-        y = self.base(x)
-        if self.fast_dtype is not None:
-            h = x.to(self.fast_dtype)
-            A = self.A.to(device=h.device, dtype=self.fast_dtype)
-            B = self.B.to(device=h.device, dtype=self.fast_dtype)
-        else:
-            h = self.dropout(x).float()
-            # A/B live on CPU (grads are accumulated there and the optimizer steps
-            # there); hop them to the activation's device for the matmul. The low-rank
-            # path is tiny, so this costs a negligible amount of PCIe traffic.
-            A = self.A if self.A.device == h.device else self.A.to(h.device)
-            B = self.B if self.B.device == h.device else self.B.to(h.device)
-        return y + (self.scale * (h @ A.t() @ B.t())).to(y.dtype)
-
-    @torch.no_grad()
-    def set_fast(self, dtype=torch.bfloat16):
-        """Inference-only: run the low-rank path in `dtype` instead of fp32.
-
-        The adapter is trained in fp32 (small values would vanish in fp16); this is a
-        deployment switch. The weights are rounded once, at load time.
-        """
-        self.A.data = self.A.data.to(dtype)
-        self.B.data = self.B.data.to(dtype)
-        self.fast_dtype = dtype
-
-    @torch.no_grad()
-    def merge(self):
-        self.base.weight.data += (self.scale * (self.B @ self.A)).to(self.base.weight.dtype)
-        self.A.data.zero_()
-        self.B.data.zero_()
+        out = self.base(x)
+        a, b = self.A, self.B
+        if a.device != x.device:
+            a, b = a.to(x.device), b.to(x.device)
+        dtype = self._fast_dtype or out.dtype
+        delta = (x.to(dtype) @ a.to(dtype).T @ b.to(dtype).T) * self.scaling
+        return out + delta.to(out.dtype)
 
 
-def freeze_base(model):
-    """Keep only LoRA A/B trainable.
-
-    `LoRALinear` freezes its own base, but the rest of the model (MLP, norms,
-    embeddings, lm_head) is still trainable by default. A training loop that optimizes
-    every `requires_grad` parameter would update those too, and the saved adapter (A/B
-    only) would not reproduce the trained behaviour. This is the fix.
-    """
-    for p in model.parameters():
-        p.requires_grad_(False)
-    for m in model.modules():
-        if isinstance(m, LoRALinear):
-            m.A.requires_grad_(True)
-            m.B.requires_grad_(True)
+def _target_r(name: str, r_attn: int, r_mlp: int) -> tuple[int, float] | None:
+    if r_attn > 0 and name.endswith(ATTN_SUFFIXES):
+        return r_attn, float(r_attn)
+    if r_mlp > 0 and name.endswith(MLP_SUFFIXES):
+        return r_mlp, float(r_mlp)
+    return None
 
 
-def apply_lora(model, r_attn: int = 16, r_mlp: int = 16, alpha_attn: int = 16,
-               alpha_mlp: int = 16, layers=None):
-    """Replace q/k/v/o and mlp projections with LoRALinear in-place.
-
-    After wrapping, only the LoRA A/B tensors are trainable; the rest of the base is
-    frozen. This makes a saved adapter reproducible in a fresh process.
-    """
-    base = model.model if hasattr(model, "model") else model
-    n = len(base.layers)
-    if layers is None:
-        layers = list(range(n))
-    for i in layers:
-        layer = base.layers[i]
-        attn = layer.self_attn.orig if hasattr(layer.self_attn, "orig") else layer.self_attn
-        for name, r, a in [("q_proj", r_attn, alpha_attn), ("k_proj", r_attn, alpha_attn),
-                           ("v_proj", r_attn, alpha_attn), ("o_proj", r_attn, alpha_attn)]:
-            mod = getattr(attn, name)
-            if not isinstance(mod, LoRALinear):
-                setattr(attn, name, LoRALinear(mod, r=r, alpha=a))
-        if r_mlp > 0:
-            for name in ("gate_proj", "up_proj", "down_proj"):
-                mod = getattr(layer.mlp, name)
-                if not isinstance(mod, LoRALinear):
-                    setattr(layer.mlp, name, LoRALinear(mod, r=r_mlp, alpha=alpha_mlp))
-    freeze_base(model)
-
-
-def lora_parameters(model):
-    for mod in model.modules():
-        if isinstance(mod, LoRALinear):
-            yield mod.A
-            yield mod.B
+def apply_lora(model: nn.Module, r_attn: int = 8, r_mlp: int = 0,
+               alpha_attn: int | None = None,
+               alpha_mlp: int | None = None) -> nn.Module:
+    """Replace target Linear modules with LoRALinear and freeze the base."""
+    for name, module in list(model.named_modules()):
+        if not isinstance(module, nn.Linear) or isinstance(module, LoRALinear):
+            continue
+        if not name.endswith(ATTN_SUFFIXES + MLP_SUFFIXES):
+            continue
+        is_attn = name.endswith(ATTN_SUFFIXES)
+        r = r_attn if is_attn else r_mlp
+        if r <= 0:
+            continue
+        alpha = (alpha_attn if is_attn else alpha_mlp) or r
+        parent_name, _, child = name.rpartition(".")
+        parent = model.get_submodule(parent_name) if parent_name else model
+        setattr(parent, child, LoRALinear(module, r, int(alpha)))
+    for param in model.parameters():
+        param.requires_grad = False
+    for module in model.modules():
+        if isinstance(module, LoRALinear):
+            module.A.requires_grad = True
+            module.B.requires_grad = True
+    return model
 
 
-def merge_lora(model):
-    for mod in model.modules():
-        if isinstance(mod, LoRALinear):
-            mod.merge()
+def inject_lora(model: nn.Module, rank: int = 8, alpha: int = 16,
+                **kwargs) -> nn.Module:
+    """Tiny-LM helper: adapt MLP layers only."""
+    return apply_lora(model, r_attn=0, r_mlp=rank, alpha_mlp=alpha)
 
 
-def count_lora_params(model):
+def count_lora_params(model: nn.Module) -> int:
     return sum(p.numel() for p in lora_parameters(model))
 
 
-def lora_state_dict(model):
-    """Adapter-only state dict (A/B tensors), CPU copies — for saving checkpoints."""
-    out = {}
-    for name, p in model.named_parameters():
-        if p.requires_grad and (name.endswith(".A") or name.endswith(".B")):
-            out[name] = p.detach().cpu().clone()
+def lora_parameters(model: nn.Module):
+    return [p for p in model.parameters() if p.requires_grad]
+
+
+def lora_state_dict(model: nn.Module) -> dict:
+    return {k: v.detach().cpu() for k, v in model.state_dict().items()
+            if k.endswith(".A") or k.endswith(".B")
+            or k.endswith("lora_A") or k.endswith("lora_B")}
+
+
+def set_lora_state_dict(model: nn.Module, state: dict):
+    target = {k: v for k, v in state.items()
+              if k.endswith(".A") or k.endswith(".B")}
+    if not target:
+        raise SystemExit("adapter has no LoRA A/B tensors")
+    model.load_state_dict(target, strict=False)
+
+
+def merge_lora(model: nn.Module):
+    with torch.no_grad():
+        for module in model.modules():
+            if not isinstance(module, LoRALinear):
+                continue
+            delta = (module.B @ module.A) * module.scaling
+            module.base.weight.add_(delta.to(module.base.weight.dtype))
+            module.A.zero_()
+            module.B.zero_()
+
+
+def save_adapter(model: nn.Module, out: str | Path, **config) -> Path:
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    torch.save({"lora": lora_state_dict(model), "config": config},
+               out / "adapter.pt")
+    (out / "config.json").write_text(json.dumps(config, indent=2) + "\n",
+                                     encoding="utf-8")
     return out
 
 
-def set_lora_state_dict(model, sd):
-    """Load an adapter saved with lora_state_dict (module tree must match)."""
-    own = {n for n, p in model.named_parameters() if p.requires_grad}
-    missing = [k for k in sd if k not in own]
-    if missing:
-        raise KeyError(f"adapter keys not found in model: {missing[:4]}")
-    with torch.no_grad():
-        for name, p in model.named_parameters():
-            if name in sd:
-                p.copy_(sd[name].to(device=p.device, dtype=p.dtype))
+def apply_adapter(model: nn.Module, path: str | Path) -> dict:
+    ck = torch.load(Path(path) / "adapter.pt", map_location="cpu",
+                    weights_only=False)
+    config = ck.get("config", {})
+    apply_lora(model, r_attn=int(config.get("r_attn", 0)),
+               r_mlp=int(config.get("r_mlp", config.get("rank", 8))),
+               alpha_attn=config.get("alpha_attn"),
+               alpha_mlp=config.get("alpha_mlp", config.get("alpha")))
+    state = {k: v for k, v in ck["lora"].items()
+             if k.endswith(".A") or k.endswith(".B")}
+    model.load_state_dict(state, strict=False)
+    model.eval()
+    return config

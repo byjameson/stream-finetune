@@ -376,6 +376,23 @@ comparable stories. It is now the **product checkpoint**
 factual questions (weather, time) are out of scope and must be routed to a tool
 or a refusal.
 
+### LoRA adapter
+
+`streamft/lora.py` implements small MLP LoRA adapters for both HF-style models
+and the tiny transformer. A demo adapter on the 50M product:
+
+- **368,640** trainable parameters (~0.74% of the base), ~1.5 MB;
+- 300 steps, ~42 s on the RTX 3050;
+- clean smoke **PASS** (1.380 bpb / 4.082 assistant);
+- runtime behavior **PASS**, E2E **PASS**.
+
+The adapter is a delivery mechanism, not a new base model: users can train
+per-domain adapters while sharing the frozen 50M base. Knowledge still belongs
+in `streamft.doc_memory`.
+
+Evidence: `research/results/adapter_behavior_banned.json`,
+`adapter_behavior_eval.json`, `adapter_chat_human_eval.json`.
+
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 
 ## Evaluation

@@ -265,6 +265,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `make_chat_corpus_clean.py` | filtered dialogue-heavy English control corpus | ~5 min |
 | `analyze_chat_lengths.py` | conversation-length distribution in the packed chat shard | ~1 s |
 | `train_transformer_chat.py` | 20.2M transformer diagnostic on the same clean SFT data | ~25 min |
+| `train_lora.py` | small MLP LoRA adapter on a frozen transformer base | ~1 min |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |

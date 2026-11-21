@@ -13,6 +13,7 @@ from pathlib import Path
 import torch
 from tokenizers import Tokenizer
 
+from streamft.lora import apply_adapter
 from streamft.transformer import TransformerLM, generate
 
 try:
@@ -24,13 +25,15 @@ ROOT = Path(__file__).resolve().parents[1]
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def load_model(path: str):
+def load_model(path: str, adapter: str = ""):
     ck = torch.load(ROOT / path / "model.pt", map_location="cpu",
                     weights_only=False)
     cfg = ck["config"]
     model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
                           cfg["heads"], cfg["ff"]).to(DEVICE)
     model.load_state_dict(ck["state"])
+    if adapter:
+        apply_adapter(model, ROOT / adapter)
     model.eval()
     tok = Tokenizer.from_file(str(ROOT / "data/chat_en_bpe8k.json"))
     return model, tok
@@ -123,9 +126,10 @@ def behavior(model, tok, memory_path: Path) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
+    ap.add_argument("--adapter", default="")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
-    model, tok = load_model(args.model)
+    model, tok = load_model(args.model, args.adapter)
     result = behavior(model, tok, ROOT / "data/behavior_eval_memory.json")
     payload = {"model": args.model, **result}
     out = ROOT / args.out
