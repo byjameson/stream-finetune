@@ -42,6 +42,7 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/learning/feedback" in page
     assert "/v1/learning/gaps" in page
     assert "/v1/documents/forget" in page
+    assert "/v1/memory/history" in page
     assert "atomzero_session" in page
     assert "add a document" in page
     assert "indexed documents" in page
@@ -516,6 +517,10 @@ def test_http_privacy_forget_document_and_session(tmp_path):
         remembered = _post(base + "/v1/agent/chat", {
             "session_id": "privacy", "message": "my name is Alice"})
         assert "remember" in remembered["reply"].lower()
+        history = _post(base + "/v1/memory/history",
+                        {"session_id": "privacy", "limit": 10})
+        assert any(item["text"] == "my name is Alice"
+                   for item in history["data"])
         removed = _post(base + "/v1/memory/forget", {
             "session_id": "privacy", "text": "Alice"})
         assert removed["facts_deleted"] == 1

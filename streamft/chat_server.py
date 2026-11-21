@@ -264,6 +264,19 @@ function add(role, text, extra, isError) {
   box.scrollIntoView({block: 'end'});
   return box;
 }
+async function restoreChat() {
+  try {
+    const r = await fetch('/v1/memory/history', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId, limit: 50})});
+    const j = await r.json();
+    if (!r.ok) return;
+    (j.data || []).forEach(item => {
+      const role = item.role === 'assistant' ? 'bot' : 'user';
+      add(role, item.text || '');
+    });
+  } catch (e) {}
+}
 function extra(result) {
   const parts = [];
   const tools = result.tool_calls || [];
@@ -1029,6 +1042,7 @@ function refreshHealth() {
       : 'No teacher provider configured; use manual paste.';
   }).catch(() => { document.getElementById('m').textContent = 'server not ready'; });
 }
+restoreChat();
 refreshHealth();
 refreshQueue();
 refreshTeacherNotes();
@@ -1200,7 +1214,8 @@ class Handler(BaseHTTPRequestHandler):
         if route not in ("/generate", "/v1/chat/completions",
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/documents/forget",
-                         "/v1/memory/forget", "/v1/teacher/notes",
+                         "/v1/memory/forget", "/v1/memory/history",
+                         "/v1/teacher/notes",
                          "/v1/teacher/notes/verify", "/v1/teacher/ask",
                          "/v1/teach", "/v1/learning/feedback",
                          "/v1/learning/queue/approve",
@@ -1270,6 +1285,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._documents_forget(req)
             if route == "/v1/memory/forget":
                 return self._memory_forget(req)
+            if route == "/v1/memory/history":
+                return self._memory_history(req)
             if self.path == "/v1/documents/search":
                 docs = _state.get("docs")
                 query = str(req.get("query", ""))
@@ -1691,6 +1708,25 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"session_id": session_id, **result})
+
+    def _memory_history(self, req: dict):
+        session_id = str(req.get("session_id", "")).strip()
+        if not session_id:
+            return self._json(400, {"error": "session_id is required"})
+        try:
+            limit = int(req.get("limit", 50))
+        except (TypeError, ValueError):
+            return self._json(400, {"error": "limit must be an integer"})
+        limit = max(1, min(limit, 200))
+        try:
+            session = self._session(session_id)
+            episodes = session.human.data.get("episodes", [])
+        except Exception as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {
+            "session_id": session_id,
+            "data": episodes[-limit:],
+        })
 
     def _session(self, session_id: str):
         from streamft.agent_runtime import AgentSession
