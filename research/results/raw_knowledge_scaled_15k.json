@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T21:02:51",
+  "model": "checkpoints/scaled_50m_step15000",
+  "adapter": "",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of're the capital of the city is the capital of the city's capital, which is the capital of the city's capital city.",
+      "correct": false,
+      "alpha": 0.781,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "The 2 + 2 is 2 + 2 is 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2 = 2 + 2",
+      "correct": false,
+      "alpha": 0.053,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange 7, we need to consider the number of ways to arrange 7, which is the most common multiple (e.g., 7), 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7",
+      "correct": false,
+      "alpha": 0.549,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world, which is the largest planet in the world.",
+      "correct": false,
+      "alpha": 0.802,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "The author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the author of the",
+      "correct": false,
+      "alpha": 0.788,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a measure of the amount of water that is less than or equal to the amount of water in the atmosphere. It is a measure of how much water it is in the atmosphere, and it is less than the amount of water it is. The boiling point of water is a measure",
+      "correct": false,
+      "alpha": 0.78,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP (HHH) is a software engineer that allows you to create and manage your workloads, track your workload, and track your progress. It's a software engineer that helps you track your progress and track your progress. HTP is a software engineer that helps you",
+      "correct": false,
+      "alpha": 0.807,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "Orange, also known as blue, is a color that is often used to describe the color of a color. It is often used to describe the color of a color in a color, such as a blue or blue color. The color is often used to describe the color of a color, such as a blue or",
+      "correct": true,
+      "alpha": 0.761,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics that describes the behavior of light. It's a fundamental concept in physics that refers to the speed of light in a specific direction or direction. In other words, light is a fundamental concept in physics that describes the behavior of a light, such as a light, a concept",
+      "correct": false,
+      "alpha": 0.807,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}
