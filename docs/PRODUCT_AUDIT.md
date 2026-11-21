@@ -11,8 +11,8 @@ release approval. Last updated 2026-11-21.
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
-| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_embed_rerank*.json` |
-| retrieval benchmark | neural top-1 0.900 vs hashed 0.850 | `retrieval_benchmark.json` |
+| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_hybrid_neural*.json` |
+| retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000 | `retrieval_benchmark_hybrid.json` |
 | behavior | 16/16 | `behavior_scaled_40k.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
 | training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
@@ -27,7 +27,8 @@ lower-LR resume did not produce a material improvement over 40k.
 - Deterministic tools: time, arithmetic, task add/list/complete, name/likes
   memory, help/limits.
 - RAG: SQLite FTS5, source/title/sha, teacher-note metadata, query-relevant
-  snippet selection (`best_snippet`).
+  snippet selection (`best_snippet`). Hybrid candidate stage adds a cached
+  embedding pool (FTS + neural cosine) before reranking.
 - Missing-source path: honest no-source reply plus knowledge-gap record.
 - Research tool: explicit `research/look up`; queue worker for approved topics.
 - Safety: opt-in filter before generation and on output.
@@ -36,10 +37,12 @@ lower-LR resume did not produce a material improvement over 40k.
 - Deletion: exact document source and session memory; path separators handled.
 
 **Gaps:** the neural reranker needs a one-time model download (`models/` is
-gitignored), so a fresh clone falls back to hashed n-grams; on the authored
-benchmark FTS candidate recall@10 caps top-1 at 0.900, so the candidate stage is
-now the bottleneck; the model is English-first; no task due dates/reminders; no
-multi-document conflict resolution.
+gitignored), so a fresh clone falls back to hashed n-grams; that fallback stays
+FTS-anchored and lexical (it does not answer semantic-only queries), so its
+recall remains 0.900. The neural hybrid path reaches 1.000 on the authored set,
+but the chunk-vector scan is linear, not an ANN index; the model is
+English-first; no task due dates/reminders; no multi-document conflict
+resolution.
 
 ## 3. Browser UI
 
@@ -96,12 +99,14 @@ only; general capability is not improved by adapters.
 - RAG reranker: deterministic hashed character n-gram embeddings + cosine,
   query coverage, title match, exact phrase and bm25; tests cover a case where
   raw bm25 prefers the wrong document and a morphological match.
-- Neural reranker candidate: local `sentence-transformers/all-MiniLM-L6-v2`
-  (BERT, 384 hidden) with mean pooling and cosine. Held-out authored retrieval
-  benchmark: top-1/citation **0.900 vs 0.850** for hashed; median latency
-  **16.5 ms vs 0.95 ms** on CPU. `--reranker auto` uses it when
-  `models/all-MiniLM-L6-v2` exists and falls back to hashed; product 21/21 and
-  safety 26/26 are unchanged with the neural path.
+- Hybrid neural retrieval: local `sentence-transformers/all-MiniLM-L6-v2`
+  (BERT, 384 hidden), mean pooling and cosine, plus cached chunk vectors in
+  SQLite. The candidate pool is FTS + neural cosine (threshold 0.30). Held-out
+  authored benchmark: **top-1/citation 1.000** vs FTS **0.850**; candidate
+  recall@10 **1.000** vs **0.900**; median retrieval latency **10.0 ms vs
+  0.34 ms**. The hashed fallback is FTS-anchored and stays at 0.850; it does
+  not answer from hash-only candidates. Product 21/21 and safety 26/26 hold on
+  both paths. Vector rows are pruned on source replace/forget.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
@@ -113,10 +118,9 @@ service is operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **372 tests** pass locally.
+- **376 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `8a04a59` green after the neural reranker, held-out retrieval benchmark,
-  expanded multilingual safety and resume gate.
+- CI for the hybrid-retrieval commit is verified after push.
 
 ## 8. Release state
 

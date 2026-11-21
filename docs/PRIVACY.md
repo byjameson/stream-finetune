@@ -20,8 +20,9 @@ python -m streamft.doc_memory --db data/docs.db forget my-note.txt
 ```
 
 The response reports `chunks_deleted`, `meta_deleted` and `vacuumed`. The row is
-removed from the FTS5 index and `doc_meta`, then SQLite is compacted with
-`VACUUM` when possible. A missing source returns 404 / a non-zero CLI exit.
+removed from the FTS5 index, `doc_meta` and the derived chunk-vector cache
+(`doc_vectors`), then SQLite is compacted with `VACUUM` when possible. A missing
+source returns 404 / a non-zero CLI exit.
 Local-path sources are matched across `/` and `\` separators, so
 `examples/demo_note.txt` deletes a row stored as `examples\demo_note.txt`.
 
@@ -64,7 +65,8 @@ The browser has **Forget session memory** for the current session.
 - the agent then answers "I do not know your name" instead of the deleted fact.
 
 `tests/test_chat_server_docs.py` verifies the HTTP document and session delete
-paths, including the 404 for a missing source.
+paths, including the 404 for a missing source. `tests/test_doc_memory.py`
+verifies that replacing a source prunes its old chunk vectors.
 
 ## Limits
 

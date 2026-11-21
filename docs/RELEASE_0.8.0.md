@@ -39,12 +39,13 @@ controls.
 
 - Product behavior: 21/21 base and adapter; 26/26 with safety; unchanged with
   the neural reranker.
-- Retrieval reranker, held-out authored set: hashed top-1/citation 0.850;
-  local MiniLM-L6-v2 neural 0.900, at 16.5 ms vs 0.95 ms median CPU latency.
+- Retrieval, held-out authored set: FTS top-1/citation 0.850; hybrid
+  FTS+MiniLM neural **1.000**, candidate recall@10 **1.000** vs 0.900, at
+  10.0 ms vs 0.34 ms median. Hashed fallback stays FTS-anchored.
 - Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
   **not** a general model; facts belong in RAG.
 - Behavior checks: 16/16 on the scaled 40k product checkpoint.
-- Test suite: 372 tests; CI green.
+- Test suite: 376 tests; CI green.
 
 ## Run locally
 

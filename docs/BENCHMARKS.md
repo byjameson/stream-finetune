@@ -45,32 +45,44 @@ With `--safety-filter` it adds five safety checks and runs 26 in total:
 The base and the product adapter tie on these deterministic behaviors. That is
 expected: the adapter was trained for a narrow skill queue, not to replace the
 runtime tools. The adapter's value is shown by the loss gates and holdout, not
-by this table. The neural reranker keeps the same gates: product **21/21** and
-safety **26/26** (`assistant_benchmark_scaled_40k_neural_rerank*.json`).
+by this table. The hybrid neural path keeps the same gates: product **21/21**
+and safety **26/26** (`assistant_benchmark_scaled_40k_hybrid_neural*.json`);
+the hashed fallback is also 21/21 and 26/26.
 
 ## Retrieval reranker benchmark
 
 `research/benchmark_retrieval.py` builds a 20-document authored office corpus
 and asks 20 paraphrased questions in a temporary database. No reranker is
 trained on these pairs. It reports top-1, top-3, MRR, citation accuracy
-(top-1 equals the expected source) and latency.
+(top-1 equals the expected source) and full retrieval latency.
 
 ```bash
 python research/benchmark_retrieval.py \
   --neural-model models/all-MiniLM-L6-v2 \
-  --out research/results/retrieval_benchmark.json
+  --out research/results/retrieval_benchmark_hybrid.json
 ```
 
-| reranker | top-1 | top-3 | MRR | citation | median latency |
+| candidate stage + reranker | top-1 | top-3 | MRR | citation | median latency |
 |---|---:|---:|---:|---:|---:|
-| raw FTS | 0.850 | 0.900 | 0.875 | 0.850 | 0.47 ms |
-| hashed n-gram | 0.850 | 0.900 | 0.875 | 0.850 | 0.95 ms |
-| MiniLM-L6-v2 neural | **0.900** | 0.900 | **0.900** | **0.900** | 16.5 ms |
+| raw FTS | 0.850 | 0.900 | 0.875 | 0.850 | 0.34 ms |
+| FTS + hashed pool | 0.850 | 0.900 | 0.875 | 0.850 | 1.87 ms |
+| FTS + neural pool | **1.000** | **1.000** | **1.000** | **1.000** | 10.0 ms |
 
-FTS candidate recall@10 is **0.900**, so neither reranker can recover the two
-queries FTS never retrieves ("printing pale", "wear to a customer meeting").
-The neural candidate wins 5 points of top-1 and citation accuracy on this small
-authored set; that is directional evidence, not a general IR claim.
+Candidate-pool recall@10:
+
+| stage | recall@10 |
+|---|---:|
+| FTS only | 0.900 |
+| FTS + MiniLM neural pool | **1.000** |
+
+The two misses in the previous FTS-only run were "Why are my documents printing
+pale?" (printer) and "What should I wear to a customer meeting?" (dress code).
+Both are absent from FTS, so no reranker could recover them. The neural
+candidate pool supplies both, and the reranker puts them at rank 1. The hashed
+pool stays FTS-anchored: it did not answer "population of Paris" from hash
+collisions, and it refuses semantic-only queries rather than risking a false
+answer. That is deliberate: the dependency-free fallback is conservative, and
+the neural path is the promoted hybrid retriever.
 
 The neural path is optional and local:
 
@@ -84,9 +96,12 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('sen
 ```
 
 `models/` is gitignored. The reranker is retrieval only; it does not change the
-49.2M core model. CPU latency is about 16 ms per query here, with a few seconds
-of warm-up. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the remaining gap:
-the candidate stage, not the reranker, is now the bottleneck.
+49.2M core model. CPU latency is about 10 ms per query here after the chunk
+vector cache is warm, with a few seconds of model warm-up. Chunk vectors are
+cached in SQLite (`doc_vectors`) by model key and pruned when a source is
+replaced or forgotten. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the
+remaining gaps: the hashed fallback is still lexical, and multi-document
+conflict resolution is not implemented.
 
 ## Raw model knowledge probe
 

@@ -43,6 +43,30 @@ def test_missing_neural_model_is_a_clear_error(tmp_path):
         reranker.embed(["hello"])
 
 
+def test_hybrid_neural_candidates_recover_an_fts_miss(tmp_path):
+    def synonym_encoder(texts):
+        rows = []
+        for text in texts:
+            low = text.lower()
+            if "login" in low or "password" in low:
+                rows.append([1.0, 0.0])
+            elif "weather" in low:
+                rows.append([0.0, 1.0])
+            else:
+                rows.append([0.0, 0.0])
+        return torch.tensor(rows, dtype=torch.float32)
+
+    docs = DocMemory(tmp_path / "docs.db")
+    docs.add_text("security.txt", "Reset your password from the account page.",
+                  title="Security")
+    docs.add_text("weather.txt", "Tomorrow will be sunny.", title="Weather")
+    docs.reranker = NeuralReranker(encoder=synonym_encoder)
+    hits = docs.search("How do I regain login access?", k=2)
+    assert hits[0]["source"] == "security.txt"
+    assert hits[0]["neural_score"] == 1.0
+    docs.close()
+
+
 def test_doc_memory_uses_attached_reranker(tmp_path):
     class Reverse:
         def rerank(self, query, hits, k):

@@ -33,6 +33,14 @@ class NeuralReranker:
         self._model = None
         self._lock = threading.RLock()
 
+    @property
+    def cache_key(self) -> str:
+        try:
+            stamp = self.model_path.stat().st_mtime
+        except OSError:
+            stamp = 0.0
+        return f"neural:{self.model_path.resolve()}:{stamp:.0f}"
+
     def _load(self) -> None:
         if self._encoder is not None or self._model is not None:
             return
@@ -79,11 +87,14 @@ class NeuralReranker:
     def rerank(self, query: str, hits: list[dict], k: int = 5) -> list[dict]:
         if not hits:
             return []
-        texts = [f"{hit.get('title', '')} {hit.get('chunk', '')}".strip()
-                 for hit in hits]
-        query_vector = self.embed([str(query or "")])
-        doc_vectors = self.embed(texts)
-        scores = (doc_vectors @ query_vector.T).flatten().tolist()
+        if all("neural_score" in hit for hit in hits):
+            scores = [float(hit["neural_score"]) for hit in hits]
+        else:
+            texts = [f"{hit.get('title', '')} {hit.get('chunk', '')}".strip()
+                     for hit in hits]
+            query_vector = self.embed([str(query or "")])
+            doc_vectors = self.embed(texts)
+            scores = (doc_vectors @ query_vector.T).flatten().tolist()
         ranked = sorted(enumerate(hits),
                         key=lambda item: (-scores[item[0]], item[0]))
         output = []

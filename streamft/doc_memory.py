@@ -9,6 +9,7 @@ this index, not in the model weights.
 from __future__ import annotations
 
 import argparse
+import array
 import hashlib
 import json
 import math
@@ -55,6 +56,11 @@ def _split_long(paragraph: str) -> list[str]:
 
 
 EMBED_DIM = 512
+HASHED_CACHE_KEY = "hashed-ngram-v1"
+# Minimum cosine for a semantic-only candidate. Lexical FTS hits are always
+# kept; this only stops unrelated chunks from being dragged into the pool.
+HYBRID_MIN_HASHED = 0.28
+HYBRID_MIN_NEURAL = 0.30
 
 
 def _char_ngrams(text: str) -> list[str]:
@@ -90,6 +96,16 @@ def _query_terms(text: str) -> set[str]:
             if len(word) > 2 and word not in STOPWORDS}
 
 
+def _pack_vector(values) -> bytes:
+    return array.array("f", (float(value) for value in values)).tobytes()
+
+
+def _unpack_vector(blob: bytes):
+    values = array.array("f")
+    values.frombytes(blob)
+    return values
+
+
 def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
     """Lexically rerank FTS candidates by coverage, title, phrase and bm25.
 
@@ -101,9 +117,19 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
         return hits[:k]
     phrase = " ".join(str(query or "").lower().split())
     query_vector = embed_text(query)
-    raw = [float(hit.get("score", 0.0)) for hit in hits]
-    # bm25 returns lower-is-better; normalize it into 0..1.
-    high, low = max(raw), min(raw)
+    raw = []
+    for hit in hits:
+        value = hit.get("score")
+        try:
+            number = float(value) if value is not None else None
+        except (TypeError, ValueError):
+            number = None
+        raw.append(number if number is not None and math.isfinite(number)
+                   else None)
+    finite = [value for value in raw if value is not None]
+    # bm25 returns lower-is-better; normalize it into 0..1. Embedding-only
+    # candidates have no bm25 and get 0 for this component.
+    high, low = (max(finite), min(finite)) if finite else (0.0, 0.0)
     span = high - low
     scored = []
     for index, hit in enumerate(hits):
@@ -113,9 +139,16 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
         coverage = len(terms & words) / len(terms)
         title_hits = len(terms & _query_terms(title)) / len(terms)
         exact = 1.0 if len(terms) >= 2 and phrase in f"{title} {chunk}" else 0.0
-        bm25 = 1.0 - ((raw[index] - low) / span) if span else 0.5
-        body_vector = embed_text(f"{title} {chunk}")
-        embedding = sum(x * y for x, y in zip(query_vector, body_vector))
+        if raw[index] is not None and span:
+            bm25 = 1.0 - ((raw[index] - low) / span)
+        elif raw[index] is not None:
+            bm25 = 0.5
+        else:
+            bm25 = 0.0
+        embedding = hit.get("embedding_score")
+        if embedding is None:
+            body_vector = embed_text(f"{title} {chunk}")
+            embedding = sum(x * y for x, y in zip(query_vector, body_vector))
         score = (0.40 * coverage + 0.10 * title_hits + 0.10 * exact
                  + 0.15 * bm25 + 0.25 * embedding)
         item = dict(hit)
@@ -192,6 +225,11 @@ class DocMemory:
             "model TEXT NOT NULL, verified INTEGER NOT NULL, "
             "created TEXT NOT NULL, reviewer TEXT NOT NULL DEFAULT '', "
             "verified_at TEXT NOT NULL DEFAULT '')")
+        self.con.execute(
+            "CREATE TABLE IF NOT EXISTS doc_vectors("
+            "doc_rowid INTEGER NOT NULL, model TEXT NOT NULL, "
+            "dim INTEGER NOT NULL, vec BLOB NOT NULL, "
+            "PRIMARY KEY(doc_rowid, model))")
         columns = {row[1] for row in self.con.execute(
             "PRAGMA table_info(doc_meta)")}
         for name, ddl in (
@@ -233,6 +271,7 @@ class DocMemory:
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (source, kind, source_url, teacher, model, verified, created,
                  reviewer, verified_at))
+            self._drop_stale_vectors()
             self.con.commit()
         return added
 
@@ -241,6 +280,104 @@ class DocMemory:
         p = Path(path)
         text = p.read_text(encoding="utf-8", errors="replace")
         return self.add_text(str(p), text, title or p.stem, meta=meta)
+
+    def _drop_stale_vectors(self) -> None:
+        self.con.execute(
+            "DELETE FROM doc_vectors WHERE doc_rowid NOT IN "
+            "(SELECT rowid FROM docs)")
+
+    @staticmethod
+    def _vector_model_key(active) -> str:
+        if active is None or not hasattr(active, "embed"):
+            return HASHED_CACHE_KEY
+        key = getattr(active, "cache_key", "")
+        if key:
+            return str(key)
+        path = getattr(active, "model_path", "")
+        if path:
+            return f"neural:{Path(path).resolve()}"
+        return "neural:custom"
+
+    @staticmethod
+    def _embed_texts(active, texts: list[str]) -> list[list[float]]:
+        if active is not None and hasattr(active, "embed"):
+            vectors = active.embed(texts)
+            return [[float(value) for value in row] for row in vectors.tolist()]
+        return [embed_text(text) for text in texts]
+
+    def _vectors_for_rows(self, active, rows) -> dict[int, list[float]]:
+        """Load cached chunk vectors, computing and storing missing ones."""
+        if not rows:
+            return {}
+        key = self._vector_model_key(active)
+        wanted = {rowid: text for rowid, text in rows}
+        vectors: dict[int, list[float]] = {}
+        ids = list(wanted)
+        for start in range(0, len(ids), 400):
+            batch = ids[start:start + 400]
+            placeholders = ",".join("?" for _ in batch)
+            found = self.con.execute(
+                "SELECT doc_rowid, vec FROM doc_vectors "
+                f"WHERE model = ? AND doc_rowid IN ({placeholders})",
+                (key, *batch)).fetchall()
+            for rowid, blob in found:
+                vectors[rowid] = _unpack_vector(blob)
+        missing = [rowid for rowid in ids if rowid not in vectors]
+        if missing:
+            computed = self._embed_texts(
+                active, [wanted[rowid] for rowid in missing])
+            self.con.executemany(
+                "INSERT OR REPLACE INTO doc_vectors"
+                "(doc_rowid, model, dim, vec) VALUES (?, ?, ?, ?)",
+                [(rowid, key, len(vector), _pack_vector(vector))
+                 for rowid, vector in zip(missing, computed)])
+            self.con.commit()
+            for rowid, vector in zip(missing, computed):
+                vectors[rowid] = vector
+        return vectors
+
+    def _embedding_candidates(self, query: str, active, limit: int):
+        """Score every chunk by embedding cosine, independent of FTS terms."""
+        rows = self.con.execute(
+            "SELECT rowid, chunk, source, title FROM docs").fetchall()
+        if not rows:
+            return [], {}
+        texts = [(row[0], f"{row[3]} {row[1]}".strip()) for row in rows]
+        vectors = self._vectors_for_rows(active, texts)
+        query_vector = self._embed_texts(active, [query])[0]
+        neural = self._vector_model_key(active).startswith("neural:")
+        scored = []
+        for row in rows:
+            vector = vectors.get(row[0])
+            if vector is None or len(vector) != len(query_vector):
+                continue
+            similarity = sum(a * b for a, b in
+                             zip(query_vector, vector))
+            scored.append((similarity, row))
+        scored.sort(key=lambda item: (-item[0], item[1][0]))
+        by_rowid = {row[0]: similarity for similarity, row in scored}
+        threshold = HYBRID_MIN_NEURAL if neural else HYBRID_MIN_HASHED
+        query_grams = set(_char_ngrams(query)) if not neural else None
+        hits = []
+        for similarity, row in scored[:limit]:
+            if similarity < threshold:
+                break
+            if query_grams is not None:
+                # Hashed vectors are sparse and can collide on short queries.
+                # Require real character overlap before a hash-only candidate
+                # may bypass FTS; neural embeddings handle synonyms instead.
+                text = f"{row[3]} {row[1]}".lower()
+                if len(query_grams & set(_char_ngrams(text))) < 2:
+                    continue
+            hit = {
+                "chunk": row[1], "source": row[2], "title": row[3],
+                "score": None, "_rowid": row[0],
+                "embedding_score": similarity,
+            }
+            if neural:
+                hit["neural_score"] = similarity
+            hits.append(hit)
+        return hits, by_rowid
 
     def _meta_map(self, sources) -> dict[str, dict]:
         sources = list(sources)
@@ -275,29 +412,67 @@ class DocMemory:
         if not words:
             return []
         match = " OR ".join(f'"{w}"' for w in words[:12])
-        candidates = max(k * 4, 10) if rerank else k
+        candidates = max(k * 4, 12) if rerank else k
+        active = reranker if reranker is not None else self.reranker
+        neural = self._vector_model_key(active).startswith("neural:")
         with self._lock:
             rows = self.con.execute(
-                "SELECT chunk, source, title, bm25(docs) AS score "
+                "SELECT rowid, chunk, source, title, bm25(docs) AS score "
                 "FROM docs WHERE docs MATCH ? ORDER BY score LIMIT ?",
                 (match, candidates)).fetchall()
-            metas = self._meta_map({row[1] for row in rows})
+            embedding_hits, embedding_scores = ([], {})
+            # Hashed n-grams are a fallback reranker, not a semantic retriever:
+            # do not answer from hash-only candidates when FTS found nothing.
+            # The neural reranker has a calibrated threshold and may do so.
+            if rerank and (rows or neural):
+                embedding_hits, embedding_scores = \
+                    self._embedding_candidates(query, active, candidates)
+            sources = {row[2] for row in rows} | {
+                hit["source"] for hit in embedding_hits}
+            metas = self._meta_map(sources)
+        default = {"kind": "document", "source_url": "", "teacher": "",
+                   "model": "", "verified": True, "created": "",
+                   "reviewer": "", "verified_at": ""}
         hits = [{
-            "chunk": row[0],
-            "source": row[1],
-            "title": row[2],
-            "score": float(row[3]),
-            **metas.get(row[1], {"source": row[1], "kind": "document",
-                                 "source_url": "", "teacher": "",
-                                 "model": "", "verified": True, "created": "",
-                                 "reviewer": "", "verified_at": ""}),
+            "chunk": row[1],
+            "source": row[2],
+            "title": row[3],
+            "score": float(row[4]),
+            "_rowid": row[0],
+            **default,
+            **metas.get(row[2], {}),
         } for row in rows]
         if not rerank:
             return hits
-        active = reranker if reranker is not None else self.reranker
+        # Hybrid candidate pool: FTS rows plus the best embedding rows. A
+        # paraphrase with no lexical overlap with any document can now enter
+        # the reranker, which was previously capped by FTS recall.
+        merged = []
+        seen = set()
+        for hit in hits + embedding_hits:
+            key = (hit["source"], hit["chunk"])
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(hit)
+        finite = [hit["score"] for hit in hits
+                  if hit.get("score") is not None]
+        fallback = max(finite) if finite else None
+        for hit in merged:
+            similarity = embedding_scores.get(hit.get("_rowid"))
+            if similarity is not None:
+                hit["embedding_score"] = similarity
+                if neural:
+                    hit["neural_score"] = similarity
+            if hit.get("score") is None:
+                hit["score"] = fallback
         if active is not None:
-            return active.rerank(query, hits, k)
-        return rerank_hits(query, hits, k)
+            ranked = active.rerank(query, merged, k)
+        else:
+            ranked = rerank_hits(query, merged, k)
+        for hit in ranked:
+            hit.pop("_rowid", None)
+        return ranked
 
     def sources(self) -> list[dict]:
         with self._lock:
@@ -375,6 +550,7 @@ class DocMemory:
             self.con.execute(
                 f"DELETE FROM doc_meta WHERE source IN ({placeholders})",
                 tuple(variants))
+            self._drop_stale_vectors()
             self.con.commit()
             vacuumed = False
             try:
@@ -394,6 +570,7 @@ class DocMemory:
                 "SELECT COUNT(*) FROM doc_meta").fetchone()[0]
             self.con.execute("DELETE FROM docs")
             self.con.execute("DELETE FROM doc_meta")
+            self._drop_stale_vectors()
             self.con.commit()
             vacuumed = False
             try:

@@ -37,11 +37,12 @@ research. Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
 `checkpoints/transformer_behavior_50m_scaled` (40k steps); the original
 `transformer_behavior_50m_long` is retained for comparison. The optional 368k
-LoRA adapter and SQLite FTS5 memory run locally. RAG reranking uses hashed
-character n-grams and, when `models/all-MiniLM-L6-v2` is present, a local
-MiniLM neural reranker (`--reranker auto`); on the held-out authored retrieval
-benchmark this reaches **0.900** top-1/citation vs **0.850** for hashed, at
-about 16.5 ms per query on CPU. Facts stay in RAG; style/skill updates go
+LoRA adapter and SQLite FTS5 memory run locally. RAG uses a hybrid candidate
+stage: FTS plus cached chunk embeddings, with hashed character n-grams as the
+dependency-free fallback. When `models/all-MiniLM-L6-v2` is present,
+`--reranker auto` uses a local MiniLM neural pool; on the held-out authored
+retrieval benchmark this reaches **1.000** top-1/citation vs **0.850** for FTS,
+at about 10 ms per query on CPU. Facts stay in RAG; style/skill updates go
 through the gate. It is not a general assistant. The project is open source; no hosted
 service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
 [product audit](docs/PRODUCT_AUDIT.md),

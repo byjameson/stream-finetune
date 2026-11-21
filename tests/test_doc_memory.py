@@ -58,6 +58,38 @@ def test_search_ignores_common_question_words(tmp_path):
     mem.close()
 
 
+def test_hybrid_rejects_unrelated_query(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    mem.add_text("law.txt", "The capital of France is Paris.",
+                 title="Notes")
+    assert mem.search("nothing here", k=2) == []
+    mem.close()
+
+
+def test_hashed_hybrid_stays_silent_without_an_fts_match(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    mem.add_text("launch.txt", "The launch code is ORANGE-42.",
+                 title="Launch")
+    mem.add_text("support.txt", "The support email is help@example.test.",
+                 title="Support")
+    assert mem.search("what is the population of Paris?", k=2) == []
+    mem.close()
+
+
+def test_hybrid_vector_cache_is_pruned_on_replace(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    mem.add_text("warranty.txt", "The warranty code is W-7781.")
+    mem.search("warranty code", k=2)
+    assert mem.con.execute(
+        "SELECT COUNT(*) FROM doc_vectors").fetchone()[0] == 1
+    mem.add_text("warranty.txt", "The warranty code is W-9900.")
+    assert mem.search("7781", k=2) == []
+    assert mem.con.execute(
+        "SELECT COUNT(*) FROM doc_vectors").fetchone()[0] == 1
+    assert mem.search("warranty code", k=2)[0]["source"] == "warranty.txt"
+    mem.close()
+
+
 def test_teacher_metadata_is_returned(tmp_path):
     try:
         mem = DocMemory(tmp_path / "docs.db")

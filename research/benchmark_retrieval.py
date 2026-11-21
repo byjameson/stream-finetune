@@ -1,9 +1,11 @@
-"""Held-out retrieval benchmark: FTS vs hashed n-gram vs neural reranker.
+"""Held-out retrieval benchmark: raw FTS vs hybrid candidate stages.
 
     python research/benchmark_retrieval.py
 
 The corpus and paraphrased queries are authored for this benchmark; no reranker
 is trained on them. The neural candidate is the local MiniLM-L6-v2 directory.
+The hashed fallback only adds candidates when FTS found an anchor; the neural
+pool may answer semantic-only paraphrases above its cosine threshold.
 """
 from __future__ import annotations
 
@@ -14,7 +16,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from streamft.doc_memory import DocMemory, rerank_hits
+from streamft.doc_memory import DocMemory
 from streamft.neural_embedder import NeuralReranker
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -104,34 +106,38 @@ def score(ranked: list[dict], expected: str) -> dict:
 def evaluate(docs: DocMemory, reranker) -> dict:
     raw_rows, hashed_rows, neural_rows = [], [], []
     raw_ms, hashed_ms, neural_ms = [], [], []
-    candidate_recall = 0
-    # Warm up FTS and the neural model before timing.
-    docs.search(QUERIES[0][0], k=10, rerank=False)
-    reranker.rerank(QUERIES[0][0], docs.search(
-        QUERIES[0][0], k=10, rerank=False), 5)
+    fts_recall = 0
+    hybrid_recall = 0
+    # Warm FTS, the neural model and both vector caches before timing.
+    first = QUERIES[0][0]
+    docs.search(first, k=10, rerank=False)
+    docs.search(first, k=10, rerank=True, reranker=None)
+    docs.search(first, k=10, rerank=True, reranker=reranker)
     for query, expected in QUERIES:
         start = time.perf_counter()
-        candidates = docs.search(query, k=10, rerank=False)
+        fts = docs.search(query, k=10, rerank=False)
         search_ms = (time.perf_counter() - start) * 1000
-        if any(hit.get("source") == expected for hit in candidates):
-            candidate_recall += 1
-
-        raw = candidates[:5]
+        if any(hit.get("source") == expected for hit in fts):
+            fts_recall += 1
         raw_rows.append({"query": query, "expected": expected,
-                         **score(raw, expected)})
+                         **score(fts[:5], expected)})
         raw_ms.append(search_ms)
 
         start = time.perf_counter()
-        hashed = rerank_hits(query, candidates, 5)
-        hashed_ms.append(search_ms + (time.perf_counter() - start) * 1000)
+        hashed = docs.search(query, k=5, rerank=True, reranker=None)
+        hashed_ms.append((time.perf_counter() - start) * 1000)
         hashed_rows.append({"query": query, "expected": expected,
                             **score(hashed, expected)})
 
         start = time.perf_counter()
-        neural = reranker.rerank(query, candidates, 5)
-        neural_ms.append(search_ms + (time.perf_counter() - start) * 1000)
+        neural = docs.search(query, k=5, rerank=True, reranker=reranker)
+        neural_ms.append((time.perf_counter() - start) * 1000)
         neural_rows.append({"query": query, "expected": expected,
                             **score(neural, expected)})
+
+        deep = docs.search(query, k=10, rerank=True, reranker=reranker)
+        if any(hit.get("source") == expected for hit in deep):
+            hybrid_recall += 1
 
     def summarize(rows, latencies):
         n = len(rows)
@@ -146,7 +152,8 @@ def evaluate(docs: DocMemory, reranker) -> dict:
         }
 
     return {
-        "candidate_recall_at_10": candidate_recall / len(QUERIES),
+        "candidate_recall_at_10": fts_recall / len(QUERIES),
+        "hybrid_recall_at_10": hybrid_recall / len(QUERIES),
         "raw": summarize(raw_rows, raw_ms),
         "hashed": summarize(hashed_rows, hashed_ms),
         "neural": summarize(neural_rows, neural_ms),
@@ -184,7 +191,8 @@ def main(argv=None) -> int:
         print(f"{name:7s} top1={row['top1']:.3f} top3={row['top3']:.3f} "
               f"mrr={row['mrr']:.3f} citation={row['citation']:.3f} "
               f"median={row['median_ms']:.2f}ms")
-    print(f"candidate recall@10: {result['candidate_recall_at_10']:.3f}")
+    print(f"fts candidate recall@10: {result['candidate_recall_at_10']:.3f}")
+    print(f"hybrid recall@10: {result['hybrid_recall_at_10']:.3f}")
     print(f"wrote {args.out}")
     return 0
 
