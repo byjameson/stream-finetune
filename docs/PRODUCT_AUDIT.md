@@ -1,7 +1,7 @@
 # Atom Zero product audit
 
-Status: **source release 0.8.0; PyPI upload pending owner token**. This is a
-full-surface audit. Last updated 2026-11-22.
+Status: **released 0.8.0; 0.8.1 PyPI README fix**. This is a full-surface
+audit. Last updated 2026-11-22.
 
 ## 1. Model and data
 
@@ -162,9 +162,10 @@ recommended.
 - GitHub release **v0.8.0** published (`abe47b4`) with release notes and
   updated repository description/topics; wheel and sdist built and
   twine-checked.
-- PyPI **streamft 0.8.0** published:
-  `https://pypi.org/project/streamft/0.8.0/`.
-- `pyproject.toml` is **0.8.0**; the owner approved publication.
+- PyPI **streamft 0.8.0** published; **0.8.1** is the current README-image fix:
+  `https://pypi.org/project/streamft/0.8.1/`.
+- `pyproject.toml` is **0.8.1** (PyPI README image fix); model weights remain
+  `0.8.0`.
 - Hugging Face and ModelScope weights published:
   `byjameson/atom-zero-49m` on both platforms; dev.to launch article published.
 - The PyPI token used for upload was pasted in chat; the owner should revoke and

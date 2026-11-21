@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.1 - PyPI README image fix (2026-11-22)
+
+- Fixed the broken architecture image on the PyPI project page: the README now
+  uses an absolute raw-GitHub PNG URL instead of a repository-relative SVG.
+- Package version bumped to `0.8.1`; model weights and benchmarks are unchanged
+  from `0.8.0`.
+
 ## 0.8.0 - open-source scaled assistant (2026-11-22)
 
 - Scaled 50M data run: 175.37M clean tokens + replay; 25k candidate promoted,
