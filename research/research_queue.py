@@ -4,17 +4,22 @@
     python research/research_queue.py list
     python research/research_queue.py approve r0001
     python research/research_queue.py run --db data/docs.db --limit 1
+    python research/research_queue.py run --db data/docs.db --limit 1 \
+      --teacher-url http://127.0.0.1:11434/v1 --teacher-model llama3.2:3b
 
-Only approved topics are fetched. Schedule the ``run`` command with Task
-Scheduler/cron for reviewed autonomous research.
+Only approved topics are fetched. Add ``--teacher-*`` to synthesize the
+fetched Wikipedia context into an unverified teacher note. Schedule the ``run``
+command with Task Scheduler/cron for reviewed autonomous research.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 
 from streamft.doc_memory import DocMemory
 from streamft.research_queue import ResearchQueue, ResearchQueueError
+from streamft.teacher_provider import TeacherProvider, TeacherProviderError
 
 
 def main(argv=None) -> int:
@@ -33,6 +38,10 @@ def main(argv=None) -> int:
     run = sub.add_parser("run")
     run.add_argument("--db", default="data/docs.db")
     run.add_argument("--limit", type=int, default=1)
+    run.add_argument("--teacher-url", default="")
+    run.add_argument("--teacher-model", default="")
+    run.add_argument("--teacher-label", default="openai-compatible")
+    run.add_argument("--teacher-timeout", type=int, default=60)
     args = ap.parse_args(argv)
 
     try:
@@ -48,14 +57,21 @@ def main(argv=None) -> int:
         elif args.cmd == "reject":
             print(json.dumps(queue.reject(args.id), ensure_ascii=False))
         else:
+            teacher = None
+            if args.teacher_url or args.teacher_model:
+                teacher = TeacherProvider(
+                    args.teacher_url, args.teacher_model,
+                    os.environ.get("TEACHER_API_KEY", ""),
+                    args.teacher_timeout, args.teacher_label)
             docs = DocMemory(args.db)
             try:
-                ran = queue.run_approved(docs, args.limit)
+                ran = queue.run_approved(
+                    docs, args.limit, teacher=teacher)
             finally:
                 docs.close()
             print(json.dumps({"ran": ran, "stats": queue.stats()},
                              indent=2, ensure_ascii=False))
-    except (ResearchQueueError, OSError) as exc:
+    except (ResearchQueueError, TeacherProviderError, OSError) as exc:
         print(json.dumps({"error": str(exc)}, ensure_ascii=False))
         return 1
     return 0

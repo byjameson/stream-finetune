@@ -13,6 +13,8 @@ import threading
 import time
 from pathlib import Path
 
+from streamft.teacher_notes import add_teacher_note
+
 
 class ResearchQueueError(ValueError):
     pass
@@ -64,6 +66,22 @@ def _page_row(page) -> dict:
             "title": str(page.get("title", "")),
             "chunks": chunks,
             "preview": str(page.get("preview", ""))[:200]}
+
+
+def _teacher_prompt(topic: str, pages: list) -> str:
+    blocks = []
+    for index, page in enumerate(pages[:5], 1):
+        page = page if isinstance(page, dict) else {}
+        context = str(page.get("context") or page.get("preview") or "").strip()
+        if not context:
+            continue
+        blocks.append(
+            f"[{index}] {page.get('title', '')}\n"
+            f"URL: {page.get('source', '')}\n{context[:4000]}")
+    return (
+        f"Write a concise factual synthesis about: {topic}\n"
+        "Use only the sources below. Do not invent facts. If the sources "
+        "disagree or are incomplete, say so.\n\n" + "\n\n".join(blocks))
 
 
 class ResearchQueue:
@@ -175,8 +193,13 @@ class ResearchQueue:
             counts[status] = counts.get(status, 0) + 1
         return {"total": len(items), **counts}
 
-    def run_approved(self, docs, limit: int = 1, fetcher=None) -> list[dict]:
-        """Fetch approved topics into DocMemory; pending items never run."""
+    def run_approved(self, docs, limit: int = 1, fetcher=None,
+                     teacher=None) -> list[dict]:
+        """Fetch approved topics into DocMemory; pending items never run.
+
+        If ``teacher`` is supplied, its synthesis of the fetched Wikipedia
+        context is stored as an unverified teacher note.
+        """
         if docs is None:
             raise ResearchQueueError("no document memory configured")
         if fetcher is None:
@@ -220,6 +243,49 @@ class ResearchQueue:
                     self._save()
                     results.append(copy.deepcopy(item))
             else:
+                teacher_result = None
+                if teacher is not None:
+                    label = str(getattr(teacher, "label", "provider"))
+                    model = str(getattr(teacher, "model", ""))
+                    if not found:
+                        teacher_result = {
+                            "label": label, "model": model, "source": "",
+                            "title": "", "verified": False,
+                            "answer_preview": "",
+                            "error": "no source pages to synthesize",
+                        }
+                    else:
+                        try:
+                            prompt = _teacher_prompt(topic, found)
+                            answer = teacher.ask(
+                                prompt,
+                                system=("You are a concise research assistant. "
+                                        "Use only the supplied sources. "
+                                        "State uncertainty."),
+                                max_tokens=512)
+                            source_url = next(
+                                (str(page.get("source", ""))
+                                 for page in found
+                                 if str(page.get("source", "")).startswith(
+                                     ("http://", "https://"))), "")
+                            note = add_teacher_note(
+                                docs, label, model, topic, answer,
+                                source_url)
+                            teacher_result = {
+                                "label": label, "model": model,
+                                "source": note["source"],
+                                "title": note["title"],
+                                "verified": False,
+                                "answer_preview": answer[:500],
+                                "error": "",
+                            }
+                        except Exception as exc:
+                            teacher_result = {
+                                "label": label, "model": model, "source": "",
+                                "title": "", "verified": False,
+                                "answer_preview": "",
+                                "error": str(exc)[:500],
+                            }
                 with self._lock:
                     self._reload()
                     item = self._find(item_id)
@@ -228,6 +294,8 @@ class ResearchQueue:
                     item["error"] = ""
                     item["sources"] = [
                         _page_row(page) for page in (found or [])]
+                    if teacher is not None:
+                        item["teacher"] = teacher_result or {}
                     self._save()
                     results.append(copy.deepcopy(item))
         return results

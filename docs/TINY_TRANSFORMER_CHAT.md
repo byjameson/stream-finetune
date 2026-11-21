@@ -188,7 +188,7 @@ Endpoints:
 | `GET /v1/research/queue` | reviewed queue items and status counts |
 | `POST /v1/research/queue` | `{"topic": "Ankara", "lang": "en", "pages": 2}`; adds a **pending** topic |
 | `POST /v1/research/queue/approve` / `reject` | `{"id": "r0001"}`; user review step |
-| `POST /v1/research/queue/run` | `{"limit": 1}`; fetches **approved** topics only |
+| `POST /v1/research/queue/run` | `{"limit": 1}`; fetches **approved** topics, plus optional teacher synthesis if configured |
 | `POST /v1/learn_url` | `{"url": "..."}`; opt-in page ingestion, requires `--allow-url-fetch` |
 | `POST /v1/agent/chat` | `{"session_id": "...", "message": "..."}`; tasks, memory, docs, time, arithmetic, research |
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
@@ -222,6 +222,12 @@ The optional provider path was verified in the browser on port 8034 against a
 local OpenAI-compatible fake provider: `Ask provider` stored the answer as
 `teacher://fake/...`, and chat returned it with the unverified warning. No
 external API or real key was used.
+
+Queue + teacher synthesis was verified in the browser on port 8036: approving
+`Ankara` fetched the Wikipedia lead (3 chunks, `curid=802`), the fake local
+provider synthesized it, the queue item recorded `teacher://fake/...` plus a
+`P-9001` synthesis preview, and chat returned the note with a Wikipedia source
+URL and the unverified warning.
 
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
@@ -328,7 +334,7 @@ curl -X POST http://127.0.0.1:8013/v1/research/queue \
 curl -X POST http://127.0.0.1:8013/v1/research/queue/approve \
   -H 'Content-Type: application/json' -d '{"id":"r0001"}'
 
-# Fetch up to one approved topic into DocMemory
+# Fetch up to one approved topic; synthesize with the provider if configured
 curl -X POST http://127.0.0.1:8013/v1/research/queue/run \
   -H 'Content-Type: application/json' -d '{"limit":1}'
 
@@ -340,12 +346,25 @@ local. Each fetched item records its Wikipedia source URLs, titles and chunk
 counts in `data/research_queue.json`; the text is searchable and cited by the
 normal document path. Duplicate active topics are rejected.
 
+If the server was started with `--teacher-url`/`--teacher-model`, `run` also
+sends the fetched lead context and source URLs to that provider and stores the
+answer as an **unverified teacher note**. The queue item gets a `teacher` block
+with its `teacher://...` source, preview and any error; chat labels it
+`teacher note, unverified`. Teacher failure does not discard the Wikipedia
+pages.
+
 CLI and scheduling:
 
 ```bash
 python research/research_queue.py --queue data/research_queue.json add "Ankara" --pages 1
 python research/research_queue.py --queue data/research_queue.json approve r0001
-python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+python research/research_queue.py --queue data/research_queue.json run \
+  --db data/docs.db --limit 1
+
+# Same, with a local teacher provider for synthesis.
+python research/research_queue.py --queue data/research_queue.json run \
+  --db data/docs.db --limit 1 \
+  --teacher-url http://127.0.0.1:11434/v1 --teacher-model llama3.2:3b
 ```
 
 The browser page has the same **Research queue** section: add a topic, approve
@@ -364,6 +383,10 @@ schtasks /Create /SC DAILY /ST 09:00 /TN "streamft research" `
 # Linux/macOS cron: daily at 09:00
 0 9 * * * cd /path/to/stream-finetune && python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
 ```
+
+Add `-TeacherUrl http://127.0.0.1:11434/v1 -TeacherModel llama3.2:3b` to the
+PowerShell wrapper (or `--teacher-url/--teacher-model` to the Python command)
+to synthesize each fetched topic. The teacher note is always unverified.
 
 It processes only approved topics; it does not generate topics or crawl the
 open web. Public release remains blocked until the licence, hosting, safety,

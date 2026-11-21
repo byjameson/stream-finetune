@@ -161,5 +161,5 @@ def wikipedia_research(memory, query: str, lang: str = "en",
         source = f"https://{lang}.wikipedia.org/?curid={pageid}"
         chunks = memory.add_text(source, text, title=title)
         pages.append({"source": source, "title": title, "chunks": chunks,
-                      "preview": text[:400]})
+                      "preview": text[:400], "context": text[:4000]})
     return pages
