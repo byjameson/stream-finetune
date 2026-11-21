@@ -1,0 +1,154 @@
+{
+  "tag": "behavior_50m_banned",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 400,
+  "bpb": {
+    "chat": {
+      "loss": 4.074421018362045,
+      "ppl": 58.816417102719846,
+      "bpb": 1.371902569943958,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.0502380612207975,
+        "ppl": 57.41112518310547,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.204807728528976,
+      "ppl": 67.00771275614254,
+      "bpb": 1.5596385485430773,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.204807728528976,
+        "ppl": 67.0077133178711,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.534772157669067,
+      "ppl": 253.35005719304655,
+      "bpb": 2.2548440026427135,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.534772157669067,
+        "ppl": 253.34999084472656,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 4.057727664709091,
+      "ppl": 57.84272356802201,
+      "bpb": 1.3913336671819545,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 3.989540203589172,
+        "ppl": 54.03003692626953,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": false,
+    "alpha_at_least_0_5": false,
+    "no_tag_leak": true
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "hello!",
+      "chars": 6,
+      "alpha": 0.8333,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hi.",
+      "chars": 3,
+      "alpha": 0.6667,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am a high-speed batch, so it's clear to work. I'm not sure, but I don't have personal preferences.",
+      "chars": 100,
+      "alpha": 0.74,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "(Octerating my phone) I'm just a single amount of text, and now it's too simple for me to think about what I want to do with my website.",
+      "chars": 136,
+      "alpha": 0.7574,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "The weather today is about 995 degrees Fahrenheit. The weather is about 178 degrees Fahrenheit (122 degrees), which states that there are 68 degrees Fahrenheit and 76 degrees Fahrenheit.",
+      "chars": 186,
+      "alpha": 0.7527,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "",
+      "chars": 0,
+      "alpha": 0.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Red and the bird found a small tree. Nora shared it with a friend, and they played until sunset.",
+      "chars": 96,
+      "alpha": 0.7812,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Nora the cat found a red ball near the beach. Nora shared it with a friend, and they played until sunset.",
+      "chars": 105,
+      "alpha": 0.781,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

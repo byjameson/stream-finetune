@@ -144,6 +144,11 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `accepted_v0001_banned.json` | `research/eval_transformer_chat.py` | accepted v0001 clean chat: 1.475 bpb / 4.374 assistant, PASS with banned tags |
 | `chat_human_eval_v0001.json` | `research/eval_chat_human.py` | v0001: all 13-turn memory/task/greeting/story checks pass |
 | `behavior_v0001.json` | `research/behavior_eval.py` | v0001 runtime behavior: memory/task + format-router checks all pass; raw model weak on count/polite |
+| `accepted_v0001_banned_fixed.json` | `research/eval_transformer_chat.py` | corrected-format v0001: 1.475 bpb / 4.374 assistant, clean smoke PASS |
+| `chat_human_eval_v0001_fixed.json` | `research/eval_chat_human.py` | corrected-format v0001 E2E: all checks pass |
+| `transformer_behavior_50m_banned.json` | `research/eval_transformer_chat.py` | 49.2M behavior: 1.372 bpb / 4.050 assistant but clean smoke BLOCKED (one empty) |
+| `behavior_50m.json` | `research/behavior_eval.py` | 50M runtime behavior: all checks pass |
+| `chat_human_eval_50m.json` | `research/eval_chat_human.py` | 50M E2E: PASS but repetitive story; not product |
 | `chat_human_eval_v0001.json` | `research/eval_chat_human.py` | accepted v0001: all memory/task/greeting/story checks pass |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |

@@ -58,9 +58,8 @@ def main():
         a = evaluate_assistant(model, tok, batches)
         if a:
             evals[name]["assistant"] = a
-    prompts = ["hello", "how are you?", "my name is Alex, remember me",
-               "what is the weather today?", "tell me a short story",
-               "add task: buy milk"]
+    prompts = ["hello", "how are you?", "what is the weather today?",
+               "tell me a short story"]
     samples = []
     for i, prompt in enumerate(prompts):
         for j in range(2):

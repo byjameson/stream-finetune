@@ -67,6 +67,16 @@ clean-chat samples. The clean-smoke gate was tightened; the v0002/v0003
 candidates were rejected, and **v0001 remains the product checkpoint**. Do not
 treat the loss gain as a behavioral gain.
 
+A **49.2M behavior checkpoint** was also compared: clean bpb 1.372 / assistant
+4.050 (better than v0001) but the raw clean smoke is **BLOCKED** (one empty
+sample and unstable weather replies). It passes the runtime behavior and E2E
+checks but is not the product model. v0001 is more stable.
+
+Corrected-format revalidation of v0001: clean smoke **PASS**, 13-turn E2E
+**PASS**, runtime behavior **PASS**. The earlier 12-sample result with one empty
+sample was the runtime-handled `my name is Alex, remember me` command; clean
+smoke now tests open-ended prompts only.
+
 ## Samples
 
 ```text

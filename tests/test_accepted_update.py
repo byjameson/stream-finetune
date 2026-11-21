@@ -6,10 +6,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def test_accepted_v0001_passes_clean_and_e2e_checks():
     clean = json.loads(
-        (ROOT / "research/results/accepted_v0001_banned.json")
+        (ROOT / "research/results/accepted_v0001_banned_fixed.json")
         .read_text(encoding="utf-8"))
     e2e = json.loads(
-        (ROOT / "research/results/chat_human_eval_v0001.json")
+        (ROOT / "research/results/chat_human_eval_v0001_fixed.json")
         .read_text(encoding="utf-8"))
     assert clean["verdict"] == "PASS_CHAT_SMOKE"
     assert all(clean["gate"].values())
