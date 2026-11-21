@@ -144,12 +144,20 @@ Endpoints:
 | `GET /v1/models` | model id |
 | `GET /v1/documents` | indexed sources |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
+| `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
 | `POST /v1/chat/completions` | messages; document hits return `sources` and a non-advice note |
 
 Verified on this machine: `/health` returns 49,582,080 params, step 1000,
 adapter `checkpoints/adapters_50m/v0001`, and 1 indexed chunk; document search
-and grounded chat return 200.
+and grounded chat return 200. `/v1/teach` stores a fact in the index and queues
+a reviewed skill example.
+
+One-command demo (server + adapter + demo note + browser):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1
+```
 
 One-command demo:
 

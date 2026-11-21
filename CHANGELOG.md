@@ -203,6 +203,11 @@
   `/v1/chat/completions` return sources plus a non-advice note. End-to-end:
   health shows 49.58M params, adapter and 1 indexed chunk; grounded
   France/Paris chat returns 200, normal hello goes to the model.
+- Server-side teach/learn path: `POST /v1/teach` writes facts into DocMemory
+  immediately or appends a reviewed `user/assistant` example to the skill
+  queue. Verified live: fact 200, skill 200, queue file updated, grounded
+  codename chat returned with source. Added one-command
+  `scripts/demo_all.ps1` with adapter + demo note + browser.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

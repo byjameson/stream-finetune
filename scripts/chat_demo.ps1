@@ -2,13 +2,15 @@ param(
     [int]$Port = 8013,
     [string]$Model = "checkpoints/transformer_behavior_50m_long",
     [string]$Adapter = "",
-    [string]$Docs = ""
+    [string]$Docs = "",
+    [string]$Queue = "data/learning_queue.jsonl"
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $extra = ""
 if ($Adapter) { $extra += " --adapter $Adapter" }
 if ($Docs) { $extra += " --docs $Docs" }
+if ($Queue) { $extra += " --queue $Queue" }
 
 Start-Process powershell -ArgumentList @(
     "-NoExit",

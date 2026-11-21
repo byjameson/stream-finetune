@@ -44,6 +44,23 @@ Document hits on `/v1/chat/completions` return the matching notes, their
 `sources`, and a `not professional advice` note; unmatched questions go to the
 model.
 
+Teach over HTTP:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/teach \
+  -H 'Content-Type: application/json' \
+  -d '{"fact":"The project codename is Blue Lantern."}'
+
+curl -X POST http://127.0.0.1:8013/v1/teach \
+  -H 'Content-Type: application/json' \
+  -d '{"user":"what is the codename?","assistant":"Blue Lantern."}'
+```
+
+The first writes to the document index immediately. The second only enters the
+reviewed skill queue; it does **not** change weights until a gated update is
+reviewed and accepted. One-command demo:
+`scripts/demo_all.ps1`.
+
 When a question matches indexed text, the reply quotes the matching notes with
 their source and adds `not professional advice`. If nothing matches, the tiny
 model handles the open-ended reply.

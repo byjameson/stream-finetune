@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -102,6 +103,7 @@ class Handler(BaseHTTPRequestHandler):
                 "adapter": _state.get("adapter") or None,
                 "documents": (_state["docs"].stats()
                               if _state.get("docs") else None),
+                "learning_queue": _state.get("queue_path"),
             })
         elif self.path == "/v1/models":
             self._json(200, {"data": [{
@@ -120,7 +122,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in ("/generate", "/v1/chat/completions",
-                             "/v1/documents/search"):
+                             "/v1/documents/search", "/v1/teach"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
         if key:
@@ -136,6 +138,8 @@ class Handler(BaseHTTPRequestHandler):
                 k = int(req.get("k", 5))
                 hits = docs.search(query, k=k) if docs else []
                 return self._json(200, {"data": hits})
+            if self.path == "/v1/teach":
+                return self._teach(req)
             if self.path == "/v1/chat/completions":
                 messages = req.get("messages") or []
                 prompt = chat_prompt(messages)
@@ -198,13 +202,41 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
 
+    def _teach(self, req: dict):
+        fact = str(req.get("fact", "")).strip()
+        user = str(req.get("user", "")).strip()
+        assistant = str(req.get("assistant", "")).strip()
+        if not fact and not (user and assistant):
+            return self._json(400, {"error": "provide fact or user+assistant"})
+        if len(fact) > 4000 or len(user) > 2000 or len(assistant) > 2000:
+            return self._json(400, {"error": "input too long"})
+        result = {"ok": True}
+        if fact:
+            docs = _state.get("docs")
+            if docs is None:
+                return self._json(400, {"error": "no document memory configured"})
+            result["fact_chunks"] = docs.add_text(
+                "user_teach", fact, title="Taught facts", replace=False)
+        if user and assistant:
+            queue = Path(_state.get("queue_path",
+                                    "data/learning_queue.jsonl"))
+            queue.parent.mkdir(parents=True, exist_ok=True)
+            with queue.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps({
+                    "user": user, "assistant": assistant,
+                    "ts": int(time.time()),
+                }, ensure_ascii=False) + "\n")
+            result["skill_queued"] = True
+        return self._json(200, result)
+
     def log_message(self, fmt, *args):
         return
 
 
 def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           port: int = 8013, api_key: str = "", adapter: str = "",
-          docs_path: str = "") -> int:
+          docs_path: str = "",
+          queue_path: str = "data/learning_queue.jsonl") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -228,6 +260,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "tok": tok,
         "docs": docs,
         "adapter": adapter,
+        "queue_path": queue_path,
         "device": device,
         "name": root.name,
         "params": sum(p.numel() for p in model.parameters()),
@@ -260,9 +293,10 @@ def main():
     ap.add_argument("--api-key", default="")
     ap.add_argument("--adapter", default="")
     ap.add_argument("--docs", default="")
+    ap.add_argument("--queue", default="data/learning_queue.jsonl")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
-                 args.api_key, args.adapter, args.docs)
+                 args.api_key, args.adapter, args.docs, args.queue)
 
 
 if __name__ == "__main__":
