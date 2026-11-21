@@ -70,7 +70,7 @@ exists).
   22.11.2026 09:00. It uses the local Ollama teacher with Wikipedia fallback.
 
 **Gaps:** no automatic teacher verification (by design); teacher model is
-separate and has its own licence; task currently disabled.
+separate and has its own licence.
 
 ## 5. Self-learning
 
