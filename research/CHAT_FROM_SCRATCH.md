@@ -309,6 +309,24 @@ skill checkpoint is the virtual-human product, not the general-chat model.
 Evidence: `research/results/transformer_chat_skill_21m.json` and
 `research/results/chat_human_eval.json`.
 
+### Retention-friendly fine-tune (running)
+
+The aggressive 1:1 skill run regressed clean chat (1.359 -> 1.655 bpb). The
+next run uses **2:1 clean:skill replay**, LR **3e-5** and 4,000 steps instead
+of 1e-4/6,000. It targets skill retention with less forgetting.
+
+### Teach/learn loop
+
+- `teach: <fact>` in `research/chat_human.py` writes the fact to memory
+  immediately, no weight update;
+- `research/update_loop.py add/list/export` keeps a reviewed queue of skill
+  examples;
+- queued examples are exported as chat documents and only enter a **gated**
+  replay fine-tune after review;
+- no autonomous weight update and no public release.
+
+Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:

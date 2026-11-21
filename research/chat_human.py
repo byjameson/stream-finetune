@@ -217,6 +217,13 @@ class ChatHuman:
             reply = "Hello! How can I help you today?"
         elif "thank you" in low:
             reply = "You are welcome."
+        elif low.startswith("teach:"):
+            fact = text.split(":", 1)[1].strip()
+            if fact:
+                self.add_fact("note", fact)
+                reply = "I learned that."
+            else:
+                reply = "Tell me what to learn after 'teach:'."
         elif extracted:
             reply = "I will remember that."
         else:
