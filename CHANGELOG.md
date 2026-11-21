@@ -307,9 +307,13 @@
   evals. The built corpus has **175,365,231 train tokens** (6.5x the original)
   and 3.2M validation tokens; corpus/training artifacts are gitignored and
   results go to `research/results/`.
-- Ollama teacher: `scripts/start_ollama_teacher.ps1` starts/pulls
-  `llama3.2:3b`; demo and scheduled research default to
-  `http://127.0.0.1:11434/v1` with graceful Wikipedia-only fallback.
+- Ollama teacher: Ollama 0.40.16 installed from the official setup (SHA-256
+  verified); `llama3.2:3b` (2.0 GB) pulled. `TeacherProvider` live test returned
+  `Hello!`. `scripts/start_ollama_teacher.ps1` starts/pulls the model; demo and
+  scheduled research default to `http://127.0.0.1:11434/v1` with graceful
+  Wikipedia-only fallback. End-to-end worker run: Ankara fetched, Ollama
+  synthesis stored as an unverified `teacher://ollama/...` note
+  (`research/results/teacher_ollama_live.json`).
 - Privacy/deletion path: `DocMemory.forget`/`forget_all` remove chunks and
   metadata and run SQLite `VACUUM`; `ChatHuman.forget` removes matching
   facts/episodes/tasks or clears them; HTTP `/v1/documents/forget` and

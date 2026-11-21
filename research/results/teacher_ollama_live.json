@@ -1,0 +1,25 @@
+{
+  "created": "2026-11-21T20:51:41",
+  "worker": "research/research_worker.py",
+  "queue": "data/research_teacher_live.json",
+  "topic": "Ankara",
+  "status": "done",
+  "sources": [
+    {
+      "source": "https://en.wikipedia.org/?curid=802",
+      "title": "Ankara",
+      "chunks": 3,
+      "preview": "Ankara is the capital city of Turkey. Located in the central part of Anatolia, the city has a population of over 5.3 million residents in its urban center, out of 6 million residents in Ankara Provinc"
+    }
+  ],
+  "teacher": {
+    "label": "ollama",
+    "model": "llama3.2:3b",
+    "source": "teacher://ollama/3944be803784635f",
+    "title": "Teacher note: Ankara",
+    "verified": false,
+    "answer_preview": "Here is a concise factual synthesis about Ankara based on the provided source:\n\nAnkara is the capital city of Turkey, located in the central part of Anatolia. The city has a population of over 5.3 million residents in its urban center, out of 6 million residents in Ankara Province. Ankara was historically known as Ancyra and Angora, serving as the capital of the ancient Celtic state of Galatia and the Roman province of the same name.\n\nThe city has various archaeological sites, including Hattian,",
+    "error": ""
+  },
+  "teacher_answer": "Here is a concise factual synthesis about Ankara based on the provided source:\n\nAnkara is the capital city of Turkey, located in the central part of Anatolia. The city has a population of over 5.3 million residents in its urban center, out of 6 million residents in Ankara Province. Ankara was historically known as Ancyra and Angora, serving as the capital of the ancient Celtic state of Galatia and the Roman province of the same name.\n\nThe city has various archaeological sites, including Hattian,"
+}
