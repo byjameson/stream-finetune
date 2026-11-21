@@ -49,6 +49,7 @@ from streamft.knowledge_gaps import (
     GapNotFound, KnowledgeGapError, KnowledgeGapStore)
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
+from streamft.safety import SafetyFilter
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
 from streamft.teacher_provider import TeacherProvider, TeacherProviderError
 from streamft.transformer import TransformerLM, generate
@@ -901,6 +902,7 @@ function refreshHealth() {
       'Atom Zero | model: ' + j.model + ' | params: ' + j.params + ' | step: ' + j.step +
       ' | adapter: ' + (j.adapter ? 'yes' : 'none') + ' | doc chunks: ' + docs +
       ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia') +
+      ' | safety: ' + (j.safety && j.safety.enabled ? 'on' : 'off') +
       ' | teacher: ' + (j.teacher && j.teacher.enabled ? j.teacher.model : 'off');
     const teacher = j.teacher || {enabled: false};
     document.getElementById('task').disabled = !teacher.enabled;
@@ -1019,6 +1021,9 @@ class Handler(BaseHTTPRequestHandler):
                 "knowledge_gaps": (
                     _state["gaps"].stats()
                     if _state.get("gaps") else None),
+                "safety": (
+                    {"enabled": True, "version": _state["safety"].version}
+                    if _state.get("safety") else {"enabled": False}),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -1224,16 +1229,32 @@ class Handler(BaseHTTPRequestHandler):
                 prompt = f"<|user|> {doc_query} <|assistant|>"
                 max_new = int(req.get("max_new_tokens", 64))
             max_new = max(1, min(max_new, 256))
-            grounded = doc_answer(doc_query, _state.get("docs"))
+            safety = _state.get("safety")
+            verdict = safety.check(doc_query) if safety else None
+            if verdict:
+                grounded = {"text": safety.refusal(verdict["category"]),
+                            "sources": []}
+            else:
+                grounded = doc_answer(doc_query, _state.get("docs"))
+                if grounded and safety:
+                    safe_text, out_verdict = safety.filter_reply(
+                        grounded["text"])
+                    if out_verdict:
+                        grounded = {**grounded, "text": safe_text,
+                                    "sources": []}
+                        verdict = out_verdict
             if grounded:
                 _state["metrics"]["requests"] += 1
                 if self.path == "/generate":
-                    return self._json(200, {
+                    payload = {
                         "text": grounded["text"],
                         "sources": grounded["sources"],
                         "model": _state["name"],
-                    })
-                return self._json(200, {
+                    }
+                    if verdict:
+                        payload["safety"] = verdict
+                    return self._json(200, payload)
+                payload = {
                     "id": "tiny-doc-" + str(abs(hash(grounded["text"]))
                                             % 10**12),
                     "object": "chat.completion",
@@ -1245,7 +1266,10 @@ class Handler(BaseHTTPRequestHandler):
                                     "content": grounded["text"]},
                         "finish_reason": "stop",
                     }],
-                })
+                }
+                if verdict:
+                    payload["safety"] = verdict
+                return self._json(200, payload)
             temperature = float(req.get("temperature", 0.7))
             top_k = int(req.get("top_k", 20))
             repetition_penalty = float(req.get("repetition_penalty", 1.1))
@@ -1258,10 +1282,18 @@ class Handler(BaseHTTPRequestHandler):
                     device=_state["device"])
                 _state["metrics"]["requests"] += 1
                 _state["metrics"]["generated_tokens"] += max_new
+            if safety:
+                safe_text, out_verdict = safety.filter_reply(text)
+                if out_verdict:
+                    text = safe_text
+                    verdict = out_verdict
             if self.path == "/generate":
-                return self._json(200, {"text": text, "stop": stop,
-                                        "model": _state["name"]})
-            return self._json(200, {
+                payload = {"text": text, "stop": stop,
+                           "model": _state["name"]}
+                if verdict:
+                    payload["safety"] = verdict
+                return self._json(200, payload)
+            payload = {
                 "id": "tiny-" + str(abs(hash(text)) % 10**12),
                 "object": "chat.completion",
                 "model": _state["name"],
@@ -1270,7 +1302,10 @@ class Handler(BaseHTTPRequestHandler):
                     "message": {"role": "assistant", "content": text},
                     "finish_reason": "stop",
                 }],
-            })
+            }
+            if verdict:
+                payload["safety"] = verdict
+            return self._json(200, payload)
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
 
@@ -1517,7 +1552,8 @@ class Handler(BaseHTTPRequestHandler):
                 model=_state.get("model"), tokenizer=_state.get("tok"),
                 device=_state.get("device"), docs=_state.get("docs"),
                 wiki_lang=_state.get("wiki_lang", "en"),
-                gap_store=_state.get("gaps"))
+                gap_store=_state.get("gaps"),
+                safety=_state.get("safety"))
         return sessions[session_id]
 
     def _teach(self, req: dict):
@@ -1564,7 +1600,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           teacher_timeout: int = 60,
           teacher_label: str = "openai-compatible",
           active_adapter_file: str = "data/active_adapter.json",
-          gap_store_path: str = "data/knowledge_gaps.json") -> int:
+          gap_store_path: str = "data/knowledge_gaps.json",
+          safety_filter: bool = False) -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -1622,6 +1659,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "feedback_export_path": feedback_export_path,
         "gaps": gaps,
         "gap_store_path": gap_store_path,
+        "safety": SafetyFilter() if safety_filter else None,
         "teacher": teacher,
         "adapter": adapter,
         "queue_path": queue_path,
@@ -1670,6 +1708,7 @@ def main():
     ap.add_argument("--feedback-store", default="data/feedback_queue.json")
     ap.add_argument("--feedback-export", default="data/feedback_training.jsonl")
     ap.add_argument("--gap-store", default="data/knowledge_gaps.json")
+    ap.add_argument("--safety-filter", action="store_true")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -1682,7 +1721,8 @@ def main():
                  args.research_queue, args.feedback_store,
                  args.feedback_export, args.teacher_url, args.teacher_model,
                  args.teacher_timeout, args.teacher_label,
-                 args.active_adapter_file, args.gap_store)
+                 args.active_adapter_file, args.gap_store,
+                 args.safety_filter)
 
 
 if __name__ == "__main__":

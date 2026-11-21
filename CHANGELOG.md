@@ -297,6 +297,12 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Opt-in safety layer: `streamft/safety.py` refuses explicit harmful requests
+  before generation and filters model/RAG output; server flag `--safety-filter`
+  and demo `-SafetyFilter`. Red-team: filter 30/30, output 4/4, agent 30/30;
+  safety-enabled product benchmark 26/26. It is off by default for local
+  research and is a narrow guardrail, not full moderation. See
+  `docs/SAFETY.md` and `research/results/redteam_safety_*.json`.
 - Knowledge-gap loop: a knowledge question with no local source now gets an
   honest "no source" reply and is recorded in `streamft/knowledge_gaps.py`.
   The browser, `research/gap_loop.py` and
@@ -337,7 +343,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 272 tests;
+- 306 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

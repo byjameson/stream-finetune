@@ -272,6 +272,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `gap_loop.py` | review knowledge gaps -> pending research topics | ~1 s |
 | `benchmark_assistant.py` | 21-task product benchmark (tools, memory, RAG, gaps) | ~10 s |
 | `benchmark_raw.py` | raw-model knowledge probe without RAG or tools | ~10 s |
+| `redteam_safety.py` | opt-in safety filter, output filter and agent refusal tests | ~10 s |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |

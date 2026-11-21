@@ -98,6 +98,9 @@ Existing controls:
   topics are fetched (`docs/RESEARCH_WORKER.md`).
 - Missing-source questions become reviewed knowledge gaps; a proposal creates
   a pending topic and still needs approval (`docs/KNOWLEDGE_GAPS.md`).
+- The opt-in safety filter refuses explicit harmful requests and filters output;
+  red-team filter 30/30, output 4/4, agent 30/30 (`docs/SAFETY.md`). It must be
+  enabled for any shared deployment.
 - A 21-task product benchmark covers tools, memory, tasks, retrieval, teacher
   review and gap detection; it is not a general benchmark. A raw-model probe
   without RAG/tools scores only **2/10** on simple general questions
@@ -108,8 +111,8 @@ Existing controls:
 
 Gaps before any hosted release:
 
-- Output safety filter and red-team set for sexual content involving minors,
-  self-harm, violence, hate, harassment and illegal instructions.
+- The opt-in filter is pattern-based; add semantic moderation, more languages
+  and a broader red-team set, then keep it enabled.
 - Authentication, TLS, rate limits and abuse monitoring.
 - Prompt-injection/jailbreak tests with untrusted documents.
 - PII deletion path and retention policy.
@@ -127,7 +130,8 @@ Secret handling:
 ### Decisions needed
 
 - [ ] Revoke the exposed PyPI token.
-- [ ] Approve the safety-filter and red-team scope.
+- [ ] Approve the safety-filter false-positive tolerance and expand the
+      red-team set for the intended deployment.
 - [ ] Approve PII retention/deletion rules.
 - [ ] Approve the incident-response owner.
 
