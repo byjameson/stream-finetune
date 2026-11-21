@@ -17,7 +17,8 @@ Builder: `research/make_chat_corpus_scaled.py`
 - The original `chat_en_clean_*` shards are not modified.
 - `research/mix_scaled_replay.py` mixes the scaled chat shard with the
   behavior shard (4x) and the skill shard (3x) so task behavior is not washed
-  out by the much larger chat corpus.
+  out by the much larger chat corpus. The mixed shard is **214,805,319 tokens**
+  (175.4M scaled + 12M behavior replay + 27.4M skill replay).
 
 Outputs:
 
@@ -33,8 +34,18 @@ data/chat_en_scaled_replay_meta.json
 ```
 
 The build prints document counts, character budgets and final token counts.
-The token count is recorded in the meta file; do not claim a size until the
-file reports it.
+The 2026-11-21 build produced:
+
+```text
+train:       175,365,231 tokens
+valid chat:    3,208,649 tokens
+valid mixed:   3,612,282 tokens
+stories valid:   403,633 tokens
+documents:     321,948 train docs
+```
+
+That is ~6.5x the original 26.98M-token corpus. The exact metadata is in
+`data/chat_en_scaled_meta.json` (gitignored).
 
 ## Training
 
@@ -69,8 +80,10 @@ Otherwise keep the product checkpoint and publish the negative result.
 
 ## Status
 
-- Corpus build: see `data/chat_en_scaled_meta.json` (in progress at the time of
-  writing).
-- Training: `data/scaled_training.log`.
+- Corpus build: **done**, 175,365,231 train tokens (6.5x the original).
+- Replay mix: scaled chat + behavior 4x + skill 3x.
+- Training: `data/scaled_training.log`; checkpoint
+  `checkpoints/transformer_chat_en_scaled_50m`.
+- Evaluation: `scripts/eval_scaled_50m.ps1`; promote only if the gate passes.
 - This is a data-scaling experiment, not a general-AI claim. The 1B+ options
   remain in [`SCALING_PLAN.md`](SCALING_PLAN.md).

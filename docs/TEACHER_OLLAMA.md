@@ -21,6 +21,8 @@ powershell -ExecutionPolicy Bypass -File scripts/start_ollama_teacher.ps1 `
 
 `llama3.2:3b` is a local chat model, not part of Atom Zero's from-scratch core.
 A 1B model (`llama3.2:1b`) is faster; use it if 3B is too slow on the 6 GB card.
+The model is downloaded by Ollama under its own licence and is not bundled with
+this repository.
 
 ## Server
 

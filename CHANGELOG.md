@@ -297,6 +297,16 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Data-scaling run: `research/make_chat_corpus_scaled.py` builds a larger clean
+  chat corpus with the original filters; `research/mix_scaled_replay.py` adds
+  behavior/skill replay; `scripts/train_scaled_50m.ps1` continues the 49.2M
+  checkpoint and `scripts/eval_scaled_50m.ps1` runs product/raw/behavior/chat
+  evals. The built corpus has **175,365,231 train tokens** (6.5x the original)
+  and 3.2M validation tokens; corpus/training artifacts are gitignored and
+  results go to `research/results/`.
+- Ollama teacher: `scripts/start_ollama_teacher.ps1` starts/pulls
+  `llama3.2:3b`; demo and scheduled research default to
+  `http://127.0.0.1:11434/v1` with graceful Wikipedia-only fallback.
 - Privacy/deletion path: `DocMemory.forget`/`forget_all` remove chunks and
   metadata and run SQLite `VACUUM`; `ChatHuman.forget` removes matching
   facts/episodes/tasks or clears them; HTTP `/v1/documents/forget` and
@@ -357,7 +367,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 315 tests;
+- 316 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

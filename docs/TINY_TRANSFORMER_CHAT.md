@@ -4,7 +4,11 @@
 
 **Atom Zero** is a tiny transformer language model trained from scratch for
 short English daily-assistant turns. The Python package and CLI remain
-`streamft`; Atom Zero is the product name. The **20.2M** checkpoint is the compact fallback; the
+`streamft`; Atom Zero is the product name.
+
+License: Apache-2.0 for code and model weights; training-data attribution is in
+[`NOTICE`](../NOTICE). The source text remains under its original dataset
+licences. The **20.2M** checkpoint is the compact fallback; the
 current product checkpoint is the **49.2M behavior variant**
 (`transformer_behavior_50m_long`). It is **not** a general assistant and not a
 factual model; facts belong in the document index, not in the weights.
