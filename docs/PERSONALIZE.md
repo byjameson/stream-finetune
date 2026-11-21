@@ -314,10 +314,14 @@ python research/learning_loop.py reject f0002
 python research/learning_loop.py export
 python research/learning_loop.py run \
   --base checkpoints/transformer_behavior_50m_long \
-  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4
+  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4 \
+  --holdout 0.2 --holdout-out data/feedback_holdout.jsonl
 ```
 
-The gate needs at least five approved examples. On acceptance it writes
+`--holdout` keeps a deterministic tail slice of approved rows out of training.
+After acceptance the base and adapter are compared on those rows and the result
+is written to `research/results/holdout_vNNNN.json` and recorded in history.
+The gate itself still needs at least five training examples. On acceptance it writes
 `data/active_adapter.json`; start the server with `--adapter auto` and
 `--active-adapter-file data/active_adapter.json` to use it. Rejected candidates
 do not change the active adapter. `scripts/run_learning.ps1` is the scheduled
@@ -354,6 +358,10 @@ skills. Evidence: [`research/results/gated_feedback_test.json`](../research/resu
 On the same 8 examples, assistant-turn loss was base **3.826** vs feedback
 adapter **1.640**; this is an in-sample fit check
 ([`research/results/adapter_comparison_feedback.json`](../research/results/adapter_comparison_feedback.json)).
+A 6-train / 2-holdout run kept both holdout rows out of training and still
+improved loss from **3.853** to **3.139** (**-18.5%**); the sample is tiny, but
+it is a real held-out check
+([`holdout_feedback_test.json`](../research/results/holdout_feedback_test.json)).
 
 Full fine-tune from a base checkpoint:
 

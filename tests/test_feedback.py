@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from research.learning_loop import main as learning_main
+from research.learning_loop import main as learning_main, split_rows
 from streamft.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
 
@@ -113,6 +113,73 @@ def test_learning_loop_records_accepted_adapter(tmp_path, monkeypatch, capsys):
     assert listed["count"] == 1
     assert listed["entries"][0]["path"] == (
         "checkpoints/adapters_feedback/v0007")
+
+
+def test_split_rows_keeps_holdout_out_of_training():
+    rows = [{"user": str(i)} for i in range(10)]
+    train, holdout = split_rows(rows, 0.2)
+    assert len(train) == 8
+    assert [row["user"] for row in holdout] == ["8", "9"]
+    assert split_rows(rows, 0.0) == (rows, [])
+    with pytest.raises(FeedbackError):
+        split_rows(rows, 1.0)
+    with pytest.raises(FeedbackError):
+        split_rows([{"user": "one"}], 0.2)
+
+
+def test_learning_loop_holdout_is_recorded(tmp_path, monkeypatch, capsys):
+    store = FeedbackStore(tmp_path / "feedback.json")
+    for i in range(8):
+        item = store.add(f"question {i}", f"answer {i}", rating=1)
+        store.approve(item["id"])
+    result_path = tmp_path / "result.json"
+    result_path.write_text(json.dumps({
+        "decision": {"accepted": True, "target_gain": 0.1},
+        "accepted_to": "checkpoints/adapters_feedback/v0001",
+    }), encoding="utf-8")
+    monkeypatch.setattr(
+        "research.learning_loop.subprocess.run",
+        lambda cmd, cwd=None: SimpleNamespace(returncode=0))
+    report = {
+        "examples": 2,
+        "models": [
+            {"label": "base", "path": "base",
+             "metrics": {"loss": 4.0, "tokens": 10, "ppl": 54.6}},
+            {"label": "adapters_feedback/v0001", "path": "adapter",
+             "metrics": {"loss": 3.0, "tokens": 10, "ppl": 20.1}},
+        ],
+    }
+    monkeypatch.setattr(
+        "research.learning_loop.holdout_compare",
+        lambda base, data, adapter: report)
+    train = tmp_path / "train.jsonl"
+    holdout = tmp_path / "holdout.jsonl"
+    active = tmp_path / "active.json"
+    history = tmp_path / "history.jsonl"
+    holdout_result = tmp_path / "holdout_result.json"
+    code = learning_main([
+        "--store", str(store.path),
+        "--out-queue", str(train), "--history", str(history),
+        "run", "--base", "checkpoints/base",
+        "--out", str(tmp_path / "adapters"),
+        "--result", str(result_path),
+        "--active-file", str(active),
+        "--holdout", "0.25",
+        "--holdout-out", str(holdout),
+        "--holdout-result", str(holdout_result),
+    ])
+    assert code == 0
+    summary = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert summary["holdout"]["loss_relative"] == pytest.approx(-0.25)
+    assert len(train.read_text().splitlines()) == 6
+    assert len(holdout.read_text().splitlines()) == 2
+    entry = json.loads(history.read_text(encoding="utf-8"))
+    assert entry["examples"] == 6
+    assert entry["holdout"]["examples"] == 2
+    assert entry["holdout"]["result"] == str(holdout_result)
+    assert json.loads(holdout_result.read_text(encoding="utf-8"))["examples"] == 2
+    promoted = json.loads(active.read_text(encoding="utf-8"))
+    assert promoted["holdout"] == entry["holdout"]
 
 
 def test_learning_loop_activate_rolls_back(tmp_path, capsys):

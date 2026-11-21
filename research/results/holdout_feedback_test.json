@@ -1,0 +1,69 @@
+{
+  "base": "checkpoints/transformer_behavior_50m_long",
+  "data": "data/feedback_holdout_test.jsonl",
+  "examples": 2,
+  "created": "2026-11-21T19:32:21",
+  "models": [
+    {
+      "label": "base",
+      "path": "checkpoints/transformer_behavior_50m_long",
+      "metrics": {
+        "examples": 2,
+        "tokens": 16,
+        "loss": 3.8531821966171265,
+        "ppl": 47.14284258570676,
+        "rows": [
+          {
+            "index": 0,
+            "user": "who is the reviewer?",
+            "assistant": "reviewer-1.",
+            "loss": 3.942243814468384,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "user": "what is the demo room?",
+            "assistant": "Room 5C.",
+            "loss": 3.764120578765869,
+            "tokens": 8,
+            "truncated": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "adapters_feedback_holdout_test/v0001",
+      "path": "checkpoints/adapters_feedback_holdout_test/v0001",
+      "metrics": {
+        "examples": 2,
+        "tokens": 16,
+        "loss": 3.1394721269607544,
+        "ppl": 23.091674168684442,
+        "rows": [
+          {
+            "index": 0,
+            "user": "who is the reviewer?",
+            "assistant": "reviewer-1.",
+            "loss": 3.081063747406006,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "user": "what is the demo room?",
+            "assistant": "Room 5C.",
+            "loss": 3.197880506515503,
+            "tokens": 8,
+            "truncated": false
+          }
+        ]
+      },
+      "vs_base": {
+        "loss_delta": -0.7137100696563721,
+        "loss_relative": -0.18522614120945768,
+        "ppl_ratio": -0.5101764572914064
+      }
+    }
+  ]
+}

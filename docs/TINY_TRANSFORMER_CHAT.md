@@ -265,6 +265,12 @@ Rollback was verified too: a second run produced `v0002`, then
 in the active file, and `--adapter auto` loaded `v0001` on port 8042
 ([`gated_feedback_history_test_v2.json`](../research/results/gated_feedback_history_test_v2.json)).
 
+A holdout run kept 2 of the 8 approved rows completely out of training (6
+train; gate accepted at **+8.89%**). On the 2 held-out rows, assistant-turn loss
+went from base **3.853** to **3.139** (**-18.5%**). The sample is tiny, so this
+is a directional check, not a benchmark
+([`holdout_feedback_test.json`](../research/results/holdout_feedback_test.json)).
+
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
 
@@ -376,8 +382,14 @@ python research/learning_loop.py reject f0002
 python research/learning_loop.py export
 python research/learning_loop.py run \
   --base checkpoints/transformer_behavior_50m_long \
-  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4
+  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4 \
+  --holdout 0.2 --holdout-out data/feedback_holdout.jsonl
 ```
+
+`--holdout` keeps a deterministic tail slice out of training. After acceptance
+the base and adapter are compared only on that slice; the JSON report and
+summary are recorded in history. The gate still needs five training examples,
+so a holdout needs enough approved rows.
 
 `run` needs at least five approved examples, invokes the existing
 `research/gated_update.py` gate, and writes `data/active_adapter.json` only when

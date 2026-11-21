@@ -10,7 +10,9 @@
 Only approved feedback is exported. ``run`` invokes the existing gated LoRA
 pipeline; a rejected candidate never becomes active. Every accepted version is
 appended to ``data/adapter_history.jsonl`` with its metrics and queue hash.
-Use ``research/compare_adapters.py`` to compare base and adapter loss.
+``--holdout 0.2`` keeps a deterministic tail slice out of training and compares
+base vs adapter on it after acceptance. Use ``research/compare_adapters.py`` to
+compare base and adapter loss on any rows.
 """
 from __future__ import annotations
 
@@ -49,6 +51,42 @@ def queue_sha256(path: str | Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def read_jsonl(path: str | Path) -> list[dict]:
+    path = Path(path)
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in
+            path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def write_jsonl(path: str | Path, rows: list[dict]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
+                           for row in rows), encoding="utf-8")
+    tmp.replace(path)
+
+
+def split_rows(rows: list[dict], holdout: float) -> tuple[list[dict],
+                                                           list[dict]]:
+    if holdout == 0:
+        return rows, []
+    if not 0 < holdout < 1:
+        raise FeedbackError("holdout must be between 0 and 1")
+    if len(rows) < 2:
+        raise FeedbackError("holdout needs at least two approved examples")
+    count = max(1, int(round(len(rows) * holdout)))
+    count = min(count, len(rows) - 1)
+    return rows[:-count], rows[-count:]
+
+
+def holdout_compare(base: str, data: str | Path, adapter: str) -> dict:
+    """Load the optional comparison module only when a holdout is requested."""
+    from research.compare_adapters import compare
+    return compare(base, data, [adapter])
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--store", default="data/feedback_queue.json")
@@ -77,6 +115,11 @@ def main(argv=None) -> int:
                      default="research/results/gated_feedback.json")
     run.add_argument("--active-file", default="data/active_adapter.json")
     run.add_argument("--min-examples", type=int, default=5)
+    run.add_argument(
+        "--holdout", type=float, default=0.0,
+        help="fraction of approved rows kept out of training for evaluation")
+    run.add_argument("--holdout-out", default="data/feedback_holdout.jsonl")
+    run.add_argument("--holdout-result", default="")
     args = ap.parse_args(argv)
 
     try:
@@ -141,14 +184,22 @@ def main(argv=None) -> int:
             result = store.export_training(ROOT / args.out_queue)
             print(json.dumps(result, ensure_ascii=False))
         else:
-            exported = store.export_training(ROOT / args.out_queue)
-            if exported["examples"] < args.min_examples:
+            store.export_training(ROOT / args.out_queue)
+            rows = read_jsonl(ROOT / args.out_queue)
+            train_rows, holdout_rows = split_rows(rows, args.holdout)
+            if len(train_rows) < args.min_examples:
                 print(json.dumps({
-                    "error": (f"need at least {args.min_examples} approved "
+                    "error": (f"need at least {args.min_examples} training "
                               "examples"),
-                    **exported,
+                    "path": args.out_queue,
+                    "examples": len(train_rows),
+                    "holdout_examples": len(holdout_rows),
                 }, ensure_ascii=False))
                 return 2
+            if args.holdout:
+                write_jsonl(ROOT / args.out_queue, train_rows)
+                write_jsonl(ROOT / args.holdout_out, holdout_rows)
+            exported = {"path": args.out_queue, "examples": len(train_rows)}
             result_path = ROOT / args.result
             cmd = [
                 sys.executable, "research/gated_update.py",
@@ -175,6 +226,39 @@ def main(argv=None) -> int:
             if decision.get("accepted") and accepted_to:
                 version = Path(accepted_to).name
                 accepted_path = Path(accepted_to).as_posix()
+                holdout_summary = None
+                if holdout_rows:
+                    try:
+                        report = holdout_compare(
+                            args.base, args.holdout_out, accepted_path)
+                        reference = report["models"][0]["metrics"]
+                        candidate = report["models"][1]["metrics"]
+                        target = (ROOT / args.holdout_result
+                                  if args.holdout_result
+                                  else ROOT / f"research/results/holdout_{version}.json")
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        target.write_text(
+                            json.dumps(report, indent=2) + "\n",
+                            encoding="utf-8")
+                        try:
+                            result_label = target.relative_to(
+                                ROOT).as_posix()
+                        except ValueError:
+                            result_label = str(target)
+                        holdout_summary = {
+                            "path": args.holdout_out,
+                            "examples": report["examples"],
+                            "tokens": reference["tokens"],
+                            "base_loss": reference["loss"],
+                            "adapter_loss": candidate["loss"],
+                            "loss_relative": (candidate["loss"]
+                                              / max(reference["loss"], 1e-9)
+                                              - 1),
+                            "result": result_label,
+                        }
+                    except (Exception, SystemExit) as exc:
+                        holdout_summary = {"path": args.holdout_out,
+                                           "error": str(exc)}
                 entry = {
                     "version": version,
                     "path": accepted_path,
@@ -187,6 +271,7 @@ def main(argv=None) -> int:
                     "rank": args.rank,
                     "alpha": args.alpha,
                     "decision": decision,
+                    "holdout": holdout_summary,
                     "result": args.result,
                 }
                 append_history(ROOT / args.history, entry)
@@ -199,6 +284,7 @@ def main(argv=None) -> int:
                     "examples": exported["examples"],
                     "result": args.result,
                     "history": args.history,
+                    "holdout": holdout_summary,
                 }, indent=2) + "\n", encoding="utf-8")
                 print(json.dumps({
                     "accepted": True,
@@ -206,6 +292,7 @@ def main(argv=None) -> int:
                     "version": version,
                     "active_file": args.active_file,
                     "history": args.history,
+                    "holdout": holdout_summary,
                     "decision": decision,
                 }, ensure_ascii=False))
             else:
