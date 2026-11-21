@@ -104,6 +104,12 @@ textarea{width:100%;min-height:100px;padding:10px;font:inherit;box-sizing:border
 input,button{font:inherit}button{padding:8px 12px;cursor:pointer}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 18px}
 .chips button{font-size:13px;background:#fff;border:1px solid #ccc;border-radius:999px}
+select{padding:8px;font:inherit;max-width:120px}
+#rlimit{flex:0 0 70px;width:70px}
+.row label{display:flex;align-items:center;gap:6px}
+.qitem{border:1px solid #ddd;border-radius:8px;padding:10px;margin:8px 0}
+.qitem .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.qitem .src{font-size:12px;color:#555;word-break:break-all;margin-top:4px}
 hr{border:0;border-top:1px solid #ddd;margin:22px 0}
 </style>
 <h1>Local assistant</h1>
@@ -136,6 +142,22 @@ SHA-256; re-adding the same source replaces it. Nothing is written to weights.</
 <div class="row"><input id="file" type="file" accept=".txt,.md,text/plain">
 <button id="add">Add document</button></div>
 <p id="ds" class="hint"></p>
+<hr>
+<h3>Research queue</h3>
+<p class="hint">A topic enters as pending and is not fetched. Approve it, then
+run approved topics; only approved items touch Wikipedia.</p>
+<div class="row">
+<input id="rtopic" placeholder="Topic, e.g. Ankara">
+<select id="rlang"><option value="en">en</option><option value="tr">tr</option></select>
+<select id="rpages"><option value="1">1 page</option><option value="2" selected>2 pages</option><option value="3">3 pages</option></select>
+<button id="radd">Add topic</button>
+</div>
+<div class="row">
+<label>run limit <input id="rlimit" type="number" min="1" max="5" value="1"></label>
+<button id="rrun">Run approved</button>
+</div>
+<p id="rmsg" class="hint"></p>
+<div id="rq"></div>
 <script>
 const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
 const chat = document.getElementById('chat');
@@ -243,6 +265,163 @@ document.getElementById('add').onclick = async () => {
     }
   } catch (e) { out.textContent = 'error: ' + e; }
 };
+function qmsg(text, isError) {
+  const el = document.getElementById('rmsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+function qbutton(label, fn) {
+  const button = document.createElement('button');
+  button.textContent = label;
+  button.onclick = fn;
+  return button;
+}
+function renderQueue(data, stats) {
+  const box = document.getElementById('rq');
+  box.textContent = '';
+  const summary = document.createElement('div');
+  summary.className = 'hint';
+  summary.textContent =
+    'total ' + (stats.total || 0) +
+    ' | pending ' + (stats.pending || 0) +
+    ' | approved ' + (stats.approved || 0) +
+    ' | done ' + (stats.done || 0) +
+    ' | error ' + (stats.error || 0) +
+    ' | rejected ' + (stats.rejected || 0);
+  box.appendChild(summary);
+  if (!data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No topics yet.';
+    box.appendChild(empty);
+    return;
+  }
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'qitem';
+    const title = document.createElement('div');
+    title.textContent = item.id + ' | ' + item.status + ' | ' + item.topic;
+    card.appendChild(title);
+    const meta = document.createElement('div');
+    meta.className = 'src';
+    meta.textContent = (item.lang || 'en') + ' | max pages ' +
+                       (item.max_pages || 1);
+    card.appendChild(meta);
+    if (item.error) {
+      const error = document.createElement('div');
+      error.className = 'src';
+      error.textContent = 'error: ' + item.error;
+      card.appendChild(error);
+    }
+    (item.sources || []).forEach(source => {
+      const line = document.createElement('div');
+      line.className = 'src';
+      line.textContent = 'source: ' + source.title + ' | ' +
+                         source.chunks + ' chunks | ' + source.source;
+      card.appendChild(line);
+    });
+    if (item.status === 'done' && !(item.sources || []).length) {
+      const none = document.createElement('div');
+      none.className = 'src';
+      none.textContent = 'no pages found';
+      card.appendChild(none);
+    }
+    if (item.status === 'pending' || item.status === 'approved') {
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      if (item.status === 'pending') {
+        actions.appendChild(qbutton('Approve',
+          () => queueAction(item.id, 'approve')));
+      }
+      actions.appendChild(qbutton('Reject',
+        () => queueAction(item.id, 'reject')));
+      card.appendChild(actions);
+    }
+    box.appendChild(card);
+  });
+}
+async function refreshQueue() {
+  try {
+    const r = await fetch('/v1/research/queue');
+    const j = await r.json();
+    if (!r.ok) {
+      qmsg('queue error: ' + (j.error || r.status), true);
+      return;
+    }
+    renderQueue(j.data || [], j.stats || {});
+  } catch (e) {
+    qmsg('queue error: ' + e, true);
+  }
+}
+async function queueAction(id, action) {
+  qmsg(action + ' ' + id + '...');
+  try {
+    const r = await fetch('/v1/research/queue/' + action, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id})});
+    const j = await r.json();
+    qmsg(r.ok ? (id + ' -> ' + j.status)
+              : ('error: ' + (j.error || r.status)), !r.ok);
+    await refreshQueue();
+  } catch (e) {
+    qmsg('error: ' + e, true);
+  }
+}
+document.getElementById('radd').onclick = async () => {
+  const topic = document.getElementById('rtopic').value.trim();
+  if (!topic) {
+    qmsg('topic is required', true);
+    return;
+  }
+  qmsg('adding ' + topic + '...');
+  try {
+    const r = await fetch('/v1/research/queue', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        topic,
+        lang: document.getElementById('rlang').value,
+        pages: parseInt(document.getElementById('rpages').value, 10),
+      })});
+    const j = await r.json();
+    qmsg(r.ok ? ('Added ' + j.id + ' as pending.')
+              : ('error: ' + (j.error || r.status)), !r.ok);
+    if (r.ok) {
+      document.getElementById('rtopic').value = '';
+      await refreshQueue();
+    }
+  } catch (e) {
+    qmsg('error: ' + e, true);
+  }
+};
+document.getElementById('rrun').onclick = async () => {
+  const button = document.getElementById('rrun');
+  const limit = parseInt(document.getElementById('rlimit').value, 10) || 1;
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Fetching...';
+  qmsg('running approved topics...');
+  try {
+    const r = await fetch('/v1/research/queue/run', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({limit})});
+    const j = await r.json();
+    if (!r.ok) {
+      qmsg('run error: ' + (j.error || r.status), true);
+    } else {
+      const ran = j.ran || [];
+      const done = ran.filter(item => item.status === 'done').length;
+      const errors = ran.filter(item => item.status === 'error').length;
+      qmsg('processed ' + ran.length + ' item(s): ' +
+           done + ' done, ' + errors + ' error.');
+    }
+    await refreshQueue();
+  } catch (e) {
+    qmsg('run error: ' + e, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+};
 function refreshHealth() {
   fetch('/health').then(r => r.json()).then(j => {
     const docs = j.documents ? j.documents.chunks : 0;
@@ -253,6 +432,7 @@ function refreshHealth() {
   }).catch(() => { document.getElementById('m').textContent = 'server not ready'; });
 }
 refreshHealth();
+refreshQueue();
 </script>"""
 
 

@@ -246,7 +246,12 @@
 - Retrieval quality: common question words are filtered from FTS queries, long
   paragraphs split at word boundaries, and repeated document sources are
   deduplicated in citations.
-- 238 tests;
+- Browser research queue UI: add/list/approve/reject/run with status counts and
+  source URLs; exact-title Wikipedia ranking prevents a query like `Ankara`
+  from selecting `New Ankara Stadium`. Added `scripts/run_research.ps1` for
+  Task Scheduler/cron. Live browser: pending -> run 0 -> approve -> run 1 done
+  -> chat cited the Ankara intro; a rejected Izmir topic was never fetched.
+- 239 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

@@ -117,7 +117,7 @@ rejected` items. Pending and rejected topics are never fetched. Each fetched
 item stores its Wikipedia source URLs and titles; normal document search and
 chat cite them.
 
-CLI (schedule `run` with Task Scheduler/cron):
+CLI:
 
 ```bash
 python research/research_queue.py --queue data/research_queue.json add "Ankara" --pages 1
@@ -125,7 +125,28 @@ python research/research_queue.py --queue data/research_queue.json approve r0001
 python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
 ```
 
+The browser page has the same queue controls: add, approve, reject and run.
+For a scheduled worker, use the wrapper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run_research.ps1 -Limit 1
+```
+
+Windows Task Scheduler:
+
+```powershell
+schtasks /Create /SC DAILY /ST 09:00 /TN "streamft research" `
+  /TR "powershell -ExecutionPolicy Bypass -File C:\path\to\stream-finetune\scripts\run_research.ps1 -Limit 1"
+```
+
+Linux/macOS cron:
+
+```cron
+0 9 * * * cd /path/to/stream-finetune && python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+```
+
 The queue does not generate its own topics and does not crawl the open web.
+Only approved topics are fetched.
 
 Agent/session use:
 

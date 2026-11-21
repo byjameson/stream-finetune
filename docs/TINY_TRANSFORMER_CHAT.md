@@ -287,9 +287,26 @@ python research/research_queue.py --queue data/research_queue.json approve r0001
 python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
 ```
 
-Schedule the `run` command with Task Scheduler/cron for reviewed autonomous
-research. It processes only approved topics; it does not generate topics or
-crawl the open web.
+The browser page has the same **Research queue** section: add a topic, approve
+or reject it, and run approved topics. It shows status counts and source URLs.
+
+Schedule the wrapper with Task Scheduler or cron for reviewed autonomous
+research:
+
+```powershell
+# Windows Task Scheduler: daily at 09:00
+schtasks /Create /SC DAILY /ST 09:00 /TN "streamft research" `
+  /TR "powershell -ExecutionPolicy Bypass -File C:\path\to\stream-finetune\scripts\run_research.ps1 -Limit 1"
+```
+
+```cron
+# Linux/macOS cron: daily at 09:00
+0 9 * * * cd /path/to/stream-finetune && python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+```
+
+It processes only approved topics; it does not generate topics or crawl the
+open web. Public release remains blocked until the licence, hosting, safety,
+name and update-policy decisions are made.
 
 ### Agent API
 
