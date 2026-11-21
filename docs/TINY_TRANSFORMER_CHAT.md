@@ -58,9 +58,14 @@ low-LR update with 2:1 clean replay:
 - gate accepted; checkpoint: `checkpoints/updates/v0001`;
 - standard E2E memory/task/greeting/story test still passes.
 
-**Caveat:** the gate is loss-based, not behavioral. `summarize` works, but
-`count to five`, `be brief` and `make it polite` often fall back to generic
-replies. Do not treat the 74% loss gain as a 74% skill gain.
+**Caveat:** the gate is loss-based, not behavioral. `summarize` works, but the
+raw model often fails `count to five`, `be brief` and `make it polite`; those
+exact formats are handled by the deterministic fast path in `chat_human.py`.
+
+A later format queue (283 examples) cleared loss + behavior but produced empty
+clean-chat samples. The clean-smoke gate was tightened; the v0002/v0003
+candidates were rejected, and **v0001 remains the product checkpoint**. Do not
+treat the loss gain as a behavioral gain.
 
 ## Samples
 

@@ -169,6 +169,14 @@
   assistant loss. Accepted as `checkpoints/updates/v0001`; E2E memory/task/
   greeting/story still passes. Loss gain is not a behavioral gain: novel skill
   generation is mixed.
+- Fixed a format bug: inference used `<|user|> ... <|end|><|assistant|>` while
+  training used `<|user|> ... <|assistant|>`. All servers/evals/tests now use
+  the training format.
+- Added a behavioral gate (memory/task + count/brief/polite/summarize/echo/
+  colors/story) and a 12-sample clean generation smoke to the gated update.
+  v0002/v0003 format updates were rejected by the clean smoke; v0001 remains
+  the product checkpoint. Exact format skills use deterministic fast paths;
+  the model handles stories/open-ended text.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -179,7 +187,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 209 tests;
+- 212 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

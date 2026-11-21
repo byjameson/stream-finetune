@@ -55,7 +55,9 @@ def chat_prompt(messages) -> str:
         parts.append(f"{tag} {content}")
     if not parts or not parts[-1].startswith("<|user|>"):
         parts.append("<|user|> hello")
-    return " ".join(parts) + " <|end|><|assistant|>"
+    # Training conversations have no <|end|> between a user turn and the
+    # assistant reply; <|end|> closes the whole conversation.
+    return " ".join(parts) + " <|assistant|>"
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -110,7 +112,7 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 prompt = (
                     f"<|user|> {str(req.get('prompt', 'hello'))}"
-                    " <|end|><|assistant|>")
+                    " <|assistant|>")
                 max_new = int(req.get("max_new_tokens", 64))
             max_new = max(1, min(max_new, 256))
             temperature = float(req.get("temperature", 0.7))

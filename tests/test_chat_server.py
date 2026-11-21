@@ -3,7 +3,7 @@ from streamft.chat_server import chat_prompt
 
 def test_chat_prompt_uses_training_format():
     prompt = chat_prompt([{"role": "user", "content": "hello"}])
-    assert prompt == "<|user|> hello <|end|><|assistant|>"
+    assert prompt == "<|user|> hello <|assistant|>"
 
 
 def test_chat_prompt_includes_the_last_turns():
