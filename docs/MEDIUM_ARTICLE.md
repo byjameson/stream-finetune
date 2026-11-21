@@ -86,6 +86,34 @@ weights_changed: false
 
 No autonomous crawling. No self-directed weight mutation. The human approves the topic, and the answer remains unverified until a reviewer marks it verified.
 
+## The self-improvement ladder (and its limits)
+
+“Self-improvement” is an overloaded phrase, so here is the exact ladder I built:
+
+| level | what changes | who approves | weights change? |
+|---|---|---|---|
+| RAG memory | a teacher note or your document enters the index | you/queue approval | no |
+| Reviewed adapter | a LoRA adapter for style/skills | human review + gate | yes |
+| Full training | a new base checkpoint | offline project decision | yes, offline |
+
+The first level is immediate. Ask a question with no local source; the assistant records a gap. You approve the topic; the worker fetches Wikipedia context and asks the local Ollama teacher; the answer becomes an **unverified teacher note** in RAG. The next answer can cite it. `weights_changed: false`.
+
+The second level is the only runtime path that touches weights. Approved feedback is exported, a LoRA adapter is trained, and a gate checks target gain, clean bpb/assistant regression, behavior and smoke. Only then is a `vNNNN` activated, with rollback support. The adapter is a style/skill layer, not a fact database: the raw knowledge probe stays at 2/10 even with the adapter.
+
+The third level is a full training run. It is manual, offline, and not something the assistant can trigger while you chat.
+
+That is the deliberate boundary: **the model can accumulate reviewed knowledge and reviewed skills, but it does not autonomously crawl, self-modify or decide what to study.** I think that boundary is a feature, not a missing button.
+
+## How far can this go?
+
+The honest potential is a ladder, not a single “AGI” claim:
+
+- **As a domain tool:** strong. A curated corpus + tools + a 3B-14B local provider can make a very useful private assistant.
+- **As a platform:** the harness is reusable. Others can plug in a stronger local model, their own documents and their own tools.
+- **As a general model:** the 49M core is not enough. That needs a larger model, much more data, compute and real evaluation. It is a separate project decision.
+
+The practical shortcut is the optional provider: keep RAG, tools and memory local, and let a stronger local model handle free-form chat. The core 49M model remains the default; the provider is not a hidden upgrade.
+
 ## What makes it different?
 
 It is not a smaller version of a frontier chatbot. The differences are architectural:

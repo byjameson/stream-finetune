@@ -39,6 +39,7 @@ powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithPr
 - **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
 - **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
 - **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.
+- **Reviewed self-improvement**: feedback → human gate → LoRA adapter → rollback. RAG notes do not change weights; the model does not autonomously self-modify.
 - **Optional provider**: plug in a local Ollama/OpenAI-compatible model for general chat.
 - **No telemetry, no hosted service**; all state is local SQLite/JSON.
 
@@ -52,7 +53,7 @@ powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithPr
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | test suite | **392 passed** |
 
-The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md).
+The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
 
 ## Published
 
