@@ -79,6 +79,24 @@ the 50M weights**. It is also why the product does not claim general knowledge.
 Results: [`raw_knowledge_base.json`](../research/results/raw_knowledge_base.json)
 and [`raw_knowledge_adapter.json`](../research/results/raw_knowledge_adapter.json).
 
+## Data-scaling early result
+
+The scaled 50M checkpoint at 10k steps was evaluated on the **new** scaled
+validation shard and on the product behaviors:
+
+| check | base | scaled 10k |
+|---|---|---|
+| scaled-valid chat bpb | 1.503 | **1.476** |
+| scaled-valid assistant loss | 4.215 | **4.120** |
+| scaled-valid stories bpb | 1.622 | **1.510** |
+| product benchmark | 21/21 | **21/21** |
+| behavior checks | 16/16 | **16/16** |
+| raw-model probe | 2/10 | 2/10 |
+
+On the **old** clean valid shard the base is still better (bpb 1.372 vs 1.426),
+so promotion remains gated. Details and final results:
+[`DATA_SCALING.md`](DATA_SCALING.md).
+
 ## Safety red-team
 
 ```bash
