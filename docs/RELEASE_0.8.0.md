@@ -40,7 +40,9 @@ controls.
 ## Benchmarks (honest scope)
 
 Shareable model card and raw-vs-augmented table:
-[`MODEL_CARD.md`](MODEL_CARD.md).
+[`MODEL_CARD.md`](MODEL_CARD.md). One-command demo:
+[`QUICKSTART_ATOMZERO.md`](QUICKSTART_ATOMZERO.md). Launch notes:
+[`LAUNCH.md`](LAUNCH.md).
 
 - Raw 49.2M without RAG/tools: **2/10**; adapter also **2/10**.
 - Product behavior: 21/21 base and adapter; 26/26 with safety; unchanged with

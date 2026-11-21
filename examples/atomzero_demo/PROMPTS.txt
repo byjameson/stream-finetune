@@ -1,0 +1,16 @@
+Demo prompts
+============
+
+1. What is the launch code?
+2. How long do I have to submit a warranty claim?
+3. What class should I book for a four-hour business flight?
+4. What is the visitor badge code?
+5. What is the population of Paris?   <- no local source; this becomes a gap
+6. Propose curiosity topics           <- creates pending research items
+7. Add task buy milk
+8. My name is Alex
+9. What is my name?
+
+The first four use local RAG and cite a source. Prompt 5 should not be answered
+from a local source; it is recorded as a knowledge gap. Nothing researches it
+until you approve the pending curiosity topic.

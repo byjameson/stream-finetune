@@ -1,4 +1,57 @@
-# stream-finetune — fine-tune a 32B model on a 6 GB laptop GPU
+# Atom Zero — a 49.2M local assistant that cites its sources
+
+[![local only](https://img.shields.io/badge/local-100%25-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+
+> A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
+
+![Atom Zero architecture](docs/figures/atomzero_architecture.svg)
+
+## 60-second demo
+
+```powershell
+git clone https://github.com/byjameson/stream-finetune.git
+cd stream-finetune
+pip install -e .
+powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+```
+
+Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
+
+```text
+What is the launch code?                         -> cited local answer
+What is the population of Paris?                 -> "I don't have a source"; gap recorded
+Propose curiosity topics                         -> pending research, approval required
+Add task buy milk / My name is Alex              -> local tools + memory
+```
+
+Optional stronger local chat (RAG/tools stay local):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
+```
+
+## What it is
+
+- **Source-cited RAG** over your own text files, with a hybrid FTS + MiniLM retriever.
+- **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
+- **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
+- **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.
+- **Optional provider**: plug in a local Ollama/OpenAI-compatible model for general chat.
+- **No telemetry, no hosted service**; all state is local SQLite/JSON.
+
+## Honest benchmark snapshot
+
+| check | result |
+|---|---:|
+| raw 49.2M, no RAG/tools | **2/10** |
+| product with RAG/tools | **21/21** |
+| behavior checks | **16/16** |
+| source-cited retrieval top-1 | **1.000** (FTS 0.850) |
+| test suite | **392 passed** |
+
+The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md).
+
+## streamft: fine-tune a 32B model on a 6 GB laptop GPU
 
 [![PyPI](https://img.shields.io/pypi/v/streamft)](https://pypi.org/project/streamft/) [![try it](https://img.shields.io/badge/try-will%20it%20fit%3F-6ee7b7)](https://huggingface.co/spaces/byjameson/will-it-fit)
 
@@ -14,6 +67,8 @@ measured speed where a measurement exists (and says so where it doesn't).
 **7B end-to-end on 6 GB:** [train an adapter, serve it on the 4-bit base, call it through
 `/v1/chat/completions`](docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
 3.14 s. This is the concrete “it works” scenario, not a benchmark.
+
+## Atom Zero runtime details
 
 **Atom Zero — local daily assistant (from scratch, 50M):** [tasks, personal
 notes and source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start

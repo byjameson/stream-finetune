@@ -15,6 +15,9 @@
   Live demo: gap -> pending -> approve -> Wikipedia + Ollama -> cited unverified
   RAG note (`research/results/curiosity_live.json`, `docs/CURIOSITY.md`).
 - Shareable model card and public benchmark snapshot: `docs/MODEL_CARD.md`.
+- Attention-ready onboarding: README hero with the 49.2M/source-cited hook,
+  architecture diagram, one-command `scripts/quickstart_atomzero.ps1`, seeded
+  demo corpus and prompt sheet. Launch assessment: `docs/LAUNCH.md`.
   Raw 49.2M is 2/10; adapter is also 2/10; the product/RAG path is 21/21.
   Teacher->RAG demo stores an unverified note and answers with a citation;
   `weights_changed: false`.

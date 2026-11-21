@@ -7,6 +7,11 @@ param(
     [string]$TeacherUrl = "http://127.0.0.1:11434/v1",
     [string]$TeacherModel = "llama3.2:3b",
     [string]$TeacherLabel = "ollama",
+    [string]$ChatProviderUrl = "",
+    [string]$ChatProviderModel = "",
+    [switch]$AllowGeneralChat,
+    [string]$VectorIndex = "auto",
+    [switch]$NoPrewarm,
     [switch]$NoTeacher,
     [switch]$SafetyFilter,
     [switch]$NoBrowser
@@ -21,6 +26,12 @@ if (-not $NoTeacher -and $TeacherUrl -and $TeacherModel) {
     $extra += " --teacher-url $TeacherUrl --teacher-model $TeacherModel --teacher-label $TeacherLabel"
 }
 if ($SafetyFilter) { $extra += " --safety-filter" }
+if ($VectorIndex) { $extra += " --vector-index $VectorIndex" }
+if ($NoPrewarm) { $extra += " --no-prewarm" }
+if ($ChatProviderUrl -and $ChatProviderModel) {
+    $extra += " --chat-provider-url $ChatProviderUrl --chat-provider-model $ChatProviderModel"
+    if ($AllowGeneralChat) { $extra += " --allow-general-chat" }
+}
 
 Start-Process powershell -ArgumentList @(
     "-NoExit",

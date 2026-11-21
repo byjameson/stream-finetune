@@ -62,6 +62,9 @@ tools, and unsourced provider answers are not fact-checked. See
 
 ## 3. Browser UI
 
+- One-command quickstart seeds a demo corpus and opens the UI
+  (`scripts/quickstart_atomzero.ps1`); architecture and launch assets in
+  `docs/figures/atomzero_architecture.svg`, `docs/LAUNCH.md`.
 - Chat, tool chips, feedback buttons, learning queue, research queue, teacher
   notes/provider, knowledge gaps, indexed-document list, document search,
   per-source Forget, session Forget, adapter-version history, safety status,
@@ -152,8 +155,7 @@ recommended.
 
 - **392 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `012f4c5` green after the curiosity queue, product, behavior and test
-  gates.
+- CI for the onboarding/launch commit is verified after push.
 
 ## 8. Release state
 

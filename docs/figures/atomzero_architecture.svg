@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Atom Zero architecture">
+  <defs>
+    <style>
+      .bg { fill: #0b1220; }
+      .box { fill: #111c30; stroke: #2d4a73; stroke-width: 1.5; rx: 14; }
+      .box2 { fill: #0f2233; stroke: #2b6f6a; stroke-width: 1.5; rx: 14; }
+      .box3 { fill: #241a2e; stroke: #6b4a8a; stroke-width: 1.5; rx: 14; }
+      .title { fill: #e8eefc; font: 600 17px system-ui, sans-serif; }
+      .small { fill: #9fb0cc; font: 13px system-ui, sans-serif; }
+      .tiny { fill: #7f91ad; font: 12px system-ui, sans-serif; }
+      .accent { fill: #7dd3fc; font: 600 13px system-ui, sans-serif; }
+      .arrow { stroke: #4b6f9e; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .arrow2 { stroke: #2b9a8f; stroke-width: 2; fill: none; marker-end: url(#arrow2); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b6f9e"/>
+    </marker>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2b9a8f"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="960" height="540"/>
+  <text x="40" y="52" class="title" font-size="28">Atom Zero</text>
+  <text x="40" y="78" class="small">local, source-cited assistant · 49.2M core + RAG + tools + optional provider</text>
+
+  <rect class="box" x="40" y="120" width="190" height="110"/>
+  <text x="62" y="150" class="title">Browser / API</text>
+  <text x="62" y="176" class="small">chat · documents · tasks</text>
+  <text x="62" y="196" class="small">feedback · curiosity</text>
+  <text x="62" y="216" class="tiny">127.0.0.1 only by default</text>
+
+  <rect class="box" x="285" y="120" width="225" height="110"/>
+  <text x="307" y="150" class="title">Agent runtime</text>
+  <text x="307" y="176" class="small">deterministic tools · memory</text>
+  <text x="307" y="196" class="small">RAG · missing-source gap</text>
+  <text x="307" y="216" class="tiny">approval gates · no crawling</text>
+
+  <rect class="box" x="565" y="120" width="170" height="110"/>
+  <text x="587" y="150" class="title">49.2M core</text>
+  <text x="587" y="176" class="small">from scratch</text>
+  <text x="587" y="196" class="small">narrow chat / behavior</text>
+  <text x="587" y="216" class="tiny">default backend</text>
+
+  <rect class="box3" x="770" y="120" width="150" height="110"/>
+  <text x="792" y="150" class="title">Optional</text>
+  <text x="792" y="176" class="small">Ollama /</text>
+  <text x="792" y="196" class="small">OpenAI-compatible</text>
+  <text x="792" y="216" class="tiny">free-form provider</text>
+
+  <rect class="box2" x="285" y="300" width="225" height="120"/>
+  <text x="307" y="330" class="title">Local memory</text>
+  <text x="307" y="356" class="small">SQLite FTS5 + MiniLM vectors</text>
+  <text x="307" y="376" class="small">source · title · sha256 · reviewer</text>
+  <text x="307" y="396" class="tiny">hybrid retrieval · exact/IVF ANN</text>
+
+  <rect class="box2" x="565" y="300" width="170" height="120"/>
+  <text x="587" y="330" class="title">Reviewed loop</text>
+  <text x="587" y="356" class="small">feedback → human gate</text>
+  <text x="587" y="376" class="small">LoRA vNNNN → rollback</text>
+  <text x="587" y="396" class="tiny">weights only here</text>
+
+  <rect class="box3" x="770" y="300" width="150" height="120"/>
+  <text x="792" y="330" class="title">Curiosity</text>
+  <text x="792" y="356" class="small">gaps → pending</text>
+  <text x="792" y="376" class="small">approve → research</text>
+  <text x="792" y="396" class="tiny">Wikipedia + teacher note</text>
+
+  <path class="arrow" d="M 230 175 L 285 175"/>
+  <path class="arrow" d="M 510 175 L 565 175"/>
+  <path class="arrow" d="M 735 175 L 770 175"/>
+  <path class="arrow2" d="M 397 230 L 397 300"/>
+  <path class="arrow2" d="M 650 230 L 650 300"/>
+  <path class="arrow2" d="M 845 230 L 845 300"/>
+  <path class="arrow" d="M 285 360 L 230 230"/>
+
+  <text x="40" y="480" class="small">Every factual answer can cite a local source. The 50M core is weak alone (2/10 raw); RAG and tools do the work.</text>
+  <text x="40" y="506" class="tiny">Optional safety filter is off by default. No telemetry. No hosted service. Apache-2.0 code and weights.</text>
+</svg>

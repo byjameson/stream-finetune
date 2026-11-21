@@ -1,0 +1,68 @@
+# Atom Zero quickstart
+
+## Requirements
+
+- Windows PowerShell (the demo scripts are PowerShell; the server is cross-platform)
+- Python 3.10+
+- The product checkpoint at `checkpoints/transformer_behavior_50m_scaled`
+- Optional: Ollama + `llama3.2:3b` for the teacher/curiosity flow and provider mode
+- Optional: `models/all-MiniLM-L6-v2` for neural retrieval
+
+## Run
+
+```powershell
+pip install -e .
+powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+```
+
+The script:
+
+1. seeds `data/atomzero_demo.db` with launch, warranty, travel and visitor docs;
+2. starts the local server on `http://127.0.0.1:8013`;
+3. opens the browser.
+
+## Try these
+
+```text
+What is the launch code?                          -> cited to Launch policy
+How long do I have to submit a warranty claim?   -> cited to Warranty
+What class should I book for a four-hour flight? -> cited to Travel
+What is the visitor badge code?                  -> cited to Visitor security
+What is the population of Paris?                 -> no local source; gap recorded
+Propose curiosity topics                         -> pending research; approval required
+Add task buy milk
+My name is Alex
+What is my name?
+```
+
+The first four exercise RAG. The Paris question exercises the honest
+missing-source path. **Propose curiosity topics** creates pending research
+items; approve one in the research queue before the worker fetches anything.
+
+## Provider mode
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
+```
+
+This routes free-form chat to local Ollama `llama3.2:3b` while RAG/tools stay
+local. Start Ollama first. Use a different model with `-ProviderModel`.
+
+## Reset the demo
+
+```powershell
+Remove-Item data/atomzero_demo.db -ErrorAction SilentlyContinue
+powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+```
+
+## Troubleshooting
+
+- **Checkpoint missing** — use `checkpoints/transformer_behavior_50m_scaled`
+  or the `transformer_behavior_50m_long` baseline.
+- **Port busy** — pass `-Port 8014`.
+- **No neural retrieval** — the server falls back to hashed FTS-anchored
+  retrieval; download `models/all-MiniLM-L6-v2` for semantic recall.
+- **No Ollama** — chat still works; curiosity/teacher calls will report the
+  provider error. Start Ollama and pull `llama3.2:3b`.
+- **Safety** — off by default. Add `-SafetyFilter` only if you want the
+  optional rule+ML filter.

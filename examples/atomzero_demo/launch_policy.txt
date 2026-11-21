@@ -1,0 +1,7 @@
+Launch policy
+=============
+
+The launch authorization code is ORANGE-42.
+
+The backup room is Room B-12. Do not share the launch code outside the launch
+team. For an emergency, use the north parking lot as the assembly point.
