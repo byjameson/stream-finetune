@@ -9,13 +9,13 @@ release approval. Last updated 2026-11-21.
 |---|---|---|
 | scaled 50M corpus | 175.37M clean train tokens, 3.21M valid | `docs/DATA_SCALING.md` |
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
-| 25k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_25k.json` |
-| old valid | bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502 | same |
-| scaled valid | bpb 1.4189 / assistant 3.9655 vs base 1.5032 / 4.2153 | `eval_base_scaled_valid.json` |
-| product benchmark | 21/21; 26/26 with safety | `assistant_benchmark_scaled_25k*.json` |
-| behavior | 16/16 | `behavior_scaled_25k.json` |
-| raw knowledge | 1/10 (2/10 base) | `raw_knowledge_scaled_25k.json` |
-| 60k run | in progress; may replace 25k if better | `data/scaled_training.log` |
+| 30k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_30k.json` |
+| old valid | bpb 1.3522 / assistant 3.8532 vs base 1.3719 / 4.0502 | same |
+| scaled valid | bpb 1.4026 / assistant 3.9151 vs base 1.5032 / 4.2153 | `eval_base_scaled_valid.json` |
+| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_30k.json` |
+| behavior | 16/16 | `behavior_scaled_30k.json` |
+| raw knowledge | 1/10 (2/10 base) | `raw_knowledge_scaled_30k.json` |
+| 60k run | in progress; auto-eval queued | `data/scaled_training.log` |
 
 **Gap:** raw 50M knowledge is still weak. Facts belong in RAG; general
 reasoning/coding needs a larger model and much more data. Not solved.
@@ -39,8 +39,9 @@ dates/reminders; no multi-document conflict resolution.
 ## 3. Browser UI
 
 - Chat, tool chips, feedback buttons, learning queue, research queue, teacher
-  notes/provider, knowledge gaps, indexed-document list, per-source Forget,
-  session Forget, safety status, model/adapter/health status.
+  notes/provider, knowledge gaps, indexed-document list, document search,
+  per-source Forget, session Forget, adapter-version history, safety status,
+  model/adapter/health status.
 - Session ID survives reload; `POST /v1/memory/history` restores the visible
   transcript; no hidden telemetry.
 - Verified in browser: session ID same after reload, transcript restored
@@ -92,7 +93,7 @@ data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **318 tests** pass locally.
+- **319 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
 - Latest feature commit verified green before the final UI changes.
 
@@ -106,9 +107,8 @@ data-licence review still recommended.
 
 ## Priority gaps
 
-1. Finish 60k scaled run and gate it against 25k.
+1. Finish 60k scaled run and gate it against 30k.
 2. Run final full benchmark/behavior/safety suite on the final checkpoint.
-3. Add adapter history/rollback to the browser.
-4. Add transcript restore or memory export/import if desired.
-5. Expand multilingual/semantic safety and RAG reranking.
-6. Larger model/general AI remains a separate compute/data decision.
+3. Add memory export/import if desired.
+4. Expand multilingual/semantic safety and RAG reranking.
+5. Larger model/general AI remains a separate compute/data decision.
