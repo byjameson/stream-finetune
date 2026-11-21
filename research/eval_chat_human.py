@@ -37,13 +37,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="checkpoints/transformer_chat_skill_21m")
     ap.add_argument("--arch", default="transformer")
+    ap.add_argument("--adapter", default="")
     ap.add_argument("--out", default="research/results/chat_human_eval.json")
     args = ap.parse_args()
     memory = ROOT / "data/chat_human_eval_memory.json"
     if memory.exists():
         memory.unlink()
     model, tok = load_model(args.model, DEVICE, args.arch,
-                            "data/chat_en_bpe8k.json")
+                            "data/chat_en_bpe8k.json", args.adapter)
     human = ChatHuman(memory, model, tok, DEVICE, args.arch)
     rows = []
     for text in TURNS:

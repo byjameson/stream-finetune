@@ -54,6 +54,30 @@ The gate requires target improvement, clean-chat regression within budget,
 behaviour checks and a 12-sample clean smoke. Rejected candidates are not
 promoted.
 
+### Lightweight LoRA adapter
+
+Train a small adapter on top of the frozen product checkpoint:
+
+```bash
+python research/train_lora.py \
+  --init checkpoints/transformer_behavior_50m_long \
+  --steps 300 --rank 8 --alpha 16 \
+  --out checkpoints/adapters/my_lora
+```
+
+Use it:
+
+```bash
+python research/chat_human.py \
+  --arch transformer \
+  --model checkpoints/transformer_behavior_50m_long \
+  --adapter checkpoints/adapters/my_lora
+```
+
+The demo adapter has **368,640 trainable parameters** (~0.74% of the 49.2M
+base), trains in ~45 seconds on the RTX 3050, and passes clean smoke, runtime
+behavior and E2E. Keep adapters per user/domain; the base is shared and frozen.
+
 Full fine-tune from a base checkpoint:
 
 ```bash

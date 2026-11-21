@@ -148,13 +148,16 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
-          port: int = 8013, api_key: str = "") -> int:
+          port: int = 8013, api_key: str = "", adapter: str = "") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
     model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
                           cfg["heads"], cfg["ff"])
     model.load_state_dict(ck["state"])
+    if adapter:
+        from streamft.lora import apply_adapter
+        apply_adapter(model, adapter)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     model.eval()
@@ -193,9 +196,10 @@ def main():
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8013)
     ap.add_argument("--api-key", default="")
+    ap.add_argument("--adapter", default="")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
-                 args.api_key)
+                 args.api_key, args.adapter)
 
 
 if __name__ == "__main__":

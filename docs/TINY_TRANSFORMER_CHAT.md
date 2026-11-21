@@ -161,6 +161,19 @@ python research/chat_human.py --arch transformer \
 
 See [`PERSONALIZE.md`](PERSONALIZE.md) for the bring-your-own-data workflow.
 
+### LoRA adapters
+
+`streamft/lora.py` supports small MLP adapters on the frozen base. A demo
+adapter has **368,640 trainable parameters** (~0.74% of 49.2M) and is ~1.5 MB:
+
+- clean smoke: **PASS** (1.380 bpb / 4.082 assistant);
+- runtime behavior: **PASS**;
+- E2E: **PASS**.
+
+Load one with `--adapter` in `streamft.chat_server`, `research/chat_human.py`,
+`research/eval_transformer_chat.py`, `research/behavior_eval.py` or
+`research/eval_chat_human.py`. Train with `research/train_lora.py`.
+
 ## Training
 
 ```bash

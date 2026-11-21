@@ -281,7 +281,8 @@ class ChatHuman:
 
 
 def load_model(path: str, device, arch: str = "spiking",
-               tokenizer_path: str = "data/chat_en_bpe8k.json"):
+               tokenizer_path: str = "data/chat_en_bpe8k.json",
+               adapter: str = ""):
     if arch == "transformer":
         ck = torch.load(Path(path) / "model.pt", map_location="cpu",
                         weights_only=False)
@@ -289,6 +290,9 @@ def load_model(path: str, device, arch: str = "spiking",
         model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
                               cfg["heads"], cfg["ff"]).to(device)
         model.load_state_dict(ck["state"])
+        if adapter:
+            from streamft.lora import apply_adapter
+            apply_adapter(model, ROOT / adapter)
         model.eval()
         from tokenizers import Tokenizer
         tokenizer = Tokenizer.from_file(str(ROOT / tokenizer_path))
@@ -307,6 +311,7 @@ def main():
                     default="spiking")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--docs", default="")
+    ap.add_argument("--adapter", default="")
     ap.add_argument("--message", default="")
     args = ap.parse_args()
 
@@ -314,7 +319,7 @@ def main():
     model = tokenizer = None
     if args.model:
         model, tokenizer = load_model(args.model, device, args.arch,
-                                      args.tokenizer)
+                                      args.tokenizer, args.adapter)
     docs = None
     if args.docs:
         from streamft.doc_memory import DocMemory

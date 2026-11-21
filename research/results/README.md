@@ -153,6 +153,9 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `transformer_behavior_50m_long_banned.json` | `research/eval_transformer_chat.py` | 50M long clean: 1.375 bpb / 4.066 assistant, clean smoke PASS |
 | `behavior_50m_long.json` | `research/behavior_eval.py` | 50M long runtime behavior: all checks pass |
 | `chat_human_eval_50m_long.json` | `research/eval_chat_human.py` | 50M long E2E: all checks pass; product checkpoint |
+| `adapter_behavior_banned.json` | `research/eval_transformer_chat.py --adapter` | 368k-param LoRA adapter: 1.380 bpb / 4.082 assistant, clean smoke PASS |
+| `adapter_behavior_eval.json` | `research/behavior_eval.py --adapter` | LoRA adapter runtime behavior: all checks pass |
+| `adapter_chat_human_eval.json` | `research/eval_chat_human.py --adapter` | LoRA adapter E2E: all checks pass |
 | `chat_human_eval_v0001.json` | `research/eval_chat_human.py` | accepted v0001: all memory/task/greeting/story checks pass |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |

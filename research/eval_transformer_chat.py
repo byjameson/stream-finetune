@@ -10,6 +10,7 @@ import torch
 from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import fixed_windows, load_tokens
 
+from streamft.lora import apply_adapter
 from streamft.transformer import TransformerLM, generate
 
 try:
@@ -27,6 +28,7 @@ def main():
     ap.add_argument("--out",
                     default="research/results/transformer_chat_en_clean_21m_banned.json")
     ap.add_argument("--tag", default="transformer_21m_sft_banned")
+    ap.add_argument("--adapter", default="")
     ap.add_argument("--chat-valid", default="data/chat_en_clean_valid.pt")
     ap.add_argument("--stories-valid",
                     default="data/chat_en_clean_stories_valid.pt")
@@ -41,6 +43,8 @@ def main():
     model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
                           cfg["heads"], cfg["ff"]).to(DEVICE)
     model.load_state_dict(ck["state"])
+    if args.adapter:
+        apply_adapter(model, ROOT / args.adapter)
     model.eval()
     tok = Tokenizer.from_file(str(ROOT / "data/chat_en_bpe8k.json"))
     user_id = tok.token_to_id("<|user|>")
