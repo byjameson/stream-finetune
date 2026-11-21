@@ -147,8 +147,19 @@ Interactive CLI with memory/tasks:
 
 ```bash
 python research/chat_human.py --arch transformer \
-  --model checkpoints/transformer_chat_en_clean_21m
+  --model checkpoints/transformer_behavior_50m_long
 ```
+
+Add your own facts/documents (RAG, no weight update):
+
+```bash
+python -m streamft.doc_memory add data/notes.txt --db data/docs.db
+python research/chat_human.py --arch transformer \
+  --model checkpoints/transformer_behavior_50m_long \
+  --docs data/docs.db
+```
+
+See [`PERSONALIZE.md`](PERSONALIZE.md) for the bring-your-own-data workflow.
 
 ## Training
 
