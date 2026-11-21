@@ -13,6 +13,28 @@ tools, memory, research, curiosity, self-learning, provider, safety, privacy,
 benchmarks and release — is
 [`PROJECT_OVERVIEW.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md).
 
+## System features
+
+| area | implemented |
+|---|---|
+| core model | 49.2M decoder-only transformer, BPE-8k, 6 layers, 768 dim, 128 context |
+| training | 175.37M clean + 214.8M replay; 40k product checkpoint |
+| RAG | SQLite FTS5, hashed/MiniLM embeddings, hybrid candidates, lexical+cosine rerank |
+| vector index | cached `doc_vectors`, prewarmed numpy matrix, IVF ANN above 256 chunks, exact fallback |
+| tools | time, safe arithmetic, task add/list/complete, name/likes memory |
+| sessions | transcript restore, JSON export/import, exact Forget, session Forget |
+| documents | ingest text/file/URL, source/title/sha256, search, per-source delete |
+| research | approved-only queue, Wikipedia fetch, worker lock/log, teacher synthesis |
+| teacher | local Ollama/OpenAI-compatible, unverified notes, reviewer verification |
+| curiosity | gap -> pending topic -> approval -> Wikipedia + teacher -> RAG note |
+| self-learning | RAG memory (no weights), reviewed LoRA (weights), manual full training |
+| provider | optional local free-form chat, RAG/tools stay local, `--allow-general-chat` |
+| safety | optional rules + local linear ML head; off by default; exact fallback |
+| privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
+| UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
+| packaging | PyPI wheel/sdist, GitHub release, HF/ModelScope weights, quickstart |
+| tests | 392 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+
 ## Model
 
 | item | value |
