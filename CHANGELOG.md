@@ -154,6 +154,11 @@
   greeting/small-talk/story; deterministic fast paths handle social phrases.
   Tradeoff: clean-chat quality regresses to 1.655 bpb / 4.93 assistant loss.
   Skill checkpoint is for the virtual-human runtime, not general chat.
+- Retention-friendly skill run started: 2:1 clean:skill replay, LR 3e-5,
+  4k steps, to reduce forgetting.
+- Teach/learn loop: `teach:` writes facts to memory; `update_loop.py` keeps a
+  reviewed queue and exports skill examples for a gated replay fine-tune.
+  Added `docs/PUBLIC_RELEASE_CHECKLIST.md` (currently not approved).
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -164,7 +169,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 202 tests;
+- 204 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

@@ -267,6 +267,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `train_transformer_chat.py` | 20.2M transformer diagnostic on the same clean SFT data | ~25 min |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
+| `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |
 | `chat_eval.py` | chat/Wikipedia/TinyStories bpb + prompt samples (`--lang tr/en`) | ~1 min |
 | `chat_human.py` | JSON memory/task runtime around the chat model | ~1 s (no model) |
 | `crypto_paper.py` | BTCUSDT daily walk-forward paper baseline, fees included | ~2 min |

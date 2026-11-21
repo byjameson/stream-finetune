@@ -136,12 +136,14 @@ def pack_batch(tok: Tokenizer, docs: list[str]) -> torch.Tensor:
     return torch.tensor(ids, dtype=torch.int64)
 
 
-def interleave(skill, clean, block: int = 4096) -> torch.Tensor:
+def interleave(skill, clean, block: int = 4096,
+               clean_per_skill: int = 1) -> torch.Tensor:
     parts = []
     for i in range(0, len(skill), block):
         parts.append(skill[i:i + block])
-        j = (i * 7919) % max(len(clean) - block, 1)
-        parts.append(clean[j:j + block])
+        for k in range(clean_per_skill):
+            j = ((i + k * 104729) * 7919) % max(len(clean) - block, 1)
+            parts.append(clean[j:j + block])
     return torch.cat(parts)
 
 
@@ -156,11 +158,17 @@ def main():
     clean_valid = torch.load(CLEAN_VALID, weights_only=True)
     mix_train = interleave(skill_train, clean_train)
     mix_valid = interleave(skill_valid, clean_valid, block=1024)
+    mix2_train = interleave(skill_train, clean_train, block=2048,
+                            clean_per_skill=2)
+    mix2_valid = interleave(skill_valid, clean_valid, block=1024,
+                            clean_per_skill=2)
     outputs = {
         "data/skill_train.pt": skill_train,
         "data/skill_valid.pt": skill_valid,
         "data/skill_mix_train.pt": mix_train,
         "data/skill_mix_valid.pt": mix_valid,
+        "data/skill_mix2_train.pt": mix2_train,
+        "data/skill_mix2_valid.pt": mix2_valid,
     }
     for rel, tensor in outputs.items():
         torch.save(tensor, ROOT / rel)
@@ -170,6 +178,8 @@ def main():
         "valid_dialogues": len(docs) - split,
         "skill_train_tokens": int(skill_train.numel()),
         "mix_train_tokens": int(mix_train.numel()),
+        "mix2_train_tokens": int(mix2_train.numel()),
+        "mix2": "2 clean blocks per 1 skill block",
         "skills": ["greeting", "remember_name", "remember_like",
                    "task_add", "task_list", "task_complete",
                    "small_talk", "short_story"],
