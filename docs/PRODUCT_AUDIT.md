@@ -41,12 +41,12 @@ dates/reminders; no multi-document conflict resolution.
 - Chat, tool chips, feedback buttons, learning queue, research queue, teacher
   notes/provider, knowledge gaps, indexed-document list, per-source Forget,
   session Forget, safety status, model/adapter/health status.
-- Session ID survives reload; no hidden telemetry.
-- Verified in browser: session ID same after reload, document list shows Berlin,
-  no console errors.
+- Session ID survives reload; `POST /v1/memory/history` restores the visible
+  transcript; no hidden telemetry.
+- Verified in browser: session ID same after reload, transcript restored
+  (`my name is Alice`), document list shows Berlin, no console errors.
 
-**Gaps:** no adapter version/rollback panel in the UI; no chat transcript
-restore (memory persists, visible chat does not); no import/export memory.
+**Gaps:** no adapter version/rollback panel in the UI; no import/export memory.
 
 ## 4. Research and teacher
 

@@ -306,6 +306,11 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Session/UI completion: the browser session id is persisted in localStorage,
+  a New session button is available, indexed documents are listed with
+  per-source Forget buttons, and `POST /v1/memory/history` restores the visible
+  transcript after reload. Browser test restored `my name is Alice` with no
+  console errors.
 - RAG snippets: grounded answers select the one or two sentences that best
   match the query instead of quoting the whole 900-char chunk. A Berlin
   population question now returns a population sentence with its source.
