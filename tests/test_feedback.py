@@ -115,6 +115,42 @@ def test_learning_loop_records_accepted_adapter(tmp_path, monkeypatch, capsys):
         "checkpoints/adapters_feedback/v0007")
 
 
+def test_learning_loop_activate_rolls_back(tmp_path, capsys):
+    history = tmp_path / "history.jsonl"
+    versions = []
+    for number in (1, 2):
+        adapter = tmp_path / "adapters" / f"v{number:04d}"
+        adapter.mkdir(parents=True)
+        (adapter / "adapter.pt").write_bytes(b"adapter")
+        versions.append(adapter)
+    history.write_text("".join(json.dumps({
+        "version": f"v{number:04d}",
+        "path": str(versions[number - 1]),
+        "examples": 8,
+        "result": f"results/v{number:04d}.json",
+    }) + "\n" for number in (1, 2)), encoding="utf-8")
+    active = tmp_path / "active.json"
+    active.write_text(json.dumps({"path": str(versions[1])}),
+                      encoding="utf-8")
+    code = learning_main([
+        "--history", str(history), "activate", "v0001",
+        "--active-file", str(active),
+    ])
+    assert code == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["activated"] is True
+    assert result["version"] == "v0001"
+    assert result["previous"] == str(versions[1])
+    promoted = json.loads(active.read_text(encoding="utf-8"))
+    assert promoted["path"] == str(versions[0])
+    assert promoted["activated"]
+    assert learning_main([
+        "--history", str(history), "activate", "v9999",
+        "--active-file", str(active),
+    ]) == 1
+    assert "not found" in capsys.readouterr().out
+
+
 def test_feedback_exports_only_approved_and_deduplicates(tmp_path):
     store = FeedbackStore(tmp_path / "feedback.json")
     store.add("same", "answer", rating=1)

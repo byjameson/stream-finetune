@@ -328,9 +328,12 @@ to `data/adapter_history.jsonl` with its gate metrics, queue hash and result:
 
 ```bash
 python research/learning_loop.py history
+python research/learning_loop.py activate v0001
 ```
 
-Compare base and adapter loss on the same rows:
+`activate` is the rollback path: it restores an adapter recorded in history
+after checking that its `adapter.pt` still exists. The active file keeps the
+previous version for audit. Compare base and adapter loss on the same rows:
 
 ```bash
 python research/compare_adapters.py \

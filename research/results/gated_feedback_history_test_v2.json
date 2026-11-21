@@ -1,0 +1,153 @@
+{
+  "mode": "lora",
+  "base": "checkpoints/transformer_behavior_50m_long",
+  "candidate": "checkpoints\\adapters\\candidate",
+  "queue": {
+    "queued": 8,
+    "train": 6,
+    "valid": 2,
+    "queue_train_tokens": 111,
+    "queue_valid_tokens": 33,
+    "sha256": "2b48043d5d686b75f532aa0f0bf8e4464e06165c49c853c17d3e31c36d478929"
+  },
+  "base_metrics": {
+    "clean": {
+      "bpb": 1.374942363043169,
+      "assistant_loss": 4.066105239674857
+    },
+    "queue": {
+      "bpb": 2.943574733777378,
+      "assistant_loss": 4.216237848455256
+    }
+  },
+  "candidate_metrics": {
+    "clean": {
+      "bpb": 1.3966812899705598,
+      "assistant_loss": 4.128848881442838
+    },
+    "queue": {
+      "bpb": 2.586929814209227,
+      "assistant_loss": 3.5106450861150567
+    }
+  },
+  "behavior": {
+    "checks": {
+      "greeting": true,
+      "small_talk": true,
+      "name": true,
+      "likes": true,
+      "task_add": true,
+      "task_list": true,
+      "task_complete": true,
+      "task_list_after": true,
+      "remember": true,
+      "story": true,
+      "count": true,
+      "brief": true,
+      "polite": true,
+      "summarize": true,
+      "echo": true,
+      "colors": true
+    },
+    "passed": true,
+    "replies": {
+      "hello": "Hello! How can I help you today?",
+      "my name is Alex": "I will remember that.",
+      "remember that I like green tea": "I will remember that.",
+      "what is my name?": "Your name is Alex.",
+      "what do I like?": "You like green tea.",
+      "add task buy milk": "Added task 1: buy milk",
+      "add task call mom": "Added task 2: call mom",
+      "list tasks": "Open tasks: 2 call mom",
+      "complete task 1": "Completed task 1.",
+      "what do you remember?": "I remember: name is Alex; likes is green tea; note is I like green tea",
+      "how are you?": "I am doing well, thank you. How are you?",
+      "tell me a short story": "Leo was a curious bear who lived near the forest. One day Leo found a paper boat. Leo wanted to share it with a friend, so they walked together and played until sunset."
+    },
+    "generated": {
+      "count": "One, two, three, four, five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Blue and green."
+    },
+    "raw_generated": {
+      "count": "One, Two, Three, Four, Five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Blue and white."
+    },
+    "story_repeat3": 0.0
+  },
+  "clean_smoke": {
+    "passed": true,
+    "rows": [
+      {
+        "prompt": "hello",
+        "text": "Hello! How can I help you today?",
+        "alpha": 0.75,
+        "stop": "end"
+      },
+      {
+        "prompt": "hello",
+        "text": "Hello! How can I help you today?",
+        "alpha": 0.75,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Grape was a curious fox who lived near the beach. One day G reminde found a blue kite. Grape wanted to share it with a friend, so they walked together and played until sunset.",
+        "alpha": 0.7885714285714286,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Miaaree was a curious fox who lived near the hill. One day Mia found a small map. Mia wanted to share it with a friend, so they walked together and played until sunset.",
+        "alpha": 0.7857142857142857,
+        "stop": "end"
+      }
+    ]
+  },
+  "decision": {
+    "accepted": true,
+    "checks": {
+      "target_gain": true,
+      "clean_bpb": true,
+      "clean_assistant": true,
+      "behavior": true,
+      "clean_smoke": true
+    },
+    "target_gain": 0.16735127089633095,
+    "clean_bpb_reg": 0.015810791427850024,
+    "clean_assistant_reg": 0.015430894693959862
+  },
+  "created": "2026-11-21T19:29:43",
+  "accepted_to": "checkpoints\\adapters_feedback_history_test\\v0002"
+}

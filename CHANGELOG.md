@@ -287,8 +287,9 @@
   facts remain in RAG. `scripts/run_learning.ps1` schedules the reviewed job.
 - Adapter versioning and comparison: accepted runs append to immutable `vNNNN`
   versions and to `data/adapter_history.jsonl` with queue sha256, gate metrics
-  and the result path; `python research/learning_loop.py history` lists them.
-  `research/compare_adapters.py` scores assistant-turn cross-entropy per row and
+  and the result path; `python research/learning_loop.py history` lists them and
+  `activate vNNNN` rolls back after checking the adapter files, recording the
+  previous version in the active file. `research/compare_adapters.py` scores assistant-turn cross-entropy per row and
   reports deltas vs base. A fresh 8-example run accepted `v0001` at +16.74%
   target gain; comparison on the same rows was base 3.826 vs feedback adapter
   1.640 (in-sample fit, not a generalization claim).
@@ -297,7 +298,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 257 tests;
+- 258 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

@@ -260,6 +260,11 @@ feedback adapter **1.640**, product adapter **3.837**; the first is an
 in-sample fit check, not a generalization claim
 ([`adapter_comparison_feedback.json`](../research/results/adapter_comparison_feedback.json)).
 
+Rollback was verified too: a second run produced `v0002`, then
+`learning_loop.py activate v0001` restored `v0001`, recorded `previous: v0002`
+in the active file, and `--adapter auto` loaded `v0001` on port 8042
+([`gated_feedback_history_test_v2.json`](../research/results/gated_feedback_history_test_v2.json)).
+
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
 
@@ -383,9 +388,12 @@ sha256 and result path:
 
 ```bash
 python research/learning_loop.py history
+python research/learning_loop.py activate v0001
 ```
 
-Compare base and adapters on the same reviewed rows with assistant-turn
+`activate` rolls the active pointer back to any adapter recorded in history
+after checking that its files still exist. The active file records the previous
+version for audit. Compare base and adapters on the same reviewed rows with assistant-turn
 cross-entropy (lower is better):
 
 ```bash
