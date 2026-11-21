@@ -148,7 +148,8 @@ recommended.
 
 - **388 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the provider-backend commit is verified after push.
+- CI `f627325` green after the provider backend, capability assessment,
+  product, behavior and safety gates.
 
 ## 8. Release state
 
