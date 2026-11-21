@@ -86,18 +86,19 @@ validation shard and on the product behaviors:
 
 | check | base | scaled 10k |
 |---|---|---|
-| scaled-valid chat bpb | 1.503 | **1.396** |
-| scaled-valid assistant loss | 4.215 | **3.891** |
-| scaled-valid stories bpb | 1.622 | **1.425** |
+| scaled-valid chat bpb | 1.503 | **1.382** |
+| scaled-valid assistant loss | 4.215 | **3.855** |
+| scaled-valid stories bpb | 1.622 | **1.414** |
 | product benchmark | 21/21 | **21/21** |
+| safety benchmark | 26/26 | **26/26** |
 | behavior checks | 16/16 | **16/16** |
-| raw-model probe | 2/10 | 1/10 |
+| raw-model probe | 2/10 | 2/10 |
 
-The 35k checkpoint is promoted as `checkpoints/transformer_behavior_50m_scaled`;
-the 60k run is still in progress. **Do not use the old clean valid shard for
-this comparison:** the larger corpus was regenerated from the same source
-datasets, so that shard is not a clean holdout for the new run. Details:
-[`DATA_SCALING.md`](DATA_SCALING.md).
+The 40k checkpoint is promoted as `checkpoints/transformer_behavior_50m_scaled`;
+training stopped at 40k because 38k/40k plateaued. **Do not use the old clean
+valid shard for this comparison:** the larger corpus was regenerated from the
+same source datasets, so that shard is not a clean holdout for the new run.
+Details: [`DATA_SCALING.md`](DATA_SCALING.md).
 
 ## Safety red-team
 

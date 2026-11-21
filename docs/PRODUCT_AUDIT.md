@@ -9,13 +9,12 @@ release approval. Last updated 2026-11-21.
 |---|---|---|
 | scaled 50M corpus | 175.37M clean train tokens, 3.21M valid | `docs/DATA_SCALING.md` |
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
-| 30k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_30k.json` |
-| old valid | bpb 1.3522 / assistant 3.8532 vs base 1.3719 / 4.0502 | same |
-| scaled valid | bpb 1.4026 / assistant 3.9151 vs base 1.5032 / 4.2153 | `eval_base_scaled_valid.json` |
-| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_30k.json` |
-| behavior | 16/16 | `behavior_scaled_30k.json` |
-| raw knowledge | 1/10 (2/10 base) | `raw_knowledge_scaled_30k.json` |
-| 60k run | in progress; auto-eval queued | `data/scaled_training.log` |
+| 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
+| scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
+| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k*.json` |
+| behavior | 16/16 | `behavior_scaled_40k.json` |
+| raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
+| training | stopped at 40k; 38k/40k plateau | `data/scaled_training.log` |
 
 **Gap:** raw 50M knowledge is still weak. Facts belong in RAG; general
 reasoning/coding needs a larger model and much more data. Not solved.
@@ -52,7 +51,8 @@ explicit CLI action (`learning_loop.py activate vNNNN`) to avoid hot-swapping
 weights under a running request.
 
 Session memory can be exported/imported as JSON from the browser; the export
-contains personal data and should be kept private.
+contains personal data and should be kept private. `/v1/memory/history`
+restores the visible transcript.
 
 **Gaps:** no UI-triggered adapter activation (by design until safe hot-swap
 exists).

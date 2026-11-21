@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T22:03:33",
+  "model": "checkpoints/scaled_50m_step40000",
+  "adapter": "",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of the city of Chicago is the capital of the city of Chicago. It is the capital of the city of Chicago, and it is the capital of the city of Chicago.",
+      "correct": false,
+      "alpha": 0.776,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "To find 2, we can use the concept of inclusion-exclusion. Let's start by finding the total number of possible outcomes for each event. For 2, the total number of possible outcomes is 2, and the total number of possible outcomes is 2. Now, we need to count the number of favor",
+      "correct": false,
+      "alpha": 0.771,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the numbers in a row, we can use the concept of permutations. Since we have 7 numbers (5, 6), the total number of ways to arrange the numbers in a row is 7. The number of ways to arrange the numbers in a row is 7, and",
+      "correct": false,
+      "alpha": 0.737,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world, with a total of 48,000 feet.",
+      "correct": false,
+      "alpha": 0.723,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "The Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears of the Bears",
+      "correct": false,
+      "alpha": 0.776,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a measure of the amount of water that is used to describe the water level of water in a given area. It is a measure of how much water is used to describe the water level. The boiling point of water is calculated by dividing the total water level by the total water level",
+      "correct": false,
+      "alpha": 0.797,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a type of data visualization tool that allows users to quickly and easily understand and analyze data by providing a clear and concise overview of the data, including the type of data, the insights, and the insights that can be derived from it. HTTP is a type of data visualization tool",
+      "correct": false,
+      "alpha": 0.81,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "A primary color is red, yellow, and yellow.",
+      "correct": true,
+      "alpha": 0.767,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics, particularly in the context of the universe. It is a fundamental concept in physics that states that the speed of light is a measure of how much energy is in a given distance. In other words, the speed of light is the speed of light, which is the distance",
+      "correct": false,
+      "alpha": 0.797,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}

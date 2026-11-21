@@ -10,10 +10,10 @@ controls.
 
 - **Scaled 50M base:** 175.37M clean chat tokens (6.5x the original) plus
   behavior/skill replay. The current product candidate is
-  `transformer_behavior_50m_scaled`, promoted at 35k steps; the 60k run is
-  being evaluated.
-  - clean scaled valid: chat bpb **1.3955** vs 1.5032, assistant **3.8908**
-    vs 4.2153.
+  `transformer_behavior_50m_scaled`, promoted at 40k steps; the run stopped
+  because 38k/40k validation plateaued.
+  - clean scaled valid: chat bpb **1.3815** vs 1.5032, assistant **3.8551**
+    vs 4.2153; stories 1.4144 vs 1.6221; mixed 1.2406 vs 1.3743.
   - The old clean valid shard is **not** a clean holdout for this run because
     the larger corpus was regenerated from the same sources; its numbers are
     not used for promotion.
