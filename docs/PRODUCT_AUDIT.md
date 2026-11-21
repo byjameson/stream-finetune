@@ -134,7 +134,8 @@ service is operated; per-source data-licence review still recommended.
 
 - **380 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the IVF ANN commit is verified after push.
+- CI `5ea77b5` green after the IVF ANN index, retrieval, product, behavior,
+  safety and red-team gates.
 
 ## 8. Release state
 
