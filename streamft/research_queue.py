@@ -128,10 +128,13 @@ class ResearchQueue:
                 nums.append(int(match.group(1)))
         return f"r{max(nums, default=0) + 1:04d}"
 
-    def add(self, topic: str, lang: str = "en", pages: int = 2) -> dict:
+    def add(self, topic: str, lang: str = "en", pages: int = 2,
+            kind: str = "research", origin_id: str = "") -> dict:
         topic = _clean_topic(topic)
         lang = _clean_lang(lang)
         pages = _clean_pages(pages)
+        kind = "curiosity" if str(kind).lower() == "curiosity" else "research"
+        origin_id = str(origin_id or "")[:64]
         with self._lock:
             self._reload()
             for item in self.items:
@@ -144,6 +147,8 @@ class ResearchQueue:
                 "status": "pending",
                 "lang": lang,
                 "max_pages": pages,
+                "kind": kind,
+                "origin_id": origin_id,
                 "created": _now(),
                 "approved_at": "",
                 "started_at": "",

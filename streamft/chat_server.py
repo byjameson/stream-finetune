@@ -43,6 +43,8 @@ from pathlib import Path
 import torch
 
 from streamft.doc_memory import SourceNotFound, best_snippet
+from streamft.curiosity import (
+    CuriosityError, curiosity_items, propose_from_gaps)
 from streamft.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
 from streamft.knowledge_gaps import (
@@ -247,9 +249,12 @@ is explicit CLI: <code>python research/learning_loop.py activate v0001</code>.</
 <hr>
 <h3>Knowledge gaps</h3>
 <p class="hint">When no local source answers a question, it is recorded here.
-Propose it as a <b>pending</b> research topic; approve it in the research queue
-before the worker fetches sources. Nothing changes weights automatically.</p>
-<div class="row"><button id="grefresh">Refresh gaps</button></div>
+Propose one gap, or use <b>Propose curiosity topics</b> to create pending
+research topics from up to three gaps. Approve them in the research queue
+before the worker fetches sources or calls the teacher. Nothing changes
+weights automatically.</p>
+<div class="row"><button id="grefresh">Refresh gaps</button>
+<button id="gcuriosity">Propose curiosity topics</button></div>
 <p id="gmsg" class="hint"></p>
 <div id="gq"></div>
 <script>
@@ -715,7 +720,8 @@ function renderQueue(data, stats) {
     const card = document.createElement('div');
     card.className = 'qitem';
     const title = document.createElement('div');
-    title.textContent = item.id + ' | ' + item.status + ' | ' + item.topic;
+    title.textContent = item.id + ' | ' + item.status +
+      (item.kind === 'curiosity' ? ' | curiosity' : '') + ' | ' + item.topic;
     card.appendChild(title);
     const meta = document.createElement('div');
     meta.className = 'src';
@@ -1180,6 +1186,34 @@ async function gapAction(id, action) {
   }
 }
 document.getElementById('grefresh').onclick = () => refreshGaps();
+async function proposeCuriosity() {
+  const button = document.getElementById('gcuriosity');
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Proposing...';
+  setGapMsg('proposing pending gaps as curiosity topics...');
+  try {
+    const r = await fetch('/v1/curiosity/propose', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({limit: 3, pages: 1})});
+    const j = await r.json();
+    if (!r.ok) {
+      setGapMsg('error: ' + (j.error || r.status), true);
+    } else {
+      const count = (j.proposed || []).length;
+      setGapMsg(count + ' curiosity topic(s) pending approval' +
+        ((j.skipped || []).length ? ' | ' + j.skipped.length + ' skipped' : ''));
+      await refreshGaps();
+      await refreshQueue();
+    }
+  } catch (e) {
+    setGapMsg('error: ' + e, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
+document.getElementById('gcuriosity').onclick = proposeCuriosity;
 function refreshHealth() {
   fetch('/health').then(r => r.json()).then(j => {
     const docs = j.documents ? j.documents.chunks : 0;
@@ -1394,6 +1428,19 @@ class Handler(BaseHTTPRequestHandler):
                 "data": entries, "active": active,
                 "history": str(history), "active_file": str(active_path),
             })
+        elif self.path == "/v1/curiosity":
+            queue = _state.get("research_queue")
+            gaps = _state.get("gaps")
+            if queue is None or gaps is None:
+                return self._json(400, {
+                    "error": "research queue or gap store is not configured"})
+            self._json(200, {
+                "items": curiosity_items(queue),
+                "pending_gaps": sum(
+                    1 for gap in gaps.list()
+                    if gap.get("status") == "pending"),
+                "stats": queue.stats(),
+            })
         elif self.path == "/v1/research/queue":
             queue = _state.get("research_queue")
             if queue is None:
@@ -1422,6 +1469,7 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/learning/queue/export",
                          "/v1/learning/gaps/propose",
                          "/v1/learning/gaps/dismiss",
+                         "/v1/curiosity/propose",
                          "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
@@ -1472,6 +1520,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._gap_propose(req)
             if route == "/v1/learning/gaps/dismiss":
                 return self._gap_dismiss(req)
+            if route == "/v1/curiosity/propose":
+                return self._curiosity_propose(req)
             if route == "/v1/research/queue":
                 return self._queue_add(req)
             if route == "/v1/research/queue/approve":
@@ -1718,6 +1768,19 @@ class Handler(BaseHTTPRequestHandler):
             "next": (f"approve {item['id']} in the research queue, then run "
                      "the scheduled worker"),
         })
+
+    def _curiosity_propose(self, req: dict):
+        try:
+            result = propose_from_gaps(
+                self._gap_store(), self._queue(),
+                limit=req.get("limit", 3),
+                lang=_state.get("wiki_lang", "en"),
+                pages=int(req.get("pages", 1)),
+                min_count=req.get("min_count", 1))
+        except (CuriosityError, KnowledgeGapError, ResearchQueueError,
+                ValueError) as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, result)
 
     def _gap_dismiss(self, req: dict):
         try:

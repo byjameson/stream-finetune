@@ -21,7 +21,10 @@ with `powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. The
 Python package and CLI remain `streamft`; Atom Zero is the product name. Paste or
 upload your own UTF-8 documents over HTTP; the response keeps source, title and
 sha256. A reviewed research queue (browser + API/CLI) fetches only
-user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
+user-approved Wikipedia topics on a schedule. Unanswered questions become
+knowledge gaps; **Propose curiosity topics** turns them into pending research
+items, and nothing runs until you approve it. See
+[`docs/CURIOSITY.md`](docs/CURIOSITY.md). ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
 local [Ollama](docs/TEACHER_OLLAMA.md)/OpenAI-compatible provider can answer on request or synthesize
 approved research topics. Teacher notes start unverified and can be marked

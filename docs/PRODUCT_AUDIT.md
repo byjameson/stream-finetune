@@ -33,6 +33,9 @@ lower-LR resume did not produce a material improvement over 40k.
   prewarmed in-memory matrix.
 - Missing-source path: honest no-source reply plus knowledge-gap record.
 - Research tool: explicit `research/look up`; queue worker for approved topics.
+- Curiosity queue: pending knowledge gaps can be proposed as `kind=curiosity`
+  research items (`POST /v1/curiosity/propose`, browser button). Approval is
+  still required before Wikipedia/teacher calls; no weights change.
 - Optional local provider: `--chat-provider-url/model` routes free-form chat to
   an Ollama/OpenAI-compatible endpoint; RAG/tools/memory stay local. Default is
   still the 50M model. `--allow-general-chat` lets the provider answer when no
@@ -91,7 +94,8 @@ exists).
   22.11.2026 09:00. It uses the local Ollama teacher with Wikipedia fallback.
 
 **Gaps:** no automatic teacher verification (by design); teacher model is
-separate and has its own licence.
+separate and has its own licence. Curiosity is gap-driven, not a general
+self-directed research agent; proposals still require human approval.
 
 ## 5. Self-learning
 
@@ -146,10 +150,9 @@ recommended.
 
 ## 7. Tests and CI
 
-- **388 tests** pass locally.
+- **392 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `f627325` green after the provider backend, capability assessment,
-  product, behavior and safety gates.
+- CI for the curiosity-queue commit is verified after push.
 
 ## 8. Release state
 

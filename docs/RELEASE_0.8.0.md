@@ -59,7 +59,10 @@ Shareable model card and raw-vs-augmented table:
 - Optional local provider backend: local Ollama/OpenAI-compatible free-form
   chat with RAG/tools/memory still local; default remains the 50M model.
   Tested live with `llama3.2:3b`; see `docs/POTENTIAL.md`.
-- Test suite: 388 tests; CI green.
+- Curiosity queue: pending gaps become pending research topics; approval is
+  required before Wikipedia/teacher calls. Live before/after RAG citation
+  evidence in `research/results/curiosity_live.json`.
+- Test suite: 392 tests; CI green.
 
 ## Run locally
 

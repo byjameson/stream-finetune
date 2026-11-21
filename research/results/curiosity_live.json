@@ -1,0 +1,78 @@
+{
+  "created": "2026-11-22T00:16:46",
+  "question": "What is the capital of New Zealand?",
+  "before": "I do not have a source for that yet. I can add it to the research queue; approve the topic and I will fetch it.",
+  "proposal": {
+    "proposed": [
+      {
+        "gap": {
+          "id": "g0001",
+          "query": "What is the capital of New Zealand?",
+          "status": "proposed",
+          "count": 1,
+          "reason": "live_curiosity_demo",
+          "session_id": "",
+          "research_id": "r0001",
+          "first_seen": "2026-11-22T00:16:41",
+          "last_seen": "2026-11-22T00:16:41",
+          "proposed_at": "2026-11-22T00:16:41",
+          "dismissed_at": ""
+        },
+        "research": {
+          "id": "r0001",
+          "topic": "What is the capital of New Zealand?",
+          "status": "pending",
+          "lang": "en",
+          "max_pages": 1,
+          "kind": "curiosity",
+          "origin_id": "g0001",
+          "created": "2026-11-22T00:16:41",
+          "approved_at": "",
+          "started_at": "",
+          "finished_at": "",
+          "sources": [],
+          "error": ""
+        }
+      }
+    ],
+    "skipped": [],
+    "next": "approve the pending research items, then run the worker; approval is required before any fetch or teacher call"
+  },
+  "unapproved_run": [],
+  "approved_run": [
+    {
+      "id": "r0001",
+      "topic": "What is the capital of New Zealand?",
+      "status": "done",
+      "lang": "en",
+      "max_pages": 1,
+      "kind": "curiosity",
+      "origin_id": "g0001",
+      "created": "2026-11-22T00:16:41",
+      "approved_at": "2026-11-22T00:16:41",
+      "started_at": "2026-11-22T00:16:41",
+      "finished_at": "2026-11-22T00:16:46",
+      "sources": [
+        {
+          "source": "https://en.wikipedia.org/?curid=27283021",
+          "title": "Capital of New Zealand",
+          "chunks": 1,
+          "preview": "The capital of New Zealand has been Wellington since 1865. New Zealand's first capital was Old Russell (Okiato), in 1840–1841. Auckland was the second capital, from 1841 to 1865. Parliament was perman"
+        }
+      ],
+      "error": "",
+      "teacher": {
+        "label": "ollama",
+        "model": "llama3.2:3b",
+        "source": "teacher://ollama/f02b06a721ff2385",
+        "title": "Teacher note: What is the capital of New Zealand?",
+        "verified": false,
+        "answer_preview": "The capital of New Zealand is Wellington. According to Wikipedia, Wellington has been the capital since 1865, replacing Auckland as the second capital from 1841 to 1865. The first capital was Old Russell (Okiato) from 1840-1841. The decision to move the capital to Wellington was made by three Australian commissioners after a decade-long argument among parliament members.",
+        "error": ""
+      }
+    }
+  ],
+  "after": "I found these notes:\n- Topic: What is the capital of New Zealand? The capital of New Zealand is Wellington. (teacher note, unverified: https://en.wikipedia.org/?curid=27283021)\n- The capital of New Zealand has been Wellington since 1865. New Zealand's first capital was Old Russell (Okiato), in 1840–1841. (source: https://en.wikipedia.org/?curid=27283021)\n\nThis is a local note, not professional advice.\n\nThis includes an unverified teacher-derived note.",
+  "weights_changed": false,
+  "note": "Only an approved topic was fetched and sent to the teacher. The result is an unverified RAG note, not a weight update."
+}

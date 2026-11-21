@@ -220,6 +220,13 @@ unverified data and can be cited immediately. No gradient update happens, and
 the model does not autonomously decide what to study. Evidence:
 [`teacher_rag_learning.json`](../research/results/teacher_rag_learning.json).
 
+The **curiosity queue** wraps this in a review gate: pending knowledge gaps are
+proposed as `kind=curiosity` research items; nothing runs until approval. A live
+run recorded `unapproved_run: 0`, `approved_run: done`, and
+`weights_changed: false`:
+[`curiosity_live.json`](../research/results/curiosity_live.json). See
+[`CURIOSITY.md`](CURIOSITY.md).
+
 ## Data-scaling early result
 
 The scaled 50M checkpoint at 10k steps was evaluated on the **new** scaled

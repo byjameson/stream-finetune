@@ -9,6 +9,11 @@
 - Optional local provider backend: Ollama/OpenAI-compatible free-form chat while
   RAG/tools/memory stay local; default remains the 50M model.
 - Capability assessment and scaling ladder: `docs/POTENTIAL.md`.
+- Curiosity queue: pending knowledge gaps can be proposed as research items
+  (`kind=curiosity`) with one browser click or `POST /v1/curiosity/propose`.
+  Nothing fetches or asks the teacher until a human approves; no weights change.
+  Live demo: gap -> pending -> approve -> Wikipedia + Ollama -> cited unverified
+  RAG note (`research/results/curiosity_live.json`, `docs/CURIOSITY.md`).
 - Shareable model card and public benchmark snapshot: `docs/MODEL_CARD.md`.
   Raw 49.2M is 2/10; adapter is also 2/10; the product/RAG path is 21/21.
   Teacher->RAG demo stores an unverified note and answers with a citation;
@@ -20,7 +25,7 @@
   faster than exact at 20k vectors with recall@10 1.000 and exact fallback.
   Hashed fallback stays FTS-anchored.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 388 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 392 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
