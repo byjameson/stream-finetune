@@ -215,6 +215,20 @@
   `/v1/chat/completions` keep per-user memory/tasks and route tools (memory,
   tasks, docs, time, research). Verified live: add/list task, document-grounded
   codename answer, session task completion via the OpenAI-style endpoint.
+- Daily-assistant repositioning: the model card and browser demo no longer
+  pitch story chat. The demo uses session agent chat with task/memory/arithmetic
+  examples and a teach-a-fact box. Added a safe AST calculator and
+  natural-language research aliases (`look up`, `search the web for`).
+- Weight-update reproducibility: re-ran the gated LoRA update from the same
+  283-example queue and seed on 2026-11-21. Accepted again at **+38.19%**
+  target gain, clean bpb **+0.079%**, assistant **+0.066%**, behavior and clean
+  smoke PASS; artifact `checkpoints/adapters_recheck/v0001`, evidence
+  `research/results/gated_lora_recheck.json`.
+- One-command demo fixes: `doc_memory` now accepts `--db` before or after the
+  subcommand; `demo_all.ps1` refreshes the demo note, runs base-only when the
+  adapter is absent, polls `/health`, and supports `-NoBrowser`. Verified live
+  on port 8020: 49.58M model + adapter + 2 doc chunks, calculator and
+  codename document search returned 200.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -225,7 +239,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 225 tests;
+- 228 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

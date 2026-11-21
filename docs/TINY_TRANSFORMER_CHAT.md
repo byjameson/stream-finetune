@@ -2,10 +2,11 @@
 
 ## What this is
 
-A tiny transformer language model trained from scratch for short English chat
-turns. The **20.2M** checkpoint is the compact model; the current product
-checkpoint is the **49.2M behavior variant** (`transformer_behavior_50m_long`).
-It is **not** a general assistant and not a factual model.
+A tiny transformer language model trained from scratch for short English
+daily-assistant turns. The **20.2M** checkpoint is the compact fallback; the
+current product checkpoint is the **49.2M behavior variant**
+(`transformer_behavior_50m_long`). It is **not** a general assistant and not a
+factual model; facts belong in the document index, not in the weights.
 
 - 20M: 5 layers, dim 512, 8 heads, FFN 2048; 50M: 6 layers, dim 768,
   12 heads, FFN 3072; 8k BPE, max sequence 512.
@@ -36,8 +37,8 @@ open-ended chat-quality claim.
 
 The product checkpoint, `transformer_chat_skill_ret_21m`, is fine-tuned for
 4,000 steps on 58.8k targeted dialogues (greetings, name/like memory, task
-add/list/complete, small talk, short stories), mixed **2:1 clean:skill** at
-LR 3e-5.
+add/list/complete, small talk and exact-format replies), mixed **2:1
+clean:skill** at LR 3e-5.
 
 - skill-only assistant loss **0.31** (ppl 1.36; synthetic templates, near
   memorization);
@@ -57,7 +58,7 @@ low-LR update with 2:1 clean replay:
 - clean bpb **1.440 -> 1.475** (+2.45%);
 - clean assistant loss **4.266 -> 4.374** (+2.52%);
 - gate accepted; checkpoint: `checkpoints/updates/v0001`;
-- standard E2E memory/task/greeting/story test still passes.
+- standard E2E memory/task/greeting check still passes.
 
 **Caveat:** the gate is loss-based, not behavioral. `summarize` works, but the
 raw model often fails `count to five`, `be brief` and `make it polite`; those
@@ -74,7 +75,7 @@ for 1,000 steps on a diverse mix of clean chat + skill + format/novel queues:
 - clean bpb **1.375** / assistant loss **4.066** (v0001: 1.475 / 4.374);
 - corrected clean smoke **PASS**;
 - runtime behavior **PASS**;
-- 13-turn E2E **PASS**, story quality comparable.
+- 13-turn E2E **PASS**.
 
 This is now the **product checkpoint**. v0001 (20M) remains a faster/local
 fallback. Factual questions such as live weather are out of scope for the raw
@@ -87,30 +88,61 @@ smoke now tests open-ended prompts only.
 
 ## Samples
 
+Runtime samples (deterministic fast paths and document memory):
+
 ```text
 hello -> Hello! How can I help you today?
-what is the weather today? -> To determine what the weather is.
-add task: buy milk -> Added task: go for a walk.
-tell me a short story -> Analyze the context of your story. It takes for a
-restless, unacceptable sunny day to be filled with dancier...
+add task buy milk -> Added task 1: buy milk
+my name is Alex -> I will remember that.
+what is my name? -> Your name is Alex.
+what is 12 * 7? -> 12 * 7 = 84
+search docs capital France -> quoted note + source
+what is the weather today? -> (raw model) To determine what the weather is.
 ```
 
-Responses are short and often generic or wrong (the task text is wrong above).
-They are grammatical English and turn-shaped.
+The raw model handles greetings and short open-ended replies. Exact task,
+memory, arithmetic and citation formats are handled by the runtime; the raw
+model is not asked to memorise them.
 
 ## Intended use
 
-- local tiny character/story chat,
+- local daily assistant: tasks, personal notes and cited document lookup,
 - memory/task runtime experiments,
+- source-cited research through Wikipedia or opt-in URL ingestion,
 - education and research on small from-scratch models,
 - a baseline for the virtual-human runtime.
+
+Creative writing is possible but is **not** the product focus. The assistant is
+not a general reasoning engine.
 
 ## Out of scope
 
 - general chat, instruction following, factual QA, coding, translation,
+- autonomous crawling or self-directed learning,
 - medical, legal, financial or safety-critical advice,
 - public deployment without a safety and licence review,
 - claims that this is a general language model.
+
+## Daily use
+
+The product is a local daily assistant, not a story demo:
+
+| layer | what it does |
+|---|---|
+| runtime fast paths | tasks, name/likes, time, simple arithmetic, exact formats |
+| document memory (SQLite FTS5) | your notes; returns quoted notes with `source` |
+| Wikipedia research | user-triggered lookup; stores extracts with URLs |
+| LoRA adapter | optional per-user style/skill, gated before acceptance |
+| 49.2M model | greetings and short open-ended wording |
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/agent/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"user-1","message":"add task buy milk"}'
+```
+
+The browser page at `/` uses the same agent endpoint. It has a plain chat box,
+task/memory/arithmetic examples and a “teach a fact” box. No account, no cloud.
 
 ## Data and licence
 
@@ -147,16 +179,19 @@ Endpoints:
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; fetches Wikipedia extracts with sources |
 | `POST /v1/learn_url` | `{"url": "..."}`; opt-in page ingestion, requires `--allow-url-fetch` |
-| `POST /v1/agent/chat` | `{"session_id": "...", "message": "..."}`; tasks, memory, docs, time, research |
+| `POST /v1/agent/chat` | `{"session_id": "...", "message": "..."}`; tasks, memory, docs, time, arithmetic, research |
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
 | `POST /v1/chat/completions` | messages; optional `session_id`; document hits return `sources` and a non-advice note |
 
-Verified on this machine: `/health` returns 49,582,080 params, step 1000,
-adapter `checkpoints/adapters_50m/v0001`, and 1 indexed chunk; document search
-and grounded chat return 200. `/v1/teach` stores a fact in the index and queues
-a reviewed skill example.
+Verified on 2026-11-21: the one-command demo on port 8020 returned health with
+**49,582,080** params, adapter `checkpoints/adapters_50m/v0001` and indexed
+documents; `/v1/agent/chat` answered `12 * 7 = 84`, handled task/memory
+commands, and returned the codename note with its source. `/v1/teach` stores a
+fact in the index and queues a reviewed skill example. The recheck adapter
+(`checkpoints/adapters_recheck/v0001`) also loaded and served on port 8017.
 
-One-command demo (server + adapter + demo note + browser):
+One-command demo (server + demo note + browser; the adapter is used when
+present, otherwise the base runs alone):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1
@@ -180,17 +215,15 @@ curl -X POST http://127.0.0.1:8013/v1/agent/chat \
   -d '{"session_id":"user-1","message":"add task buy milk"}'
 ```
 
-It routes greetings/small talk, memory/tasks, document search, time and
-Wikipedia research. The OpenAI-compatible `/v1/chat/completions` accepts the
-same `session_id`; without it, the endpoint is stateless. External agent
-frameworks can connect through these HTTP endpoints, but the 50M model remains
-the language layer, not a general reasoning engine.
+It routes greetings/small talk, memory/tasks, document search, time, simple
+arithmetic and Wikipedia research. The OpenAI-compatible
+`/v1/chat/completions` accepts the same `session_id`; without it, the endpoint
+is stateless. External agent frameworks can connect through these HTTP
+endpoints, but the 50M model remains the language layer, not a general
+reasoning engine.
 
-One-command demo:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/chat_demo.ps1
-```
+The one-command browser demo is `scripts/demo_all.ps1` above; `chat_demo.ps1`
+is the lower-level server-only launcher.
 
 Interactive CLI with memory/tasks:
 
@@ -221,6 +254,12 @@ adapter has **368,640 trainable parameters** (~0.74% of 49.2M) and is ~1.5 MB:
 - runtime behavior **PASS**;
 - E2E **PASS**.
 
+The gate was re-run on 2026-11-21 from the same 283-example queue and seed:
+accepted again with **+38.19%** target gain, clean bpb **+0.079%**, assistant
+**+0.066%**, behavior and clean smoke **PASS**
+(`research/results/gated_lora_recheck.json`). This is a reproducibility check,
+not a new capability claim.
+
 Load one with `--adapter` in `streamft.chat_server`, `research/chat_human.py`,
 `research/eval_transformer_chat.py`, `research/behavior_eval.py` or
 `research/eval_chat_human.py`. Train with `research/train_lora.py` or the gated
@@ -239,11 +278,16 @@ python research/train_transformer_chat.py \
 
 ## Limitations
 
-- 20M parameters; repetition, generic replies and task confusion remain.
+- The 49.2M product model still repeats, gives generic replies and confuses
+  open-ended wording; exact formats depend on runtime fast paths.
+- The 20M v0001 is the compact fallback; the 49.2M checkpoint is the product
+  default because its behavior and clean metrics are better.
 - English only.
 - No safety filter, no factuality guarantee, no instruction tuning beyond SFT.
 - The smoke gate is narrow; it does not prove general chat quality.
-- The 49.2M transformer is only 0.015 bpb better with a lower alpha floor, so
-  the 20M checkpoint is the product choice.
+- No autonomous web crawler: research is user-triggered (Wikipedia or opt-in
+  URL ingestion). Facts are never written into weights automatically.
+- The HTTP API is a small OpenAI-compatible subset, not full tool calling,
+  streaming or multimodal support.
 
 Full research: [`research/CHAT_FROM_SCRATCH.md`](../research/CHAT_FROM_SCRATCH.md).

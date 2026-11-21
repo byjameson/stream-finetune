@@ -1,9 +1,11 @@
 # Local verified assistant (parked experiment)
 
-**Status: parked.** The active project direction is the from-scratch spiking
-research line. This document is kept as a record of the Qwen2.5-1.5B + verified
-retrieval prototype; it is not the target model. Its 50M/500M-token comparison
-showed why the spiking TinyStories run did not produce a product-quality model.
+**Status: parked.** This document is kept as a record of the Qwen2.5-1.5B +
+verified retrieval prototype; it is **not** the target model and it is not on
+the product path. The active product is the from-scratch 49.2M transformer daily
+assistant in [`TINY_TRANSFORMER_CHAT.md`](TINY_TRANSFORMER_CHAT.md). The
+Qwen comparison is retained only as evidence that retrieval alone does not make
+a tiny model a general assistant.
 
 ## Why this path
 

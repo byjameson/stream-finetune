@@ -3,7 +3,8 @@ param(
     [string]$Model = "checkpoints/transformer_behavior_50m_long",
     [string]$Adapter = "",
     [string]$Docs = "",
-    [string]$Queue = "data/learning_queue.jsonl"
+    [string]$Queue = "data/learning_queue.jsonl",
+    [switch]$NoBrowser
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -17,6 +18,18 @@ Start-Process powershell -ArgumentList @(
     "-Command",
     "cd `"$root`"; `$env:PYTHONPATH=`"$root`"; python -m streamft.chat_server --model $Model --host 127.0.0.1 --port $Port$extra"
 )
-Start-Sleep -Seconds 8
-Start-Process "http://127.0.0.1:$Port/"
-Write-Host "Tiny chat server: http://127.0.0.1:$Port/"
+$ready = $false
+for ($i = 0; $i -lt 60; $i++) {
+    Start-Sleep -Milliseconds 500
+    try {
+        $r = Invoke-WebRequest "http://127.0.0.1:$Port/health" -UseBasicParsing -TimeoutSec 2
+        if ($r.StatusCode -eq 200) { $ready = $true; break }
+    } catch { }
+}
+if (-not $ready) {
+    Write-Warning "server did not answer within 30s; check the server window"
+}
+if (-not $NoBrowser) {
+    Start-Process "http://127.0.0.1:$Port/"
+}
+Write-Host "Local assistant: http://127.0.0.1:$Port/"

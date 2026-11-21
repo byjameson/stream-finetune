@@ -81,8 +81,8 @@ curl -X POST http://127.0.0.1:8013/v1/agent/chat \
 
 Each session keeps its own memory/tasks; `/v1/chat/completions` accepts the
 same `session_id` for OpenAI-style clients. Tools cover memory, tasks, local
-documents, time and Wikipedia research. The model only handles open-ended
-wording; it is not a general reasoning agent.
+documents, time, simple arithmetic and Wikipedia research. The model only
+handles open-ended wording; it is not a general reasoning agent.
 
 One-command demo: `scripts/demo_all.ps1`.
 
@@ -147,7 +147,9 @@ python research/gated_update.py \
 The accepted 50M adapter (`checkpoints/adapters_50m/v0001`) gives **+38.2%**
 queue-target gain with clean bpb regression **+0.08%** and assistant
 **+0.07%**. Clean smoke, behavior and E2E all pass. The gate rejects adapters
-that hurt clean chat or fail the behavioral checks.
+that hurt clean chat or fail the behavioral checks. A 2026-11-21 re-run from
+the same queue was accepted again at **+38.19% / +0.079% / +0.066%**
+(`research/results/gated_lora_recheck.json`), so the loop is reproducible.
 
 Full fine-tune from a base checkpoint:
 
@@ -167,7 +169,7 @@ Can learn, with a few thousand short examples:
 
 - greeting/small-talk style,
 - exact response formats (count, polite request, summarize, echo),
-- short story templates,
+- short email/note templates,
 - a narrow domain's phrasing.
 
 Cannot reliably learn from weights alone:

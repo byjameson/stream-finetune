@@ -17,6 +17,14 @@ def _post(url, payload):
         return json.loads(response.read().decode("utf-8"))
 
 
+def test_demo_page_uses_daily_agent_endpoint():
+    page = chat_server.PAGE.lower()
+    assert "/v1/agent/chat" in page
+    assert "teach a fact" in page
+    assert "short story" not in page
+    assert "/generate" not in page
+
+
 def test_doc_answer_returns_sources(tmp_path):
     try:
         docs = DocMemory(tmp_path / "docs.db")

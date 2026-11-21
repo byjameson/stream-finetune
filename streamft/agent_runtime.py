@@ -1,6 +1,8 @@
 """Session-based agent runtime around the tiny model and local tools."""
 from __future__ import annotations
 
+import ast
+import operator
 import re
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +13,64 @@ try:
     from research.chat_human import ChatHuman
 except ImportError:
     from chat_human import ChatHuman
+
+_BIN_OPS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+    ast.Mod: operator.mod,
+    ast.Pow: operator.pow,
+}
+_UNARY_OPS = {ast.UAdd: operator.pos, ast.USub: operator.neg}
+_MATH_PREFIX = re.compile(
+    r"^(?:what\s+is|what's|calculate|compute|calc)\s+", re.IGNORECASE)
+_MATH_CHARS = re.compile(r"[0-9+\-*/().%\s]+")
+
+
+def _eval_math(node):
+    if isinstance(node, ast.Expression):
+        return _eval_math(node.body)
+    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+        return node.value
+    if isinstance(node, ast.BinOp) and type(node.op) in _BIN_OPS:
+        left = _eval_math(node.left)
+        right = _eval_math(node.right)
+        if isinstance(node.op, ast.Pow) and (abs(left) > 1e6 or abs(right) > 100):
+            raise ValueError("exponent is too large")
+        value = _BIN_OPS[type(node.op)](left, right)
+        if abs(value) > 10**12:
+            raise ValueError("result is too large")
+        return value
+    if isinstance(node, ast.UnaryOp) and type(node.op) in _UNARY_OPS:
+        return _UNARY_OPS[type(node.op)](_eval_math(node.operand))
+    raise ValueError("unsupported expression")
+
+
+def calculate(expression: str) -> str:
+    """Evaluate a small arithmetic expression without eval()."""
+    expr = expression.strip().rstrip("=?").strip()
+    if not expr or len(expr) > 80:
+        raise ValueError("invalid expression")
+    if not _MATH_CHARS.fullmatch(expr):
+        raise ValueError("only numbers and + - * / % ** are allowed")
+    value = _eval_math(ast.parse(expr, mode="eval"))
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    return str(value)
+
+
+def math_query(text: str) -> str | None:
+    candidate = _MATH_PREFIX.sub("", text.strip()).strip()
+    candidate = candidate.rstrip("=?").strip()
+    if not candidate or not re.search(r"\d", candidate):
+        return None
+    if not _MATH_CHARS.fullmatch(candidate):
+        return None
+    if not re.search(r"[+\-*/%]", candidate):
+        return None
+    return candidate
 
 
 class AgentSession:
@@ -65,9 +125,39 @@ class AgentSession:
             now = datetime.now().strftime("%Y-%m-%d %H:%M")
             return {"reply": f"It is {now}.", "tool_calls": [
                 {"name": "time"}], "sources": []}
-        if low.startswith("research ") or low.startswith("research:"):
-            query = text.split(":", 1)[1] if ":" in text else text[9:]
-            return self._research(query.strip())
+        if low in ("what can you do", "what can you do?", "help"):
+            return {
+                "reply": ("I can keep short personal notes, manage tasks, "
+                          "search your local documents, look up Wikipedia "
+                          "with sources, calculate simple arithmetic, and "
+                          "tell the time. I am a small local model, so I am "
+                          "not a general reasoning or coding assistant."),
+                "tool_calls": [{"name": "help"}], "sources": [],
+            }
+        expression = math_query(text)
+        if expression is not None:
+            try:
+                result = calculate(expression)
+            except (ValueError, SyntaxError, ZeroDivisionError,
+                    OverflowError) as exc:
+                return {
+                    "reply": f"I could not calculate that: {exc}.",
+                    "tool_calls": [{"name": "calculator",
+                                    "expression": expression}],
+                    "sources": [],
+                }
+            return {
+                "reply": f"{expression} = {result}",
+                "tool_calls": [{"name": "calculator",
+                                "expression": expression,
+                                "result": result}],
+                "sources": [],
+            }
+        research = re.match(
+            r"^(?:research|look up|search the web for|web search)\s*:?\s*(.+)$",
+            text, re.IGNORECASE)
+        if research:
+            return self._research(research.group(1).strip())
         if (low.startswith("search docs ") or low.startswith("search my notes ")
                 or low.startswith("search documents ")):
             query = re.sub(r"^search (docs|my notes|documents)\s*:?\s*", "",
