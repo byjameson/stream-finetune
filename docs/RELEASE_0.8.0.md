@@ -1,9 +1,10 @@
 # Atom Zero 0.8.0 — open-source scaled assistant (2026-11-22)
 
 Status: **released 0.8.0** (GitHub tag `v0.8.0`; PyPI
-[`streamft==0.8.0`](https://pypi.org/project/streamft/0.8.0/)). The owner
-approved publication. Hugging Face / ModelScope weight uploads still wait for
-their own tokens. The project is open source under Apache-2.0. No hosted
+[`streamft==0.8.0`](https://pypi.org/project/streamft/0.8.0/); weights on
+[Hugging Face](https://huggingface.co/byjameson/atom-zero-49m) and
+[ModelScope](https://modelscope.cn/models/byjameson/atom-zero-49m)). The owner
+approved publication. The project is open source under Apache-2.0. No hosted
 service is operated; third-party hosts are responsible for their own deployment
 controls.
 

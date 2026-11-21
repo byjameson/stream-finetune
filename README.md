@@ -54,6 +54,13 @@ powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithPr
 
 The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md).
 
+## Published
+
+- PyPI: <https://pypi.org/project/streamft/0.8.0/>
+- Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
+- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
+- Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
+
 ## streamft: fine-tune a 32B model on a 6 GB laptop GPU
 
 [![PyPI](https://img.shields.io/pypi/v/streamft)](https://pypi.org/project/streamft/) [![try it](https://img.shields.io/badge/try-will%20it%20fit%3F-6ee7b7)](https://huggingface.co/spaces/byjameson/will-it-fit)

@@ -64,9 +64,10 @@ harness: source-cited RAG, honest gaps, curiosity approval, local provider.
 - [ ] 20–40 second screen recording/GIF of the demo
 - [x] GitHub source tag `v0.8.0`
 - [x] PyPI publish `streamft==0.8.0`
+- [x] Hugging Face weights: <https://huggingface.co/byjameson/atom-zero-49m>
+- [x] ModelScope weights: <https://modelscope.cn/models/byjameson/atom-zero-49m>
+- [x] dev.to launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - [ ] GitHub release notes page / binary artifacts
-- [ ] Hugging Face weights (`HF_TOKEN`)
-- [ ] ModelScope weights (`MODELSCOPE_API_TOKEN`)
 - [ ] Hugging Face model card/weights (owner decision)
 - [ ] one external benchmark beyond the authored product set
 

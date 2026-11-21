@@ -164,10 +164,10 @@ recommended.
 - PyPI **streamft 0.8.0** published:
   `https://pypi.org/project/streamft/0.8.0/`.
 - `pyproject.toml` is **0.8.0**; the owner approved publication.
-- Hugging Face and ModelScope weight uploads are staged at
-  `dist/atom-zero-49m` but not uploaded: their tokens are missing.
+- Hugging Face and ModelScope weights published:
+  `byjameson/atom-zero-49m` on both platforms; dev.to launch article published.
 - The PyPI token used for upload was pasted in chat; the owner should revoke and
-  rotate it.
+  rotate it. The temporary Hugging Face upload token was deleted after use.
 - Open-source: anyone may host; this project does not operate a service.
 
 ## Priority gaps
