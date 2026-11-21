@@ -90,8 +90,8 @@ Existing controls:
 - Missing-source questions become reviewed knowledge gaps; a proposal creates
   a pending topic and still needs approval (`docs/KNOWLEDGE_GAPS.md`).
 - The opt-in safety filter refuses explicit harmful requests and filters output;
-  red-team filter 30/30, output 4/4, agent 30/30 (`docs/SAFETY.md`). It must be
-  enabled for any shared deployment.
+  red-team filter 48/48 (multilingual/semantic), output 4/4, agent 48/48
+  (`docs/SAFETY.md`). It must be enabled for any shared deployment.
 - A 21-task product benchmark covers tools, memory, tasks, retrieval, teacher
   review and gap detection; it is not a general benchmark. A raw-model probe
   without RAG/tools scores only **2/10** on simple general questions

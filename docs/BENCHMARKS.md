@@ -111,9 +111,9 @@ python research/redteam_safety.py \
 
 | check | result |
 |---|---|
-| harmful/benign filter cases | **30/30** |
+| harmful/benign filter cases | **48/48** |
 | output-filter cases | **4/4** |
-| agent refusal path | **30/30** |
+| agent refusal path | **48/48** |
 | product benchmark with filter | **26/26** |
 
 The filter is pattern-based and opt-in. It is a guardrail, not proof of general

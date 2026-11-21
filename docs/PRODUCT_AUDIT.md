@@ -32,8 +32,9 @@ reasoning/coding needs a larger model and much more data. Not solved.
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
 
-**Gaps:** no semantic retrieval/reranker; no multilingual model; no task due
-dates/reminders; no multi-document conflict resolution.
+**Gaps:** the reranker is lexical (coverage/title/phrase/bm25), not an
+embedding reranker; the model is English-first; no task due dates/reminders;
+no multi-document conflict resolution.
 
 ## 3. Browser UI
 
@@ -84,19 +85,23 @@ only; general capability is not improved by adapters.
 
 ## 6. Security and privacy
 
-- Opt-in input/output safety filter; red-team 30/30, output 4/4, agent 30/30.
+- Opt-in input/output safety filter v0.2 with English regex plus
+  language-agnostic lexical-semantic rules (TR/DE/ES/FR); red-team **48/48**,
+  output 4/4, agent 48/48.
+- Lexical RAG reranker: query coverage, title match, exact phrase and bm25
+  normalization; tests cover a case where raw bm25 prefers the wrong document.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
 - Apache-2.0 code/weights; data attribution in `NOTICE`.
 
-**Gaps:** pattern-based filter (not semantic); no multi-language red-team; no
-hosted auth/rate limiting because no hosted service is operated; per-source
-data-licence review still recommended.
+**Gaps:** rule-based filter (regex + lexical-semantic rules, not an ML
+moderation model); no hosted auth/rate limiting because no hosted service is
+operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **319 tests** pass locally.
+- **341 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
 - Latest feature commit verified green before the final UI changes.
 

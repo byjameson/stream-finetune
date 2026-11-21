@@ -32,7 +32,7 @@ gated LoRA update; accepted `vNNNN` versions are recorded with metrics, can be
 compared with `research/compare_adapters.py`, evaluated on a non-training
 holdout, and rolled back with `learning_loop.py activate`. The active adapter
 loads with `--adapter auto`. An opt-in `--safety-filter` refuses explicit
-harmful requests and filters output (red-team 30/30); it is off for local
+harmful requests and filters output (multilingual red-team 48/48); it is off for local
 research. Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
 `checkpoints/transformer_behavior_50m_scaled` (40k steps); the original

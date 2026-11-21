@@ -38,8 +38,9 @@ exists, not that the release is approved.
 - [x] Opt-in output/input filter for sexual content involving minors,
       self-harm, violence, hate, harassment, illegal instructions, privacy and
       malware (`docs/SAFETY.md`).
-- [x] Refusal/redirect behaviour tested on a red-team set: filter 30/30,
-      output 4/4, agent 30/30 (`research/results/redteam_safety_*.json`).
+- [x] Refusal/redirect behaviour tested on a multilingual red-team set:
+      filter 48/48, output 4/4, agent 48/48
+      (`research/results/redteam_safety_*.json`).
 - [x] User deletion path for indexed documents and session memory tested
       (`tests/test_privacy.py`, `docs/PRIVACY.md`).
 - [ ] PII detection/redaction policy reviewed.

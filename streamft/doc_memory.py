@@ -52,6 +52,44 @@ def _split_long(paragraph: str) -> list[str]:
     return out
 
 
+def _query_terms(text: str) -> set[str]:
+    words = re.findall(r"[^\W_]+", str(text).lower(), re.UNICODE)
+    return {word for word in words
+            if len(word) > 2 and word not in STOPWORDS}
+
+
+def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
+    """Lexically rerank FTS candidates by coverage, title, phrase and bm25.
+
+    This is a deterministic reranker, not an embedding model. It is intentionally
+    cheap: local search should stay fast and work without a second model.
+    """
+    terms = _query_terms(query)
+    if not terms or not hits:
+        return hits[:k]
+    phrase = " ".join(str(query or "").lower().split())
+    raw = [float(hit.get("score", 0.0)) for hit in hits]
+    # bm25 returns lower-is-better; normalize it into 0..1.
+    high, low = max(raw), min(raw)
+    span = high - low
+    scored = []
+    for index, hit in enumerate(hits):
+        chunk = str(hit.get("chunk", "")).lower()
+        title = str(hit.get("title", "")).lower()
+        words = _query_terms(f"{title} {chunk}")
+        coverage = len(terms & words) / len(terms)
+        title_hits = len(terms & _query_terms(title)) / len(terms)
+        exact = 1.0 if len(terms) >= 2 and phrase in f"{title} {chunk}" else 0.0
+        bm25 = 1.0 - ((raw[index] - low) / span) if span else 0.5
+        score = (0.55 * coverage + 0.15 * title_hits + 0.15 * exact
+                 + 0.15 * bm25)
+        item = dict(hit)
+        item["rerank_score"] = score
+        scored.append((score, index, item))
+    scored.sort(key=lambda row: (-row[0], row[1]))
+    return [item for _, _, item in scored[:k]]
+
+
 def best_snippet(query: str, chunk: str, max_chars: int = 500) -> str:
     """Select the one or two sentences that best match the query."""
     text = str(chunk or "").strip()
@@ -189,7 +227,8 @@ class DocMemory:
             "verified_at": row[8],
         } for row in rows}
 
-    def search(self, query: str, k: int = 5) -> list[dict]:
+    def search(self, query: str, k: int = 5,
+               rerank: bool = True) -> list[dict]:
         words = re.findall(r"[\wçğıöşüÇĞİÖŞÜ]+", query)
         words = [w for w in words if len(w) > 1]
         meaningful = [w for w in words if w.lower() not in STOPWORDS]
@@ -198,13 +237,14 @@ class DocMemory:
         if not words:
             return []
         match = " OR ".join(f'"{w}"' for w in words[:12])
+        candidates = max(k * 4, 10) if rerank else k
         with self._lock:
             rows = self.con.execute(
                 "SELECT chunk, source, title, bm25(docs) AS score "
                 "FROM docs WHERE docs MATCH ? ORDER BY score LIMIT ?",
-                (match, k)).fetchall()
+                (match, candidates)).fetchall()
             metas = self._meta_map({row[1] for row in rows})
-        return [{
+        hits = [{
             "chunk": row[0],
             "source": row[1],
             "title": row[2],
@@ -214,6 +254,7 @@ class DocMemory:
                                  "model": "", "verified": True, "created": "",
                                  "reviewer": "", "verified_at": ""}),
         } for row in rows]
+        return rerank_hits(query, hits, k) if rerank else hits
 
     def sources(self) -> list[dict]:
         with self._lock:
