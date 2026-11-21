@@ -62,7 +62,7 @@ harness: source-cited RAG, honest gaps, curiosity approval, local provider.
 - [x] optional provider mode
 - [x] 392 tests, green CI
 - [ ] 20–40 second screen recording/GIF of the demo
-- [x] GitHub release `v0.8.0`: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.0>
+- [x] GitHub release `v0.8.1`: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.1>
 - [x] PyPI publish `streamft==0.8.1` (broken image fix)
 - [x] Hugging Face weights: <https://huggingface.co/byjameson/atom-zero-49m>
 - [x] ModelScope weights: <https://modelscope.cn/models/byjameson/atom-zero-49m>
