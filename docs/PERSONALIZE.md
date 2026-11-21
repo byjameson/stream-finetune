@@ -30,6 +30,20 @@ python research/chat_human.py \
   --docs data/docs.db
 ```
 
+Or over HTTP:
+
+```bash
+python -m streamft.chat_server \
+  --model checkpoints/transformer_behavior_50m_long \
+  --docs data/docs.db \
+  --adapter checkpoints/adapters_50m/v0001 \
+  --port 8013
+```
+
+Document hits on `/v1/chat/completions` return the matching notes, their
+`sources`, and a `not professional advice` note; unmatched questions go to the
+model.
+
 When a question matches indexed text, the reply quotes the matching notes with
 their source and adds `not professional advice`. If nothing matches, the tiny
 model handles the open-ended reply.

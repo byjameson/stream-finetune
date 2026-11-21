@@ -198,6 +198,11 @@
   bpb / 4.069 assistant), runtime behavior and E2E all pass. Servers/runtimes
   accept `--adapter`. Targeted low-LR 100-step runs are accepted; 300 steps at
   5e-4 overfit and are rejected.
+- HTTP server exposes document memory and adapters: `--docs` and `--adapter`;
+  added `GET /v1/documents` and `POST /v1/documents/search`. Document hits in
+  `/v1/chat/completions` return sources plus a non-advice note. End-to-end:
+  health shows 49.58M params, adapter and 1 indexed chunk; grounded
+  France/Paris chat returns 200, normal hello goes to the model.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -208,7 +213,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 219 tests;
+- 221 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
