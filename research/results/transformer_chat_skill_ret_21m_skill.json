@@ -1,0 +1,194 @@
+{
+  "tag": "transformer_skill_ret_skill",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 4000,
+  "bpb": {
+    "chat": {
+      "loss": 1.974313497543335,
+      "ppl": 7.201673989523449,
+      "bpb": 0.9544150088597828,
+      "tokens": 8192,
+      "bytes": 24448,
+      "assistant": {
+        "loss": 0.31026532477592456,
+        "ppl": 1.3637869358062744,
+        "tokens": 5670
+      }
+    },
+    "stories": {
+      "loss": 1.974313497543335,
+      "ppl": 7.201673989523449,
+      "bpb": 0.9544150088597828,
+      "tokens": 8192,
+      "bytes": 24448,
+      "assistant": {
+        "loss": 0.31026532477592456,
+        "ppl": 1.3637869358062744,
+        "tokens": 5670
+      }
+    },
+    "wiki": {
+      "loss": 5.698282778263092,
+      "ppl": 298.3546197751805,
+      "bpb": 2.321457574387299,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.698282778263092,
+        "ppl": 298.3546142578125,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 1.974313497543335,
+      "ppl": 7.201673989523449,
+      "bpb": 0.9544150088597828,
+      "tokens": 8192,
+      "bytes": 24448,
+      "assistant": {
+        "loss": 0.31026532477592456,
+        "ppl": 1.3637869358062744,
+        "tokens": 5670
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Here is the list. What are the main functions of a sentence? 1. **Increased learning** (Smasured the original text) 2. **Histributed**: The original meaning \"slive\" is a way of providing clear and concise language to guide the beverage of various aspects of a particular issue at a potential argument. 3. **Eucl",
+      "chars": 311,
+      "alpha": 0.7621,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you, Alex. I will remember your name.",
+      "chars": 50,
+      "alpha": 0.76,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you, Alex. I will remember your name.",
+      "chars": 50,
+      "alpha": 0.76,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find the time from day to day, let's go through the process. The snail climbs 3 feet and slips back 2 feet each day as before. How many days will it take for the snail to reach the top of the well. In this case, it takes 18 days to climb 3 feet to reach reach the top. However, this problem might be a problem used to solve it in",
+      "chars": 332,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0143,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To determine which of the temperature we should look at. The weather is around 4.5 ammer and the weather is about 99.",
+      "chars": 117,
+      "alpha": 0.7607,
+      "turkish_chars": 0,
+      "repeat3": 0.0476,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious fox who lived near the forest. One day Hana found a red ball. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 168,
+      "alpha": 0.7857,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious turtle who lived near the garden. One day Hana found a blue kite. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 172,
+      "alpha": 0.7907,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 2: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 1: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

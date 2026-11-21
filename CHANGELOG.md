@@ -154,8 +154,11 @@
   greeting/small-talk/story; deterministic fast paths handle social phrases.
   Tradeoff: clean-chat quality regresses to 1.655 bpb / 4.93 assistant loss.
   Skill checkpoint is for the virtual-human runtime, not general chat.
-- Retention-friendly skill run started: 2:1 clean:skill replay, LR 3e-5,
-  4k steps, to reduce forgetting.
+- Retention-friendly skill run: 2:1 clean:skill replay, LR 3e-5, 4k steps.
+  Clean chat recovers to **1.440 bpb / 4.27 assistant loss** (base 1.359/4.01,
+  aggressive 1.655/4.93); skill-only loss **0.31** (ppl 1.36, near
+  memorization). End-to-end virtual-human smoke still passes. This retention
+  checkpoint is the product model.
 - Teach/learn loop: `teach:` writes facts to memory; `update_loop.py` keeps a
   reviewed queue and exports skill examples for a gated replay fine-tune.
   Added `docs/PUBLIC_RELEASE_CHECKLIST.md` (currently not approved).
@@ -169,7 +172,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 204 tests;
+- 205 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

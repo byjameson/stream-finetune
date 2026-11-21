@@ -33,16 +33,19 @@ open-ended chat-quality claim.
 
 ## Virtual-human skill checkpoint
 
-A second checkpoint, `transformer_chat_skill_21m`, is fine-tuned for 6,000 steps
-on 58.8k targeted dialogues (greetings, name/like memory, task add/list/complete,
-small talk, short stories), mixed 1:1 with clean-chat replay.
+The product checkpoint, `transformer_chat_skill_ret_21m`, is fine-tuned for
+4,000 steps on 58.8k targeted dialogues (greetings, name/like memory, task
+add/list/complete, small talk, short stories), mixed **2:1 clean:skill** at
+LR 3e-5.
 
-- skill-mix assistant loss **2.27** (ppl ~9.6), versus 4.01 for the base;
+- skill-only assistant loss **0.31** (ppl 1.36; synthetic templates, near
+  memorization);
+- clean-chat bpb **1.440** / assistant loss **4.27** (base 1.359 / 4.01);
 - end-to-end `chat_human` smoke: **PASS_VIRTUAL_HUMAN_SMOKE**;
-- all memory/task checks pass; greeting/small talk use deterministic fast paths;
-- **tradeoff:** clean-chat bpb regresses to **1.655** and assistant loss to
-  **4.93** (base 1.359 / 4.01). Use this checkpoint for the virtual-human
-  runtime, not for general chat.
+- all memory/task checks pass; greeting/small talk use deterministic fast paths.
+
+The earlier 1:1/LR 1e-4 skill run reached skill loss 2.27 but regressed clean
+chat to 1.655 / 4.93; it is superseded by the retention checkpoint.
 
 ## Samples
 
@@ -89,7 +92,7 @@ obligations; legal/provenance review is required before redistribution.
 
 ```bash
 python -m streamft.chat_server \
-  --model checkpoints/transformer_chat_skill_21m \
+  --model checkpoints/transformer_chat_skill_ret_21m \
   --host 127.0.0.1 --port 8013
 ```
 

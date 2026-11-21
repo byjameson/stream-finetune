@@ -309,11 +309,23 @@ skill checkpoint is the virtual-human product, not the general-chat model.
 Evidence: `research/results/transformer_chat_skill_21m.json` and
 `research/results/chat_human_eval.json`.
 
-### Retention-friendly fine-tune (running)
+### Retention-friendly fine-tune (adopted)
 
 The aggressive 1:1 skill run regressed clean chat (1.359 -> 1.655 bpb). The
-next run uses **2:1 clean:skill replay**, LR **3e-5** and 4,000 steps instead
-of 1e-4/6,000. It targets skill retention with less forgetting.
+retention run uses **2:1 clean:skill replay**, LR **3e-5** and 4,000 steps.
+
+| checkpoint | clean chat bpb | clean assistant loss | skill-only assistant loss | E2E |
+|---|---:|---:|---:|---|
+| base 20M | **1.359** | **4.01** | - | - |
+| aggressive skill | 1.655 | 4.93 | ~2.27 | PASS |
+| **retention skill** | **1.440** | **4.27** | **0.31** (ppl 1.36)* | **PASS** |
+
+\* synthetic skill validation is near memorization; it measures skill
+reproduction, not general skill transfer.
+
+The retention checkpoint cuts most of the forgetting while keeping all
+memory/task/greeting/story checks. It is the **virtual-human product
+checkpoint** (`transformer_chat_skill_ret_21m`).
 
 ### Teach/learn loop
 

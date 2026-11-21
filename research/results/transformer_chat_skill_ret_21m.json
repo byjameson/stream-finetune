@@ -1,0 +1,299 @@
+{
+  "tag": "transformer_skill_ret_21m",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 4000,
+  "bpb": {
+    "chat": {
+      "loss": 4.276469111442566,
+      "ppl": 71.98581685184844,
+      "bpb": 1.4399343950548726,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.266243316646234,
+        "ppl": 71.25346374511719,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.085719496011734,
+      "ppl": 59.48472137786433,
+      "bpb": 1.5154665887049206,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.085719496011734,
+        "ppl": 59.48472595214844,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.698282778263092,
+      "ppl": 298.3546197751805,
+      "bpb": 2.321457574387299,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.698282778263092,
+        "ppl": 298.3546142578125,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 4.160584002733231,
+      "ppl": 64.10895147247538,
+      "bpb": 1.4266015554684623,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 4.0918749986753085,
+        "ppl": 59.852012634277344,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Here is the list. What are the main functions of a sentence? 1. **Increased learning** (Smasured the original text) 2. **Histributed**: The original meaning \"slive\" is a way of providing clear and concise language to guide the beverage of various aspects of a particular issue at a potential argument. 3. **Eucl",
+      "chars": 311,
+      "alpha": 0.7621,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you, Alex. I will remember your name.",
+      "chars": 50,
+      "alpha": 0.76,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you, Alex. I will remember your name.",
+      "chars": 50,
+      "alpha": 0.76,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find the time from day to day, let's go through the process. The snail climbs 3 feet and slips back 2 feet each day as before. How many days will it take for the snail to reach the top of the well. In this case, it takes 18 days to climb 3 feet to reach reach the top. However, this problem might be a problem used to solve it in",
+      "chars": 332,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0143,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To determine which of the temperature we should look at. The weather is around 4.5 ammer and the weather is about 99.",
+      "chars": 117,
+      "alpha": 0.7607,
+      "turkish_chars": 0,
+      "repeat3": 0.0476,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious fox who lived near the forest. One day Hana found a red ball. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 168,
+      "alpha": 0.7857,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious turtle who lived near the garden. One day Hana found a blue kite. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 172,
+      "alpha": 0.7907,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 2: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 1: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "history": [
+    {
+      "event": "eval",
+      "step": 500,
+      "train_loss": 0.30168697237968445,
+      "step_s": 0.08761846719984896,
+      "lr": 2.9305241966286463e-05,
+      "bpb": 1.4114825264411857,
+      "assistant": {
+        "loss": 3.2144178273504367,
+        "ppl": 24.8887996673584,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1000,
+      "train_loss": 0.24305148422718048,
+      "step_s": 0.08749702239991165,
+      "lr": 2.660489510030987e-05,
+      "bpb": 1.4057411021260398,
+      "assistant": {
+        "loss": 3.250406924259986,
+        "ppl": 25.800838470458984,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1500,
+      "train_loss": 0.7210596203804016,
+      "step_s": 0.08669248119997792,
+      "lr": 2.2287349578941232e-05,
+      "bpb": 1.4097208709567475,
+      "assistant": {
+        "loss": 3.281459661421184,
+        "ppl": 26.61458969116211,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2000,
+      "train_loss": 0.35056060552597046,
+      "step_s": 0.0868927873999346,
+      "lr": 1.7043590191477107e-05,
+      "bpb": 1.4250369652675656,
+      "assistant": {
+        "loss": 3.300684290299572,
+        "ppl": 27.131196975708008,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2500,
+      "train_loss": 0.3175475597381592,
+      "step_s": 0.08867883380013518,
+      "lr": 1.171283402492577e-05,
+      "bpb": 1.4314352958215626,
+      "assistant": {
+        "loss": 3.3161952999621076,
+        "ppl": 27.555309295654297,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3000,
+      "train_loss": 0.42172127962112427,
+      "step_s": 0.08515770059986971,
+      "lr": 7.148221227620409e-06,
+      "bpb": 1.424287837711058,
+      "assistant": {
+        "loss": 3.3141562033311787,
+        "ppl": 27.499183654785156,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3500,
+      "train_loss": 0.8112939596176147,
+      "step_s": 0.08619380660005845,
+      "lr": 4.080277510605873e-06,
+      "bpb": 1.4258337452124334,
+      "assistant": {
+        "loss": 3.3156758132912802,
+        "ppl": 27.540998458862305,
+        "tokens": 3505
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4000,
+      "train_loss": 0.5489391088485718,
+      "step_s": 0.08680446499981917,
+      "lr": 3e-06,
+      "bpb": 1.424757982835834,
+      "assistant": {
+        "loss": 3.3158096727052873,
+        "ppl": 27.544689178466797,
+        "tokens": 3505
+      }
+    }
+  ]
+}
