@@ -130,7 +130,7 @@ The product is a local daily assistant, not a story demo:
 | layer | what it does |
 |---|---|
 | runtime fast paths | tasks, name/likes, time, simple arithmetic, exact formats |
-| document memory (SQLite FTS5) | your notes; returns quoted notes with `source` |
+| document memory (SQLite FTS5) | your notes; HTTP paste/upload with `source` + sha256 |
 | Wikipedia research | user-triggered lookup; stores extracts with URLs |
 | LoRA adapter | optional per-user style/skill, gated before acceptance |
 | 49.2M model | greetings and short open-ended wording |
@@ -175,6 +175,8 @@ Endpoints:
 | `GET /health` | model, params, step, adapter, document stats |
 | `GET /v1/models` | model id |
 | `GET /v1/documents` | indexed sources |
+| `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
+| `POST /v1/documents/upload?source=...&title=...` | raw UTF-8 text body; same limits as JSON |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; fetches Wikipedia extracts with sources |
@@ -190,12 +192,43 @@ commands, and returned the codename note with its source. `/v1/teach` stores a
 fact in the index and queues a reviewed skill example. The recheck adapter
 (`checkpoints/adapters_recheck/v0001`) also loaded and served on port 8017.
 
+HTTP document ingestion was verified on port 8023 with the real 50M model:
+JSON ingest returned `200` with source/title/chunks/sha256, search and
+`/v1/chat/completions` returned the document text with `sources`, raw UTF-8
+upload returned `200`, missing source returned `400`, and a 1,000,001-byte
+document returned `413`. In the browser, pasted text and a selected `.txt` file
+were both indexed and retrieved with their source.
+
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1
 ```
+
+### Bring your own documents
+
+Paste text over JSON:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/documents \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"notes.txt","title":"Notes","text":"The launch code is ORANGE-42."}'
+```
+
+Or upload a UTF-8 text file as the raw body:
+
+```bash
+curl -X POST "http://127.0.0.1:8013/v1/documents/upload?source=notes.txt&title=Notes" \
+  -H 'Content-Type: text/plain' \
+  --data-binary @notes.txt
+```
+
+Limits: UTF-8 text only, **1,000,000 bytes** per document and **2 MB** per
+request. `source` is required; re-adding the same `source` replaces its chunks.
+The response contains `chunks`, `bytes` and `sha256`; `GET /v1/documents` lists
+the indexed source/title/chunk counts. The browser page has the same paste and
+file-picker flow. Documents go to SQLite FTS5, never to model weights.
 
 ### Web research
 

@@ -1,5 +1,7 @@
 import json
 import threading
+import urllib.error
+import urllib.parse
 import urllib.request
 from http.server import ThreadingHTTPServer
 
@@ -17,9 +19,19 @@ def _post(url, payload):
         return json.loads(response.read().decode("utf-8"))
 
 
+def _post_raw(url, body):
+    req = urllib.request.Request(
+        url, data=body.encode("utf-8"),
+        headers={"Content-Type": "text/plain"}, method="POST")
+    with urllib.request.urlopen(req, timeout=10) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
 def test_demo_page_uses_daily_agent_endpoint():
     page = chat_server.PAGE.lower()
     assert "/v1/agent/chat" in page
+    assert "/v1/documents" in page
+    assert "add a document" in page
     assert "teach a fact" in page
     assert "short story" not in page
     assert "/generate" not in page
@@ -36,6 +48,20 @@ def test_doc_answer_returns_sources(tmp_path):
     assert "Paris" in answer["text"]
     assert answer["sources"][0]["source"] == "law.txt"
     assert chat_server.doc_answer("nothing here", docs) is None
+    docs.close()
+
+
+def test_ingest_document_validates_source_and_text(tmp_path):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    with pytest.raises(ValueError):
+        chat_server.ingest_document(docs, "", "some text")
+    with pytest.raises(ValueError):
+        chat_server.ingest_document(docs, "bad\nsource", "some text")
+    with pytest.raises(ValueError):
+        chat_server.ingest_document(docs, "note.txt", "   ")
     docs.close()
 
 
@@ -95,6 +121,54 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         assert queued["skill_queued"] is True
         queue = (tmp_path / "queue.jsonl").read_text(encoding="utf-8")
         assert "good morning" in queue
+        ingested = _post(base + "/v1/documents", {
+            "source": "warranty.txt", "title": "Warranty",
+            "text": "The warranty code is W-7781. Keep the receipt.",
+        })
+        assert ingested["chunks"] == 1
+        assert ingested["title"] == "Warranty"
+        assert len(ingested["sha256"]) == 64
+        assert "W-7781" in _post(
+            base + "/v1/documents/search",
+            {"query": "warranty code"})["data"][0]["chunk"]
+        warranty_chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the warranty code?"}],
+            "max_tokens": 20,
+        })
+        assert "W-7781" in warranty_chat["choices"][0]["message"]["content"]
+        assert warranty_chat["sources"][0]["source"] == "warranty.txt"
+        replaced = _post(base + "/v1/documents", {
+            "source": "warranty.txt",
+            "text": "The warranty code is W-9900.",
+        })
+        assert replaced["chunks"] == 1
+        assert _post(base + "/v1/documents/search",
+                     {"query": "7781"})["data"] == []
+        assert "W-9900" in _post(
+            base + "/v1/documents/search",
+            {"query": "warranty"})["data"][0]["chunk"]
+        raw = _post_raw(
+            base + "/v1/documents/upload?" + urllib.parse.urlencode({
+                "source": "raw.txt", "title": "Raw upload"}),
+            "The raw upload code is R-42.")
+        assert raw["source"] == "raw.txt"
+        assert raw["chunks"] == 1
+        assert "R-42" in _post(
+            base + "/v1/documents/search",
+            {"query": "raw upload"})["data"][0]["chunk"]
+        old_max = chat_server.MAX_DOC_BYTES
+        chat_server.MAX_DOC_BYTES = 5
+        try:
+            with pytest.raises(urllib.error.HTTPError) as too_big:
+                _post(base + "/v1/documents",
+                      {"source": "big.txt", "text": "123456"})
+            assert too_big.value.code == 413
+        finally:
+            chat_server.MAX_DOC_BYTES = old_max
+        with pytest.raises(urllib.error.HTTPError) as missing_source:
+            _post(base + "/v1/documents", {"text": "no source"})
+        assert missing_source.value.code == 400
         learned = _post(base + "/v1/learn_url",
                         {"url": "https://example.com/page"})
         assert learned["title"] == "T"
