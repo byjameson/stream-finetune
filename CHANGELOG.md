@@ -310,7 +310,9 @@
   vs base 1.503, assistant 4.050 vs 4.215; product 21/21, behavior 16/16, raw
   2/10. At 20k: old-valid bpb **1.3766** vs 1.3719 (+0.34%), assistant
   **3.9176** vs 4.0502 (-3.3%), scaled-valid chat bpb **1.4283** vs 1.5032;
-  product 21/21, behavior 16/16, raw 1/10. The 20k checkpoint is promoted to
+  product 21/21, behavior 16/16, raw 1/10. At 25k: old-valid bpb **1.3596**
+  (-0.9%), assistant **3.8722** (-4.4%), scaled-valid chat **1.4189**;
+  product 21/21, behavior 16/16, raw 1/10. The 25k checkpoint is promoted to
   `checkpoints/transformer_behavior_50m_scaled`; the 60k run continues and the
   baseline checkpoint is retained.
 - Ollama teacher: Ollama 0.40.16 installed from the official setup (SHA-256
