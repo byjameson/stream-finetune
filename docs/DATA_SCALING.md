@@ -102,6 +102,11 @@ Otherwise keep the product checkpoint and publish the negative result.
 - Replay mix: scaled chat + behavior 4x + skill 3x, 214,805,319 tokens.
 - Training: stopped at **40k** because 38k/40k validation plateaued. The 40k
   checkpoint is promoted as `checkpoints/transformer_behavior_50m_scaled`.
+- Resume attempt: from 40k with LR 2e-5 for 8k steps. Best resume checkpoint
+  (40k+4k) scored scaled-valid **1.3800 / 3.8497** vs 40k **1.3815 / 3.8551**;
+  product 21/21, behavior 16/16, safety 26/26. The gain is within noise and
+  later resume steps were worse, so **40k remains the product checkpoint**.
+  The 44k candidate is preserved as `checkpoints/scaled_resume_step4000`.
 - **Clean comparison:** use the new `chat_en_scaled_valid` shard. The old
   `chat_en_clean_valid` shard is not a clean holdout for this run because the
   larger corpus was regenerated from the same source datasets; do not use its

@@ -14,10 +14,12 @@ release approval. Last updated 2026-11-21.
 | product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k*.json` |
 | behavior | 16/16 | `behavior_scaled_40k.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
-| training | stopped at 40k; 38k/40k plateau | `data/scaled_training.log` |
+| training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
+| resume gate | 44k candidate 1.3800/3.8497 vs 40k 1.3815/3.8551; product 21/21, behavior 16/16, safety 26/26 | `eval_resume_44k.json`, `assistant_benchmark_resume_44k*.json` |
 
 **Gap:** raw 50M knowledge is still weak. Facts belong in RAG; general
-reasoning/coding needs a larger model and much more data. Not solved.
+reasoning/coding needs a larger model and much more data. Not solved. The
+lower-LR resume did not produce a material improvement over 40k.
 
 ## 2. Runtime and agent
 

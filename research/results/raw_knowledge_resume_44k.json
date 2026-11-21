@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T22:33:12",
+  "model": "checkpoints/scaled_resume_step4000",
+  "adapter": "",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of the city of Croatia is Croatia, which is the capital of the city of Croatia. It is the capital of the city of Croatia, which is the capital of the city of Croatia. Croatia is the capital of the",
+      "correct": false,
+      "alpha": 0.784,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "To find 2 + 2, we can use the fact that 2 + 2 = 2 + 2 = 2. We can express 2 as 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2",
+      "correct": false,
+      "alpha": 0.257,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the 3-digit numbers in a row, we can use the concept of combinations. Since we have a total of 8 numbers, we can divide the total number of possible arrangements by the total number of arrangements. For the first position, we have 8! / (",
+      "correct": false,
+      "alpha": 0.767,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world. It is the largest planet in the world.",
+      "correct": false,
+      "alpha": 0.796,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "I'm sorry, I don't have the ability to write a story. However, I can provide you with the information you are referring to. The story of the main character, a young woman who is a young woman named Kim, is a young woman who is a young woman who is a young woman who",
+      "correct": false,
+      "alpha": 0.77,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is the water that is not water, and it is the water that is not water. It is the water that is not water that is not water.",
+      "correct": false,
+      "alpha": 0.767,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a type of data visualization that displays the relationship between two or more variables. It is a type of data visualization that displays the relationship between two variables, such as age, gender, and gender. HTTP is used to display the relationship between two variables, such as",
+      "correct": false,
+      "alpha": 0.818,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "A primary color is red, yellow, and yellow.",
+      "correct": true,
+      "alpha": 0.767,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is the speed of light in a given area of the Earth's atmosphere. It is the speed of light in the Earth's atmosphere, and it is the speed of light in the atmosphere.",
+      "correct": false,
+      "alpha": 0.776,
+      "stop": "end",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}
