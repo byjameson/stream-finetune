@@ -1,0 +1,194 @@
+{
+  "tag": "transformer_50m_sft_banned",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 3.99202698469162,
+      "ppl": 54.16456891840976,
+      "bpb": 1.3441595885409345,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 3.9656782047639116,
+        "ppl": 52.756038665771484,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.025211215019226,
+      "ppl": 55.99213391241838,
+      "bpb": 1.4930229828054884,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.025211215019226,
+        "ppl": 55.99214172363281,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.420473277568817,
+      "ppl": 225.98605132548846,
+      "bpb": 2.2082790968144366,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.420473277568817,
+        "ppl": 225.9860076904297,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.9639173448085785,
+      "ppl": 52.66322240297987,
+      "bpb": 1.3591675221885717,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 3.891651337779351,
+        "ppl": 48.99172592163086,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "The air! It's like what the planet is called. The air and the air is shuttle. A low air airs us into the Earth. As the sun rises, this water vapor is dense and it's not uncommon for people to live alone. But the air is gonna be dark.",
+      "chars": 233,
+      "alpha": 0.7554,
+      "turkish_chars": 0,
+      "repeat3": 0.0204,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "To find the number of digits of the number 5, we need to determine the total number of digits that are either in this number. There are 20, 15, and 200. The number of digits in the number 2 is 5, 8, 10. We can solve this problem by considering it as a sum of 9 and a multiple of 9. The number has two digits that are not a multiple",
+      "chars": 331,
+      "alpha": 0.716,
+      "turkish_chars": 0,
+      "repeat3": 0.058,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "A man named Ben and Rose were born in the same countryside. He was walking in the park, where his parents decided to do a long time with the people involved. They had a long time of working at home. Ben was sitting in the long distance from home and she tried to move to the other person. The other person had lost his age and didn't want to be living in",
+      "chars": 354,
+      "alpha": 0.7825,
+      "turkish_chars": 0,
+      "repeat3": 0.0282,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "To find the number of people who are the same people, we need to determine the total amount of people that would be in this dataset. Let's calculate the total population and then add the total amount. The total population is 1 - 8 = 10 * 40 = 350 people. Now, we need to add the total population to make the total amount more people and we need to divide these by",
+      "chars": 363,
+      "alpha": 0.7493,
+      "turkish_chars": 0,
+      "repeat3": 0.1029,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you.",
+      "chars": 17,
+      "alpha": 0.7647,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "To find out the number of ways to arrange a of a sequence of events of events in a sequence of events, we can start by calculating the number of events and then subtract them from 1 to 1.",
+      "chars": 187,
+      "alpha": 0.7754,
+      "turkish_chars": 0,
+      "repeat3": 0.0811,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find the average temperature of a trip, we need to use the average temperature: 88, 165.1°F (44°C) = 36.2°F for this day and is between 68°C (78.3°C) and 2.5°F (6.1°C).",
+      "chars": 171,
+      "alpha": 0.5731,
+      "turkish_chars": 0,
+      "repeat3": 0.025,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find out how many hours people are going to be at an unprecedented rate of 8.5% of those who're working at an under-demand to a unprecedented rate for all employees in an under-sourced city.",
+      "chars": 193,
+      "alpha": 0.7824,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "The man spent on a very long train by his grandfather. He was always on the edge of the forest. He had a new life. His old friend's mother and her grandfather was a little girl. She liked it all around her. One day, the man saw an incredible dog that he was in the garden. He was a little boy with a good time, so he",
+      "chars": 316,
+      "alpha": 0.7627,
+      "turkish_chars": 0,
+      "repeat3": 0.0152,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "To find the number of people who each person is a woman and their name is Jack Harris. The number of people who each person is a woman is a woman.",
+      "chars": 146,
+      "alpha": 0.7808,
+      "turkish_chars": 0,
+      "repeat3": 0.3103,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Bena and Ben are sizing the following text. Ben: - Sentence 1: - Sentence 2: - Sentence 3: \"There will be the first person.\" - Sentence 3: \"Here, the present is a strong argument, but \"All was the first person.\" - Sentence 4: Sentence 2: \"Sent",
+      "chars": 243,
+      "alpha": 0.6955,
+      "turkish_chars": 0,
+      "repeat3": 0.0513,
+      "stop": "max",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

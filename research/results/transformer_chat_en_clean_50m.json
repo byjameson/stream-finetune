@@ -1,0 +1,507 @@
+{
+  "tag": "transformer_50m_sft",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 12000,
+  "bpb": {
+    "chat": {
+      "loss": 3.99202698469162,
+      "ppl": 54.16456891840976,
+      "bpb": 1.3441595885409345,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 3.9656782047639116,
+        "ppl": 52.756038665771484,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.025211215019226,
+      "ppl": 55.99213391241838,
+      "bpb": 1.4930229828054884,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.025211215019226,
+        "ppl": 55.99214172363281,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.420473277568817,
+      "ppl": 225.98605132548846,
+      "bpb": 2.2082790968144366,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.420473277568817,
+        "ppl": 225.9860076904297,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.9639173448085785,
+      "ppl": 52.66322240297987,
+      "bpb": 1.3591675221885717,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 3.891651337779351,
+        "ppl": 48.99172592163086,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "The air! It's like what the planet is called. The air and the air is shuttle. A low air airs us into the Earth. As the sun rises, this water vapor is dense and it's not uncommon for people to live alone. But the air is gonna be dark.",
+      "chars": 233,
+      "alpha": 0.7554,
+      "turkish_chars": 0,
+      "repeat3": 0.0204,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "To find the number of digits of the number 5, we need to determine the total number of digits that are either in this number. There are 20, 15, and 200. The number of digits in the number 2 is 5, 8, 10. We can solve this problem by considering it as a sum of 9 and a multiple of 9. The number has two digits that are not a multiple",
+      "chars": 331,
+      "alpha": 0.716,
+      "turkish_chars": 0,
+      "repeat3": 0.058,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "A man named Ben and Rose were born in the same countryside. He was walking in the park, where his parents decided to do a long time with the people involved. They had a long time of working at home. Ben was sitting in the long distance from home and she tried to move to the other person. The other person had lost his age and didn't want to be living in",
+      "chars": 354,
+      "alpha": 0.7825,
+      "turkish_chars": 0,
+      "repeat3": 0.0282,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "To find the number of people who are the same people, we need to determine the total amount of people that would be in this dataset. Let's calculate the total population and then add the total amount. The total population is 1 - 8 = 10 * 40 = 350 people. Now, we need to add the total population to make the total amount more people and we need to divide these by",
+      "chars": 363,
+      "alpha": 0.7493,
+      "turkish_chars": 0,
+      "repeat3": 0.1029,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Nice to meet you.",
+      "chars": 17,
+      "alpha": 0.7647,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "To find out the number of ways to arrange a of a sequence of events of events in a sequence of events, we can start by calculating the number of events and then subtract them from 1 to 1.",
+      "chars": 187,
+      "alpha": 0.7754,
+      "turkish_chars": 0,
+      "repeat3": 0.0811,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find the average temperature of a trip, we need to use the average temperature: 88, 165.1°F (44°C) = 36.2°F for this day and is between 68°C (78.3°C) and 2.5°F (6.1°C).",
+      "chars": 171,
+      "alpha": 0.5731,
+      "turkish_chars": 0,
+      "repeat3": 0.025,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "To find out how many hours people are going to be at an unprecedented rate of 8.5% of those who're working at an under-demand to a unprecedented rate for all employees in an under-sourced city.",
+      "chars": 193,
+      "alpha": 0.7824,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "The man spent on a very long train by his grandfather. He was always on the edge of the forest. He had a new life. His old friend's mother and her grandfather was a little girl. She liked it all around her. One day, the man saw an incredible dog that he was in the garden. He was a little boy with a good time, so he",
+      "chars": 316,
+      "alpha": 0.7627,
+      "turkish_chars": 0,
+      "repeat3": 0.0152,
+      "stop": "max",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "To find the number of people who each person is a woman and their name is Jack Harris. The number of people who each person is a woman is a woman.",
+      "chars": 146,
+      "alpha": 0.7808,
+      "turkish_chars": 0,
+      "repeat3": 0.3103,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Bena and Ben are sizing the following text. Ben: - Sentence 1: - Sentence 2: - Sentence 3: \"There will be the first person.\" - Sentence 3: \"Here, the present is a strong argument, but \"All was the first person.\" - Sentence 4: Sentence 2: \"Sent",
+      "chars": 243,
+      "alpha": 0.6955,
+      "turkish_chars": 0,
+      "repeat3": 0.0513,
+      "stop": "max",
+      "tag_leak": 0
+    }
+  ],
+  "history": [
+    {
+      "event": "eval",
+      "step": 500,
+      "train_loss": 5.567572593688965,
+      "step_s": 0.15573621500004084,
+      "lr": 0.0002995696209491512,
+      "bpb": 1.9821635917417928,
+      "assistant": {
+        "loss": 5.860172425684907,
+        "ppl": 350.7845764160156,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1000,
+      "train_loss": 4.853145599365234,
+      "step_s": 0.13946061079995706,
+      "lr": 0.000296949457625412,
+      "bpb": 1.8162403917881484,
+      "assistant": {
+        "loss": 5.366041072280952,
+        "ppl": 214.01394653320312,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1500,
+      "train_loss": 4.988236904144287,
+      "step_s": 0.1384096485998016,
+      "lr": 0.00029199453600058946,
+      "bpb": 1.726457564297458,
+      "assistant": {
+        "loss": 5.086942937876612,
+        "ppl": 161.89422607421875,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2000,
+      "train_loss": 4.101135730743408,
+      "step_s": 0.1380875215998385,
+      "lr": 0.0002847925301326372,
+      "bpb": 1.6551125252994725,
+      "assistant": {
+        "loss": 4.859573706383128,
+        "ppl": 128.96922302246094,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2500,
+      "train_loss": 3.896550178527832,
+      "step_s": 0.1385587975999806,
+      "lr": 0.0002754708747476028,
+      "bpb": 1.594472779789196,
+      "assistant": {
+        "loss": 4.672667020104925,
+        "ppl": 106.9826889038086,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3000,
+      "train_loss": 3.8199944496154785,
+      "step_s": 0.13820867759990507,
+      "lr": 0.00026419451036651406,
+      "bpb": 1.5518456648254726,
+      "assistant": {
+        "loss": 4.543674417675343,
+        "ppl": 94.03569793701172,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3500,
+      "train_loss": 3.998410940170288,
+      "step_s": 0.1379161863999907,
+      "lr": 0.0002511629647920507,
+      "bpb": 1.5151335607897525,
+      "assistant": {
+        "loss": 4.4315071619145,
+        "ppl": 84.0580062866211,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4000,
+      "train_loss": 3.6440560817718506,
+      "step_s": 0.13868922480009496,
+      "lr": 0.00023660682259616522,
+      "bpb": 1.4878906614383687,
+      "assistant": {
+        "loss": 4.3464491976750805,
+        "ppl": 77.203857421875,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4500,
+      "train_loss": 3.5410611629486084,
+      "step_s": 0.1400763892000541,
+      "lr": 0.00022078364507873105,
+      "bpb": 1.4716406465039022,
+      "assistant": {
+        "loss": 4.30202631244745,
+        "ppl": 73.84928131103516,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5000,
+      "train_loss": 3.4517273902893066,
+      "step_s": 0.15596956819994376,
+      "lr": 0.00020397341289084882,
+      "bpb": 1.4410083191371026,
+      "assistant": {
+        "loss": 4.20459832845782,
+        "ppl": 66.99369049072266,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5500,
+      "train_loss": 3.409519672393799,
+      "step_s": 0.15506700240005739,
+      "lr": 0.00018647357196257473,
+      "bpb": 1.432509750124004,
+      "assistant": {
+        "loss": 4.171030600509302,
+        "ppl": 64.78218078613281,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 6000,
+      "train_loss": 3.1387510299682617,
+      "step_s": 0.15011685619992204,
+      "lr": 0.0001685937703940996,
+      "bpb": 1.4126067280881858,
+      "assistant": {
+        "loss": 4.121952655604067,
+        "ppl": 61.67955780029297,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 6500,
+      "train_loss": 3.4221129417419434,
+      "step_s": 0.15179333260003477,
+      "lr": 0.0001506503794376057,
+      "bpb": 1.39936969840251,
+      "assistant": {
+        "loss": 4.075238215014539,
+        "ppl": 58.864501953125,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 7000,
+      "train_loss": 3.18204665184021,
+      "step_s": 0.15326226900005713,
+      "lr": 0.0001329608955173995,
+      "bpb": 1.387064580781059,
+      "assistant": {
+        "loss": 4.038347013328107,
+        "ppl": 56.73250198364258,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 7500,
+      "train_loss": 3.160646915435791,
+      "step_s": 0.1548092370000668,
+      "lr": 0.000115838322340869,
+      "bpb": 1.3775972501429212,
+      "assistant": {
+        "loss": 4.010278128722323,
+        "ppl": 55.16221618652344,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 8000,
+      "train_loss": 3.0186843872070312,
+      "step_s": 0.15380302300001494,
+      "lr": 9.958563250509224e-05,
+      "bpb": 1.3684517443474378,
+      "assistant": {
+        "loss": 3.978574710041953,
+        "ppl": 53.44081497192383,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 8500,
+      "train_loss": 2.605347156524658,
+      "step_s": 0.15200533620011994,
+      "lr": 8.44904065973023e-05,
+      "bpb": 1.3529154804520738,
+      "assistant": {
+        "loss": 3.926851383773735,
+        "ppl": 50.7469367980957,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 9000,
+      "train_loss": 3.040233612060547,
+      "step_s": 0.15268629699992015,
+      "lr": 7.081974464677707e-05,
+      "bpb": 1.354423005305124,
+      "assistant": {
+        "loss": 3.939384802574534,
+        "ppl": 51.3869743347168,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 9500,
+      "train_loss": 2.857023239135742,
+      "step_s": 0.15488680239999666,
+      "lr": 5.881553996664327e-05,
+      "bpb": 1.3504899235026335,
+      "assistant": {
+        "loss": 3.9175538546301323,
+        "ppl": 50.27730941772461,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 10000,
+      "train_loss": 2.6242828369140625,
+      "step_s": 0.15542238560016267,
+      "lr": 4.869019901183617e-05,
+      "bpb": 1.3476446904427133,
+      "assistant": {
+        "loss": 3.9162780009043057,
+        "ppl": 50.21319580078125,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 10500,
+      "train_loss": 2.997507095336914,
+      "step_s": 0.15889078240003437,
+      "lr": 4.0622882987494243e-05,
+      "bpb": 1.343955264710956,
+      "assistant": {
+        "loss": 3.897728684771756,
+        "ppl": 49.290367126464844,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 11000,
+      "train_loss": 2.4789977073669434,
+      "step_s": 0.15728738759993577,
+      "lr": 3.475633771004035e-05,
+      "bpb": 1.3425491788719295,
+      "assistant": {
+        "loss": 3.8949287311913188,
+        "ppl": 49.152549743652344,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 11500,
+      "train_loss": 2.9342856407165527,
+      "step_s": 0.15320942740002647,
+      "lr": 3.119436781445904e-05,
+      "bpb": 1.341867837808262,
+      "assistant": {
+        "loss": 3.8947938653920264,
+        "ppl": 49.14591598510742,
+        "tokens": 3568
+      }
+    },
+    {
+      "event": "eval",
+      "step": 12000,
+      "train_loss": 2.497225046157837,
+      "step_s": 0.15300197540014052,
+      "lr": 2.9999999999999997e-05,
+      "bpb": 1.3412698066165152,
+      "assistant": {
+        "loss": 3.8947177425093713,
+        "ppl": 49.14217758178711,
+        "tokens": 3568
+      }
+    }
+  ]
+}
