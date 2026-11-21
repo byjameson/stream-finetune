@@ -24,10 +24,11 @@ user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
 local Ollama/OpenAI-compatible provider can answer on request or synthesize
 approved research topics. Teacher notes start unverified and can be marked
-verified by a named reviewer with a timestamp. The 49.2M
-checkpoint, optional 368k LoRA adapter and SQLite FTS5 memory run locally.
-Facts stay in RAG; style/skill updates go through a gated adapter. It is not a
-general assistant.
+verified by a named reviewer with a timestamp. Chat feedback can be reviewed,
+exported and sent through a gated LoRA update; an accepted adapter is loaded
+with `--adapter auto`. The 49.2M checkpoint, optional 368k LoRA adapter and
+SQLite FTS5 memory run locally. Facts stay in RAG; style/skill updates go
+through the gate. It is not a general assistant.
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on

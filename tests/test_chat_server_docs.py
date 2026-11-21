@@ -9,6 +9,7 @@ import pytest
 
 from streamft import chat_server
 from streamft.doc_memory import DocMemory
+from streamft.feedback import FeedbackStore
 from streamft.research_queue import ResearchQueue
 
 
@@ -35,8 +36,11 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/research/queue" in page
     assert "/v1/teacher/notes" in page
     assert "/v1/teacher/notes/verify" in page
+    assert "/v1/learning/feedback" in page
     assert "add a document" in page
     assert "add a teacher answer" in page
+    assert "learning queue" in page
+    assert "export approved" in page
     assert "unverified" in page
     assert "reviewer" in page
     assert "verify" in page
@@ -326,6 +330,75 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         chat_server._state.clear()
         chat_server._state.update(old)
         docs.close()
+
+
+def test_resolve_adapter_auto_uses_promoted_path(tmp_path):
+    assert chat_server.resolve_adapter("") == ""
+    assert chat_server.resolve_adapter("checkpoints/plain") == "checkpoints/plain"
+    active = tmp_path / "active.json"
+    active.write_text(
+        '{"path": "checkpoints/adapters_feedback/v0001"}',
+        encoding="utf-8")
+    assert chat_server.resolve_adapter("auto", str(active)) == (
+        "checkpoints/adapters_feedback/v0001")
+    active.write_text("not json", encoding="utf-8")
+    assert chat_server.resolve_adapter("auto", str(active)) == ""
+
+
+def test_http_learning_feedback_review_and_export(tmp_path):
+    store = FeedbackStore(tmp_path / "feedback.json")
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": None, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "feedback": store,
+        "feedback_path": str(tmp_path / "feedback.json"),
+        "feedback_export_path": str(tmp_path / "training.jsonl"),
+    })
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        first = _post(base + "/v1/learning/feedback", {
+            "user": "hello", "assistant": "Hi!", "rating": 1,
+            "session_id": "s1"})
+        assert first["status"] == "pending"
+        second = _post(base + "/v1/learning/feedback", {
+            "user": "what is 2+2?", "assistant": "Five.",
+            "corrected": "Four.", "rating": -1, "session_id": "s1"})
+        bad = _post(base + "/v1/learning/feedback", {
+            "user": "bad", "assistant": "wrong", "rating": -1})
+        listed = json.loads(urllib.request.urlopen(
+            base + "/v1/learning/queue", timeout=10).read().decode("utf-8"))
+        assert listed["stats"] == {"total": 3, "pending": 3}
+        with pytest.raises(urllib.error.HTTPError) as no_correction:
+            _post(base + "/v1/learning/queue/approve", {"id": bad["id"]})
+        assert no_correction.value.code == 400
+        for item in (first, second):
+            approved = _post(base + "/v1/learning/queue/approve",
+                             {"id": item["id"]})
+            assert approved["status"] == "approved"
+        rejected = _post(base + "/v1/learning/queue/reject",
+                         {"id": bad["id"]})
+        assert rejected["status"] == "rejected"
+        exported = _post(base + "/v1/learning/queue/export", {})
+        assert exported["examples"] == 2
+        rows = [json.loads(line) for line in
+                (tmp_path / "training.jsonl").read_text().splitlines()]
+        assert rows == [
+            {"user": "hello", "assistant": "Hi!"},
+            {"user": "what is 2+2?", "assistant": "Four."},
+        ]
+        health = json.loads(urllib.request.urlopen(
+            base + "/health", timeout=10).read().decode("utf-8"))
+        assert health["learning"]["approved"] == 2
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
 
 
 def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
