@@ -235,6 +235,51 @@ class DocMemory:
             meta = self._meta_map([source]).get(source, {})
             return {"source": source, **meta}
 
+    def forget(self, source: str) -> dict:
+        """Delete one source and its metadata, then compact the database."""
+        source = str(source or "").strip()
+        if not source:
+            raise ValueError("source is required")
+        with self._lock:
+            chunks = self.con.execute(
+                "SELECT COUNT(*) FROM docs WHERE source = ?",
+                (source,)).fetchone()[0]
+            meta = self.con.execute(
+                "SELECT COUNT(*) FROM doc_meta WHERE source = ?",
+                (source,)).fetchone()[0]
+            if chunks == 0 and meta == 0:
+                raise SourceNotFound(f"source not found: {source}")
+            self.con.execute("DELETE FROM docs WHERE source = ?", (source,))
+            self.con.execute("DELETE FROM doc_meta WHERE source = ?", (source,))
+            self.con.commit()
+            vacuumed = False
+            try:
+                self.con.execute("VACUUM")
+                vacuumed = True
+            except sqlite3.OperationalError:
+                pass
+            return {"source": source, "chunks_deleted": int(chunks),
+                    "meta_deleted": int(meta), "vacuumed": vacuumed}
+
+    def forget_all(self) -> dict:
+        """Delete every indexed source and compact the database."""
+        with self._lock:
+            chunks = self.con.execute(
+                "SELECT COUNT(*) FROM docs").fetchone()[0]
+            meta = self.con.execute(
+                "SELECT COUNT(*) FROM doc_meta").fetchone()[0]
+            self.con.execute("DELETE FROM docs")
+            self.con.execute("DELETE FROM doc_meta")
+            self.con.commit()
+            vacuumed = False
+            try:
+                self.con.execute("VACUUM")
+                vacuumed = True
+            except sqlite3.OperationalError:
+                pass
+            return {"chunks_deleted": int(chunks),
+                    "meta_deleted": int(meta), "vacuumed": vacuumed}
+
     def stats(self) -> dict:
         with self._lock:
             count = self.con.execute(
@@ -259,8 +304,11 @@ def main(argv=None):
     search.add_argument("-k", type=int, default=5)
     list_db = sub.add_parser("list")
     stats_db = sub.add_parser("stats")
+    forget = sub.add_parser("forget")
+    forget.add_argument("source", nargs="?")
+    forget.add_argument("--all", action="store_true")
     # Accept --db on either side of the subcommand; the docs use both forms.
-    for parser in (add, search, list_db, stats_db):
+    for parser in (add, search, list_db, stats_db, forget):
         parser.add_argument("--db", dest="db_after", default=None)
     args = ap.parse_args(argv)
     mem = DocMemory(args.db_after or args.db or "data/docs.db")
@@ -271,10 +319,20 @@ def main(argv=None):
                          ensure_ascii=False))
     elif args.cmd == "list":
         print(json.dumps(mem.sources(), indent=2, ensure_ascii=False))
+    elif args.cmd == "forget":
+        try:
+            result = (mem.forget_all() if args.all
+                      else mem.forget(args.source or ""))
+        except (ValueError, SourceNotFound) as exc:
+            print(json.dumps({"error": str(exc)}))
+            mem.close()
+            return 1
+        print(json.dumps(result, ensure_ascii=False))
     else:
         print(json.dumps(mem.stats(), indent=2))
     mem.close()
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

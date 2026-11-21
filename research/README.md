@@ -273,6 +273,8 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `benchmark_assistant.py` | 21-task product benchmark (tools, memory, RAG, gaps) | ~10 s |
 | `benchmark_raw.py` | raw-model knowledge probe without RAG or tools | ~10 s |
 | `redteam_safety.py` | opt-in safety filter, output filter and agent refusal tests | ~10 s |
+| `redteam_injection.py` | untrusted-document prompt-injection checks | ~2 s |
+| `make_chat_corpus_scaled.py` | larger clean chat corpus for 50M data scaling | long/network |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |

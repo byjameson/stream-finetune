@@ -1,20 +1,23 @@
 # Public release decisions
 
-Status: **not approved**. Atom Zero remains a local research/demo product.
-This document is a decision pack, not legal advice. Last updated 2026-11-21.
+Status: **open-source release approved by the owner (2026-11-21)**. Atom Zero
+is released as source and weights under Apache-2.0; **no hosted service is
+operated by this project**. Third-party hosting is the host's responsibility.
+PyPI publication is pending the owner's token. This document is a decision
+pack, not legal advice.
 
-Use it to make the five release decisions explicitly. Until then, do not publish
-model weights, a public API or a hosted endpoint.
+The training-data attribution and licence caveat remains: source text stays
+under its original dataset terms. See [`NOTICE`](../NOTICE).
 
 ## Decision summary
 
-| area | current state | recommendation | owner | status |
+| area | current state | decision | owner | status |
 |---|---|---|---|---|
-| Licence/legal | code is Apache-2.0; weight/data obligations unreviewed | local-only until review | user + lawyer | blocked |
-| Hosting | local server on `127.0.0.1` | keep local; optional read-only demo later | user | blocked |
-| Security | SSRF guard, upload cap, local bind; no auth/safety filter | fix hosted gaps first | user + engineering | in progress |
-| Name | **Atom Zero** working name; preliminary checks only | provisional use; professional clearance | user + lawyer | blocked |
-| Update policy | reviewed feedback, gate, holdout, versioning, rollback | publish this policy with any release | user | draft |
+| Licence/legal | code and weights Apache-2.0; data notices in `NOTICE` | open source | user | approved |
+| Hosting | no hosted service | third parties self-host; out of scope | user | closed |
+| Security | opt-in filter, red-team, PII deletion, local bind | keep local/repo controls; hosts add their own auth | user + engineering | in progress |
+| Name | **Atom Zero** working name; preliminary checks only | provisional use; professional clearance optional | user | working |
+| Update policy | reviewed feedback, gate, holdout, versioning, rollback | publish with releases | user | draft |
 
 ## 1. Licence and legal
 
@@ -35,17 +38,11 @@ checklist still requires per-source review:
 - TinyStories: CDLA-Sharing obligations.
 - Synthetic dialogues: labelled as generated in this repo.
 
-Weight licence options:
-
-1. **Apache-2.0 for code and weights** - simplest and most permissive, but only
-   if every training-data obligation permits redistribution.
-2. **Custom open-weights licence** - can add use restrictions, but is not an
-   OSI licence and needs legal drafting.
-3. **No public weights** - ship code and local setup only; safest near-term.
-
-**Recommendation:** option 3 until the data review and legal review are
-complete. If the review clears redistribution, choose option 1 rather than
-inventing a custom licence.
+Weight licence decision: **Apache-2.0 for code and weights**, matching the
+LCGA release convention. The data sources and their original licences are
+listed in [`NOTICE`](../NOTICE). The owner accepted the open-source release;
+a per-source legal review is still recommended before redistributing a
+checkpoint commercially. Do not add a custom licence.
 
 ### Legal/research use
 
@@ -58,33 +55,27 @@ lawyer. Required disclaimer:
 Do not claim guaranteed accuracy, confidentiality, privilege or professional
 advice. Crypto research remains paper-only: no real money, API keys or orders.
 
-### Decisions needed
+### Decisions
 
-- [ ] Approve code licence (recommended: keep Apache-2.0).
-- [ ] Approve weight licence (recommended: local-only until review).
-- [ ] Complete per-source data review.
-- [ ] Approve legal/research disclaimer and jurisdiction wording.
-- [ ] Name the release owner and legal reviewer.
+- [x] Code and weights: Apache-2.0.
+- [x] Open-source release approved by the owner.
+- [ ] Per-source data review before commercial redistribution.
+- [ ] Legal/research disclaimer review.
 
 ## 2. Hosting
 
-| option | cost | risk | fit |
-|---|---|---|---|
-| Local-only | zero | lowest | current default |
-| Hugging Face Space / static demo | low | medium: public inputs, abuse | after safety filter |
-| VPS API | monthly | high: auth, PII, uptime, cost | only with an operator |
+**Decision:** no hosted service is operated by this repository. The project is
+open source; anyone may host it, and each host is responsible for their own
+authentication, TLS, rate limits, PII policy and abuse handling.
 
-**Recommendation:** stay local-only for now. A future public demo should be
-read-only, rate-limited and use no personal document store. Do not expose the
-local server directly to the internet; it has no authentication and is designed
-for `127.0.0.1`.
+The local server is designed for `127.0.0.1`. A third-party host that exposes it
+publicly must add those controls; this project does not provide a public API.
 
-### Decisions needed
+### Decisions
 
-- [ ] Local-only, demo-only or hosted API?
-- [ ] If hosted: provider, region, budget and data-retention period.
-- [ ] Who is the incident/rollback owner?
-- [ ] HTTPS, auth, rate limits and cost caps before launch.
+- [x] No hosted service by this project.
+- [x] Third-party hosting is out of scope.
+- [x] Hosts are responsible for their own security and retention.
 
 ## 3. Security
 
@@ -109,31 +100,32 @@ Existing controls:
 - Adapter versions and rollback (`learning_loop.py activate`).
 - No telemetry; memory is local by default.
 
-Gaps before any hosted release:
+Release-readiness evidence:
 
-- The opt-in filter is pattern-based; add semantic moderation, more languages
-  and a broader red-team set, then keep it enabled.
-- Authentication, TLS, rate limits and abuse monitoring.
-- Prompt-injection/jailbreak tests with untrusted documents.
-- PII deletion path and retention policy.
-- Hosted logs that minimise prompt content.
-- Dependency pinning and a disclosure address.
-- Incident response, takedown and rollback runbook.
+- Prompt-injection/jailbreak checks: **4/4** deterministic
+  (`tests/test_prompt_injection.py`,
+  `research/results/redteam_injection.json`).
+- PII deletion: exact document source and session memory paths are tested
+  (`docs/PRIVACY.md`, `tests/test_privacy.py`).
+- The opt-in filter remains pattern-based; a third-party host should add
+  semantic moderation, languages and a broader red-team for their deployment.
+- A host that exposes the server must add authentication, TLS, rate limits,
+  abuse monitoring, log retention and incident response.
 
 Secret handling:
 
 - The PyPI token pasted into chat must be revoked at
-  `https://pypi.org/manage/account/token/`; never reuse it.
+  `https://pypi.org/manage/account/token/`; never reuse it. A fresh token will be
+  supplied by the owner only when publishing.
 - Keep `.env`, API keys and provider tokens out of git.
 - Rotate any credential that has appeared in logs or chat.
 
-### Decisions needed
+### Decisions
 
-- [ ] Revoke the exposed PyPI token.
-- [ ] Approve the safety-filter false-positive tolerance and expand the
-      red-team set for the intended deployment.
-- [ ] Approve PII retention/deletion rules.
-- [ ] Approve the incident-response owner.
+- [ ] Revoke the exposed PyPI token before publishing.
+- [x] Safety filter and refusal path implemented; hosts may extend it.
+- [x] PII deletion path implemented and tested.
+- [ ] Third-party host names its own incident-response owner.
 
 ## 4. Name, domain and trademark
 
@@ -203,15 +195,16 @@ Release cadence and support:
 
 ## 6. Go/no-go
 
-Do not release until every item in
-[`PUBLIC_RELEASE_CHECKLIST.md`](PUBLIC_RELEASE_CHECKLIST.md) is checked and the
-evidence is linked. Blocking items today:
+Open-source release is approved. No hosted service is operated. Before the
+actual package upload:
 
-- [ ] Data-licence review and legal review.
-- [ ] Safety filter and red-team evidence.
-- [ ] Hosted auth/rate-limit/privacy policy (only if hosting).
-- [ ] Final name/trademark/domain decision.
+- [x] Apache-2.0 `LICENSE` and data-attribution `NOTICE`.
+- [x] Safety filter and refusal evidence.
+- [x] Prompt-injection and PII deletion evidence.
+- [ ] Revoke the exposed PyPI token and provide a fresh one.
 - [ ] Release owner sign-off with date and commit hash.
-- [ ] Revoked exposed credentials.
+- [ ] Optional per-source data review before commercial redistribution.
+- [ ] Third-party hosts add their own auth, rate limits and retention.
 
-Until then: **local research demo only**.
+Hosting/auth review is **not** a blocker for this repository because it does
+not operate a hosted service.

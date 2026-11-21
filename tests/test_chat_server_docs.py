@@ -482,6 +482,53 @@ def test_http_safety_filter_refuses_agent_and_chat(tmp_path):
         chat_server._state.update(old)
 
 
+def test_http_privacy_forget_document_and_session(tmp_path):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    docs.add_text("pii.txt", "The patient email is alice@example.test.")
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": docs, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "safety": None, "wiki_lang": "en",
+        "session_dir": str(tmp_path / "sessions"), "sessions": {},
+    })
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        forgotten = _post(base + "/v1/documents/forget",
+                          {"source": "pii.txt"})
+        assert forgotten["chunks_deleted"] == 1
+        assert _post(base + "/v1/documents/search",
+                     {"query": "alice"})["data"] == []
+        with pytest.raises(urllib.error.HTTPError) as missing:
+            _post(base + "/v1/documents/forget", {"source": "pii.txt"})
+        assert missing.value.code == 404
+        remembered = _post(base + "/v1/agent/chat", {
+            "session_id": "privacy", "message": "my name is Alice"})
+        assert "remember" in remembered["reply"].lower()
+        removed = _post(base + "/v1/memory/forget", {
+            "session_id": "privacy", "text": "Alice"})
+        assert removed["facts_deleted"] == 1
+        recalled = _post(base + "/v1/agent/chat", {
+            "session_id": "privacy", "message": "what is my name?"})
+        assert "do not know your name" in recalled["reply"]
+        cleared = _post(base + "/v1/memory/forget", {
+            "session_id": "privacy", "all": True})
+        assert cleared["cleared_all"] is True
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        docs.close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
+
+
 def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
     try:
         docs = DocMemory(tmp_path / "docs.db")

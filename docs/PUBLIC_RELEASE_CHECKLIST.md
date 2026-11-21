@@ -1,7 +1,9 @@
 # Public release checklist
 
-Do not publish a checkpoint, demo or API until every item is checked and the
-evidence is linked. Current status: **not approved**.
+Current status: **open-source release approved by the owner**; no hosted
+service is operated. PyPI upload is pending the owner's fresh token. Data
+attribution and per-source review remain caveats for commercial redistribution.
+Do not publish until the remaining release items are checked.
 
 Decision pack: [`RELEASE_DECISIONS.md`](RELEASE_DECISIONS.md). Scaling:
 [`SCALING_PLAN.md`](SCALING_PLAN.md). Research worker:
@@ -26,8 +28,9 @@ exists, not that the release is approved.
 - [ ] Dolly-15k: CC BY-SA 3.0 attribution/share-alike reviewed.
 - [ ] TinyStories: CDLA-Sharing obligations reviewed.
 - [ ] Synthetic skill dialogues labelled as generated in this repo.
-- [x] Code: Apache-2.0 (`LICENSE`).
-- [ ] Weights' data obligations reviewed.
+- [x] Code and weights: Apache-2.0 (`LICENSE`) with data attribution in
+      `NOTICE`.
+- [ ] Per-source data obligations reviewed for commercial redistribution.
 - [ ] Legal review completed for the intended distribution.
 
 ## 3. Safety and abuse
@@ -37,22 +40,27 @@ exists, not that the release is approved.
       malware (`docs/SAFETY.md`).
 - [x] Refusal/redirect behaviour tested on a red-team set: filter 30/30,
       output 4/4, agent 30/30 (`research/results/redteam_safety_*.json`).
-- [ ] PII handling and user deletion path.
-- [ ] Prompt-injection and jailbreak tests.
-- [ ] Rate limits and API authentication if hosted.
-- [ ] Incident response and rollback owner named.
+- [x] User deletion path for indexed documents and session memory tested
+      (`tests/test_privacy.py`, `docs/PRIVACY.md`).
+- [ ] PII detection/redaction policy reviewed.
+- [x] Prompt-injection and jailbreak tests: injection 4/4
+      (`tests/test_prompt_injection.py`,
+      `research/results/redteam_injection.json`).
+- [x] No hosted service is operated; third-party hosts are responsible for
+      their own auth and rate limits.
 
 ## 4. Privacy
 
-- [ ] Memory is local by default; no hidden telemetry.
-- [ ] `forget`/delete path tested.
-- [ ] Hosted logs minimise prompt content and define retention.
-- [ ] Privacy policy and terms drafted.
+- [x] Memory is local by default; no hidden telemetry.
+- [x] `forget`/delete path tested.
+- [x] Local-only data flow documented in `docs/PRIVACY.md`.
+- [ ] Hosted logs minimise prompt content and define retention (third-party
+      hosting is outside this repository's release).
 
 ## 5. Deployment
 
 - [x] Local-only demo is the default.
-- [ ] Hosted endpoint uses HTTPS, auth and rate limits.
+- [x] No hosted endpoint is operated; open-source users host themselves.
 - [x] Model/version pinned; rollback checkpoint available.
 - [ ] Health, latency and error metrics monitored.
 - [x] Cost/VRAM limits documented (49.2M model, 6 GB GPU class).
@@ -73,4 +81,6 @@ exists, not that the release is approved.
 - [ ] Release owner signs off with date and commit hash.
 - [ ] Post-release monitoring and takedown process.
 
-Until then: **local research demo only**, no public model weights or public API.
+Hosting/auth is not a blocker for this repository because it does not operate a
+hosted service. Third-party hosts must add their own controls. Open-source
+publication is pending the owner's fresh token and final sign-off.

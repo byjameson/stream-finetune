@@ -297,6 +297,20 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Privacy/deletion path: `DocMemory.forget`/`forget_all` remove chunks and
+  metadata and run SQLite `VACUUM`; `ChatHuman.forget` removes matching
+  facts/episodes/tasks or clears them; HTTP `/v1/documents/forget` and
+  `/v1/memory/forget`, CLI `doc_memory forget`, and browser Delete-data controls.
+  Tested in `tests/test_privacy.py` and `tests/test_chat_server_docs.py`.
+- Prompt-injection red-team: untrusted document instructions are quoted as data,
+  do not execute tools, cannot add tasks, cannot spoof citations and cannot
+  disable the safety layer; deterministic suite **4/4**
+  (`tests/test_prompt_injection.py`, `research/redteam_injection.py`). CI now
+  runs the deterministic safety/injection red-team.
+- Open-source licensing: code and model weights Apache-2.0, matching the LCGA
+  release convention; `NOTICE` lists training-data sources and original
+  licences. Hosting is out of scope; third parties host at their own
+  responsibility. `docs/RELEASE_DECISIONS.md` updated.
 - Opt-in safety layer: `streamft/safety.py` refuses explicit harmful requests
   before generation and filters model/RAG output; server flag `--safety-filter`
   and demo `-SafetyFilter`. Red-team: filter 30/30, output 4/4, agent 30/30;
@@ -343,7 +357,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 306 tests;
+- 315 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

@@ -89,6 +89,46 @@ class ChatHuman:
         self.path.write_text(json.dumps(self.data, indent=2, ensure_ascii=False)
                              + "\n", encoding="utf-8")
 
+    def forget(self, text: str = "") -> dict:
+        """Delete facts/episodes/tasks matching ``text``; empty clears all."""
+        needle = str(text or "").strip().lower()
+        before = {
+            "facts": len(self.data.get("facts", [])),
+            "episodes": len(self.data.get("episodes", [])),
+            "tasks": len(self.data.get("tasks", [])),
+        }
+
+        def matches(value) -> bool:
+            return bool(needle) and needle in str(value).lower()
+
+        if needle:
+            self.data["facts"] = [
+                fact for fact in self.data.get("facts", [])
+                if not matches(f"{fact.get('key', '')} {fact.get('value', '')}")
+            ]
+            self.data["episodes"] = [
+                episode for episode in self.data.get("episodes", [])
+                if not matches(episode.get("text", ""))
+            ]
+            self.data["tasks"] = [
+                task for task in self.data.get("tasks", [])
+                if not matches(task.get("text", ""))
+            ]
+        else:
+            self.data["facts"] = []
+            self.data["episodes"] = []
+            self.data["tasks"] = []
+            self.data["next_task"] = 1
+        self.save()
+        return {
+            "text": needle,
+            "facts_deleted": before["facts"] - len(self.data.get("facts", [])),
+            "episodes_deleted": (before["episodes"]
+                                 - len(self.data.get("episodes", []))),
+            "tasks_deleted": before["tasks"] - len(self.data.get("tasks", [])),
+            "cleared_all": not bool(needle),
+        }
+
     def add_fact(self, key: str, value: str):
         value = value.strip()
         for fact in self.data["facts"]:

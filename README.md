@@ -23,7 +23,7 @@ upload your own UTF-8 documents over HTTP; the response keeps source, title and
 sha256. A reviewed research queue (browser + API/CLI) fetches only
 user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
-local Ollama/OpenAI-compatible provider can answer on request or synthesize
+local [Ollama](docs/TEACHER_OLLAMA.md)/OpenAI-compatible provider can answer on request or synthesize
 approved research topics. Teacher notes start unverified and can be marked
 verified by a named reviewer with a timestamp. Unknown questions become
 **knowledge gaps**; approving a proposed topic lets the scheduled worker fetch
@@ -33,10 +33,11 @@ compared with `research/compare_adapters.py`, evaluated on a non-training
 holdout, and rolled back with `learning_loop.py activate`. The active adapter
 loads with `--adapter auto`. An opt-in `--safety-filter` refuses explicit
 harmful requests and filters output (red-team 30/30); it is off for local
-research. The 49.2M checkpoint, optional 368k LoRA adapter and SQLite FTS5
-memory run locally. Facts stay in RAG; style/skill updates go through the gate. It is not a
-general assistant. Release remains local-only: see the
-[decision pack](docs/RELEASE_DECISIONS.md),
+research. Indexed sources and session memory have tested delete paths
+(`docs/PRIVACY.md`). The 49.2M checkpoint, optional 368k LoRA adapter and SQLite
+FTS5 memory run locally. Facts stay in RAG; style/skill updates go through the
+gate. It is not a general assistant. The project is open source; no hosted
+service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
 [safety filter](docs/SAFETY.md),
 [scaling plan](docs/SCALING_PLAN.md) and
 [research worker](docs/RESEARCH_WORKER.md) for what is still required.
@@ -855,4 +856,7 @@ over results or reviews.
 
 ## License
 
-Apache-2.0 — see [`LICENSE`](LICENSE).
+Apache-2.0 for code and model weights — see [`LICENSE`](LICENSE) and
+[`NOTICE`](NOTICE). The notice lists the training-data sources and their
+original licences; dataset text remains under those terms. Atom Zero is
+open source; third-party hosting is the host's responsibility.

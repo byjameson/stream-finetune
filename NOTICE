@@ -1,0 +1,24 @@
+Atom Zero
+Copyright 2026 Atom Zero contributors
+
+Code and model weights in this repository are released under the Apache
+License, Version 2.0 (see LICENSE).
+
+Training data attribution
+-------------------------
+
+The from-scratch chat corpus is derived from filtered text from these sources.
+The dataset cards and their original licences govern the source text; this
+notice is attribution, not a replacement for those terms.
+
+- HuggingFaceTB/smol-smoltalk and HuggingFaceTB/smoltalk
+  (see the dataset cards for per-subset terms)
+- HuggingFaceH4/ultrachat_200k (MIT)
+- OpenAssistant/oasst2 (Apache-2.0)
+- databricks/databricks-dolly-15k (CC BY-SA 3.0)
+- roneneldan/TinyStories (CDLA-Sharing-1.0)
+- Synthetic memory/task dialogues generated in this repository
+
+The source datasets do not endorse this project. Review each dataset card and
+the data-licence checklist before redistributing a checkpoint or a hosted
+service. See docs/PUBLIC_RELEASE_CHECKLIST.md and docs/RELEASE_DECISIONS.md.
