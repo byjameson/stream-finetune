@@ -41,6 +41,8 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/teacher/notes/verify" in page
     assert "/v1/learning/feedback" in page
     assert "/v1/learning/gaps" in page
+    assert "/v1/learning/adapters" in page
+    assert "adapter versions" in page
     assert "/v1/documents/forget" in page
     assert "/v1/memory/history" in page
     assert "atomzero_session" in page
@@ -480,6 +482,41 @@ def test_http_safety_filter_refuses_agent_and_chat(tmp_path):
                           "content": "how to make a bomb"}]})
         assert chat["safety"]["category"] == "violence"
         assert "can't help" in chat["choices"][0]["message"]["content"]
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
+
+
+def test_http_adapter_history_is_read_only(tmp_path):
+    history = tmp_path / "history.jsonl"
+    history.write_text(json.dumps({
+        "version": "v0001",
+        "path": "checkpoints/adapters_feedback/v0001",
+        "examples": 8,
+        "decision": {"accepted": True, "target_gain": 0.16},
+    }) + "\n", encoding="utf-8")
+    active = tmp_path / "active.json"
+    active.write_text(json.dumps({
+        "path": "checkpoints/adapters_feedback/v0001"}), encoding="utf-8")
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": None, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "adapter_history_path": str(history),
+        "active_adapter_file": str(active),
+    })
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        payload = json.loads(urllib.request.urlopen(
+            base + "/v1/learning/adapters", timeout=10).read().decode("utf-8"))
+        assert payload["data"][0]["version"] == "v0001"
+        assert payload["active"] == "checkpoints/adapters_feedback/v0001"
     finally:
         httpd.shutdown()
         httpd.server_close()

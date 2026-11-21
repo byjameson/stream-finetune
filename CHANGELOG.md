@@ -306,6 +306,9 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Adapter history UI: `GET /v1/learning/adapters` returns accepted versions and
+  the active path; the browser shows metrics. Activation/rollback stays an
+  explicit CLI action until safe hot-swap exists.
 - Session/UI completion: the browser session id is persisted in localStorage,
   a New session button is available, indexed documents are listed with
   per-source Forget buttons, and `POST /v1/memory/history` restores the visible

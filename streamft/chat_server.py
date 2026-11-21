@@ -226,6 +226,13 @@ for a gated LoRA update; nothing changes weights automatically.</p>
 <p id="lmsg" class="hint"></p>
 <div id="lq"></div>
 <hr>
+<h3>Adapter versions</h3>
+<p class="hint">Accepted <b>vNNNN</b> versions and the active adapter. Rollback
+is explicit CLI: <code>python research/learning_loop.py activate v0001</code>.</p>
+<div class="row"><button id="arefresh">Refresh versions</button></div>
+<p id="amsg" class="hint"></p>
+<div id="aq"></div>
+<hr>
 <h3>Knowledge gaps</h3>
 <p class="hint">When no local source answers a question, it is recorded here.
 Propose it as a <b>pending</b> research topic; approve it in the research queue
@@ -938,6 +945,59 @@ document.getElementById('lexport').onclick = async () => {
     setLearningMsg('error: ' + e, true);
   }
 };
+function setAdapterMsg(text, isError) {
+  const el = document.getElementById('amsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+function renderAdapters(data, active) {
+  const box = document.getElementById('aq');
+  box.textContent = '';
+  if (!data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No accepted adapter versions yet.';
+    box.appendChild(empty);
+    return;
+  }
+  data.slice().reverse().forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'qitem';
+    const title = document.createElement('div');
+    title.textContent = (item.version || '?') + ' | ' +
+      (item.examples || 0) + ' examples | ' +
+      (item.path === active ? 'ACTIVE' : 'accepted');
+    card.appendChild(title);
+    const path = document.createElement('div');
+    path.className = 'src';
+    path.textContent = item.path || '';
+    card.appendChild(path);
+    const decision = item.decision || {};
+    const metric = document.createElement('div');
+    metric.className = 'src';
+    metric.textContent =
+      'target ' + ((decision.target_gain || 0) * 100).toFixed(2) + '% | ' +
+      'bpb ' + ((decision.clean_bpb_reg || 0) * 100).toFixed(2) + '% | ' +
+      'assistant ' + ((decision.clean_assistant_reg || 0) * 100).toFixed(2) + '%';
+    card.appendChild(metric);
+    box.appendChild(card);
+  });
+}
+async function refreshAdapters() {
+  try {
+    const r = await fetch('/v1/learning/adapters');
+    const j = await r.json();
+    if (!r.ok) {
+      setAdapterMsg('adapter error: ' + (j.error || r.status), true);
+      return;
+    }
+    renderAdapters(j.data || [], j.active || '');
+    setAdapterMsg('active: ' + (j.active || 'none'));
+  } catch (e) {
+    setAdapterMsg('adapter error: ' + e, true);
+  }
+}
+document.getElementById('arefresh').onclick = () => refreshAdapters();
 function setGapMsg(text, isError) {
   const el = document.getElementById('gmsg');
   el.textContent = text;
@@ -1049,6 +1109,7 @@ refreshTeacherNotes();
 refreshLearning();
 refreshGaps();
 refreshDocs();
+refreshAdapters();
 </script>"""
 
 
@@ -1196,6 +1257,30 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {
                     "error": "knowledge-gap store is not configured"})
             self._json(200, {"data": store.list(), "stats": store.stats()})
+        elif self.path == "/v1/learning/adapters":
+            entries = []
+            history = Path(_state.get(
+                "adapter_history_path", "data/adapter_history.jsonl"))
+            if history.exists():
+                for line in history.read_text(encoding="utf-8").splitlines():
+                    if line.strip():
+                        try:
+                            entries.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            pass
+            active = ""
+            active_path = Path(_state.get(
+                "active_adapter_file", "data/active_adapter.json"))
+            if active_path.exists():
+                try:
+                    active = str(json.loads(
+                        active_path.read_text(encoding="utf-8")).get("path", ""))
+                except (OSError, json.JSONDecodeError):
+                    active = ""
+            self._json(200, {
+                "data": entries, "active": active,
+                "history": str(history), "active_file": str(active_path),
+            })
         elif self.path == "/v1/research/queue":
             queue = _state.get("research_queue")
             if queue is None:
@@ -1846,6 +1931,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "feedback_export_path": feedback_export_path,
         "gaps": gaps,
         "gap_store_path": gap_store_path,
+        "adapter_history_path": "data/adapter_history.jsonl",
+        "active_adapter_file": active_adapter_file,
         "safety": SafetyFilter() if safety_filter else None,
         "teacher": teacher,
         "adapter": adapter,
