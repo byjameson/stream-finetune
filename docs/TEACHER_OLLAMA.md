@@ -73,6 +73,20 @@ ollama list -> llama3.2:3b  a80c4f17acd5  2.0 GB
 TeacherProvider.ask("Say hello...") -> "Hello!"
 ```
 
+End-to-end worker run:
+
+```text
+topic: Ankara
+status: done
+source: https://en.wikipedia.org/?curid=802
+teacher: ollama / llama3.2:3b
+teacher source: teacher://ollama/3944be803784635f
+verified: false
+answer: Ankara is the capital city of Turkey... population of over 5.3 million...
+```
+
+Evidence: [`research/results/teacher_ollama_live.json`](../research/results/teacher_ollama_live.json).
+
 ## Limits
 
 - The teacher is used only on explicit request or during an approved research
