@@ -1,0 +1,44 @@
+{
+  "base": "checkpoints/transformer_chat_skill_ret_21m",
+  "candidate": "checkpoints\\updates\\candidate",
+  "queue": {
+    "queued": 55,
+    "train": 44,
+    "valid": 11,
+    "queue_train_tokens": 867,
+    "queue_valid_tokens": 314,
+    "sha256": "744f322402bce549fbc73a36b580e7f12c9262248031226ec147140ecfbc5645"
+  },
+  "base_metrics": {
+    "clean": {
+      "bpb": 1.4399343950548726,
+      "assistant_loss": 4.266243316646234
+    },
+    "queue": {
+      "bpb": 1.8980059702901904,
+      "assistant_loss": 4.088012675588746
+    }
+  },
+  "candidate_metrics": {
+    "clean": {
+      "bpb": 1.4668316359067564,
+      "assistant_loss": 4.351223942369908
+    },
+    "queue": {
+      "bpb": 1.857927480073816,
+      "assistant_loss": 4.00325544501838
+    }
+  },
+  "decision": {
+    "accepted": false,
+    "checks": {
+      "target_gain": false,
+      "clean_bpb": true,
+      "clean_assistant": true
+    },
+    "target_gain": 0.020733113445681628,
+    "clean_bpb_reg": 0.0186794904991896,
+    "clean_assistant_reg": 0.01991931060099006
+  },
+  "created": "2026-11-21T04:16:25"
+}

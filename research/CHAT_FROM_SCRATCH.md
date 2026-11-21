@@ -337,6 +337,18 @@ checkpoint** (`transformer_chat_skill_ret_21m`).
   replay fine-tune after review;
 - no autonomous weight update and no public release.
 
+**Gated update result:** with 55 reviewed examples (44 train / 11 validation),
+2:1 clean replay and 200 steps:
+
+- queued-skill loss improves **+2.07%**,
+- clean bpb regresses **+1.87%**, clean assistant loss **+1.99%**,
+- the gate requires **5% target gain**, so the update is **REJECTED**;
+- 400 steps overfit: target **-2.05%**, clean bpb **+4.48%**, also REJECTED.
+
+The gate is working: it refuses a small, weak update even when clean-chat
+regression is inside budget. The queue needs more varied examples before a
+weight update is justified; facts still go to memory.
+
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 
 ## Evaluation
