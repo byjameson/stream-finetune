@@ -251,6 +251,15 @@ small adapter improved loss on the examples but did not reliably recall an
 exact launch code; facts still belong in RAG, not weights. Raw result:
 [`gated_feedback_test.json`](../research/results/gated_feedback_test.json).
 
+A fresh run on 2026-11-21 verified versioning: the same eight examples produced
+`v0001`, accepted at **+16.74%** queue gain; the acceptance was appended to
+`data/adapter_history.jsonl` with the queue sha256, gate checks and result path.
+`--adapter auto` loaded `checkpoints/adapters_feedback_history_test/v0001` on
+port 8041. Assistant-turn comparison on the same eight rows: base **3.826**,
+feedback adapter **1.640**, product adapter **3.837**; the first is an
+in-sample fit check, not a generalization claim
+([`adapter_comparison_feedback.json`](../research/results/adapter_comparison_feedback.json)).
+
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
 
@@ -368,7 +377,30 @@ python research/learning_loop.py run \
 `run` needs at least five approved examples, invokes the existing
 `research/gated_update.py` gate, and writes `data/active_adapter.json` only when
 the candidate is accepted. A rejected candidate leaves the active adapter
-unchanged. Start the server with:
+unchanged. Accepted adapters are copied to immutable `vNNNN` directories; every
+acceptance is appended to `data/adapter_history.jsonl` with its metrics, queue
+sha256 and result path:
+
+```bash
+python research/learning_loop.py history
+```
+
+Compare base and adapters on the same reviewed rows with assistant-turn
+cross-entropy (lower is better):
+
+```bash
+python research/compare_adapters.py \
+  --base checkpoints/transformer_behavior_50m_long \
+  --data data/feedback_training.jsonl \
+  --adapters checkpoints/adapters_feedback/v0001 \
+             checkpoints/adapters_feedback/v0002
+```
+
+The report includes per-row loss and deltas vs base. It is a local comparison,
+not a general benchmark; use rows the adapter was **not** trained on if you
+want a generalization estimate.
+
+Start the server with:
 
 ```bash
 python -m streamft.chat_server \

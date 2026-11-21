@@ -3,14 +3,18 @@
     python research/learning_loop.py list
     python research/learning_loop.py approve f0001
     python research/learning_loop.py export
+    python research/learning_loop.py history
     python research/learning_loop.py run --base checkpoints/transformer_behavior_50m_long
 
 Only approved feedback is exported. ``run`` invokes the existing gated LoRA
-pipeline; a rejected candidate never becomes active.
+pipeline; a rejected candidate never becomes active. Every accepted version is
+appended to ``data/adapter_history.jsonl`` with its metrics and queue hash.
+Use ``research/compare_adapters.py`` to compare base and adapter loss.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -22,12 +26,36 @@ from streamft.feedback import FeedbackError, FeedbackStore
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def read_history(path: str | Path) -> list[dict]:
+    path = Path(path)
+    if not path.exists():
+        return []
+    entries = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            entries.append(json.loads(line))
+    return entries
+
+
+def append_history(path: str | Path, entry: dict) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def queue_sha256(path: str | Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--store", default="data/feedback_queue.json")
     ap.add_argument("--out-queue", default="data/feedback_training.jsonl")
+    ap.add_argument("--history", default="data/adapter_history.jsonl")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list")
+    sub.add_parser("history")
     approve = sub.add_parser("approve")
     approve.add_argument("id")
     reject = sub.add_parser("reject")
@@ -48,6 +76,14 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
 
     try:
+        if args.cmd == "history":
+            entries = read_history(ROOT / args.history)
+            print(json.dumps({
+                "path": args.history,
+                "count": len(entries),
+                "entries": entries,
+            }, indent=2, ensure_ascii=False))
+            return 0
         store = FeedbackStore(ROOT / args.store)
         if args.cmd == "list":
             print(json.dumps({"data": store.list(), "stats": store.stats()},
@@ -92,18 +128,39 @@ def main(argv=None) -> int:
             decision = payload.get("decision", {})
             accepted_to = payload.get("accepted_to", "")
             if decision.get("accepted") and accepted_to:
+                version = Path(accepted_to).name
+                accepted_path = Path(accepted_to).as_posix()
+                entry = {
+                    "version": version,
+                    "path": accepted_path,
+                    "base": args.base,
+                    "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "examples": exported["examples"],
+                    "queue_sha256": queue_sha256(ROOT / args.out_queue),
+                    "steps": args.steps,
+                    "lora_lr": args.lora_lr,
+                    "rank": args.rank,
+                    "alpha": args.alpha,
+                    "decision": decision,
+                    "result": args.result,
+                }
+                append_history(ROOT / args.history, entry)
                 active = ROOT / args.active_file
                 active.parent.mkdir(parents=True, exist_ok=True)
                 active.write_text(json.dumps({
-                    "path": accepted_to,
-                    "updated": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "path": accepted_path,
+                    "version": version,
+                    "updated": entry["created"],
                     "examples": exported["examples"],
                     "result": args.result,
+                    "history": args.history,
                 }, indent=2) + "\n", encoding="utf-8")
                 print(json.dumps({
                     "accepted": True,
-                    "active_adapter": accepted_to,
+                    "active_adapter": accepted_path,
+                    "version": version,
                     "active_file": args.active_file,
+                    "history": args.history,
                     "decision": decision,
                 }, ensure_ascii=False))
             else:

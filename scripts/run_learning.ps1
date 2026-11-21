@@ -3,6 +3,8 @@ param(
     [string]$OutQueue = "data/feedback_training.jsonl",
     [string]$Base = "checkpoints/transformer_behavior_50m_long",
     [string]$Out = "checkpoints/adapters_feedback",
+    [string]$History = "data/adapter_history.jsonl",
+    [string]$Active = "data/active_adapter.json",
     [int]$Steps = 100
 )
 $ErrorActionPreference = "Stop"
@@ -12,5 +14,5 @@ $env:PYTHONPATH = $root
 $env:PYTHONIOENCODING = "utf-8"
 
 python research/learning_loop.py `
-    --store $Store --out-queue $OutQueue `
-    run --base $Base --out $Out --steps $Steps
+    --store $Store --out-queue $OutQueue --history $History `
+    run --base $Base --out $Out --steps $Steps --active-file $Active

@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -65,6 +66,53 @@ def test_learning_loop_cli_exports_approved(tmp_path, capsys):
     assert result["examples"] == 1
     assert json.loads(out.read_text()) == {
         "user": "hello", "assistant": "Hi!"}
+
+
+def test_learning_loop_records_accepted_adapter(tmp_path, monkeypatch, capsys):
+    store = FeedbackStore(tmp_path / "feedback.json")
+    for i in range(5):
+        item = store.add(f"question {i}", f"answer {i}", rating=1)
+        store.approve(item["id"])
+    result_path = tmp_path / "result.json"
+    result_path.write_text(json.dumps({
+        "decision": {"accepted": True, "target_gain": 0.1},
+        "accepted_to": "checkpoints/adapters_feedback/v0007",
+    }), encoding="utf-8")
+
+    def fake_run(cmd, cwd=None):
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr("research.learning_loop.subprocess.run", fake_run)
+    active = tmp_path / "active.json"
+    history = tmp_path / "history.jsonl"
+    code = learning_main([
+        "--store", str(store.path),
+        "--out-queue", str(tmp_path / "training.jsonl"),
+        "--history", str(history),
+        "run", "--base", "checkpoints/base",
+        "--out", str(tmp_path / "adapters"),
+        "--result", str(result_path),
+        "--active-file", str(active),
+    ])
+    assert code == 0
+    summary = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert summary["accepted"] is True
+    assert summary["version"] == "v0007"
+    promoted = json.loads(active.read_text(encoding="utf-8"))
+    assert promoted["path"] == "checkpoints/adapters_feedback/v0007"
+    assert promoted["version"] == "v0007"
+    assert promoted["examples"] == 5
+    entries = [json.loads(line) for line in
+               history.read_text(encoding="utf-8").splitlines()]
+    assert entries[0]["version"] == "v0007"
+    assert entries[0]["examples"] == 5
+    assert entries[0]["decision"]["accepted"] is True
+    assert len(entries[0]["queue_sha256"]) == 64
+    assert learning_main(["--history", str(history), "history"]) == 0
+    listed = json.loads(capsys.readouterr().out)
+    assert listed["count"] == 1
+    assert listed["entries"][0]["path"] == (
+        "checkpoints/adapters_feedback/v0007")
 
 
 def test_feedback_exports_only_approved_and_deduplicates(tmp_path):

@@ -323,11 +323,34 @@ The gate needs at least five approved examples. On acceptance it writes
 do not change the active adapter. `scripts/run_learning.ps1` is the scheduled
 wrapper.
 
+Accepted adapters are immutable `vNNNN` versions. Each acceptance is appended
+to `data/adapter_history.jsonl` with its gate metrics, queue hash and result:
+
+```bash
+python research/learning_loop.py history
+```
+
+Compare base and adapter loss on the same rows:
+
+```bash
+python research/compare_adapters.py \
+  --base checkpoints/transformer_behavior_50m_long \
+  --data data/feedback_training.jsonl \
+  --adapters checkpoints/adapters_feedback/v0001
+```
+
+`compare_adapters` reports assistant-turn cross-entropy per row and the delta vs
+base. Evaluating on the same rows used for training measures fit, not
+generalization; hold out examples for an honest comparison.
+
 The 8-example bootstrap test was accepted at **+16.7%** queue gain with clean
 bpb **+1.58%** / assistant **+1.54%**; behavior and clean smoke passed. It
 improved the targeted loss but did **not** reliably memorize an exact fact.
 Use DocMemory for facts; use feedback adapters for style, format and narrow
 skills. Evidence: [`research/results/gated_feedback_test.json`](../research/results/gated_feedback_test.json).
+On the same 8 examples, assistant-turn loss was base **3.826** vs feedback
+adapter **1.640**; this is an in-sample fit check
+([`research/results/adapter_comparison_feedback.json`](../research/results/adapter_comparison_feedback.json)).
 
 Full fine-tune from a base checkpoint:
 
