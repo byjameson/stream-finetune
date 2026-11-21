@@ -4,9 +4,9 @@ param(
     [string]$Db = "data/docs.db",
     [string]$Log = "data/research_worker.jsonl",
     [string]$Lock = "data/research_worker.lock",
-    [string]$TeacherUrl = "",
-    [string]$TeacherModel = "",
-    [string]$TeacherLabel = "openai-compatible"
+    [string]$TeacherUrl = "http://127.0.0.1:11434/v1",
+    [string]$TeacherModel = "llama3.2:3b",
+    [string]$TeacherLabel = "ollama"
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot

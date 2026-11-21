@@ -96,6 +96,10 @@ class AgentSession:
         except (KnowledgeGapError, OSError):
             pass
 
+    def forget(self, text: str = "") -> dict:
+        """Delete matching session memory, or all of it when text is empty."""
+        return self.human.forget(text)
+
     def _research(self, query: str, limit: int = 2) -> dict:
         if self.docs is None:
             raise ValueError("no document memory configured")

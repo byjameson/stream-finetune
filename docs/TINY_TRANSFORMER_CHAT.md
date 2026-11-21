@@ -181,6 +181,8 @@ Endpoints:
 | `GET /v1/documents` | indexed sources |
 | `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
 | `POST /v1/documents/upload?source=...&title=...` | raw UTF-8 text body; same limits as JSON |
+| `POST /v1/documents/forget` | `{"source":"my-note.txt"}`; deletes that source and metadata, then compacts SQLite |
+| `POST /v1/memory/forget` | `{"session_id":"...","text":"..."}` or `{"all":true}`; deletes session facts/events/tasks |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
 | `GET /v1/teacher/notes` | teacher notes with verified/unverified stats |
 | `POST /v1/teacher/notes` | `{"teacher","model","topic","answer","source_url"}`; stores a **derived/unverified** note |
@@ -204,10 +206,12 @@ Endpoints:
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
 | `POST /v1/chat/completions` | messages; optional `session_id`; document hits return `sources` and a non-advice note |
 
-Shared or hosted deployments should add `--safety-filter`. It refuses explicit
-harmful requests before generation and filters output; it is off by default for
-local research. Red-team result: filter **30/30**, output **4/4**, agent
-**30/30** ([`SAFETY.md`](SAFETY.md)).
+Shared deployments should add `--safety-filter`. It refuses explicit harmful
+requests before generation and filters output; it is off by default for local
+research. Red-team result: filter **30/30**, output **4/4**, agent **30/30**;
+untrusted-document injection **4/4**
+([`SAFETY.md`](SAFETY.md)). Document and session deletion are documented in
+[`PRIVACY.md`](PRIVACY.md).
 
 Verified on 2026-11-21: the one-command demo on port 8020 returned health with
 **49,582,080** params, adapter `checkpoints/adapters_50m/v0001` and indexed
@@ -516,6 +520,10 @@ Only `approved` items touch the network. Pending and rejected topics stay
 local. Each fetched item records its Wikipedia source URLs, titles and chunk
 counts in `data/research_queue.json`; the text is searchable and cited by the
 normal document path. Duplicate active topics are rejected.
+
+For the local Ollama teacher, run `scripts/start_ollama_teacher.ps1` and start
+the server with `--teacher-url http://127.0.0.1:11434/v1 --teacher-model
+llama3.2:3b --teacher-label ollama` (see [`TEACHER_OLLAMA.md`](TEACHER_OLLAMA.md)).
 
 If the server was started with `--teacher-url`/`--teacher-model`, `run` also
 sends the fetched lead context and source URLs to that provider and stores the

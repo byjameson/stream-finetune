@@ -171,6 +171,14 @@ SHA-256; re-adding the same source replaces it. Nothing is written to weights.</
 <button id="add">Add document</button></div>
 <p id="ds" class="hint"></p>
 <hr>
+<h3>Delete data</h3>
+<p class="hint">Delete an indexed source or this browser session's memory. This
+cannot be undone.</p>
+<div class="row"><input id="forgetsrc" placeholder="Exact source, e.g. my-note.txt">
+<button id="forgetdoc">Forget source</button>
+<button id="forgetmem">Forget session memory</button></div>
+<p id="fmsg" class="hint"></p>
+<hr>
 <h3>Add a teacher answer</h3>
 <p class="hint">Paste an answer from ChatGPT or another assistant. It is stored
 as a derived, unverified note with its source URL. It is not treated as a fact
@@ -709,6 +717,40 @@ document.getElementById('rrun').onclick = async () => {
     button.textContent = label;
   }
 };
+function setForgetMsg(text, isError) {
+  const el = document.getElementById('fmsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+document.getElementById('forgetdoc').onclick = async () => {
+  const source = document.getElementById('forgetsrc').value.trim();
+  if (!source) return setForgetMsg('Enter the exact source to delete.', true);
+  if (!confirm('Delete indexed source "' + source + '"?')) return;
+  try {
+    const r = await fetch('/v1/documents/forget', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({source})});
+    const j = await r.json();
+    setForgetMsg(r.ok
+      ? ('deleted ' + j.chunks_deleted + ' chunk(s) and ' +
+         j.meta_deleted + ' metadata row(s)')
+      : ('error: ' + (j.error || r.status)), !r.ok);
+    if (r.ok) { refreshHealth(); }
+  } catch (e) { setForgetMsg('error: ' + e, true); }
+};
+document.getElementById('forgetmem').onclick = async () => {
+  if (!confirm('Delete this session memory (facts, tasks, episodes)?')) return;
+  try {
+    const r = await fetch('/v1/memory/forget', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId, all: true})});
+    const j = await r.json();
+    setForgetMsg(r.ok
+      ? ('deleted facts ' + j.facts_deleted + ', episodes ' +
+         j.episodes_deleted + ', tasks ' + j.tasks_deleted)
+      : ('error: ' + (j.error || r.status)), !r.ok);
+  } catch (e) { setForgetMsg('error: ' + e, true); }
+};
 function setLearningMsg(text, isError) {
   const el = document.getElementById('lmsg');
   el.textContent = text;
@@ -1080,7 +1122,8 @@ class Handler(BaseHTTPRequestHandler):
         route = parsed.path
         if route not in ("/generate", "/v1/chat/completions",
                          "/v1/documents", "/v1/documents/search",
-                         "/v1/documents/upload", "/v1/teacher/notes",
+                         "/v1/documents/upload", "/v1/documents/forget",
+                         "/v1/memory/forget", "/v1/teacher/notes",
                          "/v1/teacher/notes/verify", "/v1/teacher/ask",
                          "/v1/teach", "/v1/learning/feedback",
                          "/v1/learning/queue/approve",
@@ -1146,6 +1189,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self._queue_update(req, "reject")
             if route == "/v1/research/queue/run":
                 return self._queue_run(req)
+            if route == "/v1/documents/forget":
+                return self._documents_forget(req)
+            if route == "/v1/memory/forget":
+                return self._memory_forget(req)
             if self.path == "/v1/documents/search":
                 docs = _state.get("docs")
                 query = str(req.get("query", ""))
@@ -1540,6 +1587,33 @@ class Handler(BaseHTTPRequestHandler):
                 "error": "document must be UTF-8 text"})
         return self._ingest({"source": source, "title": title,
                              "text": text})
+
+    def _documents_forget(self, req: dict):
+        docs = _state.get("docs")
+        if docs is None:
+            return self._json(400, {"error": "no document memory configured"})
+        try:
+            result = docs.forget(str(req.get("source", "")))
+        except SourceNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, result)
+
+    def _memory_forget(self, req: dict):
+        session_id = str(req.get("session_id", "")).strip()
+        if not session_id:
+            return self._json(400, {"error": "session_id is required"})
+        text = str(req.get("text", "")).strip()
+        clear_all = bool(req.get("all"))
+        if not text and not clear_all:
+            return self._json(400, {"error": "text or all is required"})
+        try:
+            session = self._session(session_id)
+            result = session.forget("" if clear_all else text)
+        except Exception as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {"session_id": session_id, **result})
 
     def _session(self, session_id: str):
         from streamft.agent_runtime import AgentSession

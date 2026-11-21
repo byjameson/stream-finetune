@@ -81,6 +81,31 @@ python research/benchmark_assistant.py \
 Benchmark safety checks cover violence, self-harm, sexual-minors refusal and
 two benign controls (child-abuse reporting and Wi-Fi security).
 
+## Untrusted documents and prompt injection
+
+Retrieved document text is treated as **data**, not instructions:
+
+- the agent's document path quotes chunks and cites the database source;
+- it does not feed retrieved text into a tool executor;
+- citations come from `DocMemory` rows, so text like `Source: https://evil...`
+  cannot change the actual source;
+- a document cannot add tasks or disable the safety layer.
+
+The deterministic injection suite:
+
+```bash
+python research/redteam_injection.py \
+  --out research/results/redteam_injection.json
+```
+
+```text
+injection: 4/4
+```
+
+It covers quoted instructions, direct jailbreak, citation spoofing and a
+document that tries to disable safety. The red-team is structural and narrow;
+it does not prove resistance to every prompt-injection technique.
+
 ## Limits
 
 - Pattern-based filtering can miss paraphrases, other languages and novel
