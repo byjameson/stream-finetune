@@ -149,6 +149,11 @@
   greetings, name/like memory, task add/list/complete and short stories; mixed
   1:1 with clean chat replay (6.1M train tokens). Added `eval_chat_human.py`
   for end-to-end memory/task/open-ended checks.
+- Skill fine-tune on the 20M transformer: skill-mix assistant loss **2.27**
+  (base 4.01). End-to-end `chat_human` smoke passes all memory/task checks plus
+  greeting/small-talk/story; deterministic fast paths handle social phrases.
+  Tradeoff: clean-chat quality regresses to 1.655 bpb / 4.93 assistant loss.
+  Skill checkpoint is for the virtual-human runtime, not general chat.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -159,7 +164,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 200 tests;
+- 202 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

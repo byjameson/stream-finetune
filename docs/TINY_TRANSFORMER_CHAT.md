@@ -31,6 +31,19 @@ Without banning role tokens, 5/12 samples leak `<|assistant|>` and the gate is
 BLOCKED. The pass is therefore a **constrained-decoding smoke gate**, not an
 open-ended chat-quality claim.
 
+## Virtual-human skill checkpoint
+
+A second checkpoint, `transformer_chat_skill_21m`, is fine-tuned for 6,000 steps
+on 58.8k targeted dialogues (greetings, name/like memory, task add/list/complete,
+small talk, short stories), mixed 1:1 with clean-chat replay.
+
+- skill-mix assistant loss **2.27** (ppl ~9.6), versus 4.01 for the base;
+- end-to-end `chat_human` smoke: **PASS_VIRTUAL_HUMAN_SMOKE**;
+- all memory/task checks pass; greeting/small talk use deterministic fast paths;
+- **tradeoff:** clean-chat bpb regresses to **1.655** and assistant loss to
+  **4.93** (base 1.359 / 4.01). Use this checkpoint for the virtual-human
+  runtime, not for general chat.
+
 ## Samples
 
 ```text
@@ -76,7 +89,7 @@ obligations; legal/provenance review is required before redistribution.
 
 ```bash
 python -m streamft.chat_server \
-  --model checkpoints/transformer_chat_en_clean_21m \
+  --model checkpoints/transformer_chat_skill_21m \
   --host 127.0.0.1 --port 8013
 ```
 

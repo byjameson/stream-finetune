@@ -1,0 +1,351 @@
+{
+  "tag": "transformer_skill_21m",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 512,
+    "layers": 5,
+    "heads": 8,
+    "ff": 2048,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 6000,
+  "bpb": {
+    "chat": {
+      "loss": 4.915019154548645,
+      "ppl": 136.32192096240317,
+      "bpb": 1.654941249090597,
+      "tokens": 8192,
+      "bytes": 35100,
+      "assistant": {
+        "loss": 4.929972879471888,
+        "ppl": 138.375732421875,
+        "tokens": 7341
+      }
+    },
+    "stories": {
+      "loss": 4.647863030433655,
+      "ppl": 104.36172927675983,
+      "bpb": 1.7239757008220167,
+      "tokens": 8192,
+      "bytes": 31863,
+      "assistant": {
+        "loss": 4.647863030433655,
+        "ppl": 104.3617172241211,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 6.2273664474487305,
+      "ppl": 506.4200419963367,
+      "bpb": 2.53700414150414,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 6.2273664474487305,
+        "ppl": 506.4200439453125,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 4.789396584033966,
+      "ppl": 120.22879879373924,
+      "bpb": 1.6422119135317668,
+      "tokens": 8192,
+      "bytes": 34468,
+      "assistant": {
+        "loss": 4.735367094506664,
+        "ppl": 113.90528869628906,
+        "tokens": 7372
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": false
+  },
+  "verdict": "BLOCKED",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello I am here. What do you need?",
+      "chars": 34,
+      "alpha": 0.7353,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "Hello",
+      "chars": 5,
+      "alpha": 1.0,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "tag",
+      "tag_leak": 1
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "my name is Alex, remember me",
+      "text": "Hello! How can I help you today?",
+      "chars": 32,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what is the weather today?",
+      "text": "Hello I am here. What do you need?",
+      "chars": 34,
+      "alpha": 0.7353,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious fox who lived near the forest. One day Hana found a red ball. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 168,
+      "alpha": 0.7857,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Hana was a curious turtle who lived near the garden. One day Hana found a blue kite. Hana wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 172,
+      "alpha": 0.7907,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 2: buy milk.",
+      "chars": 23,
+      "alpha": 0.6957,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "add task: buy milk",
+      "text": "Added task 1: buy milk.  ofee.",
+      "chars": 30,
+      "alpha": 0.6667,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "history": [
+    {
+      "event": "eval",
+      "step": 500,
+      "train_loss": 0.4509623348712921,
+      "step_s": 0.08877339920005761,
+      "lr": 9.8983152541804e-05,
+      "bpb": 1.2434624117991049,
+      "assistant": {
+        "loss": 2.1366164557844143,
+        "ppl": 8.470727920532227,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1000,
+      "train_loss": 0.855796754360199,
+      "step_s": 0.09031927100010216,
+      "lr": 9.493084337754573e-05,
+      "bpb": 1.2356120571315774,
+      "assistant": {
+        "loss": 2.1704364753313596,
+        "ppl": 8.762106895446777,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 1500,
+      "train_loss": 0.518405020236969,
+      "step_s": 0.09110458579985425,
+      "lr": 8.806483678883803e-05,
+      "bpb": 1.2755368275984889,
+      "assistant": {
+        "loss": 2.2197265134521404,
+        "ppl": 9.204813957214355,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2000,
+      "train_loss": 0.8068476915359497,
+      "step_s": 0.08769020680012181,
+      "lr": 7.886894086538841e-05,
+      "bpb": 1.2508469622436897,
+      "assistant": {
+        "loss": 2.2659893471188424,
+        "ppl": 9.640657424926758,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 2500,
+      "train_loss": 0.10431861132383347,
+      "step_s": 0.09185605699988082,
+      "lr": 6.799113763028295e-05,
+      "bpb": 1.2619268388939815,
+      "assistant": {
+        "loss": 2.261154895808221,
+        "ppl": 9.594162940979004,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3000,
+      "train_loss": 0.46014153957366943,
+      "step_s": 0.08259921719995328,
+      "lr": 5.619792346469987e-05,
+      "bpb": 1.2494426630694402,
+      "assistant": {
+        "loss": 2.2505552511972384,
+        "ppl": 9.493005752563477,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 3500,
+      "train_loss": 0.11390529572963715,
+      "step_s": 0.08963747660000808,
+      "lr": 4.4320298505799834e-05,
+      "bpb": 1.2365540264680788,
+      "assistant": {
+        "loss": 2.2706067910802896,
+        "ppl": 9.68527603149414,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4000,
+      "train_loss": 0.49060970544815063,
+      "step_s": 0.09194439099985174,
+      "lr": 3.3195210835030745e-05,
+      "bpb": 1.2568135152211433,
+      "assistant": {
+        "loss": 2.2713104316713877,
+        "ppl": 9.692091941833496,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 4500,
+      "train_loss": 0.11807727813720703,
+      "step_s": 0.09182524100015871,
+      "lr": 2.360658154892569e-05,
+      "bpb": 1.2521283877307912,
+      "assistant": {
+        "loss": 2.268835986783289,
+        "ppl": 9.668140411376953,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5000,
+      "train_loss": 0.731167733669281,
+      "step_s": 0.09247827300010249,
+      "lr": 1.6230066337278724e-05,
+      "bpb": 1.2469184537341569,
+      "assistant": {
+        "loss": 2.264398244369149,
+        "ppl": 9.62533187866211,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 5500,
+      "train_loss": 0.1778019368648529,
+      "step_s": 0.09440599279990419,
+      "lr": 1.1585445903346785e-05,
+      "bpb": 1.2374046406440533,
+      "assistant": {
+        "loss": 2.2661061202625263,
+        "ppl": 9.641783714294434,
+        "tokens": 3111
+      }
+    },
+    {
+      "event": "eval",
+      "step": 6000,
+      "train_loss": 0.6218639612197876,
+      "step_s": 0.09182357200002297,
+      "lr": 1e-05,
+      "bpb": 1.2407904726015904,
+      "assistant": {
+        "loss": 2.2655686538191095,
+        "ppl": 9.636603355407715,
+        "tokens": 3111
+      }
+    }
+  ]
+}

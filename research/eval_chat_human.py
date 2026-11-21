@@ -51,12 +51,16 @@ def main():
         rows.append({"user": text, "assistant": reply})
     by_prompt = {row["user"]: row["assistant"] for row in rows}
     checks = {
+        "greeting": by_prompt["hello"].lower().startswith(("hello", "hi")),
+        "small_talk": ("well" in by_prompt["how are you?"].lower()
+                       or "good" in by_prompt["how are you?"].lower()),
+        "story": len(rows[12]["assistant"]) > 40,
         "name": by_prompt["what is my name?"] == "Your name is Alex.",
         "likes": "green tea" in by_prompt["what do I like?"],
         "task_add_1": "buy milk" in by_prompt["add task buy milk"],
         "task_add_2": "call mom" in by_prompt["add task call mom"],
-        "task_list_both": ("buy milk" in by_prompt["list tasks"]
-                           and "call mom" in by_prompt["list tasks"]),
+        "task_list_both": ("buy milk" in rows[7]["assistant"]
+                           and "call mom" in rows[7]["assistant"]),
         "task_complete": "Completed task 1" in by_prompt[
             "complete task 1"],
         "task_list_after": ("call mom" in rows[9]["assistant"]
