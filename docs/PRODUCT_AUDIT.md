@@ -106,8 +106,8 @@ service is operated; per-source data-licence review still recommended.
 
 - **367 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI green after the embedding reranker, expanded multilingual safety and
-  resume gate; rerun after this commit.
+- CI `56dccbe` green after the embedding reranker, expanded multilingual
+  safety and resume gate.
 
 ## 8. Release state
 
