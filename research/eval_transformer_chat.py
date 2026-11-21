@@ -27,6 +27,12 @@ def main():
     ap.add_argument("--out",
                     default="research/results/transformer_chat_en_clean_21m_banned.json")
     ap.add_argument("--tag", default="transformer_21m_sft_banned")
+    ap.add_argument("--chat-valid", default="data/chat_en_clean_valid.pt")
+    ap.add_argument("--stories-valid",
+                    default="data/chat_en_clean_stories_valid.pt")
+    ap.add_argument("--wiki-valid", default="data/wiki_en_valid.pt")
+    ap.add_argument("--mixed-valid",
+                    default="data/chat_en_clean_valid_mixed.pt")
     args = ap.parse_args()
     from tokenizers import Tokenizer
     root = ROOT / args.model
@@ -41,10 +47,10 @@ def main():
     assistant_id = tok.token_to_id("<|assistant|>")
     evals = {}
     for name, rel in {
-        "chat": "data/chat_en_clean_valid.pt",
-        "stories": "data/chat_en_clean_stories_valid.pt",
-        "wiki": "data/wiki_en_valid.pt",
-        "mixed": "data/chat_en_clean_valid_mixed.pt",
+        "chat": args.chat_valid,
+        "stories": args.stories_valid,
+        "wiki": args.wiki_valid,
+        "mixed": args.mixed_valid,
     }.items():
         tokens = load_tokens(str(ROOT / rel))
         batches = fixed_windows(tokens, 128, 8, 8, 0, DEVICE)

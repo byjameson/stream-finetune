@@ -137,6 +137,9 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `transformer_chat_en_clean_50m_banned.json` | `research/eval_transformer_chat.py` | 50M with banned role tokens: PASS, but only 0.015 bpb better than 20M and lower alpha floor; 20M remains the product model |
 | `transformer_chat_skill_21m.json` | `research/train_transformer_chat.py --init` | skill fine-tune: skill mix assistant 2.27; clean chat regresses to 1.655 bpb / 4.93 assistant loss; 1 tag leak |
 | `chat_human_eval.json` | `research/eval_chat_human.py` | 13-turn memory/task/greeting/story conversation: all checks pass; PASS_VIRTUAL_HUMAN_SMOKE |
+| `transformer_chat_skill_ret_21m_banned.json` | `research/eval_transformer_chat.py` | retention skill checkpoint, clean chat: 1.440 bpb / 4.27 assistant, PASS with banned tags |
+| `transformer_chat_skill_ret_21m_skill.json` | `research/eval_transformer_chat.py` | same checkpoint on synthetic skill valid: 0.954 bpb / 0.31 assistant (near memorization), PASS |
+| `chat_human_eval_ret.json` | `research/eval_chat_human.py` | retention checkpoint: all 13-turn memory/task/greeting/story checks pass |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `crypto_sma_sweep.json` | `research/crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200: SMA-50 30.5x/35.9x vs buy-hold 10.8x/9.4x; other windows fail; TREND_CANDIDATE |
