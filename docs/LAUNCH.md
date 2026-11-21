@@ -51,7 +51,8 @@ harness: source-cited RAG, honest gaps, curiosity approval, local provider.
 - Do not hide the 2/10 raw score; it is the reason the design works.
 - Do not ship the optional safety filter as a moral policy; it is off by
   default and operator-controlled.
-- Do not publish weights/PyPI without the owner’s final sign-off and token.
+- Do not publish further artifacts without the owner’s sign-off and the
+  platform-specific token.
 
 ## Release checklist for attention
 
@@ -62,8 +63,10 @@ harness: source-cited RAG, honest gaps, curiosity approval, local provider.
 - [x] 392 tests, green CI
 - [ ] 20–40 second screen recording/GIF of the demo
 - [x] GitHub source tag `v0.8.0`
+- [x] PyPI publish `streamft==0.8.0`
 - [ ] GitHub release notes page / binary artifacts
-- [ ] PyPI publish (owner token)
+- [ ] Hugging Face weights (`HF_TOKEN`)
+- [ ] ModelScope weights (`MODELSCOPE_API_TOKEN`)
 - [ ] Hugging Face model card/weights (owner decision)
 - [ ] one external benchmark beyond the authored product set
 

@@ -11,9 +11,12 @@
 ```powershell
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
-pip install -e .
+pip install streamft==0.8.0
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
+
+The package is on PyPI: <https://pypi.org/project/streamft/0.8.0/>. The demo
+checkpoint still comes from the repository/tag.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
 

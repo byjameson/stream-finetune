@@ -1,4 +1,4 @@
-# Atom Zero model card (draft, unreleased)
+# Atom Zero 49.2M model card
 
 Version: `0.8.0`<br>
 Last updated: 2026-11-22

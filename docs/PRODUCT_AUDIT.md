@@ -161,10 +161,13 @@ recommended.
 
 - GitHub source tag **v0.8.0** pushed (`abe47b4`); wheel and sdist built and
   twine-checked.
-- PyPI upload is blocked on the owner's API token (`NonInteractive: Credential
-  not found for API token`); no PyPI package has been published.
+- PyPI **streamft 0.8.0** published:
+  `https://pypi.org/project/streamft/0.8.0/`.
 - `pyproject.toml` is **0.8.0**; the owner approved publication.
-- Model weights are not on Hugging Face yet; that remains the owner's call.
+- Hugging Face and ModelScope weight uploads are staged at
+  `dist/atom-zero-49m` but not uploaded: their tokens are missing.
+- The PyPI token used for upload was pasted in chat; the owner should revoke and
+  rotate it.
 - Open-source: anyone may host; this project does not operate a service.
 
 ## Priority gaps
