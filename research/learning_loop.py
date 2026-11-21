@@ -4,6 +4,7 @@
     python research/learning_loop.py approve f0001
     python research/learning_loop.py export
     python research/learning_loop.py history
+    python research/learning_loop.py activate v0001
     python research/learning_loop.py run --base checkpoints/transformer_behavior_50m_long
 
 Only approved feedback is exported. ``run`` invokes the existing gated LoRA
@@ -56,6 +57,9 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list")
     sub.add_parser("history")
+    activate = sub.add_parser("activate")
+    activate.add_argument("version")
+    activate.add_argument("--active-file", default="data/active_adapter.json")
     approve = sub.add_parser("approve")
     approve.add_argument("id")
     reject = sub.add_parser("reject")
@@ -83,6 +87,47 @@ def main(argv=None) -> int:
                 "count": len(entries),
                 "entries": entries,
             }, indent=2, ensure_ascii=False))
+            return 0
+        if args.cmd == "activate":
+            entries = read_history(ROOT / args.history)
+            matches = [entry for entry in entries
+                       if entry.get("version") == args.version
+                       or entry.get("path") == args.version]
+            if not matches:
+                raise FeedbackError(
+                    f"adapter version not found in history: {args.version}")
+            entry = matches[-1]
+            adapter_dir = ROOT / str(entry.get("path", ""))
+            if not (adapter_dir / "adapter.pt").is_file():
+                raise FeedbackError(
+                    f"adapter files missing: {entry.get('path', '')}")
+            active = ROOT / args.active_file
+            active.parent.mkdir(parents=True, exist_ok=True)
+            previous = ""
+            if active.exists():
+                try:
+                    previous = str(json.loads(
+                        active.read_text(encoding="utf-8")).get("path", ""))
+                except (OSError, json.JSONDecodeError):
+                    previous = ""
+            now = time.strftime("%Y-%m-%dT%H:%M:%S")
+            active.write_text(json.dumps({
+                "path": entry["path"],
+                "version": entry.get("version", ""),
+                "updated": now,
+                "activated": now,
+                "examples": entry.get("examples", 0),
+                "result": entry.get("result", ""),
+                "history": args.history,
+                "previous": previous,
+            }, indent=2) + "\n", encoding="utf-8")
+            print(json.dumps({
+                "activated": True,
+                "version": entry.get("version", ""),
+                "active_adapter": entry["path"],
+                "previous": previous,
+                "active_file": args.active_file,
+            }, ensure_ascii=False))
             return 0
         store = FeedbackStore(ROOT / args.store)
         if args.cmd == "list":
