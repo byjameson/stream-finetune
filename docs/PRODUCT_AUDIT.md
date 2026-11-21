@@ -129,7 +129,8 @@ service is operated; per-source data-licence review still recommended.
 
 - **378 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the prewarmed vector-index commit is verified after push.
+- CI `00a39a1` green after the prewarmed vector index, retrieval, product,
+  behavior, safety and red-team gates.
 
 ## 8. Release state
 
