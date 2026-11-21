@@ -10,6 +10,7 @@ import pytest
 from streamft import chat_server
 from streamft.doc_memory import DocMemory
 from streamft.feedback import FeedbackStore
+from streamft.knowledge_gaps import KnowledgeGapStore
 from streamft.research_queue import ResearchQueue
 
 
@@ -38,9 +39,11 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/teacher/notes" in page
     assert "/v1/teacher/notes/verify" in page
     assert "/v1/learning/feedback" in page
+    assert "/v1/learning/gaps" in page
     assert "add a document" in page
     assert "add a teacher answer" in page
     assert "learning queue" in page
+    assert "knowledge gaps" in page
     assert "export approved" in page
     assert "unverified" in page
     assert "reviewer" in page
@@ -395,6 +398,45 @@ def test_http_learning_feedback_review_and_export(tmp_path):
         health = json.loads(urllib.request.urlopen(
             base + "/health", timeout=10).read().decode("utf-8"))
         assert health["learning"]["approved"] == 2
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
+
+
+def test_http_knowledge_gaps_propose_and_dismiss(tmp_path):
+    gaps = KnowledgeGapStore(tmp_path / "gaps.json")
+    research = ResearchQueue(tmp_path / "research.json")
+    gap = gaps.add("What is the launch code?")
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": None, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "gaps": gaps, "research_queue": research,
+        "research_queue_path": str(tmp_path / "research.json"),
+        "wiki_lang": "en", "sessions": {},
+    })
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        listed = json.loads(urllib.request.urlopen(
+            base + "/v1/learning/gaps", timeout=10).read().decode("utf-8"))
+        assert listed["stats"] == {"total": 1, "pending": 1}
+        proposed = _post(base + "/v1/learning/gaps/propose",
+                         {"id": gap["id"], "pages": 1})
+        assert proposed["gap"]["status"] == "proposed"
+        assert proposed["research"]["status"] == "pending"
+        assert research.list()[0]["topic"] == "What is the launch code?"
+        dismissed = _post(base + "/v1/learning/gaps/dismiss",
+                          {"id": gap["id"]})
+        assert dismissed["status"] == "dismissed"
+        health = json.loads(urllib.request.urlopen(
+            base + "/health", timeout=10).read().decode("utf-8"))
+        assert health["knowledge_gaps"]["dismissed"] == 1
     finally:
         httpd.shutdown()
         httpd.server_close()

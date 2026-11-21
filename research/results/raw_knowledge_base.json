@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T19:48:49",
+  "model": "checkpoints/transformer_behavior_50m_long",
+  "adapter": "",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of Norway is the capital of Sea, and it is the capital of the United States.",
+      "correct": false,
+      "alpha": 0.784,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "To find 2 + 2, we need to find the total number of possible values for the first and second values. The sum of 2 + 2 is 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +",
+      "correct": false,
+      "alpha": 0.449,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the arrangements of the arrangements of the arrangements, we need to consider the arrangement of the arrangement of the arrangement of the arrangement. The arrangement of the arrangement of the arrangement of the arrangement of the arrangement of the arrangement of",
+      "correct": false,
+      "alpha": 0.835,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet.",
+      "correct": false,
+      "alpha": 0.829,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "Mia",
+      "correct": false,
+      "alpha": 1.0,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a small map.",
+      "correct": false,
+      "alpha": 0.786,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP stands for \"The HTP stands for the Fox\" and \"Seven the Fox\" play a crucial role in the development of HTP applications. HTTP applications provide a set of rules for the development of HTP applications, including: 1. **S",
+      "correct": false,
+      "alpha": 0.781,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "Red is the primary color.",
+      "correct": true,
+      "alpha": 0.8,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is about 1.5 degrees.",
+      "correct": false,
+      "alpha": 0.725,
+      "stop": "end",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}

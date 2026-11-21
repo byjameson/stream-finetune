@@ -297,6 +297,27 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Knowledge-gap loop: a knowledge question with no local source now gets an
+  honest "no source" reply and is recorded in `streamft/knowledge_gaps.py`.
+  The browser, `research/gap_loop.py` and
+  `/v1/learning/gaps/propose` turn a gap into a **pending** research topic;
+  after human approval the worker fetches it into DocMemory. Verified live:
+  Paris population question -> `g0001` -> `r0001` -> Wikipedia source
+  `?curid=22989` -> cited answer with **2.04 million**. Gaps never mutate
+  weights.
+- Product benchmark: `research/benchmark_assistant.py` now runs 21 checks
+  covering tools, memory, tasks, five-document retrieval, teacher-note review,
+  missing-source detection and one short generation. Base and product adapter
+  both score **21/21**; this is a narrow behavior benchmark, not MMLU. The
+  benchmark also caught and fixed missing `sources` propagation from the agent
+  fallback. Results:
+  `research/results/assistant_benchmark_base.json` and
+  `assistant_benchmark_adapter.json`; scope in `docs/BENCHMARKS.md`.
+- Raw-model probe: without RAG/tools the 49.2M model scores **2/10 (20%)** on
+  ten simple general questions (base and product adapter); examples include
+  wrong Turkey capital, 2+2 and speed of light. This is the honest limit and
+  why facts stay in DocMemory. Results:
+  `research/results/raw_knowledge_base.json` and `raw_knowledge_adapter.json`.
 - Scheduled research worker: `research/research_worker.py` processes only
   approved topics with an exclusive lock, stale `running` recovery, optional
   loop mode and a JSONL run log; `scripts/run_research.ps1` wraps it and
@@ -316,7 +337,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 265 tests;
+- 272 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

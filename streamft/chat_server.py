@@ -45,6 +45,8 @@ import torch
 from streamft.doc_memory import SourceNotFound
 from streamft.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
+from streamft.knowledge_gaps import (
+    GapNotFound, KnowledgeGapError, KnowledgeGapStore)
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
@@ -211,6 +213,14 @@ for a gated LoRA update; nothing changes weights automatically.</p>
 <button id="lexport">Export approved</button></div>
 <p id="lmsg" class="hint"></p>
 <div id="lq"></div>
+<hr>
+<h3>Knowledge gaps</h3>
+<p class="hint">When no local source answers a question, it is recorded here.
+Propose it as a <b>pending</b> research topic; approve it in the research queue
+before the worker fetches sources. Nothing changes weights automatically.</p>
+<div class="row"><button id="grefresh">Refresh gaps</button></div>
+<p id="gmsg" class="hint"></p>
+<div id="gq"></div>
 <script>
 const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
 const chat = document.getElementById('chat');
@@ -257,6 +267,7 @@ async function send(message) {
     if (!r.ok) return add('bot', 'error: ' + (j.error || r.status), '', true);
     const box = add('bot', j.reply, extra(j));
     addFeedback(box, text, j.reply);
+    refreshGaps();
   } catch (e) {
     add('bot', 'error: ' + e, '', true);
   }
@@ -796,6 +807,93 @@ document.getElementById('lexport').onclick = async () => {
     setLearningMsg('error: ' + e, true);
   }
 };
+function setGapMsg(text, isError) {
+  const el = document.getElementById('gmsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+function renderGaps(data, stats) {
+  const box = document.getElementById('gq');
+  box.textContent = '';
+  const summary = document.createElement('div');
+  summary.className = 'hint';
+  summary.textContent =
+    'gaps: ' + (stats.total || 0) + ' total | pending ' +
+    (stats.pending || 0) + ' | proposed ' + (stats.proposed || 0) +
+    ' | dismissed ' + (stats.dismissed || 0);
+  box.appendChild(summary);
+  if (!data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No knowledge gaps recorded.';
+    box.appendChild(empty);
+    return;
+  }
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'qitem';
+    const title = document.createElement('div');
+    title.textContent = item.id + ' | ' + item.status +
+                        ' | seen ' + (item.count || 1);
+    card.appendChild(title);
+    const query = document.createElement('div');
+    query.className = 'src';
+    query.textContent = item.query || '';
+    card.appendChild(query);
+    if (item.research_id) {
+      const research = document.createElement('div');
+      research.className = 'src';
+      research.textContent = 'research: ' + item.research_id;
+      card.appendChild(research);
+    }
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    if (item.status === 'pending') {
+      actions.appendChild(qbutton('Propose research',
+        () => gapAction(item.id, 'propose')));
+    }
+    if (item.status === 'pending' || item.status === 'proposed') {
+      actions.appendChild(qbutton('Dismiss',
+        () => gapAction(item.id, 'dismiss')));
+    }
+    if (actions.childNodes.length) card.appendChild(actions);
+    box.appendChild(card);
+  });
+}
+async function refreshGaps() {
+  try {
+    const r = await fetch('/v1/learning/gaps');
+    const j = await r.json();
+    if (!r.ok) {
+      setGapMsg('gap error: ' + (j.error || r.status), true);
+      return;
+    }
+    renderGaps(j.data || [], j.stats || {});
+  } catch (e) {
+    setGapMsg('gap error: ' + e, true);
+  }
+}
+async function gapAction(id, action) {
+  setGapMsg(action + ' ' + id + '...');
+  try {
+    const r = await fetch('/v1/learning/gaps/' + action, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id})});
+    const j = await r.json();
+    if (!r.ok) {
+      setGapMsg('error: ' + (j.error || r.status), true);
+      return;
+    }
+    setGapMsg(j.research
+      ? (id + ' -> research ' + j.research.id + ' (pending approval)')
+      : (id + ' -> ' + j.status));
+    await refreshGaps();
+    await refreshQueue();
+  } catch (e) {
+    setGapMsg('error: ' + e, true);
+  }
+}
+document.getElementById('grefresh').onclick = () => refreshGaps();
 function refreshHealth() {
   fetch('/health').then(r => r.json()).then(j => {
     const docs = j.documents ? j.documents.chunks : 0;
@@ -816,6 +914,7 @@ refreshHealth();
 refreshQueue();
 refreshTeacherNotes();
 refreshLearning();
+refreshGaps();
 </script>"""
 
 
@@ -917,6 +1016,9 @@ class Handler(BaseHTTPRequestHandler):
                 "learning": (
                     _state["feedback"].stats()
                     if _state.get("feedback") else None),
+                "knowledge_gaps": (
+                    _state["gaps"].stats()
+                    if _state.get("gaps") else None),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -950,6 +1052,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {
                     "error": "feedback store is not configured"})
             self._json(200, {"data": store.list(), "stats": store.stats()})
+        elif self.path == "/v1/learning/gaps":
+            store = _state.get("gaps")
+            if store is None:
+                return self._json(400, {
+                    "error": "knowledge-gap store is not configured"})
+            self._json(200, {"data": store.list(), "stats": store.stats()})
         elif self.path == "/v1/research/queue":
             queue = _state.get("research_queue")
             if queue is None:
@@ -973,6 +1081,8 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/learning/queue/approve",
                          "/v1/learning/queue/reject",
                          "/v1/learning/queue/export",
+                         "/v1/learning/gaps/propose",
+                         "/v1/learning/gaps/dismiss",
                          "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
@@ -1019,6 +1129,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self._feedback_update(req, "reject")
             if route == "/v1/learning/queue/export":
                 return self._feedback_export(req)
+            if route == "/v1/learning/gaps/propose":
+                return self._gap_propose(req)
+            if route == "/v1/learning/gaps/dismiss":
+                return self._gap_dismiss(req)
             if route == "/v1/research/queue":
                 return self._queue_add(req)
             if route == "/v1/research/queue/approve":
@@ -1197,6 +1311,44 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"error": str(exc)})
         return self._json(200, result)
 
+    def _gap_store(self):
+        store = _state.get("gaps")
+        if store is None:
+            raise KnowledgeGapError(
+                "knowledge-gap store is not configured")
+        return store
+
+    def _gap_propose(self, req: dict):
+        try:
+            gaps = self._gap_store()
+            gap_id = str(req.get("id", ""))
+            gap = gaps.get(gap_id)
+            if gap.get("status") != "pending":
+                raise KnowledgeGapError(
+                    f"gap is already {gap.get('status')}")
+            item = self._queue().add(
+                gap["query"], _state.get("wiki_lang", "en"),
+                int(req.get("pages", 1)))
+            gap = gaps.mark_proposed(gap_id, item["id"])
+        except GapNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except (KnowledgeGapError, ResearchQueueError, ValueError) as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {
+            "gap": gap, "research": item,
+            "next": (f"approve {item['id']} in the research queue, then run "
+                     "the scheduled worker"),
+        })
+
+    def _gap_dismiss(self, req: dict):
+        try:
+            item = self._gap_store().dismiss(str(req.get("id", "")))
+        except GapNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except KnowledgeGapError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, item)
+
     def _queue(self):
         queue = _state.get("research_queue")
         if queue is None:
@@ -1364,7 +1516,8 @@ class Handler(BaseHTTPRequestHandler):
                 session_id, folder / f"{session_id}.json",
                 model=_state.get("model"), tokenizer=_state.get("tok"),
                 device=_state.get("device"), docs=_state.get("docs"),
-                wiki_lang=_state.get("wiki_lang", "en"))
+                wiki_lang=_state.get("wiki_lang", "en"),
+                gap_store=_state.get("gaps"))
         return sessions[session_id]
 
     def _teach(self, req: dict):
@@ -1410,7 +1563,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           teacher_url: str = "", teacher_model: str = "",
           teacher_timeout: int = 60,
           teacher_label: str = "openai-compatible",
-          active_adapter_file: str = "data/active_adapter.json") -> int:
+          active_adapter_file: str = "data/active_adapter.json",
+          gap_store_path: str = "data/knowledge_gaps.json") -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -1442,6 +1596,12 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
             feedback = FeedbackStore(feedback_path)
         except FeedbackError as exc:
             print(f"warning: feedback store disabled: {exc}", flush=True)
+    gaps = None
+    if gap_store_path:
+        try:
+            gaps = KnowledgeGapStore(gap_store_path)
+        except KnowledgeGapError as exc:
+            print(f"warning: knowledge-gap store disabled: {exc}", flush=True)
     teacher = None
     if teacher_url or teacher_model:
         try:
@@ -1460,6 +1620,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "feedback": feedback,
         "feedback_path": feedback_path,
         "feedback_export_path": feedback_export_path,
+        "gaps": gaps,
+        "gap_store_path": gap_store_path,
         "teacher": teacher,
         "adapter": adapter,
         "queue_path": queue_path,
@@ -1507,6 +1669,7 @@ def main():
     ap.add_argument("--research-queue", default="data/research_queue.json")
     ap.add_argument("--feedback-store", default="data/feedback_queue.json")
     ap.add_argument("--feedback-export", default="data/feedback_training.jsonl")
+    ap.add_argument("--gap-store", default="data/knowledge_gaps.json")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -1519,7 +1682,7 @@ def main():
                  args.research_queue, args.feedback_store,
                  args.feedback_export, args.teacher_url, args.teacher_model,
                  args.teacher_timeout, args.teacher_label,
-                 args.active_adapter_file)
+                 args.active_adapter_file, args.gap_store)
 
 
 if __name__ == "__main__":

@@ -363,6 +363,32 @@ improved loss from **3.853** to **3.139** (**-18.5%**); the sample is tiny, but
 it is a real held-out check
 ([`holdout_feedback_test.json`](../research/results/holdout_feedback_test.json)).
 
+### Missing data (gap loop)
+
+When no local document answers a knowledge question, Atom Zero records it as a
+**knowledge gap**. A human can propose it as a pending research topic; after
+approval the scheduled worker fetches Wikipedia and indexes the source. The next
+answer is extractive and cited. This is how the system "finds the missing data"
+without autonomous crawling or unsupervised weight updates.
+
+```bash
+python research/gap_loop.py list
+python research/gap_loop.py propose g0001 --pages 1
+python research/research_queue.py --queue data/research_queue.json approve r0001
+python research/research_worker.py --queue data/research_queue.json \
+  --db data/docs.db --limit 1 --once
+```
+
+The browser has the same flow under **Knowledge gaps**. A gap proposal only
+creates a pending topic; it does not fetch. Verified live: an unknown Paris
+population question became `g0001` -> `r0001`, and after approval the answer
+quoted **2.04 million** with the Wikipedia source. See
+[`KNOWLEDGE_GAPS.md`](KNOWLEDGE_GAPS.md).
+
+The product benchmark is **21/21** for base and adapter on narrow behaviors
+(tools, memory, tasks, retrieval, teacher review, gap detection, one short
+generation). It is **not MMLU**; see [`BENCHMARKS.md`](BENCHMARKS.md).
+
 Full fine-tune from a base checkpoint:
 
 ```bash

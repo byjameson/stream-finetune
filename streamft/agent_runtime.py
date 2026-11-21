@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from streamft.knowledge_gaps import KnowledgeGapError
 from streamft.web_research import wikipedia_research
 
 try:
@@ -76,14 +77,23 @@ def math_query(text: str) -> str | None:
 class AgentSession:
     def __init__(self, session_id: str, memory_path: str | Path,
                  model=None, tokenizer=None, device=None, docs=None,
-                 wiki_lang: str = "en"):
+                 wiki_lang: str = "en", gap_store=None):
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", session_id):
             raise ValueError("invalid session id")
         self.id = session_id
         self.docs = docs
         self.wiki_lang = wiki_lang
+        self.gap_store = gap_store
         self.human = ChatHuman(memory_path, model, tokenizer, device,
-                               "transformer", docs)
+                               "transformer", docs, on_gap=self._record_gap)
+
+    def _record_gap(self, text: str) -> None:
+        if self.gap_store is None:
+            return
+        try:
+            self.gap_store.add(text, session_id=self.id)
+        except (KnowledgeGapError, OSError):
+            pass
 
     def _research(self, query: str, limit: int = 2) -> dict:
         if self.docs is None:
@@ -189,4 +199,5 @@ class AgentSession:
                            text, flags=re.IGNORECASE)
             return self._search_docs(query)
         reply = self.human.respond(text)
-        return {"reply": reply, "tool_calls": [], "sources": []}
+        return {"reply": reply, "tool_calls": [],
+                "sources": list(getattr(self.human, "last_sources", []))}
