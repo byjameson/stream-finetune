@@ -1,0 +1,34 @@
+{
+  "created": "2026-11-21T23:25:30",
+  "vectors": 20000,
+  "dim": 384,
+  "clusters": 128,
+  "queries": 50,
+  "k": 10,
+  "build_s": 0.244,
+  "exact_median_ms": 3.22,
+  "probes": [
+    {
+      "probe": 4,
+      "ann_median_ms": 0.644,
+      "speedup": 5.0,
+      "recall_at_k": 1.0,
+      "min_recall_at_k": 1.0
+    },
+    {
+      "probe": 8,
+      "ann_median_ms": 1.425,
+      "speedup": 2.3,
+      "recall_at_k": 1.0,
+      "min_recall_at_k": 1.0
+    },
+    {
+      "probe": 12,
+      "ann_median_ms": 1.897,
+      "speedup": 1.7,
+      "recall_at_k": 1.0,
+      "min_recall_at_k": 1.0
+    }
+  ],
+  "note": "IVF ANN over clustered synthetic normalized vectors; exact cosine fallback remains the product safety net."
+}

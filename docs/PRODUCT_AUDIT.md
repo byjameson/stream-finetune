@@ -11,10 +11,10 @@ release approval. Last updated 2026-11-21.
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
-| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_hybrid_neural*.json` |
-| retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000 | `retrieval_benchmark_prewarmed.json` |
-| vector index | 3000 chunks: matrix 0.77 ms vs scan 127.6 ms, 166x, top-5 identical | `vector_index_benchmark.json` |
-| behavior | 16/16 | `behavior_scaled_40k.json` |
+| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_ann_neural*.json` |
+| retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000; forced ANN also 1.000 | `retrieval_benchmark_ann.json` |
+| vector index | exact 3000 chunks: 0.77 ms vs scan 127.6 ms (166x); IVF ANN 20k: 0.64 ms vs 3.22 ms (5x), recall@10 1.000 | `vector_index_benchmark.json`, `ann_index_benchmark.json` |
+| behavior | 16/16 | `behavior_scaled_40k_ann.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
 | training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
 | resume gate | 44k candidate 1.3800/3.8497 vs 40k 1.3815/3.8551; product 21/21, behavior 16/16, safety 26/26 | `eval_resume_44k.json`, `assistant_benchmark_resume_44k*.json` |
@@ -42,7 +42,9 @@ lower-LR resume did not produce a material improvement over 40k.
 gitignored), so a fresh clone falls back to hashed n-grams; that fallback stays
 FTS-anchored and lexical (it does not answer semantic-only queries), so its
 recall remains 0.900. The neural hybrid path reaches 1.000 on the authored set.
-The vector index is prewarmed and exact, not an approximate ANN graph; memory
+The vector index is IVF ANN, not HNSW; recall is measured at **1.000** on the
+clustered benchmark and the authored retrieval set, but this is not a guarantee
+for every corpus, and low-confidence queries pay an exact-scan fallback. Memory
 grows linearly with chunks and startup pays the build cost. The model is
 English-first; no task due dates/reminders; no multi-document conflict
 resolution.
@@ -110,12 +112,15 @@ only; general capability is not improved by adapters.
   0.34 ms**. The hashed fallback is FTS-anchored and stays at 0.850; it does
   not answer from hash-only candidates. Product 21/21 and safety 26/26 hold on
   both paths. Vector rows are pruned on source replace/forget.
-- Prewarmed vector index: `DocMemory.prewarm_vectors()` builds one numpy matrix
-  over all cached chunk vectors after model/reranker load; `--no-prewarm` skips
-  it. Exact cosine, no approximation. Scale benchmark (3000 hashed chunks):
-  matrix query **0.77 ms** vs linear scan **127.6 ms** (**166x**), top-5
-  overlap **1.000**; full search 6.9 ms. `/health` reports index chunks, dim and
-  build time. Writes invalidate the index and the next search rebuilds it.
+- Vector index: `DocMemory.prewarm_vectors()` builds one numpy matrix over all
+  cached chunk vectors after model/reranker load; `--no-prewarm` skips it.
+  Above 256 chunks, auto mode builds a deterministic k-means **IVF ANN** index;
+  `--vector-index ann|exact|auto` overrides it. Exact cosine is the fallback on
+  empty/short results, ANN errors, or low ANN confidence. Benchmarks: exact
+  matrix **0.77 ms** vs linear scan **127.6 ms** (**166x**, top-5 identical);
+  IVF ANN at 20k vectors **0.64 ms** vs **3.22 ms** exact (**5x**, recall@10
+  **1.000**, probe 4). `/health` reports mode, chunks, dim, nlist/nprobe and
+  fallback count. Writes invalidate the index and the next search rebuilds it.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
@@ -127,10 +132,9 @@ service is operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **378 tests** pass locally.
+- **380 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `00a39a1` green after the prewarmed vector index, retrieval, product,
-  behavior, safety and red-team gates.
+- CI for the IVF ANN commit is verified after push.
 
 ## 8. Release state
 

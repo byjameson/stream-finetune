@@ -9,10 +9,11 @@
 - RAG retrieval: hybrid FTS + cached neural candidate pool with local
   MiniLM-L6-v2; held-out authored benchmark top-1/citation 1.000 vs 0.850 for
   FTS, 8.8 ms vs 0.34 ms median. Prewarmed numpy vector index is 166x faster
-  than the linear scan on 3000 chunks with identical top-5. Hashed fallback
-  stays FTS-anchored.
+  than the linear scan on 3000 chunks with identical top-5; IVF ANN is 5x
+  faster than exact at 20k vectors with recall@10 1.000 and exact fallback.
+  Hashed fallback stays FTS-anchored.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 378 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 380 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
@@ -332,8 +333,15 @@
   and the next search rebuilds. `--no-prewarm` skips startup prewarm. A 3000
   chunk benchmark measured **0.77 ms** per matrix query vs **127.6 ms** for the
   linear SQLite scan (**166x**), with identical top-5 sources; full search was
-  6.9 ms. `/health` exposes index chunks, dimension and build time. This is an
-  exact index, not an approximate ANN graph.
+  6.9 ms. `/health` exposes index chunks, dimension and build time.
+- IVF ANN index: above 256 chunks, `prewarm_vectors()` builds deterministic
+  k-means buckets. Queries probe `ceil(sqrt(nlist))` buckets and exactly rerank
+  their members; `--vector-index ann|exact|auto` selects the path. Empty/short
+  results, ANN errors and low-confidence top scores fall back to the exact
+  matrix. 20k-vector benchmark: **0.64 ms** vs **3.22 ms** exact (**5x**),
+  recall@10 **1.000** at probe 4; product auto uses 12 probes (1.7x). Forced ANN
+  on the authored retrieval set kept top-1 at **1.000** with 2 exact fallbacks.
+  This is IVF, not HNSW.
 - Safety v0.2: English regex plus language-agnostic lexical-semantic rules for
   Turkish, German, Spanish, French, Italian, Portuguese, Dutch and Russian.
   Multilingual red-team filter **72/72**,

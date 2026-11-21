@@ -2026,7 +2026,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           safety_filter: bool = False,
           reranker: str = "auto",
           neural_model: str = "models/all-MiniLM-L6-v2",
-          prewarm_vectors: bool = True) -> int:
+          prewarm_vectors: bool = True,
+          vector_index: str = "auto") -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -2046,6 +2047,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
     if docs_path:
         from streamft.doc_memory import DocMemory
         docs = DocMemory(docs_path)
+        docs.vector_index_mode = vector_index
     active_reranker = _attach_reranker(docs, reranker, neural_model)
     if docs is not None and prewarm_vectors:
         try:
@@ -2154,6 +2156,10 @@ def main():
     ap.add_argument("--no-prewarm", dest="prewarm_vectors",
                     action="store_false", default=True,
                     help="skip building the in-memory vector index at startup")
+    ap.add_argument("--vector-index", choices=("auto", "ann", "exact"),
+                    default="auto",
+                    help="auto uses IVF ANN above 256 chunks, exact below; "
+                         "exact fallback is always available")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -2168,7 +2174,7 @@ def main():
                  args.teacher_timeout, args.teacher_label,
                  args.active_adapter_file, args.gap_store,
                  args.safety_filter, args.reranker, args.neural_model,
-                 args.prewarm_vectors)
+                 args.prewarm_vectors, args.vector_index)
 
 
 if __name__ == "__main__":

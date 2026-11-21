@@ -43,8 +43,10 @@ dependency-free fallback. When `models/all-MiniLM-L6-v2` is present,
 `--reranker auto` uses a local MiniLM neural pool; on the held-out authored
 retrieval benchmark this reaches **1.000** top-1/citation vs **0.850** for FTS,
 at about 8.8 ms per query on CPU. A prewarmed in-memory matrix makes the vector
-stage **166x** faster than the linear scan on 3000 chunks with identical top-5.
-Facts stay in RAG; style/skill updates go through the gate. It is not a general assistant. The project is open source; no hosted
+stage **166x** faster than the linear scan on 3000 chunks with identical top-5;
+above 256 chunks an IVF ANN index is used, with an exact cosine fallback and
+recall@10 **1.000** on the 20k-vector benchmark. Facts stay in RAG; style/skill
+updates go through the gate. It is not a general assistant. The project is open source; no hosted
 service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
 [product audit](docs/PRODUCT_AUDIT.md),
 [safety filter](docs/SAFETY.md),

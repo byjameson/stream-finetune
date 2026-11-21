@@ -164,10 +164,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--neural-model", default="models/all-MiniLM-L6-v2")
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--vector-index", choices=("auto", "ann", "exact"),
+                    default="auto")
     ap.add_argument("--out", default="research/results/retrieval_benchmark.json")
     args = ap.parse_args(argv)
     with tempfile.TemporaryDirectory(prefix="atomzero-retrieval-") as folder:
         docs = DocMemory(Path(folder) / "docs.db")
+        docs.vector_index_mode = args.vector_index
         try:
             for source, title, text in DOCS:
                 docs.add_text(source, text, title=title)
@@ -176,6 +179,8 @@ def main(argv=None) -> int:
             reranker.embed(["warmup"])
             result = evaluate(docs, reranker)
             result["neural_model"] = args.neural_model
+            result["vector_index_mode"] = args.vector_index
+            result["vector_index"] = docs.vector_index_stats()
             result["neural_load_s"] = round(
                 time.perf_counter() - started, 2)
         finally:
@@ -193,6 +198,9 @@ def main(argv=None) -> int:
               f"median={row['median_ms']:.2f}ms")
     print(f"fts candidate recall@10: {result['candidate_recall_at_10']:.3f}")
     print(f"hybrid recall@10: {result['hybrid_recall_at_10']:.3f}")
+    index = result.get("vector_index", {})
+    print(f"vector index: mode={index.get('mode')} ann={index.get('ann')} "
+          f"fallbacks={index.get('fallbacks')}")
     print(f"wrote {args.out}")
     return 0
 

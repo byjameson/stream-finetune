@@ -100,10 +100,10 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('sen
 index is warm, with a few seconds of model warm-up. Chunk vectors are cached in
 SQLite (`doc_vectors`) by model key and pruned when a source is replaced or
 forgotten. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the remaining gaps:
-the hashed fallback is still lexical, vector search is exact rather than ANN,
+the hashed fallback is still lexical, the ANN index is IVF rather than HNSW,
 and multi-document conflict resolution is not implemented.
 
-### Prewarmed vector index
+### Prewarmed exact vector index
 
 `research/benchmark_vector_index.py` compares the legacy linear scan (read every
 SQLite blob and loop in Python) with a one-time numpy matrix built at startup.
@@ -122,8 +122,35 @@ python research/benchmark_vector_index.py \
 Both paths are exact cosine over the same vectors; the top-5 sources match.
 Full `search` (FTS + matrix + rerank) is 6.9 ms at this size. The matrix is
 about 6 MB for 3000 hashed chunks. The server builds it after loading the model
-and reranker; `--no-prewarm` skips it for very large corpora or slow disks. This
-is a prewarmed exact index, not an approximate ANN graph.
+and reranker; `--no-prewarm` skips it for very large corpora or slow disks.
+
+### IVF ANN index
+
+Above `ANN_MIN_CHUNKS` (256), auto mode builds deterministic k-means IVF
+buckets. A query scores centroids, probes the best `nprobe` buckets and exactly
+reranks only their members. `--vector-index ann|exact|auto` selects the path.
+Anything below the auto threshold, an empty/short bucket result, an ANN error,
+or an ANN top score below the hybrid threshold falls back to the exact matrix.
+
+```bash
+python research/benchmark_ann_index.py \
+  --vectors 20000 --clusters 128 --probes 4,8,12 \
+  --out research/results/ann_index_benchmark.json
+```
+
+Clustered synthetic normalized vectors, 20k vectors, 128 buckets, build 0.24 s:
+
+| probe | ANN median | exact median | speedup | recall@10 |
+|---:|---:|---:|---:|---:|
+| 4 | **0.64 ms** | 3.22 ms | **5.0x** | **1.000** |
+| 8 | 1.43 ms | 3.22 ms | 2.3x | **1.000** |
+| 12 | 1.90 ms | 3.22 ms | 1.7x | **1.000** |
+
+This is approximate IVF, not an HNSW graph; the exact fallback is the safety
+net. On the small authored retrieval set `--vector-index ann` keeps top-1 at
+**1.000** (two low-confidence queries used the exact fallback). A live 300-doc
+server test reported `mode=ann`, `nlist=17`, `nprobe=5`, `fallbacks=0` and
+returned `CODE-137`/`CODE-299` with the right sources.
 
 ## Raw model knowledge probe
 

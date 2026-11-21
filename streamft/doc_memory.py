@@ -66,6 +66,12 @@ HASHED_CACHE_KEY = "hashed-ngram-v1"
 # kept; this only stops unrelated chunks from being dragged into the pool.
 HYBRID_MIN_HASHED = 0.28
 HYBRID_MIN_NEURAL = 0.30
+ANN_MIN_CHUNKS = 256
+ANN_BUILD_ITERATIONS = 8
+
+
+class _AnnFallback(RuntimeError):
+    """Internal signal: use the exact matrix for this query."""
 
 
 def _char_ngrams(text: str) -> list[str]:
@@ -109,6 +115,64 @@ def _unpack_vector(blob: bytes):
     values = array.array("f")
     values.frombytes(blob)
     return values
+
+
+def _normalized_rows(matrix):
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    norms[norms == 0.0] = 1.0
+    return matrix / norms
+
+
+def build_ivf(matrix, nlist: int | None = None,
+              iterations: int = ANN_BUILD_ITERATIONS) -> dict | None:
+    """Deterministic k-means IVF index over normalized rows.
+
+    This is approximate retrieval: a query scores cluster centroids, probes
+    the best `nprobe` buckets, then reranks only their members exactly.
+    """
+    if np is None or matrix is None or len(matrix) < 2:
+        return None
+    n = len(matrix)
+    if nlist is None:
+        nlist = min(64, max(2, int(round(math.sqrt(n)))))
+    nlist = min(max(2, int(nlist)), n)
+    starts = np.linspace(0, n - 1, nlist).astype(int)
+    centroids = matrix[starts].copy()
+    for _ in range(max(1, iterations)):
+        assignments = (matrix @ centroids.T).argmax(axis=1)
+        updated = centroids.copy()
+        for cluster in range(nlist):
+            members = matrix[assignments == cluster]
+            if len(members):
+                updated[cluster] = members.mean(axis=0)
+        centroids = _normalized_rows(updated)
+    assignments = (matrix @ centroids.T).argmax(axis=1)
+    buckets = [np.where(assignments == cluster)[0].astype(np.int32)
+               for cluster in range(nlist)]
+    return {"centroids": centroids, "buckets": buckets, "nlist": nlist}
+
+
+def ann_topk(matrix, ann: dict, query_vector, limit: int,
+             probe: int | None = None):
+    """Return exact-scored top-k within the best `probe` IVF buckets."""
+    if ann is None or matrix is None:
+        raise _AnnFallback("no ANN index")
+    nlist = int(ann["nlist"])
+    if probe is None:
+        probe = max(1, int(math.ceil(math.sqrt(nlist))))
+    probe = min(nlist, max(1, int(probe)))
+    cluster_scores = ann["centroids"] @ query_vector
+    clusters = np.argsort(-cluster_scores, kind="stable")[:probe]
+    parts = [ann["buckets"][int(cluster)] for cluster in clusters
+             if len(ann["buckets"][int(cluster)])]
+    if not parts:
+        raise _AnnFallback("empty ANN buckets")
+    positions = np.concatenate(parts)
+    if len(positions) < min(limit, len(matrix)):
+        raise _AnnFallback("too few ANN candidates")
+    scores = matrix[positions] @ query_vector
+    order = np.argsort(-scores, kind="stable")[:limit]
+    return positions[order], scores[order]
 
 
 def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
@@ -219,6 +283,10 @@ class DocMemory:
         self._lock = threading.RLock()
         self.reranker = None
         self._vector_index = None
+        self.vector_index_mode = "auto"  # auto | ann | exact
+        self.ann_min_chunks = ANN_MIN_CHUNKS
+        self.ann_probe = None
+        self._vector_fallback_count = 0
         self.con = sqlite3.connect(str(self.path), check_same_thread=False)
         self.con.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5("
@@ -378,9 +446,19 @@ class DocMemory:
             matrix = None
             if np is not None and kept_vectors:
                 matrix = np.asarray(kept_vectors, dtype=np.float32)
-                norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-                norms[norms == 0.0] = 1.0
-                matrix = matrix / norms
+                matrix = _normalized_rows(matrix)
+            mode = self._resolved_vector_mode(len(kept_rows))
+            ann = None
+            ann_build_s = 0.0
+            if mode == "ann" and matrix is not None:
+                ann_started = time.perf_counter()
+                try:
+                    ann = build_ivf(matrix)
+                except (MemoryError, RuntimeError, ValueError):
+                    ann = None
+                ann_build_s = time.perf_counter() - ann_started
+                if ann is None:
+                    mode = "exact"
             rowids = [row[0] for row in kept_rows]
             self._vector_index = {
                 "key": key,
@@ -389,9 +467,21 @@ class DocMemory:
                 "matrix": matrix,
                 "positions": {rowid: index
                               for index, rowid in enumerate(rowids)},
+                "mode": mode,
+                "ann": ann,
+                "ann_build_s": ann_build_s,
                 "build_s": time.perf_counter() - started,
             }
+            self._vector_fallback_count = 0
         return self.vector_index_stats()
+
+    def _resolved_vector_mode(self, chunks: int) -> str:
+        if self.vector_index_mode == "exact" or np is None:
+            return "exact"
+        if self.vector_index_mode == "ann":
+            return "ann" if chunks >= 2 else "exact"
+        return ("ann" if chunks >= max(2, int(self.ann_min_chunks))
+                else "exact")
 
     def vector_index_stats(self) -> dict:
         index = self._vector_index
@@ -400,11 +490,22 @@ class DocMemory:
             return {"built": False, "chunks": 0, "dim": 0,
                     "build_s": 0.0, "backend": backend}
         matrix = index.get("matrix")
+        ann = index.get("ann")
+        nlist = int(ann["nlist"]) if ann else 0
         return {
             "built": matrix is not None,
             "chunks": len(index.get("rows", [])),
             "dim": int(matrix.shape[1]) if matrix is not None else 0,
+            "mode": index.get("mode", "exact"),
+            "ann": bool(ann),
+            "nlist": nlist,
+            "nprobe": (int(self.ann_probe) if self.ann_probe
+                       else (max(1, int(math.ceil(math.sqrt(nlist))))
+                             if nlist else 0)),
+            "exact_fallback": True,
+            "fallbacks": int(self._vector_fallback_count),
             "build_s": round(float(index.get("build_s", 0.0)), 3),
+            "ann_build_s": round(float(index.get("ann_build_s", 0.0)), 3),
             "backend": backend,
         }
 
@@ -422,6 +523,46 @@ class DocMemory:
         # real character overlap before a hash-only candidate may bypass FTS.
         text = f"{row[3]} {row[1]}".lower()
         return len(query_grams & set(_char_ngrams(text))) >= 2
+
+    @staticmethod
+    def _exact_candidates(index, query_vector, limit: int):
+        scores = index["matrix"] @ query_vector
+        order = np.argsort(-scores, kind="stable")[:limit]
+        return order, scores[order]
+
+    def _search_positions(self, index, query_vector, limit: int,
+                          required_rowids, threshold: float):
+        matrix = index["matrix"]
+        ann = index.get("ann")
+        positions = None
+        scores = None
+        if ann is not None:
+            try:
+                positions, scores = ann_topk(
+                    matrix, ann, query_vector, limit, self.ann_probe)
+                if not len(positions) or float(scores[0]) < threshold:
+                    raise _AnnFallback("low ANN confidence")
+            except Exception:
+                positions = None
+                scores = None
+        if positions is None:
+            if ann is not None:
+                self._vector_fallback_count += 1
+            positions, scores = self._exact_candidates(
+                index, query_vector, limit)
+        by_rowid = {
+            index["rowids"][int(position)]: float(score)
+            for position, score in zip(positions, scores)
+        }
+        required = [index["positions"][rowid]
+                    for rowid in required_rowids or ()
+                    if rowid in index["positions"]]
+        if required:
+            extra = matrix[required] @ query_vector
+            for position, score in zip(required, extra):
+                by_rowid[index["rowids"][position]] = float(score)
+        return ([int(position) for position in positions],
+                [float(score) for score in scores], by_rowid)
 
     def _embedding_candidates(self, query: str, active, limit: int,
                               required_rowids=None):
@@ -442,21 +583,16 @@ class DocMemory:
         if matrix.shape[1] != query_vector.shape[0]:
             return self._embedding_candidates_scan(
                 query, active, limit, required_rowids)
-        scores = matrix @ query_vector
-        order = np.argsort(-scores, kind="stable")
-        take = min(limit, len(order))
-        top = [int(position) for position in order[:take]]
-        by_rowid = {index["rowids"][position]: float(scores[position])
-                    for position in top}
-        for rowid in required_rowids or ():
-            position = index["positions"].get(rowid)
-            if position is not None:
-                by_rowid[rowid] = float(scores[position])
         neural = key.startswith("neural:")
         threshold, query_grams = self._candidate_filters(query, neural)
+        try:
+            top, top_scores, by_rowid = self._search_positions(
+                index, query_vector, limit, required_rowids, threshold)
+        except (MemoryError, RuntimeError, ValueError, IndexError):
+            return self._embedding_candidates_scan(
+                query, active, limit, required_rowids)
         hits = []
-        for position in top:
-            similarity = float(scores[position])
+        for position, similarity in zip(top, top_scores):
             if similarity < threshold:
                 break
             row = index["rows"][position]

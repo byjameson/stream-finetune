@@ -3,7 +3,8 @@ import json
 import pytest
 
 from streamft.doc_memory import (
-    DocMemory, SourceNotFound, _chunks, best_snippet, main)
+    DocMemory, SourceNotFound, _chunks, ann_topk, best_snippet, embed_text,
+    main)
 
 
 def test_doc_memory_indexes_and_searches_with_source(tmp_path):
@@ -113,6 +114,47 @@ def test_prewarmed_index_matches_linear_scan(tmp_path):
     for hit in indexed:
         assert indexed_scores[hit["_rowid"]] == pytest.approx(
             scan_scores[hit["_rowid"]], abs=1e-6)
+    mem.close()
+
+
+def test_ann_index_matches_exact_when_probing_every_bucket(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    for index in range(20):
+        mem.add_text(f"policy-{index}.txt",
+                     f"Policy {index}: approval code CODE-{index}.",
+                     title=f"Policy {index}", replace=False)
+    mem.vector_index_mode = "ann"
+    mem.ann_min_chunks = 4
+    stats = mem.prewarm_vectors()
+    assert stats["mode"] == "ann"
+    assert stats["ann"] is True
+    assert stats["exact_fallback"] is True
+    assert stats["nlist"] >= 2
+    index = mem._vector_index
+    query = embed_text("Policy 3 approval code")
+    exact_positions, _ = mem._exact_candidates(index, query, 5)
+    ann_positions, _ = ann_topk(
+        index["matrix"], index["ann"], query, 5,
+        probe=index["ann"]["nlist"])
+    assert [int(value) for value in ann_positions] == [
+        int(value) for value in exact_positions]
+    mem.close()
+
+
+def test_ann_index_falls_back_to_exact_on_low_confidence(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    for index in range(20):
+        mem.add_text(f"policy-{index}.txt",
+                     f"Policy {index}: approval code CODE-{index}.",
+                     title=f"Policy {index}", replace=False)
+    mem.vector_index_mode = "ann"
+    mem.ann_min_chunks = 4
+    mem.ann_probe = 1
+    mem.prewarm_vectors()
+    mem._embedding_candidates("zzzz qqqq", None, 3)
+    stats = mem.vector_index_stats()
+    assert stats["mode"] == "ann"
+    assert stats["fallbacks"] >= 1
     mem.close()
 
 
