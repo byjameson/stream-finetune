@@ -7,6 +7,7 @@
 - The product checkpoint at `checkpoints/transformer_behavior_50m_scaled`
 - Optional: Ollama + `llama3.2:3b` for the teacher/curiosity flow and provider mode
 - Optional: `models/all-MiniLM-L6-v2` for neural retrieval
+- `pypdf` and `python-docx` are installed with the package for PDF/DOCX ingestion
 
 ## Run
 
