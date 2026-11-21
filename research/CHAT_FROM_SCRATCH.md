@@ -379,11 +379,13 @@ or a refusal.
 ### LoRA adapter
 
 `streamft/lora.py` implements small MLP LoRA adapters for both HF-style models
-and the tiny transformer. A demo adapter on the 50M product:
+and the tiny transformer. The gated 50M adapter:
 
 - **368,640** trainable parameters (~0.74% of the base), ~1.5 MB;
-- 300 steps, ~42 s on the RTX 3050;
-- clean smoke **PASS** (1.380 bpb / 4.082 assistant);
+- 100 steps, ~15 s on the RTX 3050;
+- queue-target gain **+38.2%**;
+- clean bpb regression **+0.08%**, assistant **+0.07%**;
+- clean smoke **PASS** (1.376 bpb / 4.069 assistant);
 - runtime behavior **PASS**, E2E **PASS**.
 
 The adapter is a delivery mechanism, not a new base model: users can train

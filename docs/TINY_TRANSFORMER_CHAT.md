@@ -163,16 +163,19 @@ See [`PERSONALIZE.md`](PERSONALIZE.md) for the bring-your-own-data workflow.
 
 ### LoRA adapters
 
-`streamft/lora.py` supports small MLP adapters on the frozen base. A demo
+`streamft/lora.py` supports small MLP adapters on the frozen base. A gated
 adapter has **368,640 trainable parameters** (~0.74% of 49.2M) and is ~1.5 MB:
 
-- clean smoke: **PASS** (1.380 bpb / 4.082 assistant);
-- runtime behavior: **PASS**;
-- E2E: **PASS**.
+- queue-target gain **+38.2%**;
+- clean bpb regression **+0.08%**, assistant **+0.07%**;
+- clean smoke **PASS** (1.376 bpb / 4.069 assistant);
+- runtime behavior **PASS**;
+- E2E **PASS**.
 
 Load one with `--adapter` in `streamft.chat_server`, `research/chat_human.py`,
 `research/eval_transformer_chat.py`, `research/behavior_eval.py` or
-`research/eval_chat_human.py`. Train with `research/train_lora.py`.
+`research/eval_chat_human.py`. Train with `research/train_lora.py` or the gated
+adapter command in [`PERSONALIZE.md`](PERSONALIZE.md).
 
 ## Training
 

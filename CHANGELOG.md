@@ -193,9 +193,11 @@
   `docs/PERSONALIZE.md`.
 - LoRA adapters for the transformer: `streamft/lora.py` works with HF-style
   and tiny-LM modules; `research/train_lora.py` trains a 368,640-param
-  (~0.74%) adapter in ~42 s. The demo adapter passes clean smoke (1.380 bpb /
-  4.082 assistant), runtime behavior and E2E; servers/runtimes accept
-  `--adapter`.
+  (~0.74%) adapter in seconds. The gated 50M adapter gets **+38.2%** queue
+  target gain with clean bpb +0.08% / assistant +0.07%; clean smoke (1.376
+  bpb / 4.069 assistant), runtime behavior and E2E all pass. Servers/runtimes
+  accept `--adapter`. Targeted low-LR 100-step runs are accepted; 300 steps at
+  5e-4 overfit and are rejected.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -206,7 +208,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 218 tests;
+- 219 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
