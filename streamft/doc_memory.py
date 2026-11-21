@@ -267,8 +267,12 @@ class DocMemory:
             raise ValueError("source is required")
         variants = [source]
         if "://" not in source:
-            # Windows stores local paths with backslashes; accept either form.
-            for variant in (Path(source).as_posix(), str(Path(source))):
+            # Windows stores local paths with backslashes; accept either form
+            # on every platform (Path() treats a backslash as a normal char on
+            # POSIX, so do the replacement explicitly too).
+            for variant in (source.replace("/", "\\"),
+                            source.replace("\\", "/"),
+                            Path(source).as_posix(), str(Path(source))):
                 if variant not in variants:
                     variants.append(variant)
         placeholders = ",".join("?" for _ in variants)
