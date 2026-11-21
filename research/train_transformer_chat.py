@@ -140,6 +140,7 @@ def main():
     ap.add_argument("--valid", default="data/chat_en_clean_valid.pt")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--out", default="checkpoints/transformer_chat_en_clean_21m")
+    ap.add_argument("--init", default="")
     ap.add_argument("--tag", default="transformer_21m_sft")
     ap.add_argument("--result",
                     default="research/results/transformer_chat_en_clean_21m.json")
@@ -174,6 +175,12 @@ def main():
     config = {"vocab": tok.get_vocab_size(), "dim": args.dim,
               "layers": args.layers, "heads": args.heads, "ff": args.ff,
               "seq": args.seq, "arch": "transformer"}
+    if args.init:
+        ck = torch.load(ROOT / args.init / "model.pt", map_location="cpu",
+                        weights_only=False)
+        model.load_state_dict(ck["state"])
+        print(json.dumps({"event": "init", "from": args.init,
+                          "step": ck.get("step")}), flush=True)
     print(json.dumps({"event": "start", "params": sum(
         p.numel() for p in model.parameters()), "config": config}), flush=True)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr,
