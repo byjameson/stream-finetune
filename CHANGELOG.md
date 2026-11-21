@@ -163,10 +163,12 @@
   reviewed queue and exports skill examples for a gated replay fine-tune.
   Added `docs/PUBLIC_RELEASE_CHECKLIST.md` (currently not approved).
 - Gated update pipeline `research/gated_update.py`: queue -> 2:1 replay -> low-LR
-  fine-tune -> clean/queue regression gate. 55-example/200-step candidate gives
-  +2.07% target but is rejected by the 5% target floor; clean regression is
-  +1.87% bpb. 400 steps overfits and is also rejected. The gate refuses weak
-  updates instead of deploying them.
+  fine-tune -> clean/queue regression gate. A 55-example/200-step candidate
+  (+2.07% target) was rejected; 267 novel format/style examples at 300 steps
+  cleared the 5% gate with **+74.4% target gain**, clean +2.45% bpb / +2.52%
+  assistant loss. Accepted as `checkpoints/updates/v0001`; E2E memory/task/
+  greeting/story still passes. Loss gain is not a behavioral gain: novel skill
+  generation is mixed.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -177,7 +179,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 208 tests;
+- 209 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

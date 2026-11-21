@@ -337,17 +337,22 @@ checkpoint** (`transformer_chat_skill_ret_21m`).
   replay fine-tune after review;
 - no autonomous weight update and no public release.
 
-**Gated update result:** with 55 reviewed examples (44 train / 11 validation),
-2:1 clean replay and 200 steps:
+**Gated update result (accepted):** with 267 novel, learnable format/style
+examples (213 train / 54 validation), 2:1 clean replay and 300 steps:
 
-- queued-skill loss improves **+2.07%**,
-- clean bpb regresses **+1.87%**, clean assistant loss **+1.99%**,
-- the gate requires **5% target gain**, so the update is **REJECTED**;
-- 400 steps overfit: target **-2.05%**, clean bpb **+4.48%**, also REJECTED.
+- queued-skill loss 4.346 -> **1.114**, a **74.4%** target gain;
+- clean bpb 1.440 -> **1.475** (+2.45%);
+- clean assistant loss 4.266 -> **4.374** (+2.52%);
+- all three gate checks pass; accepted as `checkpoints/updates/v0001`.
 
-The gate is working: it refuses a small, weak update even when clean-chat
-regression is inside budget. The queue needs more varied examples before a
-weight update is justified; facts still go to memory.
+The accepted checkpoint also passes the standard E2E memory/task/greeting/story
+test. However, **loss is not behavior**: generation of the new skills is mixed
+(`summarize` works; `count to five`, `be brief`, `make it polite` often fall
+back to generic replies). The gate is a loss/regression gate, not a full
+behavioral gate. This is the next thing to tighten.
+
+Earlier 55-example runs were rejected at 2.07% target gain, and 400 steps
+overfit; the gate correctly refused them.
 
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 
