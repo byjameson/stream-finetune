@@ -266,6 +266,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `analyze_chat_lengths.py` | conversation-length distribution in the packed chat shard | ~1 s |
 | `train_transformer_chat.py` | 20.2M transformer diagnostic on the same clean SFT data | ~25 min |
 | `train_lora.py` | small MLP LoRA adapter on a frozen transformer base | ~1 min |
+| `learning_loop.py` | reviewed feedback -> gated LoRA, history, holdout, rollback | ~1 min + gate |
+| `compare_adapters.py` | assistant-turn loss comparison for base and adapters | ~10 s |
+| `research_worker.py` | scheduled approved-topic worker with lock/log/stale recovery | per topic |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |

@@ -297,12 +297,26 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Scheduled research worker: `research/research_worker.py` processes only
+  approved topics with an exclusive lock, stale `running` recovery, optional
+  loop mode and a JSONL run log; `scripts/run_research.ps1` wraps it and
+  `scripts/register_research_task.ps1` installs the daily
+  `AtomZeroResearchWorker` task. A live approved-Ankara run stored 3 cited
+  chunks; the registered task ran with `LastTaskResult 0` and next run
+  22.11.2026 09:00. Pending/rejected topics never touch the network; no weight
+  mutation.
+- Release decision pack and scaling plan: `docs/RELEASE_DECISIONS.md` covers
+  licence/legal, hosting, security, name and update policy; `docs/SCALING_PLAN.md`
+  documents the 49.2M -> data scaling -> 150-300M -> 1B+ options. Preliminary
+  `atomzero.ai` check: registry RDAP 404 and no DNS; not a reservation and not
+  trademark clearance. `docs/PUBLIC_RELEASE_CHECKLIST.md` now marks only
+  evidence-backed items.
 - Product branding: the local assistant now presents as **Atom Zero** in the
   browser title/header, README, model card, demo output and health-facing
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 260 tests;
+- 265 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

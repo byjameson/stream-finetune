@@ -193,6 +193,30 @@ class ResearchQueue:
             counts[status] = counts.get(status, 0) + 1
         return {"total": len(items), **counts}
 
+    def recover_stale_running(self, stale_seconds: int = 21600) -> list[str]:
+        """Return interrupted ``running`` items to ``approved`` for a retry."""
+        cutoff = time.time() - max(60, int(stale_seconds))
+        recovered: list[str] = []
+        with self._lock:
+            self._reload()
+            for item in self.items:
+                if item.get("status") != "running":
+                    continue
+                try:
+                    started = time.mktime(time.strptime(
+                        str(item.get("started_at", "")),
+                        "%Y-%m-%dT%H:%M:%S"))
+                except (TypeError, ValueError, OverflowError):
+                    started = 0.0
+                if started <= cutoff:
+                    item["status"] = "approved"
+                    item["started_at"] = ""
+                    item["error"] = "recovered stale running item"
+                    recovered.append(str(item.get("id", "")))
+            if recovered:
+                self._save()
+        return recovered
+
     def run_approved(self, docs, limit: int = 1, fetcher=None,
                      teacher=None) -> list[dict]:
         """Fetch approved topics into DocMemory; pending items never run.

@@ -3,14 +3,19 @@
 Do not publish a checkpoint, demo or API until every item is checked and the
 evidence is linked. Current status: **not approved**.
 
+Decision pack: [`RELEASE_DECISIONS.md`](RELEASE_DECISIONS.md). Scaling:
+[`SCALING_PLAN.md`](SCALING_PLAN.md). Research worker:
+[`RESEARCH_WORKER.md`](RESEARCH_WORKER.md). A checked box means repo evidence
+exists, not that the release is approved.
+
 ## 1. Model and evaluation
 
 - [ ] Model card matches the exact checkpoint and commit.
-- [ ] Smoke gate evidence committed (`research/results/...`).
+- [x] Smoke gate evidence committed (`research/results/...`).
 - [ ] End-to-end virtual-human eval committed (`chat_human_eval.json`).
 - [ ] Retention matrix: base, skill, and clean-chat bpb/assistant loss.
-- [ ] Known failures documented with examples (task confusion, repetition).
-- [ ] No general-assistant, factual-reasoning or safety claim.
+- [x] Known failures documented with examples (task confusion, repetition).
+- [x] No general-assistant, factual-reasoning or safety claim.
 
 ## 2. Data provenance and licence
 
@@ -21,7 +26,8 @@ evidence is linked. Current status: **not approved**.
 - [ ] Dolly-15k: CC BY-SA 3.0 attribution/share-alike reviewed.
 - [ ] TinyStories: CDLA-Sharing obligations reviewed.
 - [ ] Synthetic skill dialogues labelled as generated in this repo.
-- [ ] Code: Apache-2.0 (`LICENSE`); weights' data obligations reviewed.
+- [x] Code: Apache-2.0 (`LICENSE`).
+- [ ] Weights' data obligations reviewed.
 - [ ] Legal review completed for the intended distribution.
 
 ## 3. Safety and abuse
@@ -43,20 +49,20 @@ evidence is linked. Current status: **not approved**.
 
 ## 5. Deployment
 
-- [ ] Local-only demo is the default.
+- [x] Local-only demo is the default.
 - [ ] Hosted endpoint uses HTTPS, auth and rate limits.
-- [ ] Model/version pinned; rollback checkpoint available.
+- [x] Model/version pinned; rollback checkpoint available.
 - [ ] Health, latency and error metrics monitored.
-- [ ] Cost/VRAM limits documented (20M model, 6 GB GPU class).
+- [x] Cost/VRAM limits documented (49.2M model, 6 GB GPU class).
 - [ ] A/B or canary plan for any model update.
 
 ## 6. Learning/update loop
 
-- [ ] Facts go to memory, not weights.
-- [ ] Skill examples enter a review queue (`research/update_loop.py`).
-- [ ] Training uses clean replay and a fixed evaluation gate.
-- [ ] Regression/rollback is automatic or manually enforced.
-- [ ] No autonomous weight update without human approval.
+- [x] Facts go to memory, not weights.
+- [x] Skill examples enter a review queue (`research/update_loop.py`).
+- [x] Training uses clean replay and a fixed evaluation gate.
+- [x] Regression/rollback is automatic or manually enforced.
+- [x] No autonomous weight update without human approval.
 
 ## 7. Go/no-go
 

@@ -502,14 +502,26 @@ python research/research_queue.py --queue data/research_queue.json run \
 The browser page has the same **Research queue** section: add a topic, approve
 or reject it, and run approved topics. It shows status counts and source URLs.
 
-Schedule the wrapper with Task Scheduler or cron for reviewed autonomous
-research:
+For scheduled runs use the worker instead of the bare CLI. It adds a lock,
+stale `running` recovery and a JSONL run log:
 
 ```powershell
-# Windows Task Scheduler: daily at 09:00
-schtasks /Create /SC DAILY /ST 09:00 /TN "streamft research" `
-  /TR "powershell -ExecutionPolicy Bypass -File C:\path\to\stream-finetune\scripts\run_research.ps1 -Limit 1"
+python research/research_worker.py --queue data/research_queue.json `
+  --db data/docs.db --limit 3 --log data/research_worker.jsonl `
+  --lock data/research_worker.lock --once
 ```
+
+Register the real Windows task (daily 09:00, current user, no admin rights):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/register_research_task.ps1 `
+  -TaskName AtomZeroResearchWorker -DailyAt 09:00 -Limit 3
+```
+
+Check it with `Get-ScheduledTask -TaskName AtomZeroResearchWorker` and
+`Get-ScheduledTaskInfo -TaskName AtomZeroResearchWorker`. Details:
+[`RESEARCH_WORKER.md`](RESEARCH_WORKER.md). The task processes only approved
+topics; pending/rejected items never touch the network.
 
 ```cron
 # Linux/macOS cron: daily at 09:00

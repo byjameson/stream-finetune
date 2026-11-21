@@ -1,3 +1,6 @@
+import json
+import time
+
 import pytest
 
 from streamft import chat_server
@@ -146,6 +149,28 @@ def test_queue_fetch_error_is_recorded(tmp_path):
     assert "network down" in ran[0]["error"]
     assert ran[0]["sources"] == []
     docs.close()
+
+
+def test_queue_recovers_stale_running_items(tmp_path):
+    path = tmp_path / "queue.json"
+    queue = ResearchQueue(path)
+    item = queue.add("Ankara")
+    queue.approve(item["id"])
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data[0]["status"] = "running"
+    data[0]["started_at"] = time.strftime(
+        "%Y-%m-%dT%H:%M:%S", time.localtime(time.time() - 7200))
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert queue.recover_stale_running(60) == [item["id"]]
+    recovered = queue.list()[0]
+    assert recovered["status"] == "approved"
+    assert "recovered" in recovered["error"]
+
+    data[0] = recovered
+    data[0]["status"] = "running"
+    data[0]["started_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert queue.recover_stale_running(3600) == []
 
 
 def test_queue_validates_topics_and_ids(tmp_path):

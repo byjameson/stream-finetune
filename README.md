@@ -32,7 +32,10 @@ evaluated on a non-training holdout, and rolled back with
 `learning_loop.py activate`. The active adapter loads with `--adapter auto`.
 The 49.2M checkpoint, optional 368k LoRA adapter and SQLite FTS5 memory run
 locally. Facts stay in RAG; style/skill updates go through the gate. It is not a
-general assistant.
+general assistant. Release remains local-only: see the
+[decision pack](docs/RELEASE_DECISIONS.md),
+[scaling plan](docs/SCALING_PLAN.md) and
+[research worker](docs/RESEARCH_WORKER.md) for what is still required.
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
