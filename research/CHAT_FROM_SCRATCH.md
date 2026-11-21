@@ -316,13 +316,28 @@ This keeps facts and actions out of the weights. The runtime is tested
 independently of the model, so a weak checkpoint does not make memory or task
 commands fail.
 
+### Local HTTP server
+
+```bash
+python -m streamft.chat_server \
+  --model checkpoints/transformer_chat_en_clean_21m \
+  --host 127.0.0.1 --port 8013
+```
+
+Verified: `/health` 200 (20,219,392 params, step 12000), `/generate` 200 and
+`/v1/chat/completions` 200. One-command demo:
+`scripts/chat_demo.ps1`. Model card:
+[`../docs/TINY_TRANSFORMER_CHAT.md`](../docs/TINY_TRANSFORMER_CHAT.md).
+
 ## Quality expectation
 
-- **21M / 24.6M tokens: BLOCKED.** It learns token statistics and produces
-  word salad, not chat.
-- 50M / 300M tokens: unknown; the next controlled test. Use a cleaner
-  dialogue-heavy mix rather than the broad SmolTalk/UltraChat mixture.
-- 100M+ / 1B+ tokens: more fluent, but days-to-weeks on a 6 GB GPU.
+- **20.2M transformer: PASS_CHAT_SMOKE** with role tokens banned; short,
+  grammatical, often generic/wrong responses. Not a general assistant.
+- **49.2M transformer: PASS** but only 0.015 bpb better, lower alpha floor and
+  more rambling; not the product choice.
+- **spiking 21M/50M: BLOCKED** at 2.29-2.31 chat bpb / 6.7-6.8 assistant loss.
+- Next: targeted skill/curriculum data and runtime evaluation, not more
+  parameter scale.
 
 The virtual-human layer (memory, tasks, tools) must carry facts and actions;
 the language model only supplies wording. Do not equate a small model's broken

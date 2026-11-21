@@ -604,6 +604,16 @@ with **24.8 MB** peak VRAM; 21M runs at 563/204 tok/s with 88.3 MB. This is not
 a general model; packaging/licence/model card are still missing.
 [`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
 
+**Tiny Transformer Chat (product path):** a **20.2M from-scratch transformer**
+on the same clean chat data reaches chat bpb **1.359**, assistant loss **4.01**,
+alpha min **0.731** and 0 empty samples. With role tokens banned at decoding it
+passes the smoke gate; the 21M/50M spiking chat models remain BLOCKED at
+2.29-2.31 bpb / 6.7-6.8 loss. A 49.2M transformer adds only 0.015 bpb, so the
+20M checkpoint is the product model. It is a tiny, repetitive character model,
+not a general assistant. Model card:
+[`docs/TINY_TRANSFORMER_CHAT.md`](docs/TINY_TRANSFORMER_CHAT.md); local server:
+`python -m streamft.chat_server`; demo: `scripts/chat_demo.ps1`.
+
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains
 **99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback

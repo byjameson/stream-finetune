@@ -15,14 +15,12 @@ from pathlib import Path
 
 import torch
 
+from streamft.transformer import TransformerLM, generate as transformer_generate
+
 try:
     from research.chat_eval import chat_generate
-    from research.train_transformer_chat import (
-        TransformerLM, generate as transformer_generate)
 except ImportError:  # running as `python research/chat_human.py`
     from chat_eval import chat_generate
-    from train_transformer_chat import (
-        TransformerLM, generate as transformer_generate)
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MEMORY = ROOT / "data/chat_human_memory.json"
@@ -163,7 +161,8 @@ class ChatHuman:
                 f"<|user|> {prompt}<|end|><|assistant|>",
                 max_new=64, temperature=0.7, top_k=20,
                 repetition_penalty=1.1,
-                banned_ids=(user_id, assistant_id))
+                banned_ids=(user_id, assistant_id),
+                device=self.device)
         else:
             text, _ = chat_generate(
                 self.model, self.tokenizer, prompt, max_new_tokens=64,
