@@ -1,6 +1,15 @@
 # Changelog
 
-## 0.7.0 — local verified assistant
+## 0.8.0 - open-source scaled assistant
+
+- Scaled 50M data run: 175.37M clean tokens + replay; 25k candidate promoted,
+  old valid bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502.
+- Reviewed learning loop, knowledge gaps, scheduled worker, Ollama teacher.
+- Opt-in safety filter, PII deletion, prompt-injection red-team.
+- Apache-2.0 code/weights with `NOTICE`; no hosted service.
+- 318 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+
+## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
   retrieval over the verified knowledge ledger.
 - `GET /health`, `/metrics`, `/v1/models`, `/knowledge/search` and
