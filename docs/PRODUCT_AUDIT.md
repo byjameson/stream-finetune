@@ -35,11 +35,11 @@ lower-LR resume did not produce a material improvement over 40k.
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
 
-**Gaps:** the neural reranker is opt-in and needs a one-time model download
-(`models/` is gitignored); on the authored benchmark FTS candidate recall@10
-caps top-1 at 0.900, so the candidate stage is now the bottleneck; the model is
-English-first; no task due dates/reminders; no multi-document conflict
-resolution.
+**Gaps:** the neural reranker needs a one-time model download (`models/` is
+gitignored), so a fresh clone falls back to hashed n-grams; on the authored
+benchmark FTS candidate recall@10 caps top-1 at 0.900, so the candidate stage is
+now the bottleneck; the model is English-first; no task due dates/reminders; no
+multi-document conflict resolution.
 
 ## 3. Browser UI
 
