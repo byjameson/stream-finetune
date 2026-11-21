@@ -41,7 +41,11 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/teacher/notes/verify" in page
     assert "/v1/learning/feedback" in page
     assert "/v1/learning/gaps" in page
+    assert "/v1/documents/forget" in page
+    assert "atomzero_session" in page
     assert "add a document" in page
+    assert "indexed documents" in page
+    assert "new session" in page
     assert "add a teacher answer" in page
     assert "learning queue" in page
     assert "knowledge gaps" in page

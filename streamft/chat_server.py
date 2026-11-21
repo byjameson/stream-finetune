@@ -1,7 +1,7 @@
 """Local HTTP server for Atom Zero, the tiny transformer daily assistant.
 
     python -m streamft.chat_server \
-      --model checkpoints/transformer_behavior_50m_long \
+      --model checkpoints/transformer_behavior_50m_scaled \
       --adapter checkpoints/adapters_50m/v0001 \
       --docs data/docs.db
 
@@ -142,6 +142,7 @@ hr{border:0;border-top:1px solid #ddd;margin:22px 0}
 <h1>Atom Zero</h1>
 <p class="hint">local-first personal assistant</p>
 <p id="m" class="hint">loading...</p>
+<div class="row"><button id="newsession">New session</button></div>
 <div id="chat"></div>
 <div class="row"><input id="p" placeholder="Ask, add a task, search your notes...">
 <button id="g">Send</button></div>
@@ -170,6 +171,8 @@ SHA-256; re-adding the same source replaces it. Nothing is written to weights.</
 <div class="row"><input id="file" type="file" accept=".txt,.md,text/plain">
 <button id="add">Add document</button></div>
 <p id="ds" class="hint"></p>
+<h3>Indexed documents</h3>
+<div id="docs"></div>
 <hr>
 <h3>Delete data</h3>
 <p class="hint">Delete an indexed source or this browser session's memory. This
@@ -231,7 +234,21 @@ before the worker fetches sources. Nothing changes weights automatically.</p>
 <p id="gmsg" class="hint"></p>
 <div id="gq"></div>
 <script>
-const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
+function getSessionId() {
+  try {
+    const saved = localStorage.getItem('atomzero_session');
+    if (saved) return saved;
+  } catch (e) {}
+  const id = 'web-' + Math.random().toString(36).slice(2, 10);
+  try { localStorage.setItem('atomzero_session', id); } catch (e) {}
+  return id;
+}
+let sessionId = getSessionId();
+document.getElementById('newsession').onclick = () => {
+  if (!confirm('Start a new session? The old session memory stays on disk until deleted.')) return;
+  try { localStorage.removeItem('atomzero_session'); } catch (e) {}
+  location.reload();
+};
 const chat = document.getElementById('chat');
 function add(role, text, extra, isError) {
   const box = document.createElement('div');
@@ -379,9 +396,67 @@ document.getElementById('add').onclick = async () => {
       document.getElementById('txt').value = '';
       document.getElementById('file').value = '';
       refreshHealth();
+      refreshDocs();
     }
   } catch (e) { out.textContent = 'error: ' + e; }
 };
+async function refreshDocs() {
+  const box = document.getElementById('docs');
+  if (!box) return;
+  try {
+    const r = await fetch('/v1/documents');
+    const j = await r.json();
+    box.textContent = '';
+    if (!r.ok) {
+      const error = document.createElement('div');
+      error.className = 'hint';
+      error.textContent = 'document error: ' + (j.error || r.status);
+      box.appendChild(error);
+      return;
+    }
+    const data = j.data || [];
+    if (!data.length) {
+      const empty = document.createElement('div');
+      empty.className = 'hint';
+      empty.textContent = 'No indexed documents.';
+      box.appendChild(empty);
+      return;
+    }
+    data.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'qitem';
+      const title = document.createElement('div');
+      title.textContent = (item.title || item.source) + ' | ' +
+                          (item.chunks || 0) + ' chunk(s)';
+      card.appendChild(title);
+      const source = document.createElement('div');
+      source.className = 'src';
+      source.textContent = item.source + (item.kind && item.kind !== 'document'
+        ? ' [' + item.kind + ']' : '');
+      card.appendChild(source);
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.appendChild(qbutton('Forget', () => forgetSource(item.source)));
+      card.appendChild(actions);
+      box.appendChild(card);
+    });
+  } catch (e) {
+    box.textContent = 'document error: ' + e;
+  }
+}
+async function forgetSource(source) {
+  if (!confirm('Delete indexed source "' + source + '"?')) return;
+  try {
+    const r = await fetch('/v1/documents/forget', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({source})});
+    const j = await r.json();
+    setForgetMsg(r.ok
+      ? ('deleted ' + j.chunks_deleted + ' chunk(s) from ' + source)
+      : ('error: ' + (j.error || r.status)), !r.ok);
+    if (r.ok) { refreshHealth(); refreshDocs(); }
+  } catch (e) { setForgetMsg('error: ' + e, true); }
+}
 document.getElementById('tnote').onclick = async () => {
   const answer = document.getElementById('ta').value.trim();
   const out = document.getElementById('tmsg');
@@ -735,7 +810,7 @@ document.getElementById('forgetdoc').onclick = async () => {
       ? ('deleted ' + j.chunks_deleted + ' chunk(s) and ' +
          j.meta_deleted + ' metadata row(s)')
       : ('error: ' + (j.error || r.status)), !r.ok);
-    if (r.ok) { refreshHealth(); }
+    if (r.ok) { refreshHealth(); refreshDocs(); }
   } catch (e) { setForgetMsg('error: ' + e, true); }
 };
 document.getElementById('forgetmem').onclick = async () => {
@@ -959,6 +1034,7 @@ refreshQueue();
 refreshTeacherNotes();
 refreshLearning();
 refreshGaps();
+refreshDocs();
 </script>"""
 
 
@@ -1768,7 +1844,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model",
-                    default="checkpoints/transformer_chat_en_clean_21m")
+                    default="checkpoints/transformer_behavior_50m_scaled")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8013)

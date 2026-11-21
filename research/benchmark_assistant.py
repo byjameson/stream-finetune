@@ -1,7 +1,7 @@
 """Narrow end-to-end benchmark for the Atom Zero assistant.
 
     python research/benchmark_assistant.py \
-        --model checkpoints/transformer_behavior_50m_long \
+        --model checkpoints/transformer_behavior_50m_scaled \
         --adapter checkpoints/adapters_50m/v0001 \
         --out research/results/assistant_benchmark_adapter.json
 
@@ -265,7 +265,7 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "--model", default="checkpoints/transformer_behavior_50m_long")
+        "--model", default="checkpoints/transformer_behavior_50m_scaled")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--adapter", default="")
     ap.add_argument("--safety-filter", action="store_true")
