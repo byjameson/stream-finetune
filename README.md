@@ -21,7 +21,8 @@ source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start with
 upload your own UTF-8 documents over HTTP; the response keeps source, title and
 sha256. A reviewed research queue (browser + API/CLI) fetches only
 user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
-pasted manually as unverified teacher notes with a source URL. The 49.2M
+pasted manually as unverified teacher notes with a source URL, or an explicit
+local Ollama/OpenAI-compatible provider can answer on request. The 49.2M
 checkpoint, optional 368k LoRA adapter and SQLite FTS5 memory run locally.
 Facts stay in RAG; style/skill updates go through a gated adapter. It is not a
 general assistant.

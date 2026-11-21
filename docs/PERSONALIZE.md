@@ -59,8 +59,31 @@ The note is stored as `kind=teacher`, `verified=false`, with a unique
 it as `teacher note, unverified`; it is not a verified fact and does not change
 weights. Missing source URLs are allowed but stay unverified.
 
-This path is **manual paste only**: no API key, no browser scraping, no
-automatic provider calls. A provider adapter is a separate opt-in feature.
+Manual paste needs no API key and no browser scraping. If you want to ask a
+configured model instead, the provider is opt-in and off by default:
+
+```bash
+# Local Ollama example (no API key).
+ollama serve
+ollama pull llama3.2:3b
+
+python -m streamft.chat_server \
+  --model checkpoints/transformer_behavior_50m_long \
+  --docs data/docs.db \
+  --teacher-url http://127.0.0.1:11434/v1 \
+  --teacher-model llama3.2:3b \
+  --teacher-label ollama \
+  --port 8013
+
+curl -X POST http://127.0.0.1:8013/v1/teacher/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"Give a short, factual summary of Ankara.","topic":"Ankara"}'
+```
+
+For a remote OpenAI-compatible server, set `TEACHER_API_KEY` in the environment
+and choose `--teacher-url`/`--teacher-model`. The provider is only called by an
+explicit user request; output is stored as `verified=false`, never written to
+weights. There is no browser automation and no background call.
 
 Use it from the runtime:
 
