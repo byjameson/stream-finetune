@@ -131,11 +131,25 @@ obligations; legal/provenance review is required before redistribution.
 ```bash
 python -m streamft.chat_server \
   --model checkpoints/transformer_behavior_50m_long \
+  --adapter checkpoints/adapters_50m/v0001 \
+  --docs data/docs.db \
   --host 127.0.0.1 --port 8013
 ```
 
-Verified on this machine: `/health` returns 20,219,392 params, step 12000;
-`POST /generate` and `POST /v1/chat/completions` return 200.
+Endpoints:
+
+| endpoint | purpose |
+|---|---|
+| `GET /health` | model, params, step, adapter, document stats |
+| `GET /v1/models` | model id |
+| `GET /v1/documents` | indexed sources |
+| `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
+| `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
+| `POST /v1/chat/completions` | messages; document hits return `sources` and a non-advice note |
+
+Verified on this machine: `/health` returns 49,582,080 params, step 1000,
+adapter `checkpoints/adapters_50m/v0001`, and 1 indexed chunk; document search
+and grounded chat return 200.
 
 One-command demo:
 

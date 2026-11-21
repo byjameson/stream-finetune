@@ -43,6 +43,23 @@ document.getElementById('g').onclick=async()=>{
 </script>"""
 
 
+def doc_answer(text: str, docs) -> dict | None:
+    """Return grounded notes with sources, or None if nothing matches."""
+    if docs is None:
+        return None
+    hits = docs.search(text, k=3)
+    if not hits:
+        return None
+    notes = "\n".join(
+        f"- {hit['chunk']} (source: {hit['source']})" for hit in hits[:3])
+    return {
+        "text": (f"I found these notes:\n{notes}\n\n"
+                 "This is a local note, not professional advice."),
+        "sources": [{"source": hit["source"], "title": hit["title"]}
+                    for hit in hits[:3]],
+    }
+
+
 def chat_prompt(messages) -> str:
     """Build the chat format used during training."""
     parts = []
@@ -82,6 +99,9 @@ class Handler(BaseHTTPRequestHandler):
                 "params": _state["params"],
                 "config": _state["config"],
                 "step": _state.get("step"),
+                "adapter": _state.get("adapter") or None,
+                "documents": (_state["docs"].stats()
+                              if _state.get("docs") else None),
             })
         elif self.path == "/v1/models":
             self._json(200, {"data": [{
@@ -90,13 +110,17 @@ class Handler(BaseHTTPRequestHandler):
             }]})
         elif self.path == "/metrics":
             self._json(200, _state["metrics"])
+        elif self.path == "/v1/documents":
+            docs = _state.get("docs")
+            self._json(200, {"data": docs.sources() if docs else []})
         elif self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
         else:
             self._json(404, {"error": "not found"})
 
     def do_POST(self):
-        if self.path not in ("/generate", "/v1/chat/completions"):
+        if self.path not in ("/generate", "/v1/chat/completions",
+                             "/v1/documents/search"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
         if key:
@@ -106,15 +130,46 @@ class Handler(BaseHTTPRequestHandler):
         try:
             n = int(self.headers.get("Content-Length", "0"))
             req = json.loads(self.rfile.read(n) or b"{}")
+            if self.path == "/v1/documents/search":
+                docs = _state.get("docs")
+                query = str(req.get("query", ""))
+                k = int(req.get("k", 5))
+                hits = docs.search(query, k=k) if docs else []
+                return self._json(200, {"data": hits})
             if self.path == "/v1/chat/completions":
-                prompt = chat_prompt(req.get("messages") or [])
+                messages = req.get("messages") or []
+                prompt = chat_prompt(messages)
                 max_new = int(req.get("max_tokens", 64))
+                doc_query = next(
+                    (str(m.get("content", "")) for m in reversed(messages)
+                     if m.get("role") == "user"), "")
             else:
-                prompt = (
-                    f"<|user|> {str(req.get('prompt', 'hello'))}"
-                    " <|assistant|>")
+                doc_query = str(req.get("prompt", "hello"))
+                prompt = f"<|user|> {doc_query} <|assistant|>"
                 max_new = int(req.get("max_new_tokens", 64))
             max_new = max(1, min(max_new, 256))
+            grounded = doc_answer(doc_query, _state.get("docs"))
+            if grounded:
+                _state["metrics"]["requests"] += 1
+                if self.path == "/generate":
+                    return self._json(200, {
+                        "text": grounded["text"],
+                        "sources": grounded["sources"],
+                        "model": _state["name"],
+                    })
+                return self._json(200, {
+                    "id": "tiny-doc-" + str(abs(hash(grounded["text"]))
+                                            % 10**12),
+                    "object": "chat.completion",
+                    "model": _state["name"],
+                    "sources": grounded["sources"],
+                    "choices": [{
+                        "index": 0,
+                        "message": {"role": "assistant",
+                                    "content": grounded["text"]},
+                        "finish_reason": "stop",
+                    }],
+                })
             temperature = float(req.get("temperature", 0.7))
             top_k = int(req.get("top_k", 20))
             repetition_penalty = float(req.get("repetition_penalty", 1.1))
@@ -148,7 +203,8 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
-          port: int = 8013, api_key: str = "", adapter: str = "") -> int:
+          port: int = 8013, api_key: str = "", adapter: str = "",
+          docs_path: str = "") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -163,9 +219,15 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
     model.eval()
     from tokenizers import Tokenizer
     tok = Tokenizer.from_file(tokenizer_path)
+    docs = None
+    if docs_path:
+        from streamft.doc_memory import DocMemory
+        docs = DocMemory(docs_path)
     _state.update({
         "model": model,
         "tok": tok,
+        "docs": docs,
+        "adapter": adapter,
         "device": device,
         "name": root.name,
         "params": sum(p.numel() for p in model.parameters()),
@@ -197,9 +259,10 @@ def main():
     ap.add_argument("--port", type=int, default=8013)
     ap.add_argument("--api-key", default="")
     ap.add_argument("--adapter", default="")
+    ap.add_argument("--docs", default="")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
-                 args.api_key, args.adapter)
+                 args.api_key, args.adapter, args.docs)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ import hashlib
 import json
 import re
 import sqlite3
+import threading
 import time
 from pathlib import Path
 
@@ -47,7 +48,8 @@ class DocMemory:
     def __init__(self, path: str | Path = "data/docs.db"):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.con = sqlite3.connect(str(self.path))
+        self._lock = threading.RLock()
+        self.con = sqlite3.connect(str(self.path), check_same_thread=False)
         self.con.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5("
             "chunk, source UNINDEXED, title UNINDEXED, sha UNINDEXED, "
@@ -56,16 +58,17 @@ class DocMemory:
 
     def add_text(self, source: str, text: str, title: str = "") -> int:
         sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
-        self.con.execute("DELETE FROM docs WHERE source = ?", (source,))
-        added = 0
-        for chunk in _chunks(text):
-            self.con.execute(
-                "INSERT INTO docs(chunk, source, title, sha, ts) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (chunk, source, title or Path(source).stem, sha,
-                 int(time.time())))
-            added += 1
-        self.con.commit()
+        with self._lock:
+            self.con.execute("DELETE FROM docs WHERE source = ?", (source,))
+            added = 0
+            for chunk in _chunks(text):
+                self.con.execute(
+                    "INSERT INTO docs(chunk, source, title, sha, ts) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (chunk, source, title or Path(source).stem, sha,
+                     int(time.time())))
+                added += 1
+            self.con.commit()
         return added
 
     def add_file(self, path: str | Path, title: str = "") -> int:
@@ -79,27 +82,32 @@ class DocMemory:
         if not words:
             return []
         match = " OR ".join(f'"{w}"' for w in words[:12])
-        rows = self.con.execute(
-            "SELECT chunk, source, title, bm25(docs) AS score "
-            "FROM docs WHERE docs MATCH ? ORDER BY score LIMIT ?",
-            (match, k)).fetchall()
+        with self._lock:
+            rows = self.con.execute(
+                "SELECT chunk, source, title, bm25(docs) AS score "
+                "FROM docs WHERE docs MATCH ? ORDER BY score LIMIT ?",
+                (match, k)).fetchall()
         return [{"chunk": r[0], "source": r[1], "title": r[2],
                  "score": float(r[3])} for r in rows]
 
     def sources(self) -> list[dict]:
-        rows = self.con.execute(
-            "SELECT source, title, COUNT(*) FROM docs "
-            "GROUP BY source, title ORDER BY source").fetchall()
+        with self._lock:
+            rows = self.con.execute(
+                "SELECT source, title, COUNT(*) FROM docs "
+                "GROUP BY source, title ORDER BY source").fetchall()
         return [{"source": r[0], "title": r[1], "chunks": r[2]}
                 for r in rows]
 
     def stats(self) -> dict:
-        count = self.con.execute("SELECT COUNT(*) FROM docs").fetchone()[0]
+        with self._lock:
+            count = self.con.execute(
+                "SELECT COUNT(*) FROM docs").fetchone()[0]
         return {"path": str(self.path), "chunks": count,
                 "sources": len(self.sources())}
 
     def close(self):
-        self.con.close()
+        with self._lock:
+            self.con.close()
 
 
 def main(argv=None):
