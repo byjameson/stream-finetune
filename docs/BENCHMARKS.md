@@ -118,6 +118,40 @@ forgotten. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the remaining gaps:
 the hashed fallback is still lexical, the ANN index is IVF rather than HNSW,
 and multi-document conflict resolution is not implemented.
 
+## Document and citation benchmark (100 questions)
+
+`research/benchmark_documents.py` generates a deterministic 10-document corpus
+in a temporary directory: Markdown, PDF, DOCX and HTML. It asks **80 answerable
+questions** with an expected source and page/section, plus **20 questions with
+no local source**. The corpus is authored; this is a regression benchmark, not
+a public leaderboard.
+
+```bash
+python research/benchmark_documents.py \
+  --out research/results/document_benchmark.json --check
+```
+
+| metric | result |
+|---|---:|
+| top-1 source | **1.000** (80/80) |
+| top-1 page/section locator | **1.000** (80/80) |
+| top-1 contains expected answer | **1.000** (80/80) |
+| complete citation (source + locator + answer) | **1.000** (80/80) |
+| no-answer refusal | **1.000** (20/20) |
+| median retrieval latency | **1.19 ms** |
+| p95 retrieval latency | **1.92 ms** |
+
+By format: Markdown 24/24, PDF 24/24, DOCX 16/16, HTML 16/16 for source,
+locator and answer. The `--check` mode enforces source ≥ 0.95, locator ≥ 0.90,
+answer ≥ 0.90, complete citation ≥ 0.90, refusal ≥ 0.95 and median latency
+≤ 100 ms. CI runs the same check.
+
+The PDF path uses page numbers; DOCX/HTML/Markdown use heading sections. The
+corpus is small and the questions are authored, so this does not measure open
+domain robustness. It does catch regressions in ingestion, provenance, source
+routing and the no-answer path. Results:
+[`document_benchmark.json`](../research/results/document_benchmark.json).
+
 ### Prewarmed exact vector index
 
 `research/benchmark_vector_index.py` compares the legacy linear scan (read every

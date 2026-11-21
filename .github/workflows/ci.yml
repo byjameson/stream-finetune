@@ -25,6 +25,10 @@ jobs:
           pip install pytest safetensors numpy scikit-learn scipy joblib pypdf python-docx
       - name: Unit tests (CPU only)
         run: python -m pytest tests -q
+      - name: Document benchmark
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python research/benchmark_documents.py --out /tmp/document_benchmark.json --check
       - name: Deterministic safety and injection red-team
         env:
           PYTHONPATH: ${{ github.workspace }}

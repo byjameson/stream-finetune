@@ -85,6 +85,20 @@ cached vectors.
 - The extractor never fetches URLs. URL ingestion remains the separate,
   opt-in research path with the existing SSRF checks.
 
+## Regression benchmark
+
+`research/benchmark_documents.py` generates a 10-document corpus across these
+formats and runs 80 answerable plus 20 no-answer questions:
+
+```powershell
+python research/benchmark_documents.py `
+  --out research/results/document_benchmark.json --check
+```
+
+It checks top-1 source, page/section locator, answer hit, no-answer refusal and
+latency. The corpus is authored; see [`BENCHMARKS.md`](BENCHMARKS.md) for the
+current result and caveats.
+
 ## Privacy
 
 Extraction happens locally. The browser uploads bytes to the localhost server;

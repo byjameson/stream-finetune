@@ -204,10 +204,14 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
     for index, hit in enumerate(hits):
         chunk = str(hit.get("chunk", "")).lower()
         title = str(hit.get("title", "")).lower()
-        words = _query_terms(f"{title} {chunk}")
+        section = str(hit.get("section", "")).strip().lower()
+        searchable = f"{title} {section} {chunk}"
+        words = _query_terms(searchable)
         coverage = len(terms & words) / len(terms)
-        title_hits = len(terms & _query_terms(title)) / len(terms)
-        exact = 1.0 if len(terms) >= 2 and phrase in f"{title} {chunk}" else 0.0
+        title_hits = len(terms & _query_terms(f"{title} {section}")) / len(terms)
+        section_hits = (len(terms & _query_terms(section)) / len(terms)
+                        if section else 0.0)
+        exact = 1.0 if len(terms) >= 2 and phrase in searchable else 0.0
         if raw[index] is not None and span:
             bm25 = 1.0 - ((raw[index] - low) / span)
         elif raw[index] is not None:
@@ -216,9 +220,10 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
             bm25 = 0.0
         embedding = hit.get("embedding_score")
         if embedding is None:
-            body_vector = embed_text(f"{title} {chunk}")
+            body_vector = embed_text(searchable)
             embedding = sum(x * y for x, y in zip(query_vector, body_vector))
-        score = (0.40 * coverage + 0.10 * title_hits + 0.10 * exact
+        score = (0.40 * coverage + 0.10 * title_hits
+                 + 0.05 * section_hits + 0.10 * exact
                  + 0.15 * bm25 + 0.25 * embedding)
         item = dict(hit)
         item["rerank_score"] = score

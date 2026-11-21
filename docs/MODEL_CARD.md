@@ -33,7 +33,8 @@ benchmarks and release — is
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
 | packaging | PyPI wheel/sdist, GitHub release, HF/ModelScope weights, quickstart |
-| tests | 401 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+| tests | 402 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+| document benchmark | 100 authored questions: 80/80 answerable, 20/20 no-answer |
 
 ## Model
 

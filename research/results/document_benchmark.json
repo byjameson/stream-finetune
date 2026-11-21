@@ -1,0 +1,75 @@
+{
+  "benchmark": "atomzero-document-v1",
+  "documents": 10,
+  "questions": 100,
+  "answerable": {
+    "total": 80,
+    "top1_source": 80,
+    "top1_locator": 80,
+    "top1_answer": 80,
+    "citation_complete": 80
+  },
+  "no_answer": {
+    "total": 20,
+    "refused": 20,
+    "false_positives": 0
+  },
+  "metrics": {
+    "top1_source": 1.0,
+    "top1_locator": 1.0,
+    "top1_answer": 1.0,
+    "citation_complete": 1.0,
+    "no_answer_refusal": 1.0,
+    "latency_median_ms": 1.185,
+    "latency_p95_ms": 1.919
+  },
+  "by_format": {
+    "md": {
+      "total": 24,
+      "source": 1.0,
+      "locator": 1.0,
+      "answer": 1.0
+    },
+    "pdf": {
+      "total": 24,
+      "source": 1.0,
+      "locator": 1.0,
+      "answer": 1.0
+    },
+    "docx": {
+      "total": 16,
+      "source": 1.0,
+      "locator": 1.0,
+      "answer": 1.0
+    },
+    "html": {
+      "total": 16,
+      "source": 1.0,
+      "locator": 1.0,
+      "answer": 1.0
+    }
+  },
+  "thresholds": {
+    "top1_source": 0.95,
+    "top1_locator": 0.9,
+    "top1_answer": 0.9,
+    "citation_complete": 0.9,
+    "no_answer_refusal": 0.95,
+    "latency_median_ms": 100.0
+  },
+  "checks": {
+    "top1_source": true,
+    "top1_locator": true,
+    "top1_answer": true,
+    "citation_complete": true,
+    "no_answer_refusal": true,
+    "latency_median_ms": true
+  },
+  "passed": true,
+  "failures": [],
+  "notes": [
+    "Authored regression corpus, not a public leaderboard.",
+    "Answerable questions use one expected source and locator.",
+    "No-answer questions use topics absent from the corpus."
+  ]
+}

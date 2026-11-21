@@ -10,7 +10,10 @@
   listings include the page range.
 - Raw uploads accept PDF/DOCX/HTML/Markdown up to 10 MB; text uploads remain
   backward compatible.
-- Added `docs/DOCUMENTS.md` and 9 document/citation tests (401 total).
+- Added `docs/DOCUMENTS.md` and 10 document/citation tests (402 total).
+- Added `research/benchmark_documents.py`: 100 authored questions across
+  Markdown/PDF/DOCX/HTML, with top-1 source, page/section, answer, no-answer
+  refusal and latency metrics; CI enforces the thresholds.
 
 ## 0.8.3 - full project map (2026-11-22)
 

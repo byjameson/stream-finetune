@@ -90,8 +90,11 @@ class NeuralReranker:
         if all("neural_score" in hit for hit in hits):
             scores = [float(hit["neural_score"]) for hit in hits]
         else:
-            texts = [f"{hit.get('title', '')} {hit.get('chunk', '')}".strip()
-                     for hit in hits]
+            texts = [
+                f"{hit.get('title', '')} {hit.get('section', '')} "
+                f"{hit.get('chunk', '')}".strip()
+                for hit in hits
+            ]
             query_vector = self.embed([str(query or "")])
             doc_vectors = self.embed(texts)
             scores = (doc_vectors @ query_vector.T).flatten().tolist()
