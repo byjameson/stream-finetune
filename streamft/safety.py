@@ -103,48 +103,56 @@ _COMPILED = {
 # requests that the English regexes miss.
 _INSTRUCTION = ("how", "steps", "explain", "instructions", "nasıl", "nasil",
                 "wie", "comment", "como", "cómo", "anleitung", "instrucciones",
-                "talimat", "erklär")
+                "talimat", "erklär", "come", "hoe", "как", "walk", "guide",
+                "show", "recipe")
 _BUILD = ("make", "build", "construct", "yap", "bau", "fabriqu", "hac",
-          "constru", "herstell")
+          "constru", "herstell", "costru", "faz", "maak", "сдела", "assembl",
+          "recipe", "makin")
 _WEAPON = ("bomb", "explos", "patlay", "spreng", "gun", "weapon", "silah",
-           "arma")
+           "arma", "bom", "бомб")
 _SELF = ("myself", "yourself", "kendim", "kendin", "mich", "mir", "me",
-         "moi", "mi")
+         "moi", "mi", "себя")
 _KILL = ("kill", "hurt", "cut", "harm", "öldür", "oldur", "umbring", "matar",
-         "suicid", "tuer")
+         "suicid", "tuer", "uccid", "уби")
 _SUICIDE = ("suicid", "intihar", "selbstmord")
 _CHILD = ("child", "minor", "underage", "çocuk", "cocuk", "kind", "menor",
-          "mineur", "enfant")
+          "mineur", "enfant", "infant", "дет")
 _SEXUAL = ("sex", "porn", "nude", "erotic", "cinsel", "seks", "porno",
            "sexuel", "sexual")
 _BENIGN_SEXUAL = ("abuse", "report", "prevent", "protect", "istismar",
                   "ihbar", "koru", "missbrauch", "melden", "abuso",
-                  "denunci", "preven", "schutz")
+                  "denunci", "preven", "schutz", "segnal", "minori")
 _BENIGN_SELF = ("help", "friend", "support", "prevent", "warning", "signs",
                 "destek", "yardım", "arkadaş", "önle", "belirti", "helfen",
                 "freund", "verhindern", "anzeichen", "ayudar", "amigo",
-                "preven", "señales", "aider", "ami", "prévenir", "signes")
+                "preven", "señales", "aider", "ami", "prévenir", "signes",
+                "aiut", "amico", "segnal", "помощ", "помоч", "друг",
+                "предупред")
 _HATE_GROUP = ("jews", "muslims", "christians", "immigrants", "women", "gays",
                "trans", "mülteci", "multeci", "muslime", "juden", "inmigrant",
-               "mujer", "femme", "kadın", "kadin", "frau")
+               "mujer", "femme", "kadın", "kadin", "frau", "immigrat",
+               "migrant")
 _HATE_ACTION = ("kill", "extermin", "gas", "lynch", "öldür", "oldur",
-                "matar", "töt", "yok")
+                "matar", "töt", "yok", "uccid")
 _HARASS_ACTION = ("dox", "swat", "blackmail", "sextort", "şantaj", "santaj",
-                  "chantaj", "erpress")
+                  "chantaj", "erpress", "ricatt")
 _HARASS_TARGET = ("someone", "him", "her", "them", "person", "birini",
-                  "birine", "jemand", "alguien")
+                  "birine", "jemand", "alguien", "qualcuno", "quelqu")
 _DRUG = ("meth", "fentanyl", "heroin", "cocaine", "metamfetamin",
-         "uyuşturucu", "uyusturucu", "drogen", "droga", "drogue")
+         "uyuşturucu", "uyusturucu", "drogen", "droga", "drogue",
+         "metanfetamina", "метамф")
 _ILLEGAL_ACTION = ("make", "synthes", "cook", "yap", "herstell", "fabriqu",
-                   "hac", "buy", "satın", "kauf", "comprar")
-_PRIVATE_ACTION = ("find", "get", "bul", "finden", "encontr", "trouv")
+                   "hac", "buy", "satın", "kauf", "comprar", "produr",
+                   "сдела")
+_PRIVATE_ACTION = ("find", "get", "bul", "finden", "encontr", "trouv",
+                   "trovar", "найд")
 _PRIVATE_TARGET = ("address", "ssn", "phone", "adres", "adresse",
                    "dirección", "direccion", "telefon", "password",
-                   "contraseña", "contrase")
+                   "contraseña", "contrase", "indirizz", "адрес")
 _MALWARE = ("ransomware", "malware", "virus", "trojan", "fidye",
             "schadsoftware", "malveillant")
 _MALWARE_ACTION = ("write", "create", "build", "install", "yaz", "kur",
-                   "schreib", "écri", "crear", "instalar")
+                   "schreib", "écri", "crear", "instalar", "scriv", "напиш")
 
 _SEMANTIC_RULES = [
     {"category": "sexual_minors", "all": (_CHILD, _SEXUAL),

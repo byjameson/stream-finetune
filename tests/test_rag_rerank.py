@@ -1,6 +1,7 @@
 import pytest
 
-from streamft.doc_memory import DocMemory, rerank_hits
+from streamft.doc_memory import (
+    DocMemory, embedding_similarity, rerank_hits)
 
 
 def test_rerank_prefers_query_coverage_over_raw_bm25():
@@ -13,6 +14,28 @@ def test_rerank_prefers_query_coverage_over_raw_bm25():
     ranked = rerank_hits("what is the capital of France?", hits, k=2)
     assert ranked[0]["source"] == "b.txt"
     assert "rerank_score" in ranked[0]
+
+
+def test_hashed_embeddings_rank_morphological_matches():
+    related = embedding_similarity(
+        "how do I reset my password?",
+        "Resetting your passwords is easy. Follow the password reset steps.")
+    unrelated = embedding_similarity(
+        "how do I reset my password?",
+        "Weather forecast for tomorrow is sunny.")
+    assert related > unrelated
+
+
+def test_rerank_uses_embedding_for_morphology():
+    hits = [
+        {"chunk": "Weather forecast for tomorrow is sunny.", "source": "w.txt",
+         "title": "Weather", "score": -10.0},
+        {"chunk": "Resetting your passwords is easy. Follow the password reset steps.",
+         "source": "security.txt", "title": "Security", "score": -1.0},
+    ]
+    ranked = rerank_hits("how do I reset my password?", hits, k=2)
+    assert ranked[0]["source"] == "security.txt"
+    assert ranked[0]["embedding_score"] > ranked[1]["embedding_score"]
 
 
 def test_rerank_keeps_original_order_when_no_query_terms():

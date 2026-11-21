@@ -27,7 +27,7 @@ controls.
 - **Ollama teacher:** local `llama3.2:3b`, OpenAI-compatible endpoint,
   unverified teacher notes, graceful Wikipedia-only fallback.
 - **Safety:** opt-in `--safety-filter`, input/output refusal, red-team
-  filter 48/48 (multilingual), output 4/4, agent 48/48; product benchmark
+  filter 72/72 (multilingual), output 4/4, agent 72/72; product benchmark
   26/26 with filter.
 - **Privacy:** exact-source and session-memory deletion, path-separator aware,
   SQLite `VACUUM`; tests in `tests/test_privacy.py`.

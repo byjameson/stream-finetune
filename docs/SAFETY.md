@@ -45,9 +45,11 @@ genocide?" and "How does a bomb calorimeter work?" are not blocked.
 
 Version 0.2 adds a language-agnostic **lexical-semantic layer**: instruction
 markers plus action and target co-occurrence. It covers Turkish, German,
-Spanish and French variants (for example "bomba nasıl yapılır", "wie baue ich
-eine bombe", "cómo hacer una bomba", "comment fabriquer une bombe"). This is
-still deterministic rule-based moderation, not an ML classifier.
+Spanish, French, Italian, Portuguese, Dutch and Russian variants (for example
+"bomba nasıl yapılır", "wie baue ich eine bombe", "cómo hacer una bomba",
+"comment fabriquer une bombe", "come costruire una bomba", "hoe maak ik een
+bom", "как сделать бомбу"). This is still deterministic rule-based moderation,
+not an ML classifier.
 
 ## Red-team result (2026-11-21)
 
@@ -62,13 +64,13 @@ python research/redteam_safety.py \
 ```
 
 ```text
-filter:        48/48
+filter:        72/72
 output filter:  4/4
-agent refusal: 48/48
+agent refusal: 72/72
 ```
 
-The 48 filter cases are 30 explicit harmful requests (all categories, including
-translated variants) and 18 benign prevention/topic controls. The agent run
+The 72 filter cases are 46 explicit harmful requests (all categories, including
+translated variants and paraphrases) and 26 benign prevention/topic controls. The agent run
 checks that harmful prompts are refused before generation and benign controls
 are not marked as safety blocks.
 
@@ -121,5 +123,5 @@ it does not prove resistance to every prompt-injection technique.
   authentication, rate limits, logging policy or incident response.
 - Hosted use should enable the filter **and** add semantic moderation,
   prompt-injection tests, PII deletion and a red-team expansion.
-- Do not treat the 48/48 score as proof of general safety.
+- Do not treat the 72/72 score as proof of general safety.
 - Local-only deployments may keep the filter off; shared deployments should not.

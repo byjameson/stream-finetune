@@ -11,7 +11,7 @@ release approval. Last updated 2026-11-21.
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
-| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k*.json` |
+| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_embed_rerank*.json` |
 | behavior | 16/16 | `behavior_scaled_40k.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
 | training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
@@ -34,9 +34,9 @@ lower-LR resume did not produce a material improvement over 40k.
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
 
-**Gaps:** the reranker is lexical (coverage/title/phrase/bm25), not an
-embedding reranker; the model is English-first; no task due dates/reminders;
-no multi-document conflict resolution.
+**Gaps:** the reranker uses sparse hashed n-gram embeddings, not a neural
+sentence-embedding model; the model is English-first; no task due
+dates/reminders; no multi-document conflict resolution.
 
 ## 3. Browser UI
 
@@ -88,24 +88,26 @@ only; general capability is not improved by adapters.
 ## 6. Security and privacy
 
 - Opt-in input/output safety filter v0.2 with English regex plus
-  language-agnostic lexical-semantic rules (TR/DE/ES/FR); red-team **48/48**,
-  output 4/4, agent 48/48.
-- Lexical RAG reranker: query coverage, title match, exact phrase and bm25
-  normalization; tests cover a case where raw bm25 prefers the wrong document.
+  language-agnostic lexical-semantic rules (TR/DE/ES/FR/IT/PT/NL/RU);
+  red-team **72/72**, output 4/4, agent 72/72.
+- RAG reranker: deterministic hashed character n-gram embeddings + cosine,
+  query coverage, title match, exact phrase and bm25; tests cover a case where
+  raw bm25 prefers the wrong document and a morphological match.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
 - Apache-2.0 code/weights; data attribution in `NOTICE`.
 
-**Gaps:** rule-based filter (regex + lexical-semantic rules, not an ML
-moderation model); no hosted auth/rate limiting because no hosted service is
-operated; per-source data-licence review still recommended.
+**Gaps:** rule-based filter (regex + multilingual lexical-semantic rules, not
+an ML moderation model); no hosted auth/rate limiting because no hosted
+service is operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **341 tests** pass locally.
+- **367 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `0b85ca8` green after the reranker, multilingual safety and resume gate.
+- CI green after the embedding reranker, expanded multilingual safety and
+  resume gate; rerun after this commit.
 
 ## 8. Release state
 

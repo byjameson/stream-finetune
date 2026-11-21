@@ -216,8 +216,8 @@ Endpoints:
 
 Shared deployments should add `--safety-filter`. It refuses explicit harmful
 requests before generation and filters output; it is off by default for local
-research. Red-team result: multilingual/semantic filter **48/48**, output
-**4/4**, agent **48/48**; untrusted-document injection **4/4**
+research. Red-team result: multilingual/semantic filter **72/72**, output
+**4/4**, agent **72/72**; untrusted-document injection **4/4**
 ([`SAFETY.md`](SAFETY.md)). Document and session deletion are documented in
 [`PRIVACY.md`](PRIVACY.md).
 

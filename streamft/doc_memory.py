@@ -11,10 +11,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import sqlite3
 import threading
 import time
+import zlib
 from pathlib import Path
 
 MAX_CHARS = 900
@@ -52,6 +54,36 @@ def _split_long(paragraph: str) -> list[str]:
     return out
 
 
+EMBED_DIM = 512
+
+
+def _char_ngrams(text: str) -> list[str]:
+    words = re.findall(r"[^\W_]+", str(text).lower(), re.UNICODE)
+    grams = []
+    for word in words:
+        padded = f" {word} "
+        for size in (3, 4, 5):
+            grams.extend(padded[index:index + size]
+                         for index in range(len(padded) - size + 1))
+    return grams
+
+
+def embed_text(text: str, dim: int = EMBED_DIM) -> list[float]:
+    """Deterministic hashed character n-gram embedding (no neural model)."""
+    vector = [0.0] * dim
+    for gram in _char_ngrams(text):
+        vector[zlib.crc32(gram.encode("utf-8")) % dim] += 1.0
+    norm = math.sqrt(sum(value * value for value in vector))
+    if norm:
+        vector = [value / norm for value in vector]
+    return vector
+
+
+def embedding_similarity(left: str, right: str) -> float:
+    a, b = embed_text(left), embed_text(right)
+    return sum(x * y for x, y in zip(a, b))
+
+
 def _query_terms(text: str) -> set[str]:
     words = re.findall(r"[^\W_]+", str(text).lower(), re.UNICODE)
     return {word for word in words
@@ -68,6 +100,7 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
     if not terms or not hits:
         return hits[:k]
     phrase = " ".join(str(query or "").lower().split())
+    query_vector = embed_text(query)
     raw = [float(hit.get("score", 0.0)) for hit in hits]
     # bm25 returns lower-is-better; normalize it into 0..1.
     high, low = max(raw), min(raw)
@@ -81,10 +114,13 @@ def rerank_hits(query: str, hits: list[dict], k: int = 5) -> list[dict]:
         title_hits = len(terms & _query_terms(title)) / len(terms)
         exact = 1.0 if len(terms) >= 2 and phrase in f"{title} {chunk}" else 0.0
         bm25 = 1.0 - ((raw[index] - low) / span) if span else 0.5
-        score = (0.55 * coverage + 0.15 * title_hits + 0.15 * exact
-                 + 0.15 * bm25)
+        body_vector = embed_text(f"{title} {chunk}")
+        embedding = sum(x * y for x, y in zip(query_vector, body_vector))
+        score = (0.40 * coverage + 0.10 * title_hits + 0.10 * exact
+                 + 0.15 * bm25 + 0.25 * embedding)
         item = dict(hit)
         item["rerank_score"] = score
+        item["embedding_score"] = embedding
         scored.append((score, index, item))
     scored.sort(key=lambda row: (-row[0], row[1]))
     return [item for _, _, item in scored[:k]]
