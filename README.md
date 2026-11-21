@@ -34,8 +34,10 @@ holdout, and rolled back with `learning_loop.py activate`. The active adapter
 loads with `--adapter auto`. An opt-in `--safety-filter` refuses explicit
 harmful requests and filters output (red-team 30/30); it is off for local
 research. Indexed sources and session memory have tested delete paths
-(`docs/PRIVACY.md`). The 49.2M checkpoint, optional 368k LoRA adapter and SQLite
-FTS5 memory run locally. Facts stay in RAG; style/skill updates go through the
+(`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
+`checkpoints/transformer_behavior_50m_scaled` (20k steps); the original
+`transformer_behavior_50m_long` is retained for comparison. The optional 368k
+LoRA adapter and SQLite FTS5 memory run locally. Facts stay in RAG; style/skill updates go through the
 gate. It is not a general assistant. The project is open source; no hosted
 service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
 [safety filter](docs/SAFETY.md),

@@ -99,9 +99,12 @@ Otherwise keep the product checkpoint and publish the negative result.
 ## Status
 
 - Corpus build: **done**, 175,365,231 train tokens (6.5x the original).
-- Replay mix: scaled chat + behavior 4x + skill 3x.
-- Training: `data/scaled_training.log`; checkpoint
-  `checkpoints/transformer_chat_en_scaled_50m`.
-- Evaluation: `scripts/eval_scaled_50m.ps1`; promote only if the gate passes.
+- Replay mix: scaled chat + behavior 4x + skill 3x, 214,805,319 tokens.
+- Training: 60k-step run in progress; 20k checkpoint promoted as
+  `checkpoints/transformer_behavior_50m_scaled`.
+- 20k gate: old clean valid bpb **1.3766** vs base 1.3719 (+0.34%), assistant
+  **3.9176** vs 4.0502 (-3.3%); scaled valid chat bpb **1.4283** vs 1.5032;
+  product **21/21**, behavior **16/16**, raw probe 1/10.
+- The original `transformer_behavior_50m_long` remains the baseline.
 - This is a data-scaling experiment, not a general-AI claim. The 1B+ options
   remain in [`SCALING_PLAN.md`](SCALING_PLAN.md).

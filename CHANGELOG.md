@@ -308,8 +308,11 @@
   and 3.2M validation tokens; corpus/training artifacts are gitignored and
   results go to `research/results/`. At 15k steps: scaled-valid chat bpb 1.452
   vs base 1.503, assistant 4.050 vs 4.215; product 21/21, behavior 16/16, raw
-  2/10. At 18k old-valid bpb is 1.391 vs base 1.372 (+1.4%), assistant 3.956 vs
-  4.050.
+  2/10. At 20k: old-valid bpb **1.3766** vs 1.3719 (+0.34%), assistant
+  **3.9176** vs 4.0502 (-3.3%), scaled-valid chat bpb **1.4283** vs 1.5032;
+  product 21/21, behavior 16/16, raw 1/10. The 20k checkpoint is promoted to
+  `checkpoints/transformer_behavior_50m_scaled`; the 60k run continues and the
+  baseline checkpoint is retained.
 - Ollama teacher: Ollama 0.40.16 installed from the official setup (SHA-256
   verified); `llama3.2:3b` (2.0 GB) pulled. `TeacherProvider` live test returned
   `Hello!`. `scripts/start_ollama_teacher.ps1` starts/pulls the model; demo and
