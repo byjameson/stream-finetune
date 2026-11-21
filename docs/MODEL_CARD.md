@@ -1,8 +1,10 @@
 # Atom Zero 49.2M model card
 
-Version: `0.8.0`<br>
+Version: model weights `0.8.0`; package `streamft 0.8.1`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
+
+![Atom Zero architecture](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/atomzero_architecture.png)
 
 ## Model
 
@@ -129,3 +131,11 @@ python research/behavior_eval.py \
 ```
 
 Evidence lives in `research/results/` and [`BENCHMARKS.md`](BENCHMARKS.md).
+
+## Published artifacts
+
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.1>
+- PyPI: <https://pypi.org/project/streamft/0.8.1/>
+- Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
+- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
+- launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
