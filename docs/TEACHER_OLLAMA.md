@@ -125,7 +125,8 @@ A gated LoRA update is a separate path: it requires reviewed feedback, a target
 gain, a clean-bpb/assistant regression check, behavior/smoke checks and
 rollback support. The model does not decide what to study or mutate its own
 weights. This is deliberate: no autonomous crawling or unreviewed weight
-mutation.
+mutation. See [`CURIOSITY.md`](CURIOSITY.md) for the approval gate and the
+weight-update boundary.
 
 ## Limits
 

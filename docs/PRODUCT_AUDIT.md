@@ -152,7 +152,8 @@ recommended.
 
 - **392 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the curiosity-queue commit is verified after push.
+- CI `012f4c5` green after the curiosity queue, product, behavior and test
+  gates.
 
 ## 8. Release state
 
