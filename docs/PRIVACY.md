@@ -22,6 +22,8 @@ python -m streamft.doc_memory --db data/docs.db forget my-note.txt
 The response reports `chunks_deleted`, `meta_deleted` and `vacuumed`. The row is
 removed from the FTS5 index and `doc_meta`, then SQLite is compacted with
 `VACUUM` when possible. A missing source returns 404 / a non-zero CLI exit.
+Local-path sources are matched across `/` and `\` separators, so
+`examples/demo_note.txt` deletes a row stored as `examples\demo_note.txt`.
 
 The browser has a **Delete data** section with the same operation.
 
