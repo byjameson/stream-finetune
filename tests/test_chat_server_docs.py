@@ -44,6 +44,7 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path):
         "name": "tiny-test", "params": 1, "config": {}, "step": 0,
         "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
         "user_id": 0, "assistant_id": 1,
+        "queue_path": str(tmp_path / "queue.jsonl"),
     })
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
@@ -66,6 +67,18 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path):
         })
         assert "Paris" in chat["choices"][0]["message"]["content"]
         assert chat["sources"][0]["source"] == "law.txt"
+        taught = _post(base + "/v1/teach",
+                       {"fact": "The sky is blue."})
+        assert taught["fact_chunks"] == 1
+        assert "blue" in _post(
+            base + "/v1/documents/search",
+            {"query": "sky"})["data"][0]["chunk"]
+        queued = _post(base + "/v1/teach",
+                       {"user": "good morning",
+                        "assistant": "Good morning!"})
+        assert queued["skill_queued"] is True
+        queue = (tmp_path / "queue.jsonl").read_text(encoding="utf-8")
+        assert "good morning" in queue
     finally:
         httpd.shutdown()
         httpd.server_close()

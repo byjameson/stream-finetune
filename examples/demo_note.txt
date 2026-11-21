@@ -1,0 +1,5 @@
+The project codename is Blue Lantern.
+
+This is a demo note. It is stored in the local document index, not in the
+model weights. The assistant quotes it with its source and does not treat it as
+professional advice.

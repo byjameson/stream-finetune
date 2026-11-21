@@ -56,10 +56,13 @@ class DocMemory:
             "ts UNINDEXED)")
         self.con.commit()
 
-    def add_text(self, source: str, text: str, title: str = "") -> int:
+    def add_text(self, source: str, text: str, title: str = "",
+                 replace: bool = True) -> int:
         sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
         with self._lock:
-            self.con.execute("DELETE FROM docs WHERE source = ?", (source,))
+            if replace:
+                self.con.execute("DELETE FROM docs WHERE source = ?",
+                                 (source,))
             added = 0
             for chunk in _chunks(text):
                 self.con.execute(
