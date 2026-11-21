@@ -18,7 +18,6 @@ import time
 from pathlib import Path
 
 import torch
-from tokenizers import Tokenizer
 
 from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import fixed_windows, load_tokens
@@ -68,6 +67,7 @@ def build(queue_path: Path) -> dict:
         raise SystemExit("need at least 5 queued examples")
     split = max(1, int(len(rows) * 0.8))
     train_rows, valid_rows = rows[:split], rows[split:]
+    from tokenizers import Tokenizer
     tok = Tokenizer.from_file(str(TOKENIZER))
     queue_train = pack(tok, [fmt(row) for row in train_rows])
     queue_valid = pack(tok, [fmt(row) for row in valid_rows])
@@ -96,6 +96,7 @@ def load_model(path: str):
                           cfg["heads"], cfg["ff"]).to(DEVICE)
     model.load_state_dict(ck["state"])
     model.eval()
+    from tokenizers import Tokenizer
     tok = Tokenizer.from_file(str(TOKENIZER))
     return model, tok
 
