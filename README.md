@@ -823,6 +823,24 @@ statement curriculum trained with the copy loss only reaches spike **0.412**
 the self-supervised matching-attention loss at this budget.
 [`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
 
+## Support the work / Destek
+
+This project is developed on a 6 GB laptop GPU. If you find it useful and want
+to support further experiments, donations go toward more compute and larger
+runs. There is no paid support, token, or investment offer.
+
+- **EVM-compatible networks** (Ethereum, BNB Smart Chain, Polygon, Optimism,
+  Arbitrum One, Base, Avalanche C-Chain):
+  `0xa4dEc84Fe6F13c8A3b8707446D6892a6E272285c`
+- **Solana:**
+  `EDqs8w4JkS5vAAfxmsB7fAQwoauEYufYXvMWFW9aYPdc`
+- **Bitcoin:**
+  `bc1qsq4mdtf0dlfvppllqwdaknxrq6xkjgsrx6ctgm`
+
+Please double-check the network and the full address before sending; crypto
+transfers are irreversible. Donations are voluntary and do not buy influence
+over results or reviews.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
