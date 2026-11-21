@@ -56,6 +56,7 @@ The 21/21 is the **product**, not the bare model. See the [model card](docs/MODE
 
 ## Published
 
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.0>
 - PyPI: <https://pypi.org/project/streamft/0.8.0/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>

@@ -159,7 +159,8 @@ recommended.
 
 ## 8. Release state
 
-- GitHub source tag **v0.8.0** pushed (`abe47b4`); wheel and sdist built and
+- GitHub release **v0.8.0** published (`abe47b4`) with release notes and
+  updated repository description/topics; wheel and sdist built and
   twine-checked.
 - PyPI **streamft 0.8.0** published:
   `https://pypi.org/project/streamft/0.8.0/`.
