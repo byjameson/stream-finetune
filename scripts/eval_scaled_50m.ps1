@@ -15,5 +15,8 @@ python research/benchmark_raw.py --model $Model `
 python research/behavior_eval.py --model $Model `
     --out "research/results/behavior_$Tag.json"
 python research/chat_eval.py --model $Model --tag $Tag --lang en `
+    --chat-valid data/chat_en_scaled_valid.pt `
+    --stories-valid data/chat_en_scaled_stories_valid.pt `
+    --mixed-valid data/chat_en_scaled_valid_mixed.pt `
     --out "research/results/chat_eval_$Tag.json"
 exit $LASTEXITCODE

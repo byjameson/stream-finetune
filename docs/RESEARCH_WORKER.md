@@ -45,7 +45,9 @@ powershell -ExecutionPolicy Bypass -File scripts/register_research_task.ps1 `
 
 The task calls `scripts/run_research.ps1`, which calls the worker. It runs under
 the current user with `Interactive` logon, so it executes when that user is
-logged on. It does not need administrator rights. Check it with:
+logged on. It does not need administrator rights. During GPU training the task
+was disabled to avoid teacher/training VRAM contention; re-enable it with
+`Enable-ScheduledTask -TaskName AtomZeroResearchWorker`. Check it with:
 
 ```powershell
 Get-ScheduledTask -TaskName AtomZeroResearchWorker
