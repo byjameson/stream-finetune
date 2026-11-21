@@ -113,14 +113,21 @@ class AgentSession:
         sources = []
         unverified = False
         for hit in hits:
+            teacher = hit.get("kind") == "teacher"
             verified = bool(hit.get("verified", True))
-            label = ("teacher note, unverified"
-                     if hit.get("kind") == "teacher" and not verified
-                     else "source")
+            if teacher and not verified:
+                label = "teacher note, unverified"
+            elif teacher:
+                reviewer = str(hit.get("reviewer", "")).strip()
+                label = (f"teacher note, verified by {reviewer}"
+                         if reviewer else "teacher note, verified")
+            else:
+                label = "source"
             location = hit.get("source_url") or hit["source"]
             lines.append(f"- {hit['chunk']} ({label}: {location})")
             source = {"source": hit["source"], "title": hit["title"]}
-            for key in ("kind", "source_url", "teacher", "model", "verified"):
+            for key in ("kind", "source_url", "teacher", "model", "verified",
+                        "reviewer", "verified_at"):
                 if key in hit:
                     source[key] = hit[key]
             if not verified:

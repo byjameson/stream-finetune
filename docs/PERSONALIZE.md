@@ -59,6 +59,21 @@ The note is stored as `kind=teacher`, `verified=false`, with a unique
 it as `teacher note, unverified`; it is not a verified fact and does not change
 weights. Missing source URLs are allowed but stay unverified.
 
+Review and verify after checking the note:
+
+```bash
+curl http://127.0.0.1:8013/v1/teacher/notes
+curl -X POST http://127.0.0.1:8013/v1/teacher/notes/verify \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"teacher://chatgpt-web/...","reviewer":"reviewer-1"}'
+```
+
+The API stores the reviewer and timestamp. The browser page lists teacher notes
+and has a **Verify** button. After verification, citations say
+`teacher note, verified by reviewer-1` and the unverified warning is removed.
+This records human review, not factual truth; re-creating the note resets it to
+unverified.
+
 Manual paste needs no API key and no browser scraping. If you want to ask a
 configured model instead, the provider is opt-in and off by default:
 

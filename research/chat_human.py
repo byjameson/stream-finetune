@@ -269,14 +269,20 @@ class ChatHuman:
                 lines = []
                 unverified = False
                 for hit in hits[:3]:
+                    teacher = hit.get("kind") == "teacher"
                     verified = bool(hit.get("verified", True))
-                    label = ("teacher note, unverified"
-                             if hit.get("kind") == "teacher" and not verified
-                             else "source")
+                    if teacher and not verified:
+                        label = "teacher note, unverified"
+                    elif teacher:
+                        reviewer = str(hit.get("reviewer", "")).strip()
+                        label = (f"teacher note, verified by {reviewer}"
+                                 if reviewer else "teacher note, verified")
+                    else:
+                        label = "source"
                     location = hit.get("source_url") or hit["source"]
                     lines.append(
                         f"- {hit['chunk']} ({label}: {location})")
-                    if not verified:
+                    if teacher and not verified:
                         unverified = True
                 reply = (f"I found these notes:\n" + "\n".join(lines) + "\n\n"
                          "This is a local note, not professional advice.")

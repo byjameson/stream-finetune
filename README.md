@@ -23,7 +23,8 @@ sha256. A reviewed research queue (browser + API/CLI) fetches only
 user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
 local Ollama/OpenAI-compatible provider can answer on request or synthesize
-approved research topics. The 49.2M
+approved research topics. Teacher notes start unverified and can be marked
+verified by a named reviewer with a timestamp. The 49.2M
 checkpoint, optional 368k LoRA adapter and SQLite FTS5 memory run locally.
 Facts stay in RAG; style/skill updates go through a gated adapter. It is not a
 general assistant.

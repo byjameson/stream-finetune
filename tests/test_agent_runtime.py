@@ -57,6 +57,10 @@ def test_agent_chat_marks_teacher_notes_unverified(tmp_path):
     assert "teacher note, unverified" in reply
     assert "https://example.com/chat" in reply
     assert "unverified teacher-derived note" in reply
+    docs.verify_source("teacher://chatgpt-web/abc", "reviewer-1")
+    verified_reply = agent.chat("what is the teacher code?")["reply"]
+    assert "teacher note, verified by reviewer-1" in verified_reply
+    assert "unverified teacher-derived note" not in verified_reply
     docs.close()
 
 

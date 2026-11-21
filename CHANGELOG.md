@@ -270,7 +270,14 @@
   the Wikipedia pages. CLI and `run_research.ps1` accept `--teacher-*` /
   `-Teacher*`. Browser E2E on port 8036: Ankara (3 chunks, `curid=802`) ->
   fake local synthesis `P-9001` -> chat warning. No external API/key.
-- 246 tests;
+- Teacher-note review: `GET /v1/teacher/notes` and
+  `POST /v1/teacher/notes/verify` mark a note verified with reviewer and
+  timestamp. `doc_meta` migrates `reviewer`/`verified_at`; the browser lists
+  notes and has a **Verify** button. Citations show `verified by <reviewer>`
+  and drop the unverified warning only after approval. Browser E2E on port
+  8037: `T-9000` unverified -> verify as `local-reviewer` -> verified with
+  timestamp -> warning removed.
+- 247 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
