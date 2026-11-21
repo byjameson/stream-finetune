@@ -86,18 +86,18 @@ validation shard and on the product behaviors:
 
 | check | base | scaled 10k |
 |---|---|---|
-| scaled-valid chat bpb | 1.503 | **1.403** |
-| scaled-valid assistant loss | 4.215 | **3.915** |
-| scaled-valid stories bpb | 1.622 | **1.447** |
+| scaled-valid chat bpb | 1.503 | **1.396** |
+| scaled-valid assistant loss | 4.215 | **3.891** |
+| scaled-valid stories bpb | 1.622 | **1.425** |
 | product benchmark | 21/21 | **21/21** |
 | behavior checks | 16/16 | **16/16** |
 | raw-model probe | 2/10 | 1/10 |
 
-At 30k on the **old** clean valid shard: bpb **1.3522** / assistant **3.8532**
-versus base 1.3719 / 4.0502. The old bpb improves by **1.4%**, and assistant
-loss improves **4.9%**. The 30k checkpoint is promoted as
-`checkpoints/transformer_behavior_50m_scaled`; the 60k run is still in
-progress. Details: [`DATA_SCALING.md`](DATA_SCALING.md).
+The 35k checkpoint is promoted as `checkpoints/transformer_behavior_50m_scaled`;
+the 60k run is still in progress. **Do not use the old clean valid shard for
+this comparison:** the larger corpus was regenerated from the same source
+datasets, so that shard is not a clean holdout for the new run. Details:
+[`DATA_SCALING.md`](DATA_SCALING.md).
 
 ## Safety red-team
 

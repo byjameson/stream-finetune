@@ -100,12 +100,16 @@ Otherwise keep the product checkpoint and publish the negative result.
 
 - Corpus build: **done**, 175,365,231 train tokens (6.5x the original).
 - Replay mix: scaled chat + behavior 4x + skill 3x, 214,805,319 tokens.
-- Training: 60k-step run in progress; 30k checkpoint currently promoted as
+- Training: 60k-step run in progress; 35k checkpoint currently promoted as
   `checkpoints/transformer_behavior_50m_scaled`.
-- 30k gate: old clean valid bpb **1.3522** vs base 1.3719 (**-1.4%**), assistant
-  **3.8532** vs 4.0502 (**-4.9%**); scaled valid chat bpb **1.4026** vs 1.5032;
-  product **21/21**, behavior **16/16**, raw probe 1/10. Validation is still
-  improving toward 60k.
+- **Clean comparison:** use the new `chat_en_scaled_valid` shard. The old
+  `chat_en_clean_valid` shard is not a clean holdout for this run because the
+  larger corpus was regenerated from the same source datasets; do not use its
+  apparent gain as evidence.
+- 35k clean result: scaled-valid chat bpb **1.3955** vs base **1.5032**,
+  assistant **3.8908** vs **4.2153**; stories **1.4248** vs 1.6221; mixed
+  **1.2501** vs 1.3743; wiki **2.1813** vs 2.2482. Product **21/21**,
+  behavior **16/16**, raw probe 1/10. Validation is still improving toward 60k.
 - The original `transformer_behavior_50m_long` remains the baseline.
 - This is a data-scaling experiment, not a general-AI claim. The 1B+ options
   remain in [`SCALING_PLAN.md`](SCALING_PLAN.md).

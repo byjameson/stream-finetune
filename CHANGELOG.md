@@ -334,9 +334,12 @@
   (-0.9%), assistant **3.8722** (-4.4%), scaled-valid chat **1.4189**;
   product 21/21, behavior 16/16, raw 1/10. At 30k: old-valid bpb **1.3522**
   (-1.4%), assistant **3.8532** (-4.9%), scaled-valid chat **1.4026**;
-  product 21/21, behavior 16/16, raw 1/10. The 30k checkpoint is promoted to
-  `checkpoints/transformer_behavior_50m_scaled`; the 60k run continues and the
-  baseline checkpoint is retained.
+  product 21/21, behavior 16/16, raw 1/10. At 35k on the clean scaled valid:
+  chat **1.3955** vs 1.5032, assistant **3.8908** vs 4.2153; product 21/21,
+  behavior 16/16, raw 1/10. The 35k checkpoint is promoted. The old clean valid
+  shard is not a clean holdout for this run (same source datasets); its numbers
+  are excluded from the promotion claim. The 60k run continues and the baseline
+  checkpoint is retained.
 - Ollama teacher: Ollama 0.40.16 installed from the official setup (SHA-256
   verified); `llama3.2:3b` (2.0 GB) pulled. `TeacherProvider` live test returned
   `Hello!`. `scripts/start_ollama_teacher.ps1` starts/pulls the model; demo and

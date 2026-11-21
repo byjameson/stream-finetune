@@ -1,0 +1,154 @@
+{
+  "tag": "scaled_35k",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 35000,
+  "bpb": {
+    "chat": {
+      "loss": 3.9799623489379883,
+      "ppl": 53.51501929224924,
+      "bpb": 1.3954791278695415,
+      "tokens": 8192,
+      "bytes": 33707,
+      "assistant": {
+        "loss": 3.8908076743077142,
+        "ppl": 48.95040512084961,
+        "tokens": 7078
+      }
+    },
+    "stories": {
+      "loss": 3.814833343029022,
+      "ppl": 45.369194660300074,
+      "bpb": 1.4247828424485343,
+      "tokens": 8192,
+      "bytes": 31644,
+      "assistant": {
+        "loss": 3.814833343029022,
+        "ppl": 45.369197845458984,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.354149043560028,
+      "ppl": 211.48393614315884,
+      "bpb": 2.181258869599235,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.354149043560028,
+        "ppl": 211.48390197753906,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.654531627893448,
+      "ppl": 38.64941456747348,
+      "bpb": 1.2501097882687717,
+      "tokens": 8192,
+      "bytes": 34550,
+      "assistant": {
+        "loss": 3.5599314215854867,
+        "ppl": 35.160789489746094,
+        "tokens": 7178
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?  me two different colors",
+      "chars": 65,
+      "alpha": 0.7538,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Wes was a curious turtle who lived near the hill. One day Wes found a shiny stone. Wes wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 169,
+      "alpha": 0.787,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Iris was a curious fox who lived near the hill. One day Iris found a blue kite. Iris wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 167,
+      "alpha": 0.7844,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

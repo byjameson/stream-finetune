@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T21:55:08",
+  "model": "checkpoints/scaled_50m_step35000",
+  "adapter": "",
+  "score": 0.1,
+  "passed": 1,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris, and it is the capital of France.",
+      "correct": true,
+      "alpha": 0.781,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of the most important capital of the world is the capital of the United States, which is the capital of the United States.",
+      "correct": false,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "The 2 + 2 + 2 is 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2",
+      "correct": false,
+      "alpha": 0.038,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the 3-digit numbers in order, we can use the concept of permutations and the concept of permutations. Since we have a number of 3, we can think of 7 as the number of permutations in the first position. The first position is 7",
+      "correct": false,
+      "alpha": 0.776,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet, and it is the largest planet, and it is the largest planet.",
+      "correct": false,
+      "alpha": 0.792,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "I'm sorry, I'm not sure what you're referring to. I'm not sure what you're referring to.",
+      "correct": false,
+      "alpha": 0.739,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a fundamental concept in mathematics, particularly in the context of the study of the properties of the universe. It is a fundamental concept in mathematics, and it is often used to describe the properties of the universe, such as the properties of the universe, the behavior of the universe, and the",
+      "correct": false,
+      "alpha": 0.812,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a type of data visualization that displays the relationship between two continuous variables, such as hours studied and exam scores, to help identify patterns, trends, and correlations. It is used to display the relationship between two continuous variables, such as hours studied and exam scores, to identify patterns,",
+      "correct": false,
+      "alpha": 0.826,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "A primary color is a color that is often used to describe the color of a person or group. It is often used to describe the color of a person or group. The color is often used to describe the color of a person or group. It is often used to describe the color of a person or group. The",
+      "correct": false,
+      "alpha": 0.777,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics, and it is a fundamental concept in physics, particularly in the study of the behavior of light. It is a fundamental concept in physics, physics, and physics, and it is a fundamental concept in physics and physics. The speed of light is a fundamental concept in physics",
+      "correct": false,
+      "alpha": 0.806,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}
