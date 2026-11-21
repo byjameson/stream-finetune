@@ -155,7 +155,8 @@ recommended.
 
 - **392 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the onboarding/launch commit is verified after push.
+- CI `b59c412` green after the README hero, architecture, quickstart and
+  demo-corpus changes.
 
 ## 8. Release state
 
