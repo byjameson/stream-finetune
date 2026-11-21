@@ -50,12 +50,14 @@ def _tokens(text: str) -> set[str]:
 
 class ChatHuman:
     def __init__(self, memory_path: str | Path = DEFAULT_MEMORY,
-                 model=None, tokenizer=None, device=None, arch="spiking"):
+                 model=None, tokenizer=None, device=None, arch="spiking",
+                 docs=None):
         self.path = Path(memory_path)
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
         self.arch = arch
+        self.docs = docs
         self.data = self._load()
 
     def _load(self) -> dict:
@@ -262,8 +264,17 @@ class ChatHuman:
         elif extracted:
             reply = "I will remember that."
         else:
-            formatted = self.format_skill(text)
-            reply = formatted if formatted is not None else self._generate(text)
+            hits = self.docs.search(text, k=3) if self.docs else []
+            if hits:
+                notes = "\n".join(
+                    f"- {hit['chunk']} (source: {hit['source']})"
+                    for hit in hits[:3])
+                reply = (f"I found these notes:\n{notes}\n\n"
+                         "This is a local note, not professional advice.")
+            else:
+                formatted = self.format_skill(text)
+                reply = (formatted if formatted is not None
+                         else self._generate(text))
 
         self.add_episode("assistant", reply)
         return reply
@@ -295,6 +306,7 @@ def main():
     ap.add_argument("--arch", choices=["spiking", "transformer"],
                     default="spiking")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
+    ap.add_argument("--docs", default="")
     ap.add_argument("--message", default="")
     args = ap.parse_args()
 
@@ -303,7 +315,11 @@ def main():
     if args.model:
         model, tokenizer = load_model(args.model, device, args.arch,
                                       args.tokenizer)
-    human = ChatHuman(args.memory, model, tokenizer, device, args.arch)
+    docs = None
+    if args.docs:
+        from streamft.doc_memory import DocMemory
+        docs = DocMemory(args.docs)
+    human = ChatHuman(args.memory, model, tokenizer, device, args.arch, docs)
 
     if args.message:
         print(human.respond(args.message))
