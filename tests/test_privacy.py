@@ -28,6 +28,15 @@ def test_doc_memory_forget_removes_only_that_source(tmp_path):
     docs.close()
 
 
+def test_doc_memory_forget_accepts_path_separator_variants(tmp_path):
+    docs = _docs(tmp_path)
+    docs.add_text("examples\\demo_note.txt", "private note", title="Demo")
+    result = docs.forget("examples/demo_note.txt")
+    assert result["chunks_deleted"] == 1
+    assert docs.sources() == []
+    docs.close()
+
+
 def test_doc_memory_forget_all_and_meta(tmp_path):
     docs = _docs(tmp_path)
     docs.add_text(
