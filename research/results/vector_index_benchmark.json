@@ -1,0 +1,13 @@
+{
+  "created": "2026-11-21T23:11:26",
+  "chunks": 3000,
+  "dim": 512,
+  "backend": "numpy",
+  "prewarm_ms": 746.94,
+  "matrix_median_ms": 0.768,
+  "scan_median_ms": 127.59,
+  "search_median_ms": 6.949,
+  "speedup_vs_scan": 166.1,
+  "top5_overlap": 1.0,
+  "note": "Hashed vectors, exact cosine. The scan reads every doc_vectors blob per query; the matrix is built once."
+}

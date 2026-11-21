@@ -65,8 +65,8 @@ python research/benchmark_retrieval.py \
 | candidate stage + reranker | top-1 | top-3 | MRR | citation | median latency |
 |---|---:|---:|---:|---:|---:|
 | raw FTS | 0.850 | 0.900 | 0.875 | 0.850 | 0.34 ms |
-| FTS + hashed pool | 0.850 | 0.900 | 0.875 | 0.850 | 1.87 ms |
-| FTS + neural pool | **1.000** | **1.000** | **1.000** | **1.000** | 10.0 ms |
+| FTS + hashed pool | 0.850 | 0.900 | 0.875 | 0.850 | 1.36 ms |
+| FTS + neural pool | **1.000** | **1.000** | **1.000** | **1.000** | 8.8 ms |
 
 Candidate-pool recall@10:
 
@@ -96,12 +96,34 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('sen
 ```
 
 `models/` is gitignored. The reranker is retrieval only; it does not change the
-49.2M core model. CPU latency is about 10 ms per query here after the chunk
-vector cache is warm, with a few seconds of model warm-up. Chunk vectors are
-cached in SQLite (`doc_vectors`) by model key and pruned when a source is
-replaced or forgotten. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the
-remaining gaps: the hashed fallback is still lexical, and multi-document
-conflict resolution is not implemented.
+49.2M core model. CPU latency is about 8.8 ms per query here after the vector
+index is warm, with a few seconds of model warm-up. Chunk vectors are cached in
+SQLite (`doc_vectors`) by model key and pruned when a source is replaced or
+forgotten. See [`PRODUCT_AUDIT.md`](PRODUCT_AUDIT.md) for the remaining gaps:
+the hashed fallback is still lexical, vector search is exact rather than ANN,
+and multi-document conflict resolution is not implemented.
+
+### Prewarmed vector index
+
+`research/benchmark_vector_index.py` compares the legacy linear scan (read every
+SQLite blob and loop in Python) with a one-time numpy matrix built at startup.
+It uses hashed 512-dim vectors, so the benchmark needs no neural model.
+
+```bash
+python research/benchmark_vector_index.py \
+  --chunks 3000 --repeats 20 \
+  --out research/results/vector_index_benchmark.json
+```
+
+| chunks | prewarm | matrix query | linear scan | speedup | top-5 overlap |
+|---:|---:|---:|---:|---:|---:|
+| 3000 | 747 ms | **0.77 ms** | 127.6 ms | **166x** | **1.000** |
+
+Both paths are exact cosine over the same vectors; the top-5 sources match.
+Full `search` (FTS + matrix + rerank) is 6.9 ms at this size. The matrix is
+about 6 MB for 3000 hashed chunks. The server builds it after loading the model
+and reranker; `--no-prewarm` skips it for very large corpora or slow disks. This
+is a prewarmed exact index, not an approximate ANN graph.
 
 ## Raw model knowledge probe
 

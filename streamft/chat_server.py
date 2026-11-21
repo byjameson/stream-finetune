@@ -1316,6 +1316,9 @@ class Handler(BaseHTTPRequestHandler):
                     {"enabled": True, "version": _state["safety"].version}
                     if _state.get("safety") else {"enabled": False}),
                 "reranker": _state.get("reranker", "hashed"),
+                "vector_index": (
+                    _state["docs"].vector_index_stats()
+                    if _state.get("docs") else None),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -2022,7 +2025,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           gap_store_path: str = "data/knowledge_gaps.json",
           safety_filter: bool = False,
           reranker: str = "auto",
-          neural_model: str = "models/all-MiniLM-L6-v2") -> int:
+          neural_model: str = "models/all-MiniLM-L6-v2",
+          prewarm_vectors: bool = True) -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -2043,6 +2047,14 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         from streamft.doc_memory import DocMemory
         docs = DocMemory(docs_path)
     active_reranker = _attach_reranker(docs, reranker, neural_model)
+    if docs is not None and prewarm_vectors:
+        try:
+            stats = docs.prewarm_vectors()
+            print(f"vector index: {stats['chunks']} chunks, "
+                  f"dim {stats['dim']}, {stats['backend']}, "
+                  f"{stats['build_s']:.3f}s", flush=True)
+        except (OSError, RuntimeError, ValueError) as exc:
+            print(f"warning: vector prewarm failed: {exc}", flush=True)
     research_queue = None
     if research_queue_path:
         try:
@@ -2139,6 +2151,9 @@ def main():
                     help="auto uses the local neural model when present, "
                          "otherwise hashed n-gram embeddings")
     ap.add_argument("--neural-model", default="models/all-MiniLM-L6-v2")
+    ap.add_argument("--no-prewarm", dest="prewarm_vectors",
+                    action="store_false", default=True,
+                    help="skip building the in-memory vector index at startup")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -2152,7 +2167,8 @@ def main():
                  args.feedback_export, args.teacher_url, args.teacher_model,
                  args.teacher_timeout, args.teacher_label,
                  args.active_adapter_file, args.gap_store,
-                 args.safety_filter, args.reranker, args.neural_model)
+                 args.safety_filter, args.reranker, args.neural_model,
+                 args.prewarm_vectors)
 
 
 if __name__ == "__main__":

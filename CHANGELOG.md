@@ -8,9 +8,11 @@
 - Opt-in safety filter, PII deletion, prompt-injection red-team.
 - RAG retrieval: hybrid FTS + cached neural candidate pool with local
   MiniLM-L6-v2; held-out authored benchmark top-1/citation 1.000 vs 0.850 for
-  FTS, 10 ms vs 0.34 ms median. Hashed fallback stays FTS-anchored.
+  FTS, 8.8 ms vs 0.34 ms median. Prewarmed numpy vector index is 166x faster
+  than the linear scan on 3000 chunks with identical top-5. Hashed fallback
+  stays FTS-anchored.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 376 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 378 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
@@ -320,11 +322,18 @@
   candidate pool (threshold 0.30) before reranking. Local
   `sentence-transformers/all-MiniLM-L6-v2` reaches top-1/citation **1.000** vs
   **0.850** for FTS, candidate recall@10 **1.000** vs **0.900**, median CPU
-  latency 10.0 ms vs 0.34 ms. The hashed fallback is FTS-anchored: it does not
+  latency 8.8 ms vs 0.34 ms. The hashed fallback is FTS-anchored: it does not
   answer semantic-only queries from hash collisions. The server's
   `--reranker auto` uses the neural model when `models/all-MiniLM-L6-v2`
   exists and falls back to hashed; product 21/21 and safety 26/26 hold on both
   paths. Vector rows are pruned on source replace/forget.
+- Prewarmed vector index: `DocMemory.prewarm_vectors()` builds one numpy matrix
+  over all cached chunk vectors after model/reranker load; writes invalidate it
+  and the next search rebuilds. `--no-prewarm` skips startup prewarm. A 3000
+  chunk benchmark measured **0.77 ms** per matrix query vs **127.6 ms** for the
+  linear SQLite scan (**166x**), with identical top-5 sources; full search was
+  6.9 ms. `/health` exposes index chunks, dimension and build time. This is an
+  exact index, not an approximate ANN graph.
 - Safety v0.2: English regex plus language-agnostic lexical-semantic rules for
   Turkish, German, Spanish, French, Italian, Portuguese, Dutch and Russian.
   Multilingual red-team filter **72/72**,

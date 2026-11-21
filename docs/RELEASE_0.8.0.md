@@ -41,11 +41,13 @@ controls.
   the neural reranker.
 - Retrieval, held-out authored set: FTS top-1/citation 0.850; hybrid
   FTS+MiniLM neural **1.000**, candidate recall@10 **1.000** vs 0.900, at
-  10.0 ms vs 0.34 ms median. Hashed fallback stays FTS-anchored.
+  8.8 ms vs 0.34 ms median. Hashed fallback stays FTS-anchored.
+- Prewarmed vector index: 3000 chunks, 0.77 ms matrix query vs 127.6 ms linear
+  scan (166x), identical top-5; exact cosine, not ANN.
 - Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
   **not** a general model; facts belong in RAG.
 - Behavior checks: 16/16 on the scaled 40k product checkpoint.
-- Test suite: 376 tests; CI green.
+- Test suite: 378 tests; CI green.
 
 ## Run locally
 

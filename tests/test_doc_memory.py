@@ -90,6 +90,46 @@ def test_hybrid_vector_cache_is_pruned_on_replace(tmp_path):
     mem.close()
 
 
+def test_prewarmed_index_matches_linear_scan(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    mem.add_text("printer.txt",
+                 "Replace the cyan cartridge when print quality fades.",
+                 title="Printer")
+    mem.add_text("law.txt", "The capital of France is Paris.",
+                 title="Notes")
+    mem.add_text("weather.txt", "Tomorrow will be sunny with light wind.",
+                 title="Weather")
+    stats = mem.prewarm_vectors()
+    assert stats["built"] is True
+    assert stats["chunks"] == 3
+    assert stats["dim"] == 512
+    assert stats["backend"] == "numpy"
+    indexed, indexed_scores = mem._embedding_candidates(
+        "Why are my documents printing pale?", None, 3)
+    scanned, scan_scores = mem._embedding_candidates_scan(
+        "Why are my documents printing pale?", None, 3)
+    assert [hit["source"] for hit in indexed] == [
+        hit["source"] for hit in scanned]
+    for hit in indexed:
+        assert indexed_scores[hit["_rowid"]] == pytest.approx(
+            scan_scores[hit["_rowid"]], abs=1e-6)
+    mem.close()
+
+
+def test_vector_index_invalidates_on_add_and_forget(tmp_path):
+    mem = DocMemory(tmp_path / "docs.db")
+    mem.add_text("launch.txt", "The launch code is ORANGE-42.")
+    mem.prewarm_vectors()
+    assert mem.vector_index_stats()["built"] is True
+    mem.add_text("support.txt", "The support email is help@example.test.")
+    assert mem.vector_index_stats()["built"] is False
+    mem.search("support email", k=2)
+    assert mem.vector_index_stats()["built"] is True
+    mem.forget("support.txt")
+    assert mem.vector_index_stats()["built"] is False
+    mem.close()
+
+
 def test_teacher_metadata_is_returned(tmp_path):
     try:
         mem = DocMemory(tmp_path / "docs.db")

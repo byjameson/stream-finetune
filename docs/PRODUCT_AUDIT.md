@@ -12,7 +12,8 @@ release approval. Last updated 2026-11-21.
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
 | product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_hybrid_neural*.json` |
-| retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000 | `retrieval_benchmark_hybrid.json` |
+| retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000 | `retrieval_benchmark_prewarmed.json` |
+| vector index | 3000 chunks: matrix 0.77 ms vs scan 127.6 ms, 166x, top-5 identical | `vector_index_benchmark.json` |
 | behavior | 16/16 | `behavior_scaled_40k.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
 | training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
@@ -28,7 +29,8 @@ lower-LR resume did not produce a material improvement over 40k.
   memory, help/limits.
 - RAG: SQLite FTS5, source/title/sha, teacher-note metadata, query-relevant
   snippet selection (`best_snippet`). Hybrid candidate stage adds a cached
-  embedding pool (FTS + neural cosine) before reranking.
+  embedding pool (FTS + neural cosine) before reranking, served from a
+  prewarmed in-memory matrix.
 - Missing-source path: honest no-source reply plus knowledge-gap record.
 - Research tool: explicit `research/look up`; queue worker for approved topics.
 - Safety: opt-in filter before generation and on output.
@@ -39,8 +41,9 @@ lower-LR resume did not produce a material improvement over 40k.
 **Gaps:** the neural reranker needs a one-time model download (`models/` is
 gitignored), so a fresh clone falls back to hashed n-grams; that fallback stays
 FTS-anchored and lexical (it does not answer semantic-only queries), so its
-recall remains 0.900. The neural hybrid path reaches 1.000 on the authored set,
-but the chunk-vector scan is linear, not an ANN index; the model is
+recall remains 0.900. The neural hybrid path reaches 1.000 on the authored set.
+The vector index is prewarmed and exact, not an approximate ANN graph; memory
+grows linearly with chunks and startup pays the build cost. The model is
 English-first; no task due dates/reminders; no multi-document conflict
 resolution.
 
@@ -103,10 +106,16 @@ only; general capability is not improved by adapters.
   (BERT, 384 hidden), mean pooling and cosine, plus cached chunk vectors in
   SQLite. The candidate pool is FTS + neural cosine (threshold 0.30). Held-out
   authored benchmark: **top-1/citation 1.000** vs FTS **0.850**; candidate
-  recall@10 **1.000** vs **0.900**; median retrieval latency **10.0 ms vs
+  recall@10 **1.000** vs **0.900**; median retrieval latency **8.8 ms vs
   0.34 ms**. The hashed fallback is FTS-anchored and stays at 0.850; it does
   not answer from hash-only candidates. Product 21/21 and safety 26/26 hold on
   both paths. Vector rows are pruned on source replace/forget.
+- Prewarmed vector index: `DocMemory.prewarm_vectors()` builds one numpy matrix
+  over all cached chunk vectors after model/reranker load; `--no-prewarm` skips
+  it. Exact cosine, no approximation. Scale benchmark (3000 hashed chunks):
+  matrix query **0.77 ms** vs linear scan **127.6 ms** (**166x**), top-5
+  overlap **1.000**; full search 6.9 ms. `/health` reports index chunks, dim and
+  build time. Writes invalidate the index and the next search rebuilds it.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
@@ -118,10 +127,9 @@ service is operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **376 tests** pass locally.
+- **378 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `6b2c126` green after the hybrid retrieval candidate stage, product,
-  behavior, safety and red-team gates.
+- CI for the prewarmed vector-index commit is verified after push.
 
 ## 8. Release state
 

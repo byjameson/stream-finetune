@@ -20,6 +20,11 @@ import time
 import zlib
 from pathlib import Path
 
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - numpy is a declared dependency
+    np = None
+
 MAX_CHARS = 900
 
 
@@ -213,6 +218,7 @@ class DocMemory:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
         self.reranker = None
+        self._vector_index = None
         self.con = sqlite3.connect(str(self.path), check_same_thread=False)
         self.con.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5("
@@ -271,7 +277,9 @@ class DocMemory:
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (source, kind, source_url, teacher, model, verified, created,
                  reviewer, verified_at))
-            self._drop_stale_vectors()
+            if replace:
+                self._drop_stale_vectors()
+            self._vector_index = None
             self.con.commit()
         return added
 
@@ -336,10 +344,140 @@ class DocMemory:
                 vectors[rowid] = vector
         return vectors
 
-    def _embedding_candidates(self, query: str, active, limit: int):
-        """Score every chunk by embedding cosine, independent of FTS terms."""
+    def prewarm_vectors(self, active=None) -> dict:
+        """Build the in-memory matrix over all current chunk vectors.
+
+        With no explicit reranker, use the attached one (neural when
+        configured, hashed otherwise).
+        """
+        if active is None:
+            active = self.reranker
+        started = time.perf_counter()
+        with self._lock:
+            rows = self.con.execute(
+                "SELECT rowid, chunk, source, title FROM docs "
+                "ORDER BY rowid").fetchall()
+            key = self._vector_model_key(active)
+            if not rows:
+                self._vector_index = {
+                    "key": key, "rows": [], "rowids": [], "matrix": None,
+                    "positions": {}, "build_s": 0.0}
+                return self.vector_index_stats()
+            texts = [(row[0], f"{row[3]} {row[1]}".strip()) for row in rows]
+            vectors = self._vectors_for_rows(active, texts)
+            kept_rows = []
+            kept_vectors = []
+            for row in rows:
+                vector = vectors.get(row[0])
+                if vector is None:
+                    continue
+                if kept_vectors and len(vector) != len(kept_vectors[0]):
+                    continue
+                kept_rows.append(row)
+                kept_vectors.append(vector)
+            matrix = None
+            if np is not None and kept_vectors:
+                matrix = np.asarray(kept_vectors, dtype=np.float32)
+                norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+                norms[norms == 0.0] = 1.0
+                matrix = matrix / norms
+            rowids = [row[0] for row in kept_rows]
+            self._vector_index = {
+                "key": key,
+                "rows": kept_rows,
+                "rowids": rowids,
+                "matrix": matrix,
+                "positions": {rowid: index
+                              for index, rowid in enumerate(rowids)},
+                "build_s": time.perf_counter() - started,
+            }
+        return self.vector_index_stats()
+
+    def vector_index_stats(self) -> dict:
+        index = self._vector_index
+        backend = "numpy" if np is not None else "scan"
+        if not index:
+            return {"built": False, "chunks": 0, "dim": 0,
+                    "build_s": 0.0, "backend": backend}
+        matrix = index.get("matrix")
+        return {
+            "built": matrix is not None,
+            "chunks": len(index.get("rows", [])),
+            "dim": int(matrix.shape[1]) if matrix is not None else 0,
+            "build_s": round(float(index.get("build_s", 0.0)), 3),
+            "backend": backend,
+        }
+
+    @staticmethod
+    def _candidate_filters(query: str, neural: bool):
+        threshold = HYBRID_MIN_NEURAL if neural else HYBRID_MIN_HASHED
+        grams = set(_char_ngrams(query)) if not neural else None
+        return threshold, grams
+
+    @staticmethod
+    def _has_hashed_overlap(query_grams, row) -> bool:
+        if query_grams is None:
+            return True
+        # Hashed vectors are sparse and can collide on short queries. Require
+        # real character overlap before a hash-only candidate may bypass FTS.
+        text = f"{row[3]} {row[1]}".lower()
+        return len(query_grams & set(_char_ngrams(text))) >= 2
+
+    def _embedding_candidates(self, query: str, active, limit: int,
+                              required_rowids=None):
+        """Score chunks with the prewarmed matrix; rebuild it when invalid."""
+        key = self._vector_model_key(active)
+        index = self._vector_index
+        if index is None or index.get("key") != key:
+            self.prewarm_vectors(active)
+            index = self._vector_index
+        matrix = index.get("matrix") if index else None
+        if matrix is None:
+            return self._embedding_candidates_scan(
+                query, active, limit, required_rowids)
+        if not index["rows"]:
+            return [], {}
+        query_vector = np.asarray(
+            self._embed_texts(active, [query])[0], dtype=np.float32)
+        if matrix.shape[1] != query_vector.shape[0]:
+            return self._embedding_candidates_scan(
+                query, active, limit, required_rowids)
+        scores = matrix @ query_vector
+        order = np.argsort(-scores, kind="stable")
+        take = min(limit, len(order))
+        top = [int(position) for position in order[:take]]
+        by_rowid = {index["rowids"][position]: float(scores[position])
+                    for position in top}
+        for rowid in required_rowids or ():
+            position = index["positions"].get(rowid)
+            if position is not None:
+                by_rowid[rowid] = float(scores[position])
+        neural = key.startswith("neural:")
+        threshold, query_grams = self._candidate_filters(query, neural)
+        hits = []
+        for position in top:
+            similarity = float(scores[position])
+            if similarity < threshold:
+                break
+            row = index["rows"][position]
+            if not self._has_hashed_overlap(query_grams, row):
+                continue
+            hit = {
+                "chunk": row[1], "source": row[2], "title": row[3],
+                "score": None, "_rowid": row[0],
+                "embedding_score": similarity,
+            }
+            if neural:
+                hit["neural_score"] = similarity
+            hits.append(hit)
+        return hits, by_rowid
+
+    def _embedding_candidates_scan(self, query: str, active, limit: int,
+                                   required_rowids=None):
+        """Legacy linear scan; used only when numpy is unavailable."""
         rows = self.con.execute(
-            "SELECT rowid, chunk, source, title FROM docs").fetchall()
+            "SELECT rowid, chunk, source, title FROM docs "
+            "ORDER BY rowid").fetchall()
         if not rows:
             return [], {}
         texts = [(row[0], f"{row[3]} {row[1]}".strip()) for row in rows]
@@ -356,19 +494,13 @@ class DocMemory:
             scored.append((similarity, row))
         scored.sort(key=lambda item: (-item[0], item[1][0]))
         by_rowid = {row[0]: similarity for similarity, row in scored}
-        threshold = HYBRID_MIN_NEURAL if neural else HYBRID_MIN_HASHED
-        query_grams = set(_char_ngrams(query)) if not neural else None
+        threshold, query_grams = self._candidate_filters(query, neural)
         hits = []
         for similarity, row in scored[:limit]:
             if similarity < threshold:
                 break
-            if query_grams is not None:
-                # Hashed vectors are sparse and can collide on short queries.
-                # Require real character overlap before a hash-only candidate
-                # may bypass FTS; neural embeddings handle synonyms instead.
-                text = f"{row[3]} {row[1]}".lower()
-                if len(query_grams & set(_char_ngrams(text))) < 2:
-                    continue
+            if not self._has_hashed_overlap(query_grams, row):
+                continue
             hit = {
                 "chunk": row[1], "source": row[2], "title": row[3],
                 "score": None, "_rowid": row[0],
@@ -426,7 +558,9 @@ class DocMemory:
             # The neural reranker has a calibrated threshold and may do so.
             if rerank and (rows or neural):
                 embedding_hits, embedding_scores = \
-                    self._embedding_candidates(query, active, candidates)
+                    self._embedding_candidates(
+                        query, active, candidates,
+                        required_rowids={row[0] for row in rows})
             sources = {row[2] for row in rows} | {
                 hit["source"] for hit in embedding_hits}
             metas = self._meta_map(sources)
@@ -551,6 +685,7 @@ class DocMemory:
                 f"DELETE FROM doc_meta WHERE source IN ({placeholders})",
                 tuple(variants))
             self._drop_stale_vectors()
+            self._vector_index = None
             self.con.commit()
             vacuumed = False
             try:
@@ -571,6 +706,7 @@ class DocMemory:
             self.con.execute("DELETE FROM docs")
             self.con.execute("DELETE FROM doc_meta")
             self._drop_stale_vectors()
+            self._vector_index = None
             self.con.commit()
             vacuumed = False
             try:
