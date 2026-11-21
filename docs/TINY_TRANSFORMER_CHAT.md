@@ -47,6 +47,21 @@ LR 3e-5.
 The earlier 1:1/LR 1e-4 skill run reached skill loss 2.27 but regressed clean
 chat to 1.655 / 4.93; it is superseded by the retention checkpoint.
 
+### Gated update v0001
+
+A reviewed queue of 267 novel format/style examples was used for a 300-step,
+low-LR update with 2:1 clean replay:
+
+- queue loss **4.346 -> 1.114** (74.4% target gain);
+- clean bpb **1.440 -> 1.475** (+2.45%);
+- clean assistant loss **4.266 -> 4.374** (+2.52%);
+- gate accepted; checkpoint: `checkpoints/updates/v0001`;
+- standard E2E memory/task/greeting/story test still passes.
+
+**Caveat:** the gate is loss-based, not behavioral. `summarize` works, but
+`count to five`, `be brief` and `make it polite` often fall back to generic
+replies. Do not treat the 74% loss gain as a 74% skill gain.
+
 ## Samples
 
 ```text
@@ -92,7 +107,7 @@ obligations; legal/provenance review is required before redistribution.
 
 ```bash
 python -m streamft.chat_server \
-  --model checkpoints/transformer_chat_skill_ret_21m \
+  --model checkpoints/updates/v0001 \
   --host 127.0.0.1 --port 8013
 ```
 

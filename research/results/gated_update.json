@@ -2,12 +2,12 @@
   "base": "checkpoints/transformer_chat_skill_ret_21m",
   "candidate": "checkpoints\\updates\\candidate",
   "queue": {
-    "queued": 55,
-    "train": 44,
-    "valid": 11,
-    "queue_train_tokens": 867,
-    "queue_valid_tokens": 314,
-    "sha256": "744f322402bce549fbc73a36b580e7f12c9262248031226ec147140ecfbc5645"
+    "queued": 267,
+    "train": 213,
+    "valid": 54,
+    "queue_train_tokens": 5005,
+    "queue_valid_tokens": 1937,
+    "sha256": "51fe2df4c157cd9676c4ba787b650c0e580b6eabfd985ea36e4fe351fae880af"
   },
   "base_metrics": {
     "clean": {
@@ -15,30 +15,31 @@
       "assistant_loss": 4.266243316646234
     },
     "queue": {
-      "bpb": 1.8980059702901904,
-      "assistant_loss": 4.088012675588746
+      "bpb": 1.7973241185647844,
+      "assistant_loss": 4.345663596364078
     }
   },
   "candidate_metrics": {
     "clean": {
-      "bpb": 1.4668316359067564,
-      "assistant_loss": 4.351223942369908
+      "bpb": 1.4752633122648096,
+      "assistant_loss": 4.3736661893602715
     },
     "queue": {
-      "bpb": 1.857927480073816,
-      "assistant_loss": 4.00325544501838
+      "bpb": 0.8072609873776639,
+      "assistant_loss": 1.1144569849461325
     }
   },
   "decision": {
-    "accepted": false,
+    "accepted": true,
     "checks": {
-      "target_gain": false,
+      "target_gain": true,
       "clean_bpb": true,
       "clean_assistant": true
     },
-    "target_gain": 0.020733113445681628,
-    "clean_bpb_reg": 0.0186794904991896,
-    "clean_assistant_reg": 0.01991931060099006
+    "target_gain": 0.7435473408759541,
+    "clean_bpb_reg": 0.024535088078502687,
+    "clean_assistant_reg": 0.02517973419258346
   },
-  "created": "2026-11-21T04:16:25"
+  "created": "2026-11-21T04:25:23",
+  "accepted_to": "checkpoints\\updates\\v0001"
 }

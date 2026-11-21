@@ -1,6 +1,6 @@
 param(
     [int]$Port = 8013,
-    [string]$Model = "checkpoints/transformer_chat_skill_ret_21m"
+    [string]$Model = "checkpoints/updates/v0001"
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot

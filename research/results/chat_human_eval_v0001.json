@@ -1,0 +1,73 @@
+{
+  "model": "checkpoints/updates/v0001",
+  "arch": "transformer",
+  "checks": {
+    "greeting": true,
+    "small_talk": true,
+    "story": true,
+    "name": true,
+    "likes": true,
+    "task_add_1": true,
+    "task_add_2": true,
+    "task_list_both": true,
+    "task_complete": true,
+    "task_list_after": true,
+    "remember": true
+  },
+  "open_ended_ok": true,
+  "verdict": "PASS_VIRTUAL_HUMAN_SMOKE",
+  "turns": [
+    {
+      "user": "hello",
+      "assistant": "Hello! How can I help you today?"
+    },
+    {
+      "user": "my name is Alex",
+      "assistant": "I will remember that."
+    },
+    {
+      "user": "remember that I like green tea",
+      "assistant": "I will remember that."
+    },
+    {
+      "user": "what is my name?",
+      "assistant": "Your name is Alex."
+    },
+    {
+      "user": "what do I like?",
+      "assistant": "You like green tea."
+    },
+    {
+      "user": "add task buy milk",
+      "assistant": "Added task 1: buy milk"
+    },
+    {
+      "user": "add task call mom",
+      "assistant": "Added task 2: call mom"
+    },
+    {
+      "user": "list tasks",
+      "assistant": "Open tasks: 1 buy milk; 2 call mom"
+    },
+    {
+      "user": "complete task 1",
+      "assistant": "Completed task 1."
+    },
+    {
+      "user": "list tasks",
+      "assistant": "Open tasks: 2 call mom"
+    },
+    {
+      "user": "what do you remember?",
+      "assistant": "I remember: name is Alex; likes is green tea; note is I like green tea"
+    },
+    {
+      "user": "how are you?",
+      "assistant": "I am doing well, thank you. How are you?"
+    },
+    {
+      "user": "tell me a short story",
+      "assistant": "Mia the dog found a paper boat. Mia The dog found a small map. Mia the bars are not given the answer."
+    }
+  ]
+}
