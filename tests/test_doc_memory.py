@@ -1,6 +1,8 @@
+import json
+
 import pytest
 
-from streamft.doc_memory import DocMemory
+from streamft.doc_memory import DocMemory, main
 
 
 def test_doc_memory_indexes_and_searches_with_source(tmp_path):
@@ -21,3 +23,15 @@ def test_doc_memory_indexes_and_searches_with_source(tmp_path):
     mem.add_text("law.txt", "Only one fact.", title="Notes")
     assert len(mem.search("fact", k=3)) == 1
     mem.close()
+
+
+def test_cli_accepts_db_after_subcommand(tmp_path, capsys):
+    note = tmp_path / "note.txt"
+    note.write_text("The project codename is Blue Lantern.", encoding="utf-8")
+    db = tmp_path / "docs.db"
+    main(["add", str(note), "--db", str(db), "--title", "Demo"])
+    added = json.loads(capsys.readouterr().out)
+    assert added["added"] == 1
+    main(["--db", str(db), "search", "codename"])
+    hits = json.loads(capsys.readouterr().out)
+    assert "Blue Lantern" in hits[0]["chunk"]

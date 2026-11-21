@@ -1,5 +1,6 @@
 param(
-    [int]$Port = 8013
+    [int]$Port = 8013,
+    [switch]$NoBrowser
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -15,12 +16,12 @@ if (!(Test-Path "$model/model.pt")) {
     throw "missing product checkpoint: $model"
 }
 if (!(Test-Path "$adapter/adapter.pt")) {
-    throw "missing adapter: $adapter"
+    Write-Host "adapter not found at $adapter; running the base model only"
+    $adapter = ""
 }
-if (!(Test-Path $docs)) {
-    python -m streamft.doc_memory add examples/demo_note.txt --db $docs --title "Demo note"
-}
+# Always refresh the demo note; other indexed sources are untouched.
+python -m streamft.doc_memory add examples/demo_note.txt --db $docs --title "Demo note"
 
-powershell -ExecutionPolicy Bypass -File scripts/chat_demo.ps1 `
+& (Join-Path $PSScriptRoot "chat_demo.ps1") `
     -Port $Port -Model $model -Adapter $adapter -Docs $docs `
-    -Queue "data/learning_queue.jsonl"
+    -Queue "data/learning_queue.jsonl" -NoBrowser:$NoBrowser

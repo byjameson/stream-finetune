@@ -4,7 +4,7 @@ Documents are chunked, indexed and retrieved with their source. Facts stay in
 this index, not in the model weights.
 
     python -m streamft.doc_memory add notes.txt --db data/docs.db
-    python -m streamft.doc_memory search "kira" --db data/docs.db
+    python -m streamft.doc_memory --db data/docs.db search "kira"
 """
 from __future__ import annotations
 
@@ -115,7 +115,7 @@ class DocMemory:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--db", default="data/docs.db")
+    ap.add_argument("--db", default=None)
     sub = ap.add_subparsers(dest="cmd", required=True)
     add = sub.add_parser("add")
     add.add_argument("path")
@@ -123,10 +123,13 @@ def main(argv=None):
     search = sub.add_parser("search")
     search.add_argument("query")
     search.add_argument("-k", type=int, default=5)
-    sub.add_parser("list")
-    sub.add_parser("stats")
+    list_db = sub.add_parser("list")
+    stats_db = sub.add_parser("stats")
+    # Accept --db on either side of the subcommand; the docs use both forms.
+    for parser in (add, search, list_db, stats_db):
+        parser.add_argument("--db", dest="db_after", default=None)
     args = ap.parse_args(argv)
-    mem = DocMemory(args.db)
+    mem = DocMemory(args.db_after or args.db or "data/docs.db")
     if args.cmd == "add":
         print(json.dumps({"added": mem.add_file(args.path, args.title)}))
     elif args.cmd == "search":

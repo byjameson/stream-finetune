@@ -1,12 +1,21 @@
-"""Local HTTP server for the 20M transformer chat checkpoint.
+"""Local HTTP server for the tiny transformer daily assistant.
 
-    python -m streamft.chat_server --model checkpoints/transformer_chat_en_clean_21m
+    python -m streamft.chat_server \
+      --model checkpoints/transformer_behavior_50m_long \
+      --adapter checkpoints/adapters_50m/v0001 \
+      --docs data/docs.db
 
 Endpoints:
   GET  /health
   GET  /v1/models
-  POST /generate                 {"prompt": "...", "max_new_tokens": 64}
-  POST /v1/chat/completions      {"messages": [...], "max_tokens": 64}
+  GET  /v1/documents
+  POST /v1/documents/search
+  POST /v1/teach
+  POST /v1/research
+  POST /v1/learn_url
+  POST /v1/agent/chat
+  POST /generate
+  POST /v1/chat/completions
 """
 from __future__ import annotations
 
@@ -25,22 +34,116 @@ from streamft.transformer import TransformerLM, generate
 _lock = threading.Lock()
 _state: dict = {}
 
-PAGE = """<!doctype html><meta charset="utf-8"><title>streamft tiny chat</title>
-<style>body{font:16px/1.5 system-ui;max-width:760px;margin:40px auto;padding:0 20px}
-textarea{width:100%;min-height:90px}#o{white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:8px}
+PAGE = """<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>streamft local assistant</title>
+<style>
+body{font:16px/1.5 system-ui;max-width:820px;margin:32px auto;padding:0 20px;color:#111}
+h1{margin:0 0 4px}.hint{color:#666;font-size:14px}
+#chat{display:flex;flex-direction:column;gap:10px;min-height:220px;margin:18px 0}
+.msg{max-width:85%;padding:10px 12px;border-radius:10px;white-space:pre-wrap}
+.user{align-self:flex-end;background:#e8f0fe}.bot{align-self:flex-start;background:#f4f4f4}
+.meta{font-size:12px;color:#666;margin-top:4px}.err{background:#fde8e8}
+.row{display:flex;gap:8px}.row input{flex:1;padding:10px;font:inherit}
+input,button{font:inherit}button{padding:8px 12px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 18px}
+.chips button{font-size:13px;background:#fff;border:1px solid #ccc;border-radius:999px}
+hr{border:0;border-top:1px solid #ddd;margin:22px 0}
 </style>
-<h2>streamft tiny chat</h2><p id="m" style="color:#666"></p>
-<textarea id="p">hello</textarea>
-<button id="g">Send</button><pre id="o"></pre>
+<h1>Local assistant</h1>
+<p id="m" class="hint">loading...</p>
+<div id="chat"></div>
+<div class="row"><input id="p" placeholder="Ask, add a task, search your notes...">
+<button id="g">Send</button></div>
+<div class="chips">
+<button data-q="what can you do?">what can it do</button>
+<button data-q="add task buy milk">add task</button>
+<button data-q="list tasks">list tasks</button>
+<button data-q="my name is Alex">remember my name</button>
+<button data-q="what do you remember?">recall</button>
+<button data-q="what is 12 * 7?">calculate</button>
+</div>
+<hr>
+<h3>Teach a fact</h3>
+<p class="hint">Stored in the local document index with a source. Facts do not
+change model weights.</p>
+<div class="row"><input id="f" placeholder="The project codename is Blue Lantern.">
+<button id="t">Teach fact</button></div>
+<p id="s" class="hint"></p>
 <script>
-fetch('/health').then(r=>r.json()).then(j=>document.getElementById('m').textContent=
-  'params: '+j.params+' | step: '+j.step);
-document.getElementById('g').onclick=async()=>{
-  const o=document.getElementById('o'); o.textContent='...';
-  const r=await fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:document.getElementById('p').value,max_new_tokens:80,temperature:0.7,top_k:20,repetition_penalty:1.1})});
-  const j=await r.json(); o.textContent=j.error ? ('error: '+j.error) : j.text;
+const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
+const chat = document.getElementById('chat');
+function add(role, text, extra, isError) {
+  const box = document.createElement('div');
+  box.className = 'msg ' + role + (isError ? ' err' : '');
+  box.textContent = text;
+  if (extra) {
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = extra;
+    box.appendChild(meta);
+  }
+  chat.appendChild(box);
+  box.scrollIntoView({block: 'end'});
+}
+function extra(result) {
+  const parts = [];
+  const tools = result.tool_calls || [];
+  if (tools.length) parts.push('tools: ' + tools.map(t => t.name).join(', '));
+  const sources = result.sources || [];
+  if (sources.length) parts.push('sources: ' + sources.map(s => s.title + ' (' + s.source + ')').join('; '));
+  return parts.join(' | ');
+}
+async function send(message) {
+  const text = (message || document.getElementById('p').value).trim();
+  if (!text) return;
+  document.getElementById('p').value = '';
+  add('user', text);
+  try {
+    const r = await fetch('/v1/agent/chat', {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId, message: text})});
+    const j = await r.json();
+    if (!r.ok) return add('bot', 'error: ' + (j.error || r.status), '', true);
+    add('bot', j.reply, extra(j));
+  } catch (e) {
+    add('bot', 'error: ' + e, '', true);
+  }
+}
+document.getElementById('g').onclick = () => send();
+document.getElementById('p').addEventListener('keydown', e => {
+  if (e.key === 'Enter') send();
+});
+document.querySelectorAll('.chips button').forEach(b => {
+  b.onclick = () => send(b.dataset.q);
+});
+document.getElementById('t').onclick = async () => {
+  const fact = document.getElementById('f').value.trim();
+  if (!fact) return;
+  const out = document.getElementById('s');
+  try {
+    const r = await fetch('/v1/teach', {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({fact})});
+    const j = await r.json();
+    out.textContent = r.ok ? ('Saved ' + j.fact_chunks + ' chunk(s) to local memory.')
+                           : ('error: ' + (j.error || r.status));
+    if (r.ok) {
+      document.getElementById('f').value = '';
+      refreshHealth();
+    }
+  } catch (e) { out.textContent = 'error: ' + e; }
 };
+function refreshHealth() {
+  fetch('/health').then(r => r.json()).then(j => {
+    const docs = j.documents ? j.documents.chunks : 0;
+    document.getElementById('m').textContent =
+      'model: ' + j.model + ' | params: ' + j.params + ' | step: ' + j.step +
+      ' | adapter: ' + (j.adapter ? 'yes' : 'none') + ' | doc chunks: ' + docs +
+      ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia');
+  }).catch(() => { document.getElementById('m').textContent = 'server not ready'; });
+}
+refreshHealth();
 </script>"""
 
 
@@ -361,7 +464,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "metrics": {"requests": 0, "generated_tokens": 0},
     })
     httpd = ThreadingHTTPServer((host, port), Handler)
-    print(f"streamft tiny chat serving {model_path} at http://{host}:{port}",
+    print(f"streamft local assistant serving {model_path} at http://{host}:{port}",
           flush=True)
     try:
         httpd.serve_forever()

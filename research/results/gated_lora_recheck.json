@@ -1,0 +1,153 @@
+{
+  "mode": "lora",
+  "base": "checkpoints/transformer_behavior_50m_long",
+  "candidate": "checkpoints\\adapters\\candidate",
+  "queue": {
+    "queued": 283,
+    "train": 226,
+    "valid": 57,
+    "queue_train_tokens": 4198,
+    "queue_valid_tokens": 2094,
+    "sha256": "0924702624f68372e1ccf732c1e7f4476c5296ba1f18aac4ef0072c2859f9dae"
+  },
+  "base_metrics": {
+    "clean": {
+      "bpb": 1.374942363043169,
+      "assistant_loss": 4.066105239674857
+    },
+    "queue": {
+      "bpb": 0.7895493083507623,
+      "assistant_loss": 1.445635599168252
+    }
+  },
+  "candidate_metrics": {
+    "clean": {
+      "bpb": 1.3760299315453526,
+      "assistant_loss": 4.068800763690233
+    },
+    "queue": {
+      "bpb": 0.6242056708113997,
+      "assistant_loss": 0.8934991148844781
+    }
+  },
+  "behavior": {
+    "checks": {
+      "greeting": true,
+      "small_talk": true,
+      "name": true,
+      "likes": true,
+      "task_add": true,
+      "task_list": true,
+      "task_complete": true,
+      "task_list_after": true,
+      "remember": true,
+      "story": true,
+      "count": true,
+      "brief": true,
+      "polite": true,
+      "summarize": true,
+      "echo": true,
+      "colors": true
+    },
+    "passed": true,
+    "replies": {
+      "hello": "Hello! How can I help you today?",
+      "my name is Alex": "I will remember that.",
+      "remember that I like green tea": "I will remember that.",
+      "what is my name?": "Your name is Alex.",
+      "what do I like?": "You like green tea.",
+      "add task buy milk": "Added task 1: buy milk",
+      "add task call mom": "Added task 2: call mom",
+      "list tasks": "Open tasks: 2 call mom",
+      "complete task 1": "Completed task 1.",
+      "what do you remember?": "I remember: name is Alex; likes is green tea; note is I like green tea",
+      "how are you?": "I am doing well, thank you. How are you?",
+      "tell me a short story": "Nora the cat found a shiny stone near the hill. Nora shared it with a friend, and they played until sunset."
+    },
+    "generated": {
+      "count": "One, two, three, four, five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Blue and green."
+    },
+    "raw_generated": {
+      "count": "one, two, three, four, five.",
+      "brief": "Hi.",
+      "polite": "Could you open the window, please?",
+      "summarize": "The cat sat on the mat.",
+      "echo": "The book is on the desk.",
+      "colors": "Black and green."
+    },
+    "story_repeat3": 0.0
+  },
+  "clean_smoke": {
+    "passed": true,
+    "rows": [
+      {
+        "prompt": "hello",
+        "text": "Hi there! What would you like to do?",
+        "alpha": 0.75,
+        "stop": "end"
+      },
+      {
+        "prompt": "hello",
+        "text": "Hello! I am here. What do you need?",
+        "alpha": 0.7142857142857143,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "how are you?",
+        "text": "I am doing well, thank you. How are you?",
+        "alpha": 0.725,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "what can you do?",
+        "text": "I can chat, remember facts, and keep a task list.",
+        "alpha": 0.7551020408163265,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Ada the bear found a blue kite near the garden. Ada shared it with a friend, and they played until sunset.",
+        "alpha": 0.7830188679245284,
+        "stop": "end"
+      },
+      {
+        "prompt": "tell me a short story",
+        "text": "Mia the fox found a red ball near the hill. Mia shared it with a friend, and they played until sunset.",
+        "alpha": 0.7745098039215687,
+        "stop": "end"
+      }
+    ]
+  },
+  "decision": {
+    "accepted": true,
+    "checks": {
+      "target_gain": true,
+      "clean_bpb": true,
+      "clean_assistant": true,
+      "behavior": true,
+      "clean_smoke": true
+    },
+    "target_gain": 0.38193337560409146,
+    "clean_bpb_reg": 0.000790992067315921,
+    "clean_assistant_reg": 0.0006629252949663655
+  },
+  "created": "2026-11-21T05:37:33",
+  "accepted_to": "checkpoints\\adapters_recheck\\v0001"
+}
