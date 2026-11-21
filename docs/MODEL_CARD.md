@@ -23,7 +23,7 @@ benchmarks and release — is
 | vector index | cached `doc_vectors`, prewarmed numpy matrix, IVF ANN above 256 chunks, exact fallback |
 | tools | time, safe arithmetic, task add/list/complete, name/likes memory |
 | sessions | transcript restore, JSON export/import, exact Forget, session Forget |
-| documents | ingest text/file/URL, source/title/sha256, search, per-source delete |
+| documents | ingest text/Markdown/HTML/PDF/DOCX, page/section citations, source/title/sha256, search, per-source delete |
 | research | approved-only queue, Wikipedia fetch, worker lock/log, teacher synthesis |
 | teacher | local Ollama/OpenAI-compatible, unverified notes, reviewer verification |
 | curiosity | gap -> pending topic -> approval -> Wikipedia + teacher -> RAG note |
@@ -33,7 +33,7 @@ benchmarks and release — is
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
 | packaging | PyPI wheel/sdist, GitHub release, HF/ModelScope weights, quickstart |
-| tests | 392 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+| tests | 401 passed; product 21/21; behavior 16/16; retrieval 1.000 |
 
 ## Model
 
@@ -168,6 +168,8 @@ Evidence lives in `research/results/` and [`BENCHMARKS.md`](BENCHMARKS.md).
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
+- Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
+- document formats: [`DOCUMENTS.md`](DOCUMENTS.md)
 
 ## Contact
 

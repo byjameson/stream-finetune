@@ -1,0 +1,94 @@
+# Documents and citations
+
+Atom Zero keeps facts in a local index, not in the 49.2M model. A retrieved
+chunk carries its source, title, SHA-256, and — when the format provides it —
+a page number or section heading.
+
+## Supported formats
+
+| format | extraction | citation locator |
+|---|---|---|
+| `.txt` | UTF-8 text | source |
+| `.md` / `.markdown` | heading-aware blocks | source + section |
+| `.html` / `.htm` | block-level text and headings | source + section |
+| `.pdf` | one block per page via `pypdf` | source + page |
+| `.docx` | paragraphs and headings via `python-docx` | source + section |
+
+PDF pages are 1-based. DOCX/HTML/Markdown sections come from heading styles
+(`Heading 1`, `Heading 2`, ...) or `<h1>`-`<h6>` tags. Plain text has no page
+or section.
+
+## What is stored
+
+For every chunk the index keeps:
+
+- the chunk text and source path/URL;
+- the document title and SHA-256;
+- `page` (PDF) or `section` (DOCX/HTML/Markdown);
+- `char_start` / `char_end` inside that block.
+
+The API and UI show the locator next to the citation:
+
+```text
+The launch code is L-7781. (source: manual.pdf (p. 4))
+The warranty period is 24 months. (source: policy.docx [Warranty])
+```
+
+## Add a document
+
+### Web UI
+
+1. Open the local Atom Zero page.
+2. Under **Add a document**, choose a file.
+3. Click **Add document**.
+
+Text/Markdown/HTML files are also editable in the textarea before indexing.
+PDF/DOCX files are uploaded as bytes; they are never converted to text in the
+browser.
+
+### CLI
+
+```powershell
+python -m streamft.doc_memory add manual.pdf --db data/docs.db
+python -m streamft.doc_memory add policy.docx --db data/docs.db
+python -m streamft.doc_memory --db data/docs.db search "warranty code"
+```
+
+### HTTP
+
+```text
+POST /v1/documents/upload?source=manual.pdf&title=Manual
+Content-Type: application/octet-stream
+
+<raw PDF bytes>
+```
+
+Or paste text as JSON:
+
+```text
+POST /v1/documents
+{"source": "notes.md", "title": "Notes", "text": "# Warranty\n..."}
+```
+
+Re-adding the same `source` replaces its chunks, page/section metadata and
+cached vectors.
+
+## Limits
+
+- Maximum upload: **10 MB** per document.
+- No OCR. A scanned/image-only PDF returns a clear “no extractable text” error;
+  run OCR separately and add the resulting text if needed.
+- Encrypted PDFs are rejected unless they can be opened with an empty password.
+- DOCX page numbers are not available because pagination is a renderer
+  decision; the section heading is the locator.
+- Tables are extracted as row text; complex layouts may lose structure.
+- The extractor never fetches URLs. URL ingestion remains the separate,
+  opt-in research path with the existing SSRF checks.
+
+## Privacy
+
+Extraction happens locally. The browser uploads bytes to the localhost server;
+the server writes the index to the SQLite database you configured. There is no
+telemetry and no third-party conversion service. **Forget source** removes the
+chunks, their page/section metadata, metadata row and cached vectors, then
+compacts the database.

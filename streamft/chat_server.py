@@ -42,7 +42,8 @@ from pathlib import Path
 
 import torch
 
-from streamft.doc_memory import SourceNotFound, best_snippet
+from streamft.doc_memory import (
+    SourceNotFound, add_citation_source, best_snippet, format_citation)
 from streamft.curiosity import (
     CuriosityError, curiosity_items, propose_from_gaps)
 from streamft.feedback import (
@@ -60,7 +61,7 @@ _lock = threading.Lock()
 _state: dict = {}
 
 MAX_BODY_BYTES = 2_000_000
-MAX_DOC_BYTES = 1_000_000
+MAX_DOC_BYTES = 10_000_000
 MAX_SOURCE_CHARS = 512
 MAX_TITLE_CHARS = 200
 
@@ -100,6 +101,49 @@ def ingest_document(docs, source, text, title: str = "") -> dict:
         "bytes": len(raw),
         "sha256": hashlib.sha256(raw).hexdigest(),
         "replace": True,
+    }
+
+
+def ingest_upload(docs, source, data, title: str = "") -> dict:
+    """Validate and index a text/PDF/DOCX/HTML upload."""
+    if docs is None:
+        raise ValueError("no document memory configured")
+    source = str(source or "").strip()
+    title = str(title or "").strip()
+    if not source:
+        raise ValueError("source is required")
+    if len(source) > MAX_SOURCE_CHARS:
+        raise ValueError(f"source is too long (max {MAX_SOURCE_CHARS} chars)")
+    if len(title) > MAX_TITLE_CHARS:
+        raise ValueError(f"title is too long (max {MAX_TITLE_CHARS} chars)")
+    if any(ord(ch) < 32 for ch in source + title):
+        raise ValueError("source/title contains control characters")
+    if not isinstance(data, (bytes, bytearray)):
+        raise ValueError("document data must be bytes")
+    data = bytes(data)
+    if len(data) > MAX_DOC_BYTES:
+        raise DocumentTooLarge(
+            f"document is too large (max {MAX_DOC_BYTES} bytes)")
+    from streamft.doc_ingest import (
+        DocumentExtractError, extract_bytes)
+
+    try:
+        extracted = extract_bytes(source, data, title=title)
+    except DocumentExtractError as exc:
+        raise ValueError(str(exc)) from exc
+    chunks = docs.add_blocks(
+        source, extracted["blocks"], title=extracted["title"])
+    pages = [block.get("page") for block in extracted["blocks"]
+             if block.get("page") is not None]
+    return {
+        "source": source,
+        "title": extracted["title"],
+        "chunks": chunks,
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "replace": True,
+        "format": extracted["format"],
+        "pages": len(set(pages)),
     }
 
 
@@ -165,12 +209,15 @@ change model weights.</p>
 <p id="s" class="hint"></p>
 <hr>
 <h3>Add a document</h3>
-<p class="hint">Text only (.txt/.md), max 1 MB. Stored with source, title and
-SHA-256; re-adding the same source replaces it. Nothing is written to weights.</p>
+<p class="hint">Text, Markdown, HTML, PDF or DOCX (max 10 MB). PDFs keep page
+numbers; DOCX/HTML/Markdown keep section headings. Stored with source, title
+and SHA-256; re-adding the same source replaces it. Nothing is written to
+weights.</p>
 <div class="row"><input id="src" value="my-note.txt" placeholder="Source (required)">
 <input id="ttl" placeholder="Title (optional)"></div>
 <textarea id="txt" placeholder="Paste text or choose a file..."></textarea>
-<div class="row"><input id="file" type="file" accept=".txt,.md,text/plain">
+<div class="row"><input id="file" type="file"
+ accept=".txt,.md,.markdown,.html,.htm,.pdf,.docx,text/plain,text/html,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 <button id="add">Add document</button></div>
 <p id="ds" class="hint"></p>
 <h3>Indexed documents</h3>
@@ -393,45 +440,75 @@ document.getElementById('t').onclick = async () => {
     }
   } catch (e) { out.textContent = 'error: ' + e; }
 };
+let selectedFile = null;
+document.getElementById('txt').addEventListener('input', () => {
+  selectedFile = null;
+});
 document.getElementById('file').onchange = () => {
   const file = document.getElementById('file').files[0];
-  if (!file) return;
   const out = document.getElementById('ds');
-  if (file.size > 1000000) {
-    out.textContent = 'file is too large (max 1 MB)';
+  selectedFile = file || null;
+  if (!file) return;
+  if (file.size > 10000000) {
+    out.textContent = 'file is too large (max 10 MB)';
+    selectedFile = null;
     return;
   }
-  const reader = new FileReader();
-  reader.onload = () => {
-    document.getElementById('txt').value = reader.result;
-    const src = document.getElementById('src');
-    if (!src.value.trim() || src.value === 'my-note.txt') src.value = file.name;
-    const title = document.getElementById('ttl');
-    if (!title.value.trim()) title.value = file.name;
-  };
-  reader.readAsText(file);
+  const src = document.getElementById('src');
+  if (!src.value.trim() || src.value === 'my-note.txt') src.value = file.name;
+  const title = document.getElementById('ttl');
+  if (!title.value.trim()) title.value = file.name;
+  const textLike = /\\.(txt|md|markdown|html?)$/i.test(file.name);
+  if (textLike) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('txt').value = reader.result;
+      out.textContent = 'Selected ' + file.name + ' - click Add document.';
+    };
+    reader.readAsText(file);
+  } else {
+    document.getElementById('txt').value = '';
+    out.textContent = 'Selected ' + file.name + ' - click Add document.';
+  }
 };
 document.getElementById('add').onclick = async () => {
   const source = document.getElementById('src').value.trim();
   const text = document.getElementById('txt').value;
   const out = document.getElementById('ds');
-  if (!source || !text.trim()) {
-    out.textContent = 'source and text are required';
+  if (!source) {
+    out.textContent = 'source is required';
+    return;
+  }
+  if (!selectedFile && !text.trim()) {
+    out.textContent = 'source and text (or a file) are required';
     return;
   }
   try {
-    const r = await fetch('/v1/documents', {method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({source, title: document.getElementById('ttl').value,
-                            text})});
+    let r;
+    if (selectedFile) {
+      const query = new URLSearchParams({
+        source, title: document.getElementById('ttl').value});
+      r = await fetch('/v1/documents/upload?' + query.toString(), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/octet-stream'},
+        body: selectedFile});
+    } else {
+      r = await fetch('/v1/documents', {method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({source,
+                              title: document.getElementById('ttl').value,
+                              text})});
+    }
     const j = await r.json();
     out.textContent = r.ok
       ? ('Indexed ' + j.chunks + ' chunk(s) from ' + j.source +
+         (j.format ? ' [' + j.format + ']' : '') +
          ' | sha256 ' + j.sha256.slice(0, 12) + '...')
       : ('error: ' + (j.error || r.status));
     if (r.ok) {
       document.getElementById('txt').value = '';
       document.getElementById('file').value = '';
+      selectedFile = null;
       refreshHealth();
       refreshDocs();
     }
@@ -463,8 +540,10 @@ async function refreshDocs() {
       const card = document.createElement('div');
       card.className = 'qitem';
       const title = document.createElement('div');
+      const pageInfo = item.page_start
+        ? ' | pp. ' + item.page_start + '-' + item.page_end : '';
       title.textContent = (item.title || item.source) + ' | ' +
-                          (item.chunks || 0) + ' chunk(s)';
+                          (item.chunks || 0) + ' chunk(s)' + pageInfo;
       card.appendChild(title);
       const source = document.createElement('div');
       source.className = 'src';
@@ -500,7 +579,10 @@ async function searchDocs() {
       const card = document.createElement('div');
       card.className = 'qitem';
       const title = document.createElement('div');
-      title.textContent = (hit.title || hit.source) + ' | ' + hit.source;
+      const where = (hit.page ? ' | p. ' + hit.page : '') +
+                    (hit.section ? ' | ' + hit.section : '');
+      title.textContent = (hit.title || hit.source) + ' | ' + hit.source +
+                          where;
       card.appendChild(title);
       const snippet = document.createElement('div');
       snippet.className = 'src';
@@ -1252,7 +1334,7 @@ def doc_answer(text: str, docs) -> dict | None:
     if not hits:
         return None
     notes = []
-    sources = []
+    source_map = {}
     unverified = False
     for hit in hits[:3]:
         teacher = hit.get("kind") == "teacher"
@@ -1265,23 +1347,17 @@ def doc_answer(text: str, docs) -> dict | None:
                      if reviewer else "teacher note, verified")
         else:
             label = "source"
-        location = hit.get("source_url") or hit["source"]
+        location = format_citation(hit)
         notes.append(f"- {best_snippet(text, hit['chunk'])} "
                      f"({label}: {location})")
-        source = {"source": hit["source"], "title": hit["title"]}
-        for key in ("kind", "source_url", "teacher", "model", "verified",
-                    "reviewer", "verified_at"):
-            if key in hit:
-                source[key] = hit[key]
+        add_citation_source(source_map, hit)
         if not verified:
             unverified = True
-        if source not in sources:
-            sources.append(source)
     text = (f"I found these notes:\n" + "\n".join(notes) + "\n\n"
             "This is a local note, not professional advice.")
     if unverified:
         text += "\n\nThis includes an unverified teacher-derived note."
-    return {"text": text, "sources": sources}
+    return {"text": text, "sources": list(source_map.values())}
 
 
 def chat_prompt(messages) -> str:
@@ -1941,12 +2017,16 @@ class Handler(BaseHTTPRequestHandler):
                 "error": f"document is too large (max {MAX_DOC_BYTES} bytes)"})
         raw = self.rfile.read(n)
         try:
-            text = raw.decode("utf-8")
-        except UnicodeDecodeError:
-            return self._json(400, {
-                "error": "document must be UTF-8 text"})
-        return self._ingest({"source": source, "title": title,
-                             "text": text})
+            result = ingest_upload(
+                _state.get("docs"), source, raw, title)
+        except DocumentTooLarge as exc:
+            return self._json(413, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        metrics = _state.get("metrics")
+        if isinstance(metrics, dict):
+            metrics["documents"] = metrics.get("documents", 0) + 1
+        return self._json(200, result)
 
     def _documents_forget(self, req: dict):
         docs = _state.get("docs")

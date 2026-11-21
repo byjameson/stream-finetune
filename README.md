@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-392-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-401-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -17,6 +17,9 @@ powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 
 The package is on PyPI: <https://pypi.org/project/streamft/0.8.3/>. The demo
 checkpoint still comes from the repository/tag.
+
+> **0.9.0 development:** PDF/DOCX/HTML/Markdown ingestion and page/section
+> citations are on `main`. PyPI `0.8.3` is the previous text-only package.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
 
@@ -42,7 +45,8 @@ It covers every layer:
 - **Model:** 49.2M decoder-only transformer, BPE-8k, 6 layers, 768 dim, 40k steps.
 - **Training:** 175.37M clean tokens + 214.8M replay; clean-valid bpb 1.3815.
 - **RAG:** SQLite FTS5 + hashed/MiniLM embeddings, hybrid candidates, reranking,
-  cached vectors, prewarmed matrix, IVF ANN + exact fallback.
+  cached vectors, prewarmed matrix, IVF ANN + exact fallback, page/section
+  citation locators for PDF/DOCX/HTML/Markdown.
 - **Runtime:** deterministic tools, arithmetic, time, tasks, name/likes memory.
 - **Sessions/UI:** transcript restore, export/import, Forget, document search,
   adapter history, health.
@@ -55,12 +59,13 @@ It covers every layer:
 - **Safety:** optional rules + local ML head; off by default.
 - **Privacy/security:** localhost, no telemetry, deletion, SSRF guard, caps.
 - **Benchmarks:** raw 2/10, product 21/21, behavior 16/16, retrieval 1.000,
-  safety 26/26, 392 tests.
-- **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium draft.
+  safety 26/26, 401 tests.
+- **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium.
 
 ## What it is
 
-- **Source-cited RAG** over your own text files, with a hybrid FTS + MiniLM retriever.
+- **Source-cited RAG** over your own text, Markdown, HTML, PDF and DOCX files,
+  with a hybrid FTS + MiniLM retriever and page/section locators.
 - **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
 - **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
 - **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.
@@ -76,7 +81,7 @@ It covers every layer:
 | product with RAG/tools | **21/21** |
 | behavior checks | **16/16** |
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
-| test suite | **392 passed** |
+| test suite | **401 passed** |
 
 The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
 
@@ -87,6 +92,8 @@ The 21/21 is the **product**, not the bare model. See the [model card](docs/MODE
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
+- Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
+- Document formats and citations: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md)
 
 ## Contact
 

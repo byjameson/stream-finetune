@@ -27,6 +27,8 @@ dependencies = [
   "numpy",
   "psutil",
   "bitsandbytes",
+  "pypdf>=4",
+  "python-docx>=1.1",
 ]
 
 [project.optional-dependencies]

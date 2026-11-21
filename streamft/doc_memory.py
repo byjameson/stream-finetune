@@ -253,6 +253,43 @@ def best_snippet(query: str, chunk: str, max_chars: int = 500) -> str:
     return snippet[:max_chars]
 
 
+def format_citation(hit: dict) -> str:
+    """Format a hit as ``source (p. N) [section]`` for chat/UI display."""
+    location = str(hit.get("source_url") or hit.get("source") or "")
+    page = hit.get("page")
+    if page not in (None, ""):
+        location += f" (p. {page})"
+    section = str(hit.get("section") or "").strip()
+    if section:
+        location += f" [{section}]"
+    return location
+
+
+def add_citation_source(sources: dict, hit: dict) -> dict:
+    """Merge a page/section hit into a source-keyed citation map."""
+    key = str(hit.get("source", ""))
+    source = sources.get(key)
+    if source is None:
+        source = {"source": hit.get("source", ""),
+                  "title": hit.get("title", "")}
+        for field in ("kind", "source_url", "teacher", "model", "verified",
+                      "reviewer", "verified_at"):
+            if field in hit:
+                source[field] = hit[field]
+        sources[key] = source
+    page = hit.get("page")
+    if page not in (None, ""):
+        pages = source.setdefault("pages", [])
+        if page not in pages:
+            pages.append(page)
+    section = str(hit.get("section") or "").strip()
+    if section:
+        sections = source.setdefault("sections", [])
+        if section not in sections:
+            sections.append(section)
+    return source
+
+
 def _chunks(text: str) -> list[str]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
@@ -304,6 +341,11 @@ class DocMemory:
             "doc_rowid INTEGER NOT NULL, model TEXT NOT NULL, "
             "dim INTEGER NOT NULL, vec BLOB NOT NULL, "
             "PRIMARY KEY(doc_rowid, model))")
+        self.con.execute(
+            "CREATE TABLE IF NOT EXISTS doc_chunk_meta("
+            "doc_rowid INTEGER PRIMARY KEY, page INTEGER, "
+            "section TEXT NOT NULL DEFAULT '', "
+            "char_start INTEGER, char_end INTEGER)")
         columns = {row[1] for row in self.con.execute(
             "PRAGMA table_info(doc_meta)")}
         for name, ddl in (
@@ -316,7 +358,21 @@ class DocMemory:
 
     def add_text(self, source: str, text: str, title: str = "",
                  replace: bool = True, meta: dict | None = None) -> int:
-        sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        return self.add_blocks(
+            source, [{"text": text, "page": None, "section": ""}],
+            title=title, replace=replace, meta=meta)
+
+    def add_blocks(self, source: str, blocks: list[dict], title: str = "",
+                   replace: bool = True, meta: dict | None = None) -> int:
+        """Index text blocks while keeping page/section provenance.
+
+        A block is a piece of text with an optional 1-based ``page`` and a
+        ``section`` label. Each block is split with the normal chunker; the
+        resulting chunks inherit the block's provenance and a character range
+        inside that block.
+        """
+        source = str(source)
+        title = str(title or Path(source).stem)
         meta = meta or {}
         kind = str(meta.get("kind", "document"))
         source_url = str(meta.get("source_url", ""))
@@ -326,18 +382,47 @@ class DocMemory:
         created = str(meta.get("created", int(time.time())))
         reviewer = str(meta.get("reviewer", ""))
         verified_at = str(meta.get("verified_at", ""))
+        block_texts = [str(block.get("text", "")) for block in blocks]
+        sha = hashlib.sha256(
+            "\n\n".join(block_texts).encode("utf-8")).hexdigest()
         with self._lock:
             if replace:
                 self.con.execute("DELETE FROM docs WHERE source = ?",
                                  (source,))
             added = 0
-            for chunk in _chunks(text):
-                self.con.execute(
-                    "INSERT INTO docs(chunk, source, title, sha, ts) "
-                    "VALUES (?, ?, ?, ?, ?)",
-                    (chunk, source, title or Path(source).stem, sha,
-                     int(time.time())))
-                added += 1
+            for block in blocks:
+                text = str(block.get("text", "")).replace(
+                    "\r\n", "\n").replace("\r", "\n").strip()
+                if not text:
+                    continue
+                page = block.get("page")
+                try:
+                    page = int(page) if page not in (None, "") else None
+                except (TypeError, ValueError):
+                    page = None
+                section = str(block.get("section", "") or "").strip()
+                cursor = 0
+                for chunk in _chunks(text):
+                    position = text.find(chunk, cursor)
+                    if position < 0:
+                        position = cursor
+                    char_start = position
+                    char_end = position + len(chunk)
+                    inserted = self.con.execute(
+                        "INSERT INTO docs(chunk, source, title, sha, ts) "
+                        "VALUES (?, ?, ?, ?, ?)",
+                        (chunk, source, title, sha, int(time.time())))
+                    rowid = inserted.lastrowid
+                    if not rowid:
+                        rowid = self.con.execute(
+                            "SELECT last_insert_rowid()").fetchone()[0]
+                    self.con.execute(
+                        "INSERT OR REPLACE INTO doc_chunk_meta("
+                        "doc_rowid, page, section, char_start, char_end) "
+                        "VALUES (?, ?, ?, ?, ?)",
+                        (rowid, page, section, char_start, char_end))
+                    cursor = char_end
+                    added += 1
             self.con.execute(
                 "INSERT OR REPLACE INTO doc_meta("
                 "source, kind, source_url, teacher, model, verified, created, "
@@ -347,19 +432,29 @@ class DocMemory:
                  reviewer, verified_at))
             if replace:
                 self._drop_stale_vectors()
+                self._drop_stale_chunk_meta()
             self._vector_index = None
             self.con.commit()
         return added
 
     def add_file(self, path: str | Path, title: str = "",
                  meta: dict | None = None) -> int:
+        from streamft.doc_ingest import extract_file
+
         p = Path(path)
-        text = p.read_text(encoding="utf-8", errors="replace")
-        return self.add_text(str(p), text, title or p.stem, meta=meta)
+        extracted = extract_file(p, title=title)
+        return self.add_blocks(
+            str(p), extracted["blocks"], title=extracted["title"],
+            meta=meta)
 
     def _drop_stale_vectors(self) -> None:
         self.con.execute(
             "DELETE FROM doc_vectors WHERE doc_rowid NOT IN "
+            "(SELECT rowid FROM docs)")
+
+    def _drop_stale_chunk_meta(self) -> None:
+        self.con.execute(
+            "DELETE FROM doc_chunk_meta WHERE doc_rowid NOT IN "
             "(SELECT rowid FROM docs)")
 
     @staticmethod
@@ -669,6 +764,23 @@ class DocMemory:
             "verified_at": row[8],
         } for row in rows}
 
+    def _chunk_meta_map(self, rowids) -> dict[int, dict]:
+        rowids = [int(rowid) for rowid in rowids
+                  if rowid is not None]
+        if not rowids:
+            return {}
+        placeholders = ",".join("?" for _ in rowids)
+        rows = self.con.execute(
+            "SELECT doc_rowid, page, section, char_start, char_end "
+            f"FROM doc_chunk_meta WHERE doc_rowid IN ({placeholders})",
+            tuple(rowids)).fetchall()
+        return {row[0]: {
+            "page": row[1],
+            "section": row[2] or "",
+            "char_start": row[3],
+            "char_end": row[4],
+        } for row in rows}
+
     def search(self, query: str, k: int = 5,
                rerank: bool = True,
                reranker=None) -> list[dict]:
@@ -700,9 +812,13 @@ class DocMemory:
             sources = {row[2] for row in rows} | {
                 hit["source"] for hit in embedding_hits}
             metas = self._meta_map(sources)
+            chunk_metas = self._chunk_meta_map(
+                {row[0] for row in rows}
+                | {hit.get("_rowid") for hit in embedding_hits})
         default = {"kind": "document", "source_url": "", "teacher": "",
                    "model": "", "verified": True, "created": "",
-                   "reviewer": "", "verified_at": ""}
+                   "reviewer": "", "verified_at": "", "page": None,
+                   "section": "", "char_start": None, "char_end": None}
         hits = [{
             "chunk": row[1],
             "source": row[2],
@@ -711,7 +827,10 @@ class DocMemory:
             "_rowid": row[0],
             **default,
             **metas.get(row[2], {}),
+            **chunk_metas.get(row[0], {}),
         } for row in rows]
+        for hit in embedding_hits:
+            hit.update(chunk_metas.get(hit.get("_rowid"), {}))
         if not rerank:
             return hits
         # Hybrid candidate pool: FTS rows plus the best embedding rows. A
@@ -750,15 +869,29 @@ class DocMemory:
                 "SELECT source, title, COUNT(*) FROM docs "
                 "GROUP BY source, title ORDER BY source").fetchall()
             metas = self._meta_map([row[0] for row in rows])
-        return [{
-            "source": row[0],
-            "title": row[1],
-            "chunks": row[2],
-            **metas.get(row[0], {"source": row[0], "kind": "document",
-                                 "source_url": "", "teacher": "",
-                                 "model": "", "verified": True, "created": "",
-                                 "reviewer": "", "verified_at": ""}),
-        } for row in rows]
+            page_rows = self.con.execute(
+                "SELECT docs.source, MIN(m.page), MAX(m.page) "
+                "FROM doc_chunk_meta m JOIN docs ON docs.rowid = m.doc_rowid "
+                "GROUP BY docs.source").fetchall()
+        pages = {row[0]: (row[1], row[2]) for row in page_rows}
+        result = []
+        for row in rows:
+            item = {
+                "source": row[0],
+                "title": row[1],
+                "chunks": row[2],
+                **metas.get(row[0], {"source": row[0], "kind": "document",
+                                     "source_url": "", "teacher": "",
+                                     "model": "", "verified": True,
+                                     "created": "", "reviewer": "",
+                                     "verified_at": ""}),
+            }
+            page_range = pages.get(row[0])
+            if page_range and page_range[0] is not None:
+                item["page_start"] = page_range[0]
+                item["page_end"] = page_range[1]
+            result.append(item)
+        return result
 
     def verify_source(self, source: str, reviewer: str) -> dict:
         """Mark a teacher note verified with reviewer and timestamp."""
@@ -821,6 +954,7 @@ class DocMemory:
                 f"DELETE FROM doc_meta WHERE source IN ({placeholders})",
                 tuple(variants))
             self._drop_stale_vectors()
+            self._drop_stale_chunk_meta()
             self._vector_index = None
             self.con.commit()
             vacuumed = False
@@ -842,6 +976,7 @@ class DocMemory:
             self.con.execute("DELETE FROM docs")
             self.con.execute("DELETE FROM doc_meta")
             self._drop_stale_vectors()
+            self._drop_stale_chunk_meta()
             self._vector_index = None
             self.con.commit()
             vacuumed = False

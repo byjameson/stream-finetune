@@ -39,6 +39,15 @@ The first four exercise RAG. The Paris question exercises the honest
 missing-source path. **Propose curiosity topics** creates pending research
 items; approve one in the research queue before the worker fetches anything.
 
+## Add your own documents
+
+Under **Add a document**, choose a file and click **Add document**. Supported
+formats are `.txt`, `.md`, `.markdown`, `.html`, `.htm`, `.pdf` and `.docx`
+(max 10 MB). PDF citations keep the page number; DOCX/HTML/Markdown citations
+keep the section heading. Scanned PDFs need OCR before ingestion.
+
+The full format and provenance rules are in [`DOCUMENTS.md`](DOCUMENTS.md).
+
 ## Provider mode
 
 ```powershell

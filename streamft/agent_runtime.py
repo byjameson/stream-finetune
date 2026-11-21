@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from streamft.doc_memory import add_citation_source, format_citation
 from streamft.knowledge_gaps import KnowledgeGapError
 from streamft.web_research import wikipedia_research
 
@@ -134,7 +135,7 @@ class AgentSession:
                     "tool_calls": [{"name": "search_docs", "query": query}],
                     "sources": []}
         lines = []
-        sources = []
+        source_map = {}
         unverified = False
         for hit in hits:
             teacher = hit.get("kind") == "teacher"
@@ -147,17 +148,11 @@ class AgentSession:
                          if reviewer else "teacher note, verified")
             else:
                 label = "source"
-            location = hit.get("source_url") or hit["source"]
+            location = format_citation(hit)
             lines.append(f"- {hit['chunk']} ({label}: {location})")
-            source = {"source": hit["source"], "title": hit["title"]}
-            for key in ("kind", "source_url", "teacher", "model", "verified",
-                        "reviewer", "verified_at"):
-                if key in hit:
-                    source[key] = hit[key]
+            add_citation_source(source_map, hit)
             if not verified:
                 unverified = True
-            if source not in sources:
-                sources.append(source)
         reply = (f"I found these notes:\n" + "\n".join(lines) + "\n\n"
                  "This is a local note, not professional advice.")
         if unverified:
@@ -165,7 +160,7 @@ class AgentSession:
         return {
             "reply": reply,
             "tool_calls": [{"name": "search_docs", "query": query}],
-            "sources": sources,
+            "sources": list(source_map.values()),
         }
 
     def chat(self, text: str) -> dict:

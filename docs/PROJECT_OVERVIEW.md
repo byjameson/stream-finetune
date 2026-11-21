@@ -21,7 +21,8 @@ its own. Apache-2.0 code and weights, no hosted service, no telemetry.
 **It is:**
 
 - a local assistant for a small GPU or CPU;
-- a source-cited RAG system over your own UTF-8 documents;
+- a source-cited RAG system over your own text, Markdown, HTML, PDF and DOCX
+  documents, with page/section locators;
 - a deterministic tool/memory runtime;
 - a reviewed research + curiosity loop;
 - a small-model + harness reference implementation;
@@ -103,7 +104,12 @@ not free-form tool planning.
 ## 6. Retrieval (RAG)
 
 The document index stores chunk, source, title, sha256, timestamp and
-provenance metadata (teacher, model, verified, reviewer, verified_at).
+provenance metadata (teacher, model, verified, reviewer, verified_at). A
+separate `doc_chunk_meta` table keeps `page` (PDF), `section`
+(DOCX/HTML/Markdown) and character offsets for each chunk. Extraction is local:
+`pypdf` for PDF, `python-docx` for DOCX, a stdlib HTML parser for HTML, and a
+heading-aware Markdown reader. Scanned PDFs are rejected with a clear OCR
+message; there is no hidden conversion service.
 
 Pipeline:
 
@@ -111,7 +117,8 @@ Pipeline:
 2. Chunk embeddings are cached in `doc_vectors`.
 3. The best FTS rows are merged with an embedding candidate pool.
 4. A reranker scores coverage, title match, exact phrase, bm25 and cosine.
-5. The top snippets are quoted with `source`, `title` and sha256.
+5. The top snippets are quoted with `source`, `title`, sha256 and, when
+   available, `page` or `section`.
 
 Two reranker paths:
 
@@ -255,7 +262,7 @@ whether to enable it.
 | behavior checks | **16/16** |
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | safety-enabled product | **26/26** |
-| test suite | **392 passed** |
+| test suite | **401 passed** |
 
 The product benchmark is narrow and authored: tools, memory, tasks, retrieval,
 teacher-note review, missing-source detection and one short generation. It is
@@ -286,6 +293,8 @@ runs on CPU, slower.
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - dev.to: https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m
+- Medium: https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78
+- Document formats: `DOCUMENTS.md`
 - Email: **gokhancava@gmail.com**
 - LinkedIn: https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/
 - License: Apache-2.0; data attribution in `NOTICE`.
@@ -295,7 +304,9 @@ runs on CPU, slower.
 **Limits:** raw model 2/10; English-first; no free-form tool planning; no ML
 moderation model; no multi-document conflict resolution; no hosted auth/rate
 limits; provider is text-only; IVF recall is measured but not guaranteed for
-every corpus.
+every corpus. Document ingestion has no OCR, rejects encrypted PDFs, cannot
+recover DOCX page numbers (pagination is a renderer decision), and caps uploads
+at 10 MB. Complex tables may lose structure.
 
 **Potential:** a strong domain tool with curated RAG, tools and a 3B-14B local
 provider; a reusable local-agent harness; a base for larger model/data work.

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased - document provenance
+
+- Added local PDF, DOCX, HTML and Markdown ingestion with `pypdf`,
+  `python-docx` and a stdlib HTML parser.
+- Added `doc_chunk_meta`: page numbers for PDFs, section headings for
+  DOCX/HTML/Markdown, and character offsets for every chunk.
+- Citations and the UI now show `source (p. N)` / `source [section]`; source
+  listings include the page range.
+- Raw uploads accept PDF/DOCX/HTML/Markdown up to 10 MB; text uploads remain
+  backward compatible.
+- Added `docs/DOCUMENTS.md` and 9 document/citation tests (401 total).
+
 ## 0.8.3 - full project map (2026-11-22)
 
 - Added `docs/PROJECT_OVERVIEW.md`, a canonical description of the model,
