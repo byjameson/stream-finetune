@@ -111,12 +111,16 @@ class AgentSession:
                     "sources": []}
         lines = "\n".join(
             f"- {h['chunk']} (source: {h['source']})" for h in hits)
+        sources = []
+        for hit in hits:
+            source = {"source": hit["source"], "title": hit["title"]}
+            if source not in sources:
+                sources.append(source)
         return {
             "reply": f"I found these notes:\n{lines}\n\n"
                      "This is a local note, not professional advice.",
             "tool_calls": [{"name": "search_docs", "query": query}],
-            "sources": [{"source": h["source"], "title": h["title"]}
-                        for h in hits],
+            "sources": sources,
         }
 
     def chat(self, text: str) -> dict:

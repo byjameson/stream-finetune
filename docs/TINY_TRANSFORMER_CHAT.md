@@ -118,7 +118,8 @@ not a general reasoning engine.
 ## Out of scope
 
 - general chat, instruction following, factual QA, coding, translation,
-- autonomous crawling or self-directed learning,
+- unreviewed autonomous crawling or self-directed topic generation; the
+  research queue only runs user-approved topics,
 - medical, legal, financial or safety-critical advice,
 - public deployment without a safety and licence review,
 - claims that this is a general language model.
@@ -131,7 +132,7 @@ The product is a local daily assistant, not a story demo:
 |---|---|
 | runtime fast paths | tasks, name/likes, time, simple arithmetic, exact formats |
 | document memory (SQLite FTS5) | your notes; HTTP paste/upload with `source` + sha256 |
-| Wikipedia research | user-triggered lookup; stores extracts with URLs |
+| Wikipedia research | user-triggered lookup or approved queue; lead extracts with URLs |
 | LoRA adapter | optional per-user style/skill, gated before acceptance |
 | 49.2M model | greetings and short open-ended wording |
 
@@ -172,14 +173,18 @@ Endpoints:
 
 | endpoint | purpose |
 |---|---|
-| `GET /health` | model, params, step, adapter, document stats |
+| `GET /health` | model, params, step, adapter, document stats, research queue stats |
 | `GET /v1/models` | model id |
 | `GET /v1/documents` | indexed sources |
 | `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
 | `POST /v1/documents/upload?source=...&title=...` | raw UTF-8 text body; same limits as JSON |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
-| `POST /v1/research` | `{"query": "...", "limit": 2}`; fetches Wikipedia extracts with sources |
+| `POST /v1/research` | `{"query": "...", "limit": 2}`; directly fetches Wikipedia lead extracts with sources |
+| `GET /v1/research/queue` | reviewed queue items and status counts |
+| `POST /v1/research/queue` | `{"topic": "Ankara", "lang": "en", "pages": 2}`; adds a **pending** topic |
+| `POST /v1/research/queue/approve` / `reject` | `{"id": "r0001"}`; user review step |
+| `POST /v1/research/queue/run` | `{"limit": 1}`; fetches **approved** topics only |
 | `POST /v1/learn_url` | `{"url": "..."}`; opt-in page ingestion, requires `--allow-url-fetch` |
 | `POST /v1/agent/chat` | `{"session_id": "...", "message": "..."}`; tasks, memory, docs, time, arithmetic, research |
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
@@ -198,6 +203,11 @@ JSON ingest returned `200` with source/title/chunks/sha256, search and
 upload returned `200`, missing source returned `400`, and a 1,000,001-byte
 document returned `413`. In the browser, pasted text and a selected `.txt` file
 were both indexed and retrieved with their source.
+
+The reviewed research queue was verified on port 8027: a pending `Ankara`
+topic was not fetched by `run`, approval allowed the fetch, Wikipedia returned
+the lead extract (`3` chunks, source `https://en.wikipedia.org/?curid=802`),
+and both search and chat returned the intro with one deduplicated source.
 
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
@@ -232,11 +242,54 @@ file-picker flow. Documents go to SQLite FTS5, never to model weights.
 
 ### Web research
 
-`POST /v1/research` uses the public Wikipedia API, fetches plain-text extracts
-and stores them with URL/title provenance. Arbitrary page fetching
-(`/v1/learn_url`) is **opt-in** via `--allow-url-fetch`; private/loopback hosts
-are blocked (SSRF guard), pages are size-capped, and no crawler runs
-automatically. Research writes to DocMemory, never to model weights.
+`POST /v1/research` uses the public Wikipedia API, fetches **lead-section**
+plain-text extracts and stores them with URL/title provenance. Lead extracts
+are smaller and more focused than full pages; a full Ankara page became 3
+chunks instead of 94. Arbitrary page fetching (`/v1/learn_url`) is **opt-in**
+via `--allow-url-fetch`; private/loopback hosts are blocked (SSRF guard), pages
+are size-capped. No crawler runs on its own: only approved queue topics can be
+processed by a scheduler. Research writes to DocMemory, never to model weights.
+
+### Reviewed research queue
+
+```text
+pending -> approved -> running -> done / error
+        \-> rejected (never fetched)
+```
+
+```bash
+# Add a topic (pending, no network)
+curl -X POST http://127.0.0.1:8013/v1/research/queue \
+  -H 'Content-Type: application/json' \
+  -d '{"topic":"Ankara","lang":"en","pages":1}'
+
+# Review it
+curl -X POST http://127.0.0.1:8013/v1/research/queue/approve \
+  -H 'Content-Type: application/json' -d '{"id":"r0001"}'
+
+# Fetch up to one approved topic into DocMemory
+curl -X POST http://127.0.0.1:8013/v1/research/queue/run \
+  -H 'Content-Type: application/json' -d '{"limit":1}'
+
+curl http://127.0.0.1:8013/v1/research/queue
+```
+
+Only `approved` items touch the network. Pending and rejected topics stay
+local. Each fetched item records its Wikipedia source URLs, titles and chunk
+counts in `data/research_queue.json`; the text is searchable and cited by the
+normal document path. Duplicate active topics are rejected.
+
+CLI and scheduling:
+
+```bash
+python research/research_queue.py --queue data/research_queue.json add "Ankara" --pages 1
+python research/research_queue.py --queue data/research_queue.json approve r0001
+python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+```
+
+Schedule the `run` command with Task Scheduler/cron for reviewed autonomous
+research. It processes only approved topics; it does not generate topics or
+crawl the open web.
 
 ### Agent API
 

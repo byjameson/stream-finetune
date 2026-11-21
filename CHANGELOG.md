@@ -236,6 +236,17 @@
   The browser page has paste and file-picker inputs. Live 50M test: JSON and
   raw upload returned 200 with retrieval and sources, missing source 400,
   1,000,001-byte document 413; browser paste and `.txt` upload both retrieved.
+- Reviewed research queue: topics move `pending -> approved -> running ->
+  done/error` (or `rejected`); only approved items touch the network. Added
+  `GET/POST /v1/research/queue`, approve/reject and run endpoints, plus
+  `research/research_queue.py` for Task Scheduler/cron. Wikipedia now stores
+  lead-section extracts (Ankara: 3 chunks instead of 94), with source URLs in
+  DocMemory. Live port 8027: unapproved run fetched nothing; after approval the
+  queue fetched Ankara, and search/chat returned the intro with one source.
+- Retrieval quality: common question words are filtered from FTS queries, long
+  paragraphs split at word boundaries, and repeated document sources are
+  deduplicated in citations.
+- 238 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -246,7 +257,6 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 229 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

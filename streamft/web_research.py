@@ -108,7 +108,8 @@ def index_url(memory, url: str, title: str = "",
 
 
 def wikipedia_research(memory, query: str, lang: str = "en",
-                       limit: int = 2, timeout: int = 20) -> list[dict]:
+                       limit: int = 2, timeout: int = 20,
+                       intro_only: bool = True) -> list[dict]:
     api = f"https://{lang}.wikipedia.org/w/api.php"
     params = {
         "action": "query", "list": "search", "srsearch": query,
@@ -127,6 +128,7 @@ def wikipedia_research(memory, query: str, lang: str = "en",
             continue
         extract_params = {
             "action": "query", "prop": "extracts", "explaintext": 1,
+            "exintro": 1 if intro_only else 0,
             "pageids": pageid, "format": "json",
         }
         req = urllib.request.Request(

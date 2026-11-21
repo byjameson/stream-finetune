@@ -18,6 +18,32 @@ import time
 from pathlib import Path
 
 MAX_CHARS = 900
+STOPWORDS = frozenset({
+    "a", "an", "and", "are", "as", "at", "be", "been", "being", "but",
+    "by", "can", "could", "did", "do", "does", "for", "from", "had", "has",
+    "have", "he", "her", "here", "him", "his", "how", "i", "if", "in",
+    "into", "is", "it", "its", "me", "my", "no", "not", "of", "on", "or",
+    "our", "please", "she", "should", "so", "tell", "than", "that", "the",
+    "their", "them", "then", "there", "these", "they", "this", "those",
+    "to", "was", "we", "were", "what", "when", "where", "which", "who",
+    "why", "will", "with", "would", "you", "your",
+})
+
+
+def _split_long(paragraph: str) -> list[str]:
+    """Split a long paragraph near a word boundary, never mid-word if possible."""
+    out = []
+    while len(paragraph) > MAX_CHARS:
+        cut = paragraph.rfind(" ", 0, MAX_CHARS)
+        if cut < MAX_CHARS // 2:
+            cut = MAX_CHARS
+        piece = paragraph[:cut].strip()
+        if piece:
+            out.append(piece)
+        paragraph = paragraph[cut:].lstrip()
+    if paragraph.strip():
+        out.append(paragraph.strip())
+    return out
 
 
 def _chunks(text: str) -> list[str]:
@@ -30,8 +56,7 @@ def _chunks(text: str) -> list[str]:
             if current:
                 out.append(current)
                 current = ""
-            for i in range(0, len(para), MAX_CHARS):
-                out.append(para[i:i + MAX_CHARS])
+            out.extend(_split_long(para))
             continue
         if len(current) + len(para) + 2 <= MAX_CHARS:
             current = (current + "\n\n" + para).strip()
@@ -82,6 +107,9 @@ class DocMemory:
     def search(self, query: str, k: int = 5) -> list[dict]:
         words = re.findall(r"[\wçğıöşüÇĞİÖŞÜ]+", query)
         words = [w for w in words if len(w) > 1]
+        meaningful = [w for w in words if w.lower() not in STOPWORDS]
+        if meaningful:
+            words = meaningful
         if not words:
             return []
         match = " OR ".join(f'"{w}"' for w in words[:12])

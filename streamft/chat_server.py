@@ -14,6 +14,11 @@ Endpoints:
   POST /v1/documents/search
   POST /v1/teach
   POST /v1/research
+  GET  /v1/research/queue
+  POST /v1/research/queue
+  POST /v1/research/queue/approve
+  POST /v1/research/queue/reject
+  POST /v1/research/queue/run
   POST /v1/learn_url
   POST /v1/agent/chat
   POST /generate
@@ -33,6 +38,8 @@ from pathlib import Path
 
 import torch
 
+from streamft.research_queue import (
+    ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.transformer import TransformerLM, generate
 
 _lock = threading.Lock()
@@ -258,11 +265,15 @@ def doc_answer(text: str, docs) -> dict | None:
         return None
     notes = "\n".join(
         f"- {hit['chunk']} (source: {hit['source']})" for hit in hits[:3])
+    sources = []
+    for hit in hits[:3]:
+        source = {"source": hit["source"], "title": hit["title"]}
+        if source not in sources:
+            sources.append(source)
     return {
         "text": (f"I found these notes:\n{notes}\n\n"
                  "This is a local note, not professional advice."),
-        "sources": [{"source": hit["source"], "title": hit["title"]}
-                    for hit in hits[:3]],
+        "sources": sources,
     }
 
 
@@ -313,6 +324,9 @@ class Handler(BaseHTTPRequestHandler):
                     "wikipedia_lang": _state.get("wiki_lang"),
                     "url_fetch": bool(_state.get("allow_url_fetch")),
                 },
+                "research_queue": (
+                    _state["research_queue"].stats()
+                    if _state.get("research_queue") else None),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -325,6 +339,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/v1/documents":
             docs = _state.get("docs")
             self._json(200, {"data": docs.sources() if docs else []})
+        elif self.path == "/v1/research/queue":
+            queue = _state.get("research_queue")
+            if queue is None:
+                return self._json(400, {
+                    "error": "research queue is not configured"})
+            self._json(200, {"data": queue.list(), "stats": queue.stats()})
         elif self.path in ("/", "/index.html"):
             self._send(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
         else:
@@ -337,6 +357,10 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/teach",
                          "/v1/learn_url", "/v1/research",
+                         "/v1/research/queue",
+                         "/v1/research/queue/approve",
+                         "/v1/research/queue/reject",
+                         "/v1/research/queue/run",
                          "/v1/agent/chat"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
@@ -364,6 +388,14 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if route == "/v1/documents":
                 return self._ingest(req)
+            if route == "/v1/research/queue":
+                return self._queue_add(req)
+            if route == "/v1/research/queue/approve":
+                return self._queue_update(req, "approve")
+            if route == "/v1/research/queue/reject":
+                return self._queue_update(req, "reject")
+            if route == "/v1/research/queue/run":
+                return self._queue_run(req)
             if self.path == "/v1/documents/search":
                 docs = _state.get("docs")
                 query = str(req.get("query", ""))
@@ -497,6 +529,46 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
 
+    def _queue(self):
+        queue = _state.get("research_queue")
+        if queue is None:
+            raise ResearchQueueError("research queue is not configured")
+        return queue
+
+    def _queue_add(self, req: dict):
+        try:
+            item = self._queue().add(
+                req.get("topic", ""), req.get("lang", "en"),
+                req.get("pages", 2))
+        except ResearchQueueError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, item)
+
+    def _queue_update(self, req: dict, action: str):
+        try:
+            queue = self._queue()
+            item_id = str(req.get("id", ""))
+            item = (queue.approve(item_id) if action == "approve"
+                    else queue.reject(item_id))
+        except ItemNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except ResearchQueueError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, item)
+
+    def _queue_run(self, req: dict):
+        docs = _state.get("docs")
+        if docs is None:
+            return self._json(400, {"error": "no document memory configured"})
+        try:
+            queue = self._queue()
+            from streamft.web_research import wikipedia_research
+            ran = queue.run_approved(
+                docs, req.get("limit", 1), wikipedia_research)
+        except ResearchQueueError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {"ran": ran, "stats": queue.stats()})
+
     def _ingest(self, req: dict):
         try:
             result = ingest_document(
@@ -580,7 +652,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           docs_path: str = "",
           queue_path: str = "data/learning_queue.jsonl",
           allow_url_fetch: bool = False, wiki_lang: str = "en",
-          session_dir: str = "data/sessions") -> int:
+          session_dir: str = "data/sessions",
+          research_queue_path: str = "data/research_queue.json") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -599,10 +672,18 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
     if docs_path:
         from streamft.doc_memory import DocMemory
         docs = DocMemory(docs_path)
+    research_queue = None
+    if research_queue_path:
+        try:
+            research_queue = ResearchQueue(research_queue_path)
+        except ResearchQueueError as exc:
+            print(f"warning: research queue disabled: {exc}", flush=True)
     _state.update({
         "model": model,
         "tok": tok,
         "docs": docs,
+        "research_queue": research_queue,
+        "research_queue_path": research_queue_path,
         "adapter": adapter,
         "queue_path": queue_path,
         "allow_url_fetch": allow_url_fetch,
@@ -645,10 +726,12 @@ def main():
     ap.add_argument("--allow-url-fetch", action="store_true")
     ap.add_argument("--wiki-lang", default="en")
     ap.add_argument("--session-dir", default="data/sessions")
+    ap.add_argument("--research-queue", default="data/research_queue.json")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
                  args.api_key, args.adapter, args.docs, args.queue,
-                 args.allow_url_fetch, args.wiki_lang, args.session_dir)
+                 args.allow_url_fetch, args.wiki_lang, args.session_dir,
+                 args.research_queue)
 
 
 if __name__ == "__main__":

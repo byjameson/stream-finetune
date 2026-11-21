@@ -1,10 +1,13 @@
+import json
 import threading
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
+from streamft import web_research
 from streamft.doc_memory import DocMemory
-from streamft.web_research import html_to_text, index_url
+from streamft.web_research import html_to_text, index_url, wikipedia_research
 
 
 class _Page(BaseHTTPRequestHandler):
@@ -51,3 +54,46 @@ def test_index_url_stores_source_and_search(tmp_path):
         httpd.shutdown()
         httpd.server_close()
         docs.close()
+
+
+class _ApiResponse:
+    def __init__(self, payload):
+        self.payload = json.dumps(payload).encode("utf-8")
+
+    def read(self):
+        return self.payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+
+def test_wikipedia_research_uses_intro_and_keeps_source(tmp_path, monkeypatch):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    calls = []
+
+    def fake_urlopen(request, timeout=20):
+        url = request.full_url if hasattr(request, "full_url") else str(request)
+        calls.append(url)
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if query.get("list") == ["search"]:
+            return _ApiResponse({"query": {"search": [
+                {"pageid": 123, "title": "Ankara"}]}})
+        return _ApiResponse({"query": {"pages": {"123": {
+            "extract": "Ankara is the capital of Turkey. It is in Anatolia."}}}})
+
+    monkeypatch.setattr(web_research.urllib.request, "urlopen", fake_urlopen)
+    pages = wikipedia_research(docs, "Ankara", limit=1)
+    assert pages[0]["source"] == "https://en.wikipedia.org/?curid=123"
+    assert pages[0]["title"] == "Ankara"
+    extract_url = [url for url in calls if "prop=extracts" in url][0]
+    assert urllib.parse.parse_qs(
+        urllib.parse.urlparse(extract_url).query)["exintro"] == ["1"]
+    hits = docs.search("capital Turkey")
+    assert hits and hits[0]["source"] == pages[0]["source"]
+    docs.close()
