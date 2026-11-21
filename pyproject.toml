@@ -41,3 +41,4 @@ Issues = "https://github.com/byjameson/stream-finetune/issues"
 
 [tool.setuptools]
 packages = ["streamft"]
+license-files = ["LICENSE", "NOTICE"]
