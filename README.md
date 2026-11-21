@@ -40,6 +40,7 @@ research. Indexed sources and session memory have tested delete paths
 LoRA adapter and SQLite FTS5 memory run locally. Facts stay in RAG; style/skill updates go through the
 gate. It is not a general assistant. The project is open source; no hosted
 service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
+[product audit](docs/PRODUCT_AUDIT.md),
 [safety filter](docs/SAFETY.md),
 [scaling plan](docs/SCALING_PLAN.md),
 [data-scaling run](docs/DATA_SCALING.md) and
