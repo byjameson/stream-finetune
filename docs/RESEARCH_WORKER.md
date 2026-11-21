@@ -68,8 +68,10 @@ Unregister-ScheduledTask -TaskName AtomZeroResearchWorker -Confirm:$false
 - Every pass appends one line to `data/research_worker.jsonl`.
 - The worker uses the public Wikipedia API; arbitrary URL fetching remains
   opt-in in the server and is not exposed by this worker.
-- A teacher provider is optional. Without `--teacher-url`/`--teacher-model`,
-  no external model is called.
+- A teacher provider is optional. `scripts/run_research.ps1` defaults to the
+  local Ollama endpoint (`llama3.2:3b`); if Ollama is down, the Wikipedia pages
+  are still indexed and the teacher error is recorded. See
+  [`TEACHER_OLLAMA.md`](TEACHER_OLLAMA.md).
 - Nothing in this worker updates adapter weights. Weight changes still require
   reviewed feedback plus the gated LoRA pipeline.
 

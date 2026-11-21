@@ -39,7 +39,8 @@ FTS5 memory run locally. Facts stay in RAG; style/skill updates go through the
 gate. It is not a general assistant. The project is open source; no hosted
 service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
 [safety filter](docs/SAFETY.md),
-[scaling plan](docs/SCALING_PLAN.md) and
+[scaling plan](docs/SCALING_PLAN.md),
+[data-scaling run](docs/DATA_SCALING.md) and
 [research worker](docs/RESEARCH_WORKER.md) for what is still required.
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a

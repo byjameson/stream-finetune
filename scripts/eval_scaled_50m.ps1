@@ -1,0 +1,19 @@
+param(
+    [string]$Model = "checkpoints/transformer_chat_en_scaled_50m",
+    [string]$Tag = "scaled_50m"
+)
+$ErrorActionPreference = "Stop"
+$root = Split-Path -Parent $PSScriptRoot
+Set-Location $root
+$env:PYTHONPATH = $root
+$env:PYTHONIOENCODING = "utf-8"
+
+python research/benchmark_assistant.py --model $Model `
+    --out "research/results/assistant_benchmark_$Tag.json"
+python research/benchmark_raw.py --model $Model `
+    --out "research/results/raw_knowledge_$Tag.json"
+python research/behavior_eval.py --model $Model `
+    --out "research/results/behavior_$Tag.json"
+python research/chat_eval.py --model $Model --tag $Tag --lang en `
+    --out "research/results/chat_eval_$Tag.json"
+exit $LASTEXITCODE

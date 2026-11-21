@@ -58,6 +58,11 @@ Rough Chinchilla-style token targets (20 tokens/parameter):
 These are planning numbers, not guarantees. Data quality, deduplication,
 licensing and evaluation matter more than the parameter count.
 
+## Current data-scaling run
+
+See [`DATA_SCALING.md`](DATA_SCALING.md) for the concrete 50M continuation run:
+`research/make_chat_corpus_scaled.py` and `scripts/train_scaled_50m.ps1`.
+
 ## Recommended sequence
 
 1. **Stay at 50M + RAG for the product.** Improve retrieval, task coverage,
