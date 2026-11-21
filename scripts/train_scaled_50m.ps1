@@ -1,6 +1,6 @@
 param(
     [int]$Steps = 60000,
-    [string]$Data = "data/chat_en_scaled_train.pt",
+    [string]$Data = "data/chat_en_scaled_replay_train.pt",
     [string]$Valid = "data/chat_en_scaled_valid.pt",
     [string]$Out = "checkpoints/transformer_chat_en_scaled_50m",
     [string]$Result = "research/results/transformer_chat_en_scaled_50m.json",

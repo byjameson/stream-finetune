@@ -275,6 +275,7 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `redteam_safety.py` | opt-in safety filter, output filter and agent refusal tests | ~10 s |
 | `redteam_injection.py` | untrusted-document prompt-injection checks | ~2 s |
 | `make_chat_corpus_scaled.py` | larger clean chat corpus for 50M data scaling | long/network |
+| `mix_scaled_replay.py` | scaled chat + behavior/skill replay training shard | ~1 min |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |
