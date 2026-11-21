@@ -115,8 +115,8 @@ service is operated; per-source data-licence review still recommended.
 
 - **372 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `56dccbe` green after the embedding reranker, expanded multilingual
-  safety and resume gate.
+- CI `8a04a59` green after the neural reranker, held-out retrieval benchmark,
+  expanded multilingual safety and resume gate.
 
 ## 8. Release state
 
