@@ -211,6 +211,12 @@ class ChatHuman:
                 reply = f"Completed task {match.group(1)}."
             else:
                 reply = "I could not find that task."
+        elif "how are you" in low:
+            reply = "I am doing well, thank you. How are you?"
+        elif low.strip(" ?!.") in ("hello", "hi", "hey"):
+            reply = "Hello! How can I help you today?"
+        elif "thank you" in low:
+            reply = "You are welcome."
         elif extracted:
             reply = "I will remember that."
         else:

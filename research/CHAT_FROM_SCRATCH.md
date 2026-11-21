@@ -280,6 +280,35 @@ work goes into data/skills and the runtime, not parameter scale.
 Evidence: `research/results/transformer_chat_en_clean_50m.json` and
 `research/results/transformer_chat_en_clean_50m_banned.json`.
 
+### Skill fine-tune and virtual-human smoke
+
+The 20M transformer was fine-tuned on a targeted skill corpus for 6,000 steps
+(LR 1e-4, 1:1 skill + clean-chat replay):
+
+- skill mix assistant loss **2.27** (ppl ~9.6) versus **4.01** for the base;
+- end-to-end `chat_human` smoke: **PASS_VIRTUAL_HUMAN_SMOKE**;
+- all memory/task checks pass:
+  name, likes, add/list/complete tasks, list-after-complete, remember facts;
+- greeting and small talk now come from the deterministic fast path; the model
+  handles stories/open-ended text:
+
+```text
+you> hello
+tiny> Hello! How can I help you today?
+you> how are you?
+tiny> I am doing well, thank you. How are you?
+you> tell me a short story
+tiny> Nora was a curious rabbit who lived near the garden...
+```
+
+**Tradeoff:** general clean-chat quality regressed. Clean valid chat bpb is
+**1.655** and assistant loss **4.93** (base: 1.359 / 4.01), with one tag leak
+unconstrained. This is forgetting from the aggressive skill fine-tune; the
+skill checkpoint is the virtual-human product, not the general-chat model.
+
+Evidence: `research/results/transformer_chat_skill_21m.json` and
+`research/results/chat_human_eval.json`.
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:
