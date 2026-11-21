@@ -1,9 +1,15 @@
 import json
 from pathlib import Path
 
+import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
+
+pytestmark = pytest.mark.skipif(
+    not (ROOT / "data/skill_meta.json").exists(),
+    reason="local skill corpus artifact is not committed",
+)
 
 
 def test_skill_corpus_is_built_and_mixed():
