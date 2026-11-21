@@ -65,8 +65,8 @@ exists).
 - Ollama 0.40.16 + `llama3.2:3b` (2.0 GB) installed; live `TeacherProvider`
   returned `Hello!`; Ankara worker stored an unverified `teacher://ollama/...`
   note.
-- Task is disabled during GPU training to avoid VRAM contention; re-enable
-  after training.
+- Task was disabled during GPU training and is now **Ready** again; next run
+  22.11.2026 09:00. It uses the local Ollama teacher with Wikipedia fallback.
 
 **Gaps:** no automatic teacher verification (by design); teacher model is
 separate and has its own licence; task currently disabled.

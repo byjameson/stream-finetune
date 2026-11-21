@@ -385,6 +385,9 @@
   wrong Turkey capital, 2+2 and speed of light. This is the honest limit and
   why facts stay in DocMemory. Results:
   `research/results/raw_knowledge_base.json` and `raw_knowledge_adapter.json`.
+- Scheduled research worker state: `AtomZeroResearchWorker` was disabled during
+  GPU training and re-enabled afterwards (Ready, next run 22.11.2026 09:00);
+  it defaults to the local Ollama teacher with Wikipedia fallback.
 - Scheduled research worker: `research/research_worker.py` processes only
   approved topics with an exclusive lock, stale `running` recovery, optional
   loop mode and a JSONL run log; `scripts/run_research.ps1` wraps it and
