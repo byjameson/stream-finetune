@@ -182,6 +182,16 @@ class ChatHuman:
             reply = ("I remember: " + "; ".join(
                 f"{fact['key']} is {fact['value']}" for fact in facts[-8:])
                 if facts else "I do not know anything about you yet.")
+        elif "what is my name" in low or "who am i" in low:
+            name = next((f["value"] for f in self.data["facts"]
+                         if f["key"] == "name"), None)
+            reply = (f"Your name is {name}." if name
+                     else "I do not know your name yet.")
+        elif "what do i like" in low or "what do you know i like" in low:
+            likes = [f["value"] for f in self.data["facts"]
+                     if f["key"] == "likes"]
+            reply = ("You like " + ", ".join(likes) + "." if likes
+                     else "I do not know what you like yet.")
         elif low.startswith("add task"):
             task = text.split("add task", 1)[1].strip(" :")
             if task:
