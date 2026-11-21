@@ -179,6 +179,7 @@ class DocMemory:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
+        self.reranker = None
         self.con = sqlite3.connect(str(self.path), check_same_thread=False)
         self.con.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5("
@@ -264,7 +265,8 @@ class DocMemory:
         } for row in rows}
 
     def search(self, query: str, k: int = 5,
-               rerank: bool = True) -> list[dict]:
+               rerank: bool = True,
+               reranker=None) -> list[dict]:
         words = re.findall(r"[\wçğıöşüÇĞİÖŞÜ]+", query)
         words = [w for w in words if len(w) > 1]
         meaningful = [w for w in words if w.lower() not in STOPWORDS]
@@ -290,7 +292,12 @@ class DocMemory:
                                  "model": "", "verified": True, "created": "",
                                  "reviewer": "", "verified_at": ""}),
         } for row in rows]
-        return rerank_hits(query, hits, k) if rerank else hits
+        if not rerank:
+            return hits
+        active = reranker if reranker is not None else self.reranker
+        if active is not None:
+            return active.rerank(query, hits, k)
+        return rerank_hits(query, hits, k)
 
     def sources(self) -> list[dict]:
         with self._lock:

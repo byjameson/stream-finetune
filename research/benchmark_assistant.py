@@ -45,7 +45,8 @@ def _case(name: str, fn) -> dict:
 
 
 def run(model_path: str, tokenizer: str, adapter: str = "",
-        safety_filter: bool = False) -> dict:
+        safety_filter: bool = False, reranker: str = "hashed",
+        neural_model: str = "models/all-MiniLM-L6-v2") -> dict:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tok = load_model(model_path, device, "transformer", tokenizer,
                             adapter)
@@ -53,6 +54,9 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
     with tempfile.TemporaryDirectory(prefix="atomzero-bench-") as folder:
         root = Path(folder)
         docs = DocMemory(root / "docs.db")
+        if reranker == "neural":
+            from streamft.neural_embedder import NeuralReranker
+            docs.reranker = NeuralReranker(neural_model)
         gaps = KnowledgeGapStore(root / "gaps.json")
         docs.add_text(
             "https://example.test/policy",
@@ -252,6 +256,7 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
         "model": model_path,
         "adapter": adapter,
         "safety_filter": bool(safety_filter),
+        "reranker": reranker,
         "score": passed / max(len(tasks), 1),
         "passed": passed,
         "total": len(tasks),
@@ -269,11 +274,14 @@ def main(argv=None) -> int:
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--adapter", default="")
     ap.add_argument("--safety-filter", action="store_true")
+    ap.add_argument("--reranker", choices=("hashed", "neural"),
+                    default="hashed")
+    ap.add_argument("--neural-model", default="models/all-MiniLM-L6-v2")
     ap.add_argument(
         "--out", default="research/results/assistant_benchmark.json")
     args = ap.parse_args(argv)
     payload = run(args.model, args.tokenizer, args.adapter,
-                  args.safety_filter)
+                  args.safety_filter, args.reranker, args.neural_model)
     out = ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",

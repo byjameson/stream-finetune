@@ -1,0 +1,578 @@
+{
+  "candidate_recall_at_10": 0.9,
+  "raw": {
+    "top1": 0.85,
+    "top3": 0.9,
+    "mrr": 0.875,
+    "citation": 0.85,
+    "median_ms": 0.4681000136770308,
+    "p95_ms": 0.6567999953404069,
+    "rows": [
+      {
+        "query": "What code authorizes a launch?",
+        "expected": "launch.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do I have to submit a warranty claim?",
+        "expected": "warranty.txt",
+        "top1": false,
+        "top3": true,
+        "mrr": 0.5,
+        "citation": false,
+        "rank": 2
+      },
+      {
+        "query": "What class should I book for a short work flight?",
+        "expected": "travel.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Do guests need to display identification?",
+        "expected": "security.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How can I regain access to a locked login?",
+        "expected": "account.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Why are my documents printing pale?",
+        "expected": "printer.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "When is the emergency power system checked?",
+        "expected": "generator.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where do I send a phishing message?",
+        "expected": "phishing.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the annual allowance for working from home?",
+        "expected": "homeoffice.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the maximum rollover for annual leave?",
+        "expected": "vacation.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When does the canteen shut?",
+        "expected": "cafeteria.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the deadline for expense claims?",
+        "expected": "finance.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where should we gather during a fire alarm?",
+        "expected": "assembly.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do I get a replacement computer?",
+        "expected": "laptop.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do visitors get internet access?",
+        "expected": "guestwifi.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the evacuation practice?",
+        "expected": "firedrill.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What should I wear to a customer meeting?",
+        "expected": "dresscode.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "Where can I find medical supplies?",
+        "expected": "firstaid.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do we keep client data?",
+        "expected": "retention.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the nightly data copy?",
+        "expected": "backup.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      }
+    ]
+  },
+  "hashed": {
+    "top1": 0.85,
+    "top3": 0.9,
+    "mrr": 0.875,
+    "citation": 0.85,
+    "median_ms": 0.9463000460527837,
+    "p95_ms": 1.2778998352587223,
+    "rows": [
+      {
+        "query": "What code authorizes a launch?",
+        "expected": "launch.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do I have to submit a warranty claim?",
+        "expected": "warranty.txt",
+        "top1": false,
+        "top3": true,
+        "mrr": 0.5,
+        "citation": false,
+        "rank": 2
+      },
+      {
+        "query": "What class should I book for a short work flight?",
+        "expected": "travel.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Do guests need to display identification?",
+        "expected": "security.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How can I regain access to a locked login?",
+        "expected": "account.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Why are my documents printing pale?",
+        "expected": "printer.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "When is the emergency power system checked?",
+        "expected": "generator.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where do I send a phishing message?",
+        "expected": "phishing.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the annual allowance for working from home?",
+        "expected": "homeoffice.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the maximum rollover for annual leave?",
+        "expected": "vacation.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When does the canteen shut?",
+        "expected": "cafeteria.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the deadline for expense claims?",
+        "expected": "finance.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where should we gather during a fire alarm?",
+        "expected": "assembly.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do I get a replacement computer?",
+        "expected": "laptop.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do visitors get internet access?",
+        "expected": "guestwifi.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the evacuation practice?",
+        "expected": "firedrill.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What should I wear to a customer meeting?",
+        "expected": "dresscode.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "Where can I find medical supplies?",
+        "expected": "firstaid.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do we keep client data?",
+        "expected": "retention.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the nightly data copy?",
+        "expected": "backup.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      }
+    ]
+  },
+  "neural": {
+    "top1": 0.9,
+    "top3": 0.9,
+    "mrr": 0.9,
+    "citation": 0.9,
+    "median_ms": 16.51625003432855,
+    "p95_ms": 20.93199989758432,
+    "rows": [
+      {
+        "query": "What code authorizes a launch?",
+        "expected": "launch.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do I have to submit a warranty claim?",
+        "expected": "warranty.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What class should I book for a short work flight?",
+        "expected": "travel.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Do guests need to display identification?",
+        "expected": "security.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How can I regain access to a locked login?",
+        "expected": "account.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Why are my documents printing pale?",
+        "expected": "printer.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "When is the emergency power system checked?",
+        "expected": "generator.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where do I send a phishing message?",
+        "expected": "phishing.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the annual allowance for working from home?",
+        "expected": "homeoffice.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What is the maximum rollover for annual leave?",
+        "expected": "vacation.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When does the canteen shut?",
+        "expected": "cafeteria.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the deadline for expense claims?",
+        "expected": "finance.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "Where should we gather during a fire alarm?",
+        "expected": "assembly.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do I get a replacement computer?",
+        "expected": "laptop.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How do visitors get internet access?",
+        "expected": "guestwifi.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the evacuation practice?",
+        "expected": "firedrill.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "What should I wear to a customer meeting?",
+        "expected": "dresscode.txt",
+        "top1": false,
+        "top3": false,
+        "mrr": 0.0,
+        "citation": false,
+        "rank": 0
+      },
+      {
+        "query": "Where can I find medical supplies?",
+        "expected": "firstaid.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "How long do we keep client data?",
+        "expected": "retention.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      },
+      {
+        "query": "When is the nightly data copy?",
+        "expected": "backup.txt",
+        "top1": true,
+        "top3": true,
+        "mrr": 1.0,
+        "citation": true,
+        "rank": 1
+      }
+    ]
+  },
+  "neural_model": "models/all-MiniLM-L6-v2",
+  "neural_load_s": 8.29,
+  "docs": 20,
+  "queries": 20,
+  "created": "2026-11-21T22:47:49"
+}

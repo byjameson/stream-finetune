@@ -37,11 +37,14 @@ controls.
 
 ## Benchmarks (honest scope)
 
-- Product behavior: 21/21 base and adapter; 26/26 with safety.
-- Raw model without RAG/tools: 2/10 base, 1/10 scaled 25k. It is **not** a
-  general model; facts belong in RAG.
-- Behavior checks: 16/16 on the scaled 25k candidate.
-- Test suite: 318 tests; CI green.
+- Product behavior: 21/21 base and adapter; 26/26 with safety; unchanged with
+  the neural reranker.
+- Retrieval reranker, held-out authored set: hashed top-1/citation 0.850;
+  local MiniLM-L6-v2 neural 0.900, at 16.5 ms vs 0.95 ms median CPU latency.
+- Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
+  **not** a general model; facts belong in RAG.
+- Behavior checks: 16/16 on the scaled 40k product checkpoint.
+- Test suite: 372 tests; CI green.
 
 ## Run locally
 

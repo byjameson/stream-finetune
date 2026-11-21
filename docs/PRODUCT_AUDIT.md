@@ -12,6 +12,7 @@ release approval. Last updated 2026-11-21.
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
 | product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_embed_rerank*.json` |
+| retrieval benchmark | neural top-1 0.900 vs hashed 0.850 | `retrieval_benchmark.json` |
 | behavior | 16/16 | `behavior_scaled_40k.json` |
 | raw knowledge | 2/10 (2/10 base) | `raw_knowledge_scaled_40k.json` |
 | training | stopped at 40k; resume to 48k did not beat it materially | `data/scaled_training.log`, `data/scaled_60k_resume.log` |
@@ -34,9 +35,11 @@ lower-LR resume did not produce a material improvement over 40k.
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
 
-**Gaps:** the reranker uses sparse hashed n-gram embeddings, not a neural
-sentence-embedding model; the model is English-first; no task due
-dates/reminders; no multi-document conflict resolution.
+**Gaps:** the neural reranker is opt-in and needs a one-time model download
+(`models/` is gitignored); on the authored benchmark FTS candidate recall@10
+caps top-1 at 0.900, so the candidate stage is now the bottleneck; the model is
+English-first; no task due dates/reminders; no multi-document conflict
+resolution.
 
 ## 3. Browser UI
 
@@ -93,6 +96,12 @@ only; general capability is not improved by adapters.
 - RAG reranker: deterministic hashed character n-gram embeddings + cosine,
   query coverage, title match, exact phrase and bm25; tests cover a case where
   raw bm25 prefers the wrong document and a morphological match.
+- Neural reranker candidate: local `sentence-transformers/all-MiniLM-L6-v2`
+  (BERT, 384 hidden) with mean pooling and cosine. Held-out authored retrieval
+  benchmark: top-1/citation **0.900 vs 0.850** for hashed; median latency
+  **16.5 ms vs 0.95 ms** on CPU. `--reranker auto` uses it when
+  `models/all-MiniLM-L6-v2` exists and falls back to hashed; product 21/21 and
+  safety 26/26 are unchanged with the neural path.
 - Prompt-injection 4/4; untrusted text quoted as data, tools not executed.
 - PII/source deletion tested; document list Forget UI.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
@@ -104,7 +113,7 @@ service is operated; per-source data-licence review still recommended.
 
 ## 7. Tests and CI
 
-- **367 tests** pass locally.
+- **372 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
 - CI `56dccbe` green after the embedding reranker, expanded multilingual
   safety and resume gate.

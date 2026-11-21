@@ -31,6 +31,18 @@ def _post_raw(url, body):
         return json.loads(response.read().decode("utf-8"))
 
 
+def test_auto_reranker_falls_back_when_model_missing(tmp_path, capsys):
+    docs = DocMemory(tmp_path / "docs.db")
+    try:
+        active = chat_server._attach_reranker(
+            docs, "auto", str(tmp_path / "missing"))
+        assert active == "hashed"
+        assert docs.reranker is None
+        assert "note: neural reranker disabled" in capsys.readouterr().out
+    finally:
+        docs.close()
+
+
 def test_demo_page_uses_daily_agent_endpoint():
     page = chat_server.PAGE.lower()
     assert "atom zero" in page

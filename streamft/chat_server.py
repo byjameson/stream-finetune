@@ -47,6 +47,7 @@ from streamft.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
 from streamft.knowledge_gaps import (
     GapNotFound, KnowledgeGapError, KnowledgeGapStore)
+from streamft.neural_embedder import NeuralEmbedderError, NeuralReranker
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.safety import SafetyFilter
@@ -1188,6 +1189,7 @@ function refreshHealth() {
       ' | adapter: ' + (j.adapter ? 'yes' : 'none') + ' | doc chunks: ' + docs +
       ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia') +
       ' | safety: ' + (j.safety && j.safety.enabled ? 'on' : 'off') +
+      ' | reranker: ' + (j.reranker || 'hashed') +
       ' | teacher: ' + (j.teacher && j.teacher.enabled ? j.teacher.model : 'off');
     const teacher = j.teacher || {enabled: false};
     document.getElementById('task').disabled = !teacher.enabled;
@@ -1313,6 +1315,7 @@ class Handler(BaseHTTPRequestHandler):
                 "safety": (
                     {"enabled": True, "version": _state["safety"].version}
                     if _state.get("safety") else {"enabled": False}),
+                "reranker": _state.get("reranker", "hashed"),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -1986,6 +1989,23 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
+def _attach_reranker(docs, mode: str = "auto",
+                     neural_model: str = "models/all-MiniLM-L6-v2") -> str:
+    """Attach the best available reranker; never fail server startup."""
+    if docs is None or mode == "hashed":
+        return "hashed"
+    try:
+        neural = NeuralReranker(neural_model)
+        neural.embed(["warmup"])
+        docs.reranker = neural
+        return "neural"
+    except (NeuralEmbedderError, OSError, RuntimeError) as exc:
+        level = "warning" if mode == "neural" else "note"
+        print(f"{level}: neural reranker disabled, using hashed "
+              f"embeddings: {exc}", flush=True)
+        return "hashed"
+
+
 def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           port: int = 8013, api_key: str = "", adapter: str = "",
           docs_path: str = "",
@@ -2000,7 +2020,9 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           teacher_label: str = "openai-compatible",
           active_adapter_file: str = "data/active_adapter.json",
           gap_store_path: str = "data/knowledge_gaps.json",
-          safety_filter: bool = False) -> int:
+          safety_filter: bool = False,
+          reranker: str = "auto",
+          neural_model: str = "models/all-MiniLM-L6-v2") -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -2020,6 +2042,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
     if docs_path:
         from streamft.doc_memory import DocMemory
         docs = DocMemory(docs_path)
+    active_reranker = _attach_reranker(docs, reranker, neural_model)
     research_queue = None
     if research_queue_path:
         try:
@@ -2061,6 +2084,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "adapter_history_path": "data/adapter_history.jsonl",
         "active_adapter_file": active_adapter_file,
         "safety": SafetyFilter() if safety_filter else None,
+        "reranker": active_reranker,
         "teacher": teacher,
         "adapter": adapter,
         "queue_path": queue_path,
@@ -2110,6 +2134,11 @@ def main():
     ap.add_argument("--feedback-export", default="data/feedback_training.jsonl")
     ap.add_argument("--gap-store", default="data/knowledge_gaps.json")
     ap.add_argument("--safety-filter", action="store_true")
+    ap.add_argument("--reranker", choices=("auto", "hashed", "neural"),
+                    default="auto",
+                    help="auto uses the local neural model when present, "
+                         "otherwise hashed n-gram embeddings")
+    ap.add_argument("--neural-model", default="models/all-MiniLM-L6-v2")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -2123,7 +2152,7 @@ def main():
                  args.feedback_export, args.teacher_url, args.teacher_model,
                  args.teacher_timeout, args.teacher_label,
                  args.active_adapter_file, args.gap_store,
-                 args.safety_filter)
+                 args.safety_filter, args.reranker, args.neural_model)
 
 
 if __name__ == "__main__":

@@ -6,8 +6,11 @@
   old valid bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502.
 - Reviewed learning loop, knowledge gaps, scheduled worker, Ollama teacher.
 - Opt-in safety filter, PII deletion, prompt-injection red-team.
+- RAG retrieval: hashed n-gram reranker plus optional local MiniLM-L6-v2
+  neural reranker; held-out authored benchmark top-1/citation 0.900 vs 0.850,
+  16.5 ms vs 0.95 ms median CPU latency.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 318 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 372 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
@@ -311,6 +314,14 @@
   phrase and normalized bm25. This fixes a case where raw bm25 ranks a country
   note above the capital answer and a morphological match. Tests:
   `tests/test_rag_rerank.py`.
+- Neural reranker candidate: `research/benchmark_retrieval.py` runs a held-out
+  authored 20-document/20-query benchmark. Local
+  `sentence-transformers/all-MiniLM-L6-v2` reaches top-1/citation **0.900** vs
+  **0.850** for hashed n-grams, with median CPU latency 16.5 ms vs 0.95 ms.
+  The server's `--reranker auto` uses the neural model when
+  `models/all-MiniLM-L6-v2` exists and falls back to hashed; product 21/21 and
+  safety 26/26 are unchanged. FTS candidate recall@10 (0.900) is now the
+  bottleneck.
 - Safety v0.2: English regex plus language-agnostic lexical-semantic rules for
   Turkish, German, Spanish, French, Italian, Portuguese, Dutch and Russian.
   Multilingual red-team filter **72/72**,
