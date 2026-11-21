@@ -46,7 +46,12 @@ dates/reminders; no multi-document conflict resolution.
 - Verified in browser: session ID same after reload, transcript restored
   (`my name is Alice`), document list shows Berlin, no console errors.
 
-**Gaps:** no adapter version/rollback panel in the UI; no import/export memory.
+Adapter version history is shown read-only in the UI; rollback remains an
+explicit CLI action (`learning_loop.py activate vNNNN`) to avoid hot-swapping
+weights under a running request.
+
+**Gaps:** no import/export memory; no UI-triggered adapter activation (by
+design until safe hot-swap exists).
 
 ## 4. Research and teacher
 
