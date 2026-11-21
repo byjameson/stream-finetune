@@ -1,4 +1,4 @@
-# Personalize the tiny model with your own data
+# Personalize Atom Zero with your own data
 
 Two different jobs, two different paths:
 
