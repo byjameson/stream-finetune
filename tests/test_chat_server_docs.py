@@ -45,6 +45,9 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "adapter versions" in page
     assert "/v1/documents/forget" in page
     assert "/v1/memory/history" in page
+    assert "/v1/memory/export" in page
+    assert "/v1/memory/import" in page
+    assert "session backup" in page
     assert "atomzero_session" in page
     assert "add a document" in page
     assert "indexed documents" in page
@@ -559,8 +562,25 @@ def test_http_privacy_forget_document_and_session(tmp_path):
                         {"session_id": "privacy", "limit": 10})
         assert any(item["text"] == "my name is Alice"
                    for item in history["data"])
+        exported = _post(base + "/v1/memory/export",
+                         {"session_id": "privacy"})
+        assert exported["data"]["facts"]
+        imported = _post(base + "/v1/memory/import", {
+            "session_id": "privacy",
+            "data": {
+                "persona": {"name": "Tiny", "style": "test"},
+                "facts": [{"key": "name", "value": "Bob"}],
+                "episodes": [{"role": "user", "text": "imported"}],
+                "tasks": [],
+                "next_task": 1,
+            },
+        })
+        assert imported["facts"] == 1
+        recalled = _post(base + "/v1/agent/chat", {
+            "session_id": "privacy", "message": "what is my name?"})
+        assert "Bob" in recalled["reply"]
         removed = _post(base + "/v1/memory/forget", {
-            "session_id": "privacy", "text": "Alice"})
+            "session_id": "privacy", "text": "Bob"})
         assert removed["facts_deleted"] == 1
         recalled = _post(base + "/v1/agent/chat", {
             "session_id": "privacy", "message": "what is my name?"})

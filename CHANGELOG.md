@@ -306,6 +306,9 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- Session backup: `POST /v1/memory/export` / `import` and browser
+  Export/Import controls; exported JSON contains personal memory and must be
+  kept private.
 - Adapter history UI: `GET /v1/learning/adapters` returns accepted versions and
   the active path; the browser shows metrics. Activation/rollback stays an
   explicit CLI action until safe hot-swap exists.

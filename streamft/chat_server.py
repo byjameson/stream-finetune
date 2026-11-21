@@ -186,6 +186,14 @@ cannot be undone.</p>
 <button id="forgetmem">Forget session memory</button></div>
 <p id="fmsg" class="hint"></p>
 <hr>
+<h3>Session backup</h3>
+<p class="hint">Export or replace this session's facts, tasks and transcript.
+The file contains personal memory; keep it private.</p>
+<div class="row"><button id="mexport">Export session</button>
+<input id="mimport" type="file" accept="application/json">
+<button id="mimportbtn">Import session</button></div>
+<p id="bmsg" class="hint"></p>
+<hr>
 <h3>Add a teacher answer</h3>
 <p class="hint">Paste an answer from ChatGPT or another assistant. It is stored
 as a derived, unverified note with its source URL. It is not treated as a fact
@@ -982,6 +990,56 @@ document.getElementById('lexport').onclick = async () => {
     setLearningMsg('error: ' + e, true);
   }
 };
+function setBackupMsg(text, isError) {
+  const el = document.getElementById('bmsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+document.getElementById('mexport').onclick = async () => {
+  setBackupMsg('exporting...');
+  try {
+    const r = await fetch('/v1/memory/export', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId})});
+    const j = await r.json();
+    if (!r.ok) {
+      setBackupMsg('error: ' + (j.error || r.status), true);
+      return;
+    }
+    const blob = new Blob([JSON.stringify(j.data, null, 2)],
+                          {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'atomzero-' + sessionId + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    setBackupMsg('session exported');
+  } catch (e) { setBackupMsg('error: ' + e, true); }
+};
+document.getElementById('mimportbtn').onclick = () => {
+  const file = document.getElementById('mimport').files[0];
+  if (!file) { setBackupMsg('choose a JSON backup first', true); return; }
+  if (!confirm('Replace this session memory with the imported file?')) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const r = await fetch('/v1/memory/import', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({session_id: sessionId, data})});
+      const j = await r.json();
+      if (!r.ok) {
+        setBackupMsg('error: ' + (j.error || r.status), true);
+        return;
+      }
+      setBackupMsg('imported facts ' + j.facts + ', episodes ' +
+                   j.episodes + ', tasks ' + j.tasks);
+      setTimeout(() => location.reload(), 500);
+    } catch (e) { setBackupMsg('error: ' + e, true); }
+  };
+  reader.readAsText(file);
+};
 function setAdapterMsg(text, isError) {
   const el = document.getElementById('amsg');
   el.textContent = text;
@@ -1337,6 +1395,7 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/documents/forget",
                          "/v1/memory/forget", "/v1/memory/history",
+                         "/v1/memory/export", "/v1/memory/import",
                          "/v1/teacher/notes",
                          "/v1/teacher/notes/verify", "/v1/teacher/ask",
                          "/v1/teach", "/v1/learning/feedback",
@@ -1409,6 +1468,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self._memory_forget(req)
             if route == "/v1/memory/history":
                 return self._memory_history(req)
+            if route == "/v1/memory/export":
+                return self._memory_export(req)
+            if route == "/v1/memory/import":
+                return self._memory_import(req)
             if self.path == "/v1/documents/search":
                 docs = _state.get("docs")
                 query = str(req.get("query", ""))
@@ -1828,6 +1891,33 @@ class Handler(BaseHTTPRequestHandler):
             session = self._session(session_id)
             result = session.forget("" if clear_all else text)
         except Exception as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {"session_id": session_id, **result})
+
+    def _memory_export(self, req: dict):
+        session_id = str(req.get("session_id", "")).strip()
+        if not session_id:
+            return self._json(400, {"error": "session_id is required"})
+        try:
+            session = self._session(session_id)
+            data = session.export_memory()
+        except Exception as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, {"session_id": session_id, "data": data})
+
+    def _memory_import(self, req: dict):
+        session_id = str(req.get("session_id", "")).strip()
+        data = req.get("data")
+        if not session_id:
+            return self._json(400, {"error": "session_id is required"})
+        if not isinstance(data, dict):
+            return self._json(400, {"error": "data must be an object"})
+        if len(json.dumps(data)) > 1_000_000:
+            return self._json(413, {"error": "memory import is too large"})
+        try:
+            session = self._session(session_id)
+            result = session.import_memory(data)
+        except (OSError, ValueError) as exc:
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"session_id": session_id, **result})
 

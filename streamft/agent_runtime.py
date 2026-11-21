@@ -100,6 +100,12 @@ class AgentSession:
         """Delete matching session memory, or all of it when text is empty."""
         return self.human.forget(text)
 
+    def export_memory(self) -> dict:
+        return self.human.export_memory()
+
+    def import_memory(self, data: dict) -> dict:
+        return self.human.import_memory(data)
+
     def _research(self, query: str, limit: int = 2) -> dict:
         if self.docs is None:
             raise ValueError("no document memory configured")

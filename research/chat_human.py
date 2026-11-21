@@ -8,6 +8,7 @@ The language model supplies wording; this module supplies the parts that a
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import time
@@ -89,6 +90,43 @@ class ChatHuman:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.data, indent=2, ensure_ascii=False)
                              + "\n", encoding="utf-8")
+
+    def export_memory(self) -> dict:
+        return copy.deepcopy(self.data)
+
+    def import_memory(self, data: dict) -> dict:
+        if not isinstance(data, dict):
+            raise ValueError("memory data must be an object")
+        persona = data.get("persona")
+        if not isinstance(persona, dict):
+            persona = self.data.get("persona", {})
+        clean = {
+            "persona": copy.deepcopy(persona),
+            "facts": [],
+            "episodes": [],
+            "tasks": [],
+            "next_task": 1,
+        }
+        for key, limit in (("facts", 1000), ("episodes", 1000),
+                           ("tasks", 1000)):
+            rows = data.get(key, [])
+            if not isinstance(rows, list):
+                raise ValueError(f"{key} must be a list")
+            if len(rows) > limit:
+                raise ValueError(f"{key} is too large")
+            clean[key] = [copy.deepcopy(row) for row in rows
+                          if isinstance(row, dict)]
+        try:
+            clean["next_task"] = max(1, int(data.get("next_task", 1)))
+        except (TypeError, ValueError):
+            clean["next_task"] = 1
+        self.data = clean
+        self.save()
+        return {
+            "facts": len(clean["facts"]),
+            "episodes": len(clean["episodes"]),
+            "tasks": len(clean["tasks"]),
+        }
 
     def forget(self, text: str = "") -> dict:
         """Delete facts/episodes/tasks matching ``text``; empty clears all."""

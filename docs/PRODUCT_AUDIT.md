@@ -51,8 +51,11 @@ Adapter version history is shown read-only in the UI; rollback remains an
 explicit CLI action (`learning_loop.py activate vNNNN`) to avoid hot-swapping
 weights under a running request.
 
-**Gaps:** no import/export memory; no UI-triggered adapter activation (by
-design until safe hot-swap exists).
+Session memory can be exported/imported as JSON from the browser; the export
+contains personal data and should be kept private.
+
+**Gaps:** no UI-triggered adapter activation (by design until safe hot-swap
+exists).
 
 ## 4. Research and teacher
 
