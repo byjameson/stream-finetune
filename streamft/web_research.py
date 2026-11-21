@@ -113,15 +113,33 @@ def wikipedia_research(memory, query: str, lang: str = "en",
     api = f"https://{lang}.wikipedia.org/w/api.php"
     params = {
         "action": "query", "list": "search", "srsearch": query,
-        "format": "json", "srlimit": max(1, min(limit, 5)),
+        "format": "json", "srlimit": max(3, min(10, limit * 2)),
     }
     req = urllib.request.Request(
         api + "?" + urllib.parse.urlencode(params),
         headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout) as response:
         data = json.loads(response.read().decode("utf-8"))
+    results = [result for result in
+               data.get("query", {}).get("search", [])
+               if result.get("pageid")]
+    wanted = query.strip().lower()
+
+    def rank(item):
+        index, result = item
+        title = str(result.get("title", "")).strip().lower()
+        if title == wanted:
+            return (0, index)
+        if title.startswith(wanted + " ("):
+            return (1, index)
+        if title.startswith(wanted):
+            return (2, index)
+        return (3, index)
+
+    results = [result for _, result in
+               sorted(enumerate(results), key=rank)][:max(1, min(limit, 5))]
     pages = []
-    for result in data.get("query", {}).get("search", []):
+    for result in results:
         pageid = result.get("pageid")
         title = result.get("title", "")
         if not pageid:

@@ -97,3 +97,34 @@ def test_wikipedia_research_uses_intro_and_keeps_source(tmp_path, monkeypatch):
     hits = docs.search("capital Turkey")
     assert hits and hits[0]["source"] == pages[0]["source"]
     docs.close()
+
+
+def test_wikipedia_research_prefers_exact_title(tmp_path, monkeypatch):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    calls = []
+
+    def fake_urlopen(request, timeout=20):
+        url = request.full_url if hasattr(request, "full_url") else str(request)
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        calls.append(query)
+        if query.get("list") == ["search"]:
+            return _ApiResponse({"query": {"search": [
+                {"pageid": 2, "title": "New Ankara Stadium"},
+                {"pageid": 1, "title": "Ankara"},
+            ]}})
+        pageid = query["pageids"][0]
+        text = ("Ankara is the capital of Turkey. It is in Anatolia."
+                if pageid == "1" else "A stadium in Ankara with a roof.")
+        return _ApiResponse({"query": {"pages": {pageid: {"extract": text}}}})
+
+    monkeypatch.setattr(web_research.urllib.request, "urlopen", fake_urlopen)
+    pages = wikipedia_research(docs, "Ankara", limit=1)
+    assert pages[0]["title"] == "Ankara"
+    assert pages[0]["source"].endswith("curid=1")
+    extract_calls = [call for call in calls if call.get("prop") == ["extracts"]]
+    assert len(extract_calls) == 1
+    assert extract_calls[0]["pageids"] == ["1"]
+    docs.close()

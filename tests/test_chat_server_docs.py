@@ -32,7 +32,10 @@ def test_demo_page_uses_daily_agent_endpoint():
     page = chat_server.PAGE.lower()
     assert "/v1/agent/chat" in page
     assert "/v1/documents" in page
+    assert "/v1/research/queue" in page
     assert "add a document" in page
+    assert "research queue" in page
+    assert "run approved" in page
     assert "teach a fact" in page
     assert "short story" not in page
     assert "/generate" not in page

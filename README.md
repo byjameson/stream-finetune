@@ -19,10 +19,10 @@ measured speed where a measurement exists (and says so where it doesn't).
 source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start with
 `powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. Paste or
 upload your own UTF-8 documents over HTTP; the response keeps source, title and
-sha256. A reviewed research queue fetches only user-approved Wikipedia topics
-on a schedule. The 49.2M checkpoint, optional 368k LoRA adapter and SQLite FTS5
-memory run locally. Facts stay in RAG; style/skill updates go through a gated
-adapter. It is not a general assistant.
+sha256. A reviewed research queue (browser + API/CLI) fetches only
+user-approved Wikipedia topics on a schedule. The 49.2M checkpoint, optional
+368k LoRA adapter and SQLite FTS5 memory run locally. Facts stay in RAG;
+style/skill updates go through a gated adapter. It is not a general assistant.
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
