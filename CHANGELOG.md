@@ -374,7 +374,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 317 tests;
+- 318 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
