@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T20:48:34",
+  "model": "checkpoints/scaled_50m_step10000",
+  "adapter": "",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris, a city known for its vibrant culture and cultural significance. The capital of France is Paris, a place of famous landmarks such as the Eiffel Tower, the Eiffel Tower, and the Eiffel Tower.",
+      "correct": true,
+      "alpha": 0.801,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of France is Paris, and it is a city of Paris, located in the heart of the city, and is a city of Paris. It is a city of Paris, and it is a city of Paris, a city, and a city is a city that offers a rich history, culture, and culture",
+      "correct": false,
+      "alpha": 0.742,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "The given statement is that it is a statement that is true that all people are in the same way. The statement is \"All people are in the same way.\" The statement is \"All people are in the same way.\" The statement is \"All people are in the same way.\" The statement is \"",
+      "correct": false,
+      "alpha": 0.76,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the numbers in the sequence, we can use the concept of modular arithmetic. The first term, which states that the first term is the sum of the first term, is the sum of the first term, is the sum of the first term, is the sum of the first",
+      "correct": false,
+      "alpha": 0.775,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world, with a planet of approximately 4.5,000 years old.",
+      "correct": false,
+      "alpha": 0.75,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "The main song of the song is \"The Lion\" by The Lion.",
+      "correct": false,
+      "alpha": 0.731,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a type of water that is used to create a shallow or other water. It is a type of water that is used to create a shallow or other water. It is used to create a shallow, which is a type of water that is used to create",
+      "correct": false,
+      "alpha": 0.771,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTTP is a type of data analysis used to analyze and analyze data, identify patterns, and make predictions about a specific situation. It is a type of data visualization tool that allows you to identify patterns, patterns, and correlations within a dataset. HTTP is a type of data",
+      "correct": false,
+      "alpha": 0.811,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "The primary color is the blue color.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics that deals with the study of the behavior of a system and the behavior of a system. It is a fundamental concept in physics that states that a system is a way to describe a system's behavior, such as a system, a system, or a system. The",
+      "correct": false,
+      "alpha": 0.786,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}
