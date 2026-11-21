@@ -297,6 +297,9 @@
   training: a 6-train / 2-holdout run was accepted at +8.89% and generalised
   from base 3.853 to adapter 3.139 (-18.5%) on the held-out rows; tiny sample,
   directional only.
+- RAG snippets: grounded answers select the one or two sentences that best
+  match the query instead of quoting the whole 900-char chunk. A Berlin
+  population question now returns a population sentence with its source.
 - Data-scaling run: `research/make_chat_corpus_scaled.py` builds a larger clean
   chat corpus with the original filters; `research/mix_scaled_replay.py` adds
   behavior/skill replay; `scripts/train_scaled_50m.ps1` continues the 49.2M
@@ -367,7 +370,7 @@
   status text. The Python package/CLI and PyPI project remain `streamft` for
   compatibility. Public-release naming still needs final domain/trademark
   verification.
-- 316 tests;
+- 317 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

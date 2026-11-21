@@ -15,6 +15,7 @@ from pathlib import Path
 
 import torch
 
+from streamft.doc_memory import best_snippet
 from streamft.transformer import TransformerLM, generate as transformer_generate
 
 try:
@@ -336,7 +337,8 @@ class ChatHuman:
                         label = "source"
                     location = hit.get("source_url") or hit["source"]
                     lines.append(
-                        f"- {hit['chunk']} ({label}: {location})")
+                        f"- {best_snippet(text, hit['chunk'])} "
+                        f"({label}: {location})")
                     source = {"source": hit["source"], "title": hit["title"]}
                     for key in ("kind", "source_url", "teacher", "model",
                                 "verified", "reviewer", "verified_at"):

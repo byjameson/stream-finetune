@@ -3,7 +3,7 @@ import json
 import pytest
 
 from streamft.doc_memory import (
-    DocMemory, SourceNotFound, _chunks, main)
+    DocMemory, SourceNotFound, _chunks, best_snippet, main)
 
 
 def test_doc_memory_indexes_and_searches_with_source(tmp_path):
@@ -24,6 +24,17 @@ def test_doc_memory_indexes_and_searches_with_source(tmp_path):
     mem.add_text("law.txt", "Only one fact.", title="Notes")
     assert len(mem.search("fact", k=3)) == 1
     mem.close()
+
+
+def test_best_snippet_selects_query_sentence_and_keeps_teacher_value():
+    text = (
+        "Berlin was first documented in the 13th century. "
+        "The city has a population of 3.7 million. "
+        "It is the capital of Germany.")
+    snippet = best_snippet("what is the population of Berlin?", text)
+    assert "population of 3.7 million" in snippet
+    teacher = ("Topic: Teacher code\n\nThe teacher code is T-9000.")
+    assert "T-9000" in best_snippet("what is the teacher code?", teacher)
 
 
 def test_chunks_split_long_text_on_word_boundaries():

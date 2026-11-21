@@ -52,6 +52,31 @@ def _split_long(paragraph: str) -> list[str]:
     return out
 
 
+def best_snippet(query: str, chunk: str, max_chars: int = 500) -> str:
+    """Select the one or two sentences that best match the query."""
+    text = str(chunk or "").strip()
+    if not text:
+        return ""
+    parts = [part.strip() for part in
+             re.split(r"(?<=[.!?])\s+|\n+", text) if part.strip()]
+    if len(parts) <= 1:
+        return text[:max_chars]
+    words = {word for word in re.findall(r"[a-z0-9]+", str(query).lower())
+             if len(word) > 2 and word not in STOPWORDS}
+    scores = [
+        sum(1 for word in re.findall(r"[a-z0-9]+", part.lower())
+            if word in words)
+        for part in parts
+    ]
+    chosen = sorted(sorted(range(len(parts)),
+                           key=lambda i: (-scores[i], i))[:2])
+    snippet = " ".join(parts[i] for i in chosen)
+    if len(snippet) > max_chars:
+        snippet = parts[min(range(len(parts)),
+                            key=lambda i: (-scores[i], i))]
+    return snippet[:max_chars]
+
+
 def _chunks(text: str) -> list[str]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]

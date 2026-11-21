@@ -42,7 +42,7 @@ from pathlib import Path
 
 import torch
 
-from streamft.doc_memory import SourceNotFound
+from streamft.doc_memory import SourceNotFound, best_snippet
 from streamft.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
 from streamft.knowledge_gaps import (
@@ -984,7 +984,8 @@ def doc_answer(text: str, docs) -> dict | None:
         else:
             label = "source"
         location = hit.get("source_url") or hit["source"]
-        notes.append(f"- {hit['chunk']} ({label}: {location})")
+        notes.append(f"- {best_snippet(text, hit['chunk'])} "
+                     f"({label}: {location})")
         source = {"source": hit["source"], "title": hit["title"]}
         for key in ("kind", "source_url", "teacher", "model", "verified",
                     "reviewer", "verified_at"):
