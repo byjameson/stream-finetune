@@ -265,17 +265,28 @@ class DocMemory:
         source = str(source or "").strip()
         if not source:
             raise ValueError("source is required")
+        variants = [source]
+        if "://" not in source:
+            # Windows stores local paths with backslashes; accept either form.
+            for variant in (Path(source).as_posix(), str(Path(source))):
+                if variant not in variants:
+                    variants.append(variant)
+        placeholders = ",".join("?" for _ in variants)
         with self._lock:
             chunks = self.con.execute(
-                "SELECT COUNT(*) FROM docs WHERE source = ?",
-                (source,)).fetchone()[0]
+                f"SELECT COUNT(*) FROM docs WHERE source IN ({placeholders})",
+                tuple(variants)).fetchone()[0]
             meta = self.con.execute(
-                "SELECT COUNT(*) FROM doc_meta WHERE source = ?",
-                (source,)).fetchone()[0]
+                f"SELECT COUNT(*) FROM doc_meta WHERE source IN "
+                f"({placeholders})", tuple(variants)).fetchone()[0]
             if chunks == 0 and meta == 0:
                 raise SourceNotFound(f"source not found: {source}")
-            self.con.execute("DELETE FROM docs WHERE source = ?", (source,))
-            self.con.execute("DELETE FROM doc_meta WHERE source = ?", (source,))
+            self.con.execute(
+                f"DELETE FROM docs WHERE source IN ({placeholders})",
+                tuple(variants))
+            self.con.execute(
+                f"DELETE FROM doc_meta WHERE source IN ({placeholders})",
+                tuple(variants))
             self.con.commit()
             vacuumed = False
             try:
