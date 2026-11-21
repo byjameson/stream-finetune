@@ -24,6 +24,9 @@ A 1B model (`llama3.2:1b`) is faster; use it if 3B is too slow on the 6 GB card.
 
 ## Server
 
+`scripts/chat_demo.ps1` and `scripts/demo_all.ps1` default to the local Ollama
+teacher. Pass `-NoTeacher` to run without it. The direct command is:
+
 ```bash
 python -m streamft.chat_server \
   --model checkpoints/transformer_behavior_50m_long \

@@ -1,6 +1,7 @@
 param(
     [int]$Port = 8013,
     [switch]$SafetyFilter,
+    [switch]$NoTeacher,
     [switch]$NoBrowser
 )
 $ErrorActionPreference = "Stop"
@@ -27,4 +28,4 @@ Write-Host "Starting Atom Zero demo..."
 & (Join-Path $PSScriptRoot "chat_demo.ps1") `
     -Port $Port -Model $model -Adapter $adapter -Docs $docs `
     -Queue "data/learning_queue.jsonl" -SafetyFilter:$SafetyFilter `
-    -NoBrowser:$NoBrowser
+    -NoTeacher:$NoTeacher -NoBrowser:$NoBrowser
