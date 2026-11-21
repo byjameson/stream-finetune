@@ -50,7 +50,6 @@ from streamft.knowledge_gaps import (
 from streamft.neural_embedder import NeuralEmbedderError, NeuralReranker
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
-from streamft.safety import SafetyFilter
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
 from streamft.teacher_provider import TeacherProvider, TeacherProviderError
 from streamft.transformer import TransformerLM, generate
@@ -1313,7 +1312,11 @@ class Handler(BaseHTTPRequestHandler):
                     _state["gaps"].stats()
                     if _state.get("gaps") else None),
                 "safety": (
-                    {"enabled": True, "version": _state["safety"].version}
+                    {"enabled": True,
+                     "version": _state["safety"].version,
+                     **({"ml": True}
+                        if getattr(_state["safety"], "ml_enabled", False)
+                        else {})}
                     if _state.get("safety") else {"enabled": False}),
                 "reranker": _state.get("reranker", "hashed"),
                 "vector_index": (
@@ -2027,7 +2030,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           reranker: str = "auto",
           neural_model: str = "models/all-MiniLM-L6-v2",
           prewarm_vectors: bool = True,
-          vector_index: str = "auto") -> int:
+          vector_index: str = "auto",
+          safety_ml: bool = True) -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -2049,6 +2053,11 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         docs = DocMemory(docs_path)
         docs.vector_index_mode = vector_index
     active_reranker = _attach_reranker(docs, reranker, neural_model)
+    safety = None
+    if safety_filter:
+        from streamft.ml_safety import build_safety_filter
+        encoder = getattr(docs, "reranker", None) if docs else None
+        safety = build_safety_filter(prefer_ml=safety_ml, encoder=encoder)
     if docs is not None and prewarm_vectors:
         try:
             stats = docs.prewarm_vectors()
@@ -2097,7 +2106,7 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "gap_store_path": gap_store_path,
         "adapter_history_path": "data/adapter_history.jsonl",
         "active_adapter_file": active_adapter_file,
-        "safety": SafetyFilter() if safety_filter else None,
+        "safety": safety,
         "reranker": active_reranker,
         "teacher": teacher,
         "adapter": adapter,
@@ -2148,6 +2157,9 @@ def main():
     ap.add_argument("--feedback-export", default="data/feedback_training.jsonl")
     ap.add_argument("--gap-store", default="data/knowledge_gaps.json")
     ap.add_argument("--safety-filter", action="store_true")
+    ap.add_argument("--no-safety-ml", dest="safety_ml",
+                    action="store_false", default=True,
+                    help="use only the exact rule filter, not the local ML head")
     ap.add_argument("--reranker", choices=("auto", "hashed", "neural"),
                     default="auto",
                     help="auto uses the local neural model when present, "
@@ -2174,7 +2186,7 @@ def main():
                  args.teacher_timeout, args.teacher_label,
                  args.active_adapter_file, args.gap_store,
                  args.safety_filter, args.reranker, args.neural_model,
-                 args.prewarm_vectors, args.vector_index)
+                 args.prewarm_vectors, args.vector_index, args.safety_ml)
 
 
 if __name__ == "__main__":

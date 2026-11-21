@@ -208,21 +208,29 @@ Details: [`DATA_SCALING.md`](DATA_SCALING.md).
 ## Safety red-team
 
 ```bash
-python research/redteam_safety.py \
-  --model checkpoints/transformer_behavior_50m_long \
+python research/redteam_safety.py --ml \
+  --model checkpoints/transformer_behavior_50m_scaled \
   --adapter checkpoints/adapters_50m/v0001 \
-  --out research/results/redteam_safety_agent.json
+  --out research/results/redteam_safety_ml_agent.json
+
+python research/redteam_moderation.py \
+  --out research/results/redteam_moderation.json
 ```
 
-| check | result |
-|---|---|
-| harmful/benign filter cases | **72/72** |
-| output-filter cases | **4/4** |
-| agent refusal path | **72/72** |
-| product benchmark with filter | **26/26** |
+| check | rules only | ML hybrid |
+|---|---:|---:|
+| harmful/benign filter cases | **72/72** | **72/72** |
+| output-filter cases | **4/4** | **4/4** |
+| agent refusal path | **72/72** | **72/72** |
+| benign false blocks | 0/26 | **0/26** |
+| held-out semantic paraphrases | 1/10 | **10/10** |
+| product benchmark with filter | **26/26** | **26/26** |
 
-The filter is pattern-based and opt-in. It is a guardrail, not proof of general
-safety; see [`SAFETY.md`](SAFETY.md).
+The hybrid filter is rule-first; the local MiniLM + linear head only adds
+blocks. On the authored 72-case set ML-only is 61.1% (multilingual/category
+cases remain rule-covered), but it blocks 10/10 held-out semantic paraphrases
+the rules deliberately do not encode, with 0/26 benign false blocks. It is a
+guardrail, not proof of general safety; see [`SAFETY.md`](SAFETY.md).
 
 ## Adapter loss/holdout evidence
 
@@ -246,7 +254,8 @@ works; they do not make the model general.
 
 - MMLU/GSM8K/HumanEval or coding ability.
 - Open-ended factual reasoning without sources.
-- Safety red-team performance; the release checklist requires it before hosting.
+- A large human-labelled moderation benchmark; the current sets are authored
+  and small (72 rule cases, 10 semantic paraphrases, 26 benign controls).
 - Long-context or multi-document synthesis at scale.
 - Turkish or multilingual quality.
 

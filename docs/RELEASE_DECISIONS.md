@@ -90,8 +90,10 @@ Existing controls:
 - Missing-source questions become reviewed knowledge gaps; a proposal creates
   a pending topic and still needs approval (`docs/KNOWLEDGE_GAPS.md`).
 - The opt-in safety filter refuses explicit harmful requests and filters output;
-  red-team filter 72/72 (multilingual/semantic), output 4/4, agent 72/72
-  (`docs/SAFETY.md`). It must be enabled for any shared deployment.
+  rules are authoritative and a local MiniLM + linear ML head adds paraphrase
+  coverage. Red-team 72/72, output 4/4, agent 72/72, benign false blocks 0/26,
+  held-out semantic paraphrases 10/10 (`docs/SAFETY.md`). It must be enabled for
+  any shared deployment.
 - A 21-task product benchmark covers tools, memory, tasks, retrieval, teacher
   review and gap detection; it is not a general benchmark. A raw-model probe
   without RAG/tools scores only **2/10** on simple general questions
@@ -108,7 +110,8 @@ Release-readiness evidence:
 - PII deletion: exact document source and session memory paths are tested
   (`docs/PRIVACY.md`, `tests/test_privacy.py`).
 - The opt-in filter remains pattern-based; a third-party host should add
-  semantic moderation, languages and a broader red-team for their deployment.
+  a larger human-labelled moderation set, languages and a broader red-team for
+  their deployment.
 - A host that exposes the server must add authentication, TLS, rate limits,
   abuse monitoring, log retention and incident response.
 

@@ -22,7 +22,7 @@ import torch
 from streamft.agent_runtime import AgentSession
 from streamft.doc_memory import DocMemory
 from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.safety import SafetyFilter
+from streamft.ml_safety import HybridSafetyFilter, build_safety_filter
 
 try:
     from research.chat_human import load_model
@@ -46,7 +46,8 @@ def _case(name: str, fn) -> dict:
 
 def run(model_path: str, tokenizer: str, adapter: str = "",
         safety_filter: bool = False, reranker: str = "hashed",
-        neural_model: str = "models/all-MiniLM-L6-v2") -> dict:
+        neural_model: str = "models/all-MiniLM-L6-v2",
+        safety_ml: bool = True) -> dict:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, tok = load_model(model_path, device, "transformer", tokenizer,
                             adapter)
@@ -78,7 +79,10 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
             meta={"kind": "teacher", "source_url": "https://example.com/chat",
                   "teacher": "chatgpt-web", "model": "gpt-5",
                   "verified": False})
-        safety = SafetyFilter() if safety_filter else None
+        safety = (build_safety_filter(
+            prefer_ml=safety_ml,
+            encoder=getattr(docs, "reranker", None))
+            if safety_filter else None)
         agent = AgentSession("bench", root / "memory.json", model=model,
                              tokenizer=tok, device=device, docs=docs,
                              gap_store=gaps, safety=safety)
@@ -256,6 +260,9 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
         "model": model_path,
         "adapter": adapter,
         "safety_filter": bool(safety_filter),
+        "safety_version": safety.version if safety else None,
+        "safety_ml": bool(isinstance(safety, HybridSafetyFilter)
+                          and safety.ml_enabled) if safety else False,
         "reranker": reranker,
         "score": passed / max(len(tasks), 1),
         "passed": passed,
@@ -274,6 +281,8 @@ def main(argv=None) -> int:
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--adapter", default="")
     ap.add_argument("--safety-filter", action="store_true")
+    ap.add_argument("--no-safety-ml", dest="safety_ml",
+                    action="store_false", default=True)
     ap.add_argument("--reranker", choices=("hashed", "neural"),
                     default="hashed")
     ap.add_argument("--neural-model", default="models/all-MiniLM-L6-v2")
@@ -281,7 +290,8 @@ def main(argv=None) -> int:
         "--out", default="research/results/assistant_benchmark.json")
     args = ap.parse_args(argv)
     payload = run(args.model, args.tokenizer, args.adapter,
-                  args.safety_filter, args.reranker, args.neural_model)
+                  args.safety_filter, args.reranker, args.neural_model,
+                  args.safety_ml)
     out = ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",

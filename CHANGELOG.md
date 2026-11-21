@@ -5,7 +5,7 @@
 - Scaled 50M data run: 175.37M clean tokens + replay; 25k candidate promoted,
   old valid bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502.
 - Reviewed learning loop, knowledge gaps, scheduled worker, Ollama teacher.
-- Opt-in safety filter, PII deletion, prompt-injection red-team.
+- Opt-in rule + local ML safety filter, PII deletion, prompt-injection red-team.
 - RAG retrieval: hybrid FTS + cached neural candidate pool with local
   MiniLM-L6-v2; held-out authored benchmark top-1/citation 1.000 vs 0.850 for
   FTS, 8.8 ms vs 0.34 ms median. Prewarmed numpy vector index is 166x faster
@@ -13,7 +13,7 @@
   faster than exact at 20k vectors with recall@10 1.000 and exact fallback.
   Hashed fallback stays FTS-anchored.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 380 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 385 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
@@ -346,6 +346,13 @@
   Turkish, German, Spanish, French, Italian, Portuguese, Dutch and Russian.
   Multilingual red-team filter **72/72**,
   output 4/4, agent 72/72; benign reporting/prevention cases still pass.
+- Safety v0.3 ML moderation: rule-first hybrid with a local MiniLM-L6-v2
+  embedding + linear head (`streamft/moderation_head.json`, 58 KB). Trained on
+  349 generated examples with the authored red-team/semantic holdouts excluded.
+  Hybrid: 72/72 red-team, 0/26 benign false blocks, output 4/4, agent 72/72;
+  held-out semantic paraphrases **10/10** (rules only 1/10). ML-only on the
+  authored set is 61.1% but rules remain authoritative. Missing/broken head or
+  model returns the exact v0.2 rules. `--no-safety-ml` forces the rule baseline.
 - Session backup: `POST /v1/memory/export` / `import` and browser
   Export/Import controls; exported JSON contains personal memory and must be
   kept private.

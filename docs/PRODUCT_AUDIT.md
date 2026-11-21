@@ -11,7 +11,7 @@ release approval. Last updated 2026-11-21.
 | replay mix | 214.8M tokens (chat + behavior 4x + skill 3x) | `data/chat_en_scaled_replay_meta.json` |
 | 40k candidate | promoted to `transformer_behavior_50m_scaled` | `research/results/eval_scaled_40k.json` |
 | scaled valid | bpb 1.3815 / assistant 3.8551 vs base 1.5032 / 4.2153 | same |
-| product benchmark | 21/21; safety suite 26/26 | `assistant_benchmark_scaled_40k_ann_neural*.json` |
+| product benchmark | 21/21; safety suite 26/26 with ML filter | `assistant_benchmark_scaled_40k_ml_safety*.json` |
 | retrieval benchmark | hybrid neural top-1/citation 1.000 vs FTS 0.850; FTS recall@10 0.900 vs hybrid 1.000; forced ANN also 1.000 | `retrieval_benchmark_ann.json` |
 | vector index | exact 3000 chunks: 0.77 ms vs scan 127.6 ms (166x); IVF ANN 20k: 0.64 ms vs 3.22 ms (5x), recall@10 1.000 | `vector_index_benchmark.json`, `ann_index_benchmark.json` |
 | behavior | 16/16 | `behavior_scaled_40k_ann.json` |
@@ -33,7 +33,8 @@ lower-LR resume did not produce a material improvement over 40k.
   prewarmed in-memory matrix.
 - Missing-source path: honest no-source reply plus knowledge-gap record.
 - Research tool: explicit `research/look up`; queue worker for approved topics.
-- Safety: opt-in filter before generation and on output.
+- Safety: opt-in rule-first filter plus a local MiniLM linear ML head before
+  generation and on output; missing model falls back to exact rules.
 - Session memory: JSON facts/tasks/episodes; stable browser session ID now
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
@@ -98,9 +99,12 @@ only; general capability is not improved by adapters.
 
 ## 6. Security and privacy
 
-- Opt-in input/output safety filter v0.2 with English regex plus
-  language-agnostic lexical-semantic rules (TR/DE/ES/FR/IT/PT/NL/RU);
-  red-team **72/72**, output 4/4, agent 72/72.
+- Opt-in input/output safety filter v0.3: exact rule layer v0.2 (English regex
+  plus TR/DE/ES/FR/IT/PT/NL/RU lexical-semantic rules) followed by a local
+  MiniLM + linear ML head. Red-team **72/72**, output **4/4**, agent **72/72**,
+  benign false blocks **0/26**; held-out semantic paraphrases **10/10** (rules
+  only 1/10). ML-only on the authored 72-case set is 61.1%, but rules remain
+  authoritative. Missing/broken head or model returns the exact rules.
 - RAG reranker: deterministic hashed character n-gram embeddings + cosine,
   query coverage, title match, exact phrase and bm25; tests cover a case where
   raw bm25 prefers the wrong document and a morphological match.
@@ -126,16 +130,18 @@ only; general capability is not improved by adapters.
 - Local bind default; SSRF guard; URL fetch opt-in; upload caps.
 - Apache-2.0 code/weights; data attribution in `NOTICE`.
 
-**Gaps:** rule-based filter (regex + multilingual lexical-semantic rules, not
-an ML moderation model); no hosted auth/rate limiting because no hosted
-service is operated; per-source data-licence review still recommended.
+**Gaps:** the ML layer is a small linear head over frozen MiniLM embeddings,
+trained on 349 synthetic examples, not a full moderation model; MiniLM is
+English-centric, so multilingual coverage still comes from rules; category
+attribution is not guaranteed out of distribution. No hosted auth/rate limiting
+because no hosted service is operated; per-source data-licence review still
+recommended.
 
 ## 7. Tests and CI
 
-- **380 tests** pass locally.
+- **385 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `5ea77b5` green after the IVF ANN index, retrieval, product, behavior,
-  safety and red-team gates.
+- CI for the ML-moderation commit is verified after push.
 
 ## 8. Release state
 
@@ -147,8 +153,10 @@ service is operated; per-source data-licence review still recommended.
 
 ## Priority gaps
 
-1. Finish 60k scaled run and gate it against 30k.
-2. Run final full benchmark/behavior/safety suite on the final checkpoint.
-3. Add memory export/import if desired.
-4. Expand multilingual/semantic safety and RAG reranking.
-5. Larger model/general AI remains a separate compute/data decision.
+1. Replace the synthetic 349-example moderation training set with a larger
+   human-labelled set, especially non-English.
+2. Final owner completeness sign-off and PyPI token.
+3. Larger model/data scaling remains a separate compute decision; raw-model
+   knowledge is still **2/10**.
+4. Optional HNSW graph replacing IVF if recall/latency needs it.
+5. Hosted deployment (auth, rate limits, monitoring) is out of scope.

@@ -31,8 +31,11 @@ a source into RAG. Chat feedback can be reviewed, exported and sent through a
 gated LoRA update; accepted `vNNNN` versions are recorded with metrics, can be
 compared with `research/compare_adapters.py`, evaluated on a non-training
 holdout, and rolled back with `learning_loop.py activate`. The active adapter
-loads with `--adapter auto`. An opt-in `--safety-filter` refuses explicit
-harmful requests and filters output (multilingual red-team 72/72); it is off for local
+loads with `--adapter auto`. An opt-in `--safety-filter` runs exact rules first
+and then a small local MiniLM linear ML head; it refuses explicit harmful
+requests and filters output (multilingual red-team 72/72, held-out semantic
+paraphrases 10/10, 0/26 benign false blocks). Missing model/head falls back to
+exact rules; `--no-safety-ml` forces the rule baseline. It is off for local
 research. Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
 `checkpoints/transformer_behavior_50m_scaled` (40k steps); the original

@@ -39,8 +39,10 @@ exists, not that the release is approved.
       self-harm, violence, hate, harassment, illegal instructions, privacy and
       malware (`docs/SAFETY.md`).
 - [x] Refusal/redirect behaviour tested on a multilingual red-team set:
-      filter 72/72, output 4/4, agent 72/72
-      (`research/results/redteam_safety_*.json`).
+      filter 72/72, output 4/4, agent 72/72; hybrid ML+rule filter also 72/72
+      with 0/26 benign false blocks and 10/10 held-out semantic paraphrases
+      (`research/results/redteam_safety_*.json`,
+      `research/results/redteam_moderation.json`).
 - [x] User deletion path for indexed documents and session memory tested
       (`tests/test_privacy.py`, `docs/PRIVACY.md`).
 - [ ] PII detection/redaction policy reviewed.

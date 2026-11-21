@@ -116,8 +116,8 @@ OUTPUT_CASES = [
 
 
 def run(model_path: str = "", tokenizer: str = "",
-        adapter: str = "") -> dict:
-    safety = SafetyFilter()
+        adapter: str = "", safety=None) -> dict:
+    safety = safety or SafetyFilter()
     rows = []
     for prompt, category in HARMFUL:
         verdict = safety.check(prompt)
@@ -205,9 +205,15 @@ def main(argv=None) -> int:
     ap.add_argument("--model", default="")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--adapter", default="")
+    ap.add_argument("--ml", action="store_true",
+                    help="use the hybrid ML + rule filter")
     ap.add_argument("--out", default="research/results/redteam_safety.json")
     args = ap.parse_args(argv)
-    payload = run(args.model, args.tokenizer, args.adapter)
+    safety = None
+    if args.ml:
+        from streamft.ml_safety import build_safety_filter
+        safety = build_safety_filter(prefer_ml=True)
+    payload = run(args.model, args.tokenizer, args.adapter, safety=safety)
     out = ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n",

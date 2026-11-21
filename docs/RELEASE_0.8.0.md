@@ -26,9 +26,11 @@ controls.
   task (disabled during GPU training; re-enable after).
 - **Ollama teacher:** local `llama3.2:3b`, OpenAI-compatible endpoint,
   unverified teacher notes, graceful Wikipedia-only fallback.
-- **Safety:** opt-in `--safety-filter`, input/output refusal, red-team
-  filter 72/72 (multilingual), output 4/4, agent 72/72; product benchmark
-  26/26 with filter.
+- **Safety:** opt-in `--safety-filter`, exact rules first plus a local MiniLM
+  linear ML head; red-team 72/72, output 4/4, agent 72/72, benign false blocks
+  0/26, held-out semantic paraphrases 10/10; product benchmark 26/26 with
+  filter. Missing model/head falls back to exact rules; `--no-safety-ml`
+  forces the rule baseline.
 - **Privacy:** exact-source and session-memory deletion, path-separator aware,
   SQLite `VACUUM`; tests in `tests/test_privacy.py`.
 - **Prompt injection:** untrusted-document checks 4/4; quoted data cannot
@@ -50,7 +52,7 @@ controls.
 - Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
   **not** a general model; facts belong in RAG.
 - Behavior checks: 16/16 on the scaled 40k product checkpoint.
-- Test suite: 380 tests; CI green.
+- Test suite: 385 tests; CI green.
 
 ## Run locally
 
@@ -71,6 +73,7 @@ powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1 -SafetyFilter
 
 - 50M is narrow; general reasoning/coding and reliable unaided facts are out
   of reach. The raw probe is 1-2/10.
-- The safety filter is pattern-based, not full moderation.
+- The safety filter is a small local ML head over frozen MiniLM embeddings
+  plus exact rules, not a full moderation system.
 - The 60k scaled run is still being evaluated; 25k is the promoted candidate.
 - Public release still needs the owner's PyPI token and final sign-off.
