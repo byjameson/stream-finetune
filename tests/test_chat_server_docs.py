@@ -9,6 +9,7 @@ import pytest
 
 from streamft import chat_server
 from streamft.doc_memory import DocMemory
+from streamft.research_queue import ResearchQueue
 
 
 def _post(url, payload):
@@ -48,6 +49,22 @@ def test_doc_answer_returns_sources(tmp_path):
     assert "Paris" in answer["text"]
     assert answer["sources"][0]["source"] == "law.txt"
     assert chat_server.doc_answer("nothing here", docs) is None
+    docs.close()
+
+
+def test_doc_answer_dedupes_repeated_sources(tmp_path):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    docs.add_text(
+        "ankara.txt",
+        ("Ankara is a city. " * 30) + "\n\n" + ("Ankara is in Turkey. " * 30),
+        title="Ankara")
+    answer = chat_server.doc_answer("Ankara", docs)
+    assert answer is not None
+    assert len(answer["sources"]) == 1
+    assert answer["sources"][0]["source"] == "ankara.txt"
     docs.close()
 
 
@@ -184,6 +201,88 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         })
         content = session_chat["choices"][0]["message"]["content"]
         assert "buy milk" in content
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
+        docs.close()
+
+
+def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    queue = ResearchQueue(tmp_path / "research.json")
+    old = dict(chat_server._state)
+    chat_server._state.update({
+        "model": None, "tok": None, "docs": docs, "adapter": "",
+        "name": "tiny-test", "params": 1, "config": {}, "step": 0,
+        "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
+        "user_id": 0, "assistant_id": 1,
+        "queue_path": str(tmp_path / "queue.jsonl"),
+        "allow_url_fetch": False, "wiki_lang": "en",
+        "session_dir": str(tmp_path / "sessions"), "sessions": {},
+        "research_queue": queue,
+        "research_queue_path": str(tmp_path / "research.json"),
+    })
+    calls = []
+
+    def fake_research(memory, query, lang, limit):
+        calls.append(query)
+        source = "https://en.wikipedia.org/?curid=9"
+        chunks = memory.add_text(
+            source, "Ankara is the capital of Turkey.", title="Ankara")
+        return [{"source": source, "title": "Ankara", "chunks": chunks,
+                 "preview": "Ankara is the capital of Turkey."}]
+
+    import streamft.web_research as wr
+    monkeypatch.setattr(wr, "wikipedia_research", fake_research)
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        item = _post(base + "/v1/research/queue",
+                     {"topic": "Ankara", "pages": 2})
+        assert item["status"] == "pending"
+        listed = json.loads(urllib.request.urlopen(
+            base + "/v1/research/queue", timeout=10).read().decode("utf-8"))
+        assert listed["data"][0]["id"] == item["id"]
+        unapproved = _post(base + "/v1/research/queue/run", {"limit": 1})
+        assert unapproved["ran"] == []
+        assert calls == []
+        approved = _post(base + "/v1/research/queue/approve",
+                         {"id": item["id"]})
+        assert approved["status"] == "approved"
+        ran = _post(base + "/v1/research/queue/run", {"limit": 1})
+        assert ran["ran"][0]["status"] == "done"
+        assert calls == ["Ankara"]
+        assert ran["ran"][0]["sources"][0]["source"].startswith("https://")
+        assert "Ankara" in _post(
+            base + "/v1/documents/search",
+            {"query": "capital Turkey"})["data"][0]["chunk"]
+        chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the capital of Turkey?"}],
+            "max_tokens": 20,
+        })
+        assert "Ankara" in chat["choices"][0]["message"]["content"]
+        assert chat["sources"][0]["source"].startswith("https://")
+        health = json.loads(urllib.request.urlopen(
+            base + "/health", timeout=10).read().decode("utf-8"))
+        assert health["research_queue"]["done"] == 1
+        second = _post(base + "/v1/research/queue", {"topic": "Izmir"})
+        rejected = _post(base + "/v1/research/queue/reject",
+                         {"id": second["id"]})
+        assert rejected["status"] == "rejected"
+        ran_again = _post(base + "/v1/research/queue/run", {"limit": 1})
+        assert ran_again["ran"] == []
+        assert calls == ["Ankara"]
+        with pytest.raises(urllib.error.HTTPError) as missing:
+            _post(base + "/v1/research/queue/approve", {"id": "r9999"})
+        assert missing.value.code == 404
     finally:
         httpd.shutdown()
         httpd.server_close()

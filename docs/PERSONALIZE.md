@@ -91,8 +91,41 @@ curl -X POST http://127.0.0.1:8013/v1/research \
   -d '{"query":"Ankara history","limit":2}'
 ```
 
-Wikipedia extracts are stored with source URLs. Arbitrary URL ingest is
+Wikipedia lead extracts are stored with source URLs. Arbitrary URL ingest is
 opt-in (`--allow-url-fetch`), size-capped and blocks private/loopback hosts.
+
+### Reviewed research queue
+
+Use a queue when you want a scheduler to fetch topics without approving each
+fetch in real time:
+
+```bash
+# Add a pending topic; this does not touch the network.
+curl -X POST http://127.0.0.1:8013/v1/research/queue \
+  -H 'Content-Type: application/json' \
+  -d '{"topic":"Ankara","lang":"en","pages":1}'
+
+# Approve it, then fetch approved topics into DocMemory.
+curl -X POST http://127.0.0.1:8013/v1/research/queue/approve \
+  -H 'Content-Type: application/json' -d '{"id":"r0001"}'
+curl -X POST http://127.0.0.1:8013/v1/research/queue/run \
+  -H 'Content-Type: application/json' -d '{"limit":1}'
+```
+
+`GET /v1/research/queue` shows `pending / approved / running / done / error /
+rejected` items. Pending and rejected topics are never fetched. Each fetched
+item stores its Wikipedia source URLs and titles; normal document search and
+chat cite them.
+
+CLI (schedule `run` with Task Scheduler/cron):
+
+```bash
+python research/research_queue.py --queue data/research_queue.json add "Ankara" --pages 1
+python research/research_queue.py --queue data/research_queue.json approve r0001
+python research/research_queue.py --queue data/research_queue.json run --db data/docs.db --limit 1
+```
+
+The queue does not generate its own topics and does not crawl the open web.
 
 Agent/session use:
 
