@@ -105,7 +105,7 @@ operated; per-source data-licence review still recommended.
 
 - **341 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- Latest feature commit verified green before the final UI changes.
+- CI `0b85ca8` green after the reranker, multilingual safety and resume gate.
 
 ## 8. Release state
 
