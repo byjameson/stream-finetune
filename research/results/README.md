@@ -133,6 +133,8 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `spiking_chat_en_clean_50m_sft.json` | `research/chat_eval.py --lang en` | 50M SFT: assistant loss 6.73, chat 2.293 bpb, 2 empty, 6/12 tag leaks, alpha min 0.0; no improvement over 21M; BLOCKED |
 | `transformer_chat_en_clean_21m.json` | `research/train_transformer_chat.py` | 20.2M transformer, 12k steps: chat 1.359 bpb, assistant 4.01, alpha min 0.731, 0 empty; 5/12 tag leaks without banning |
 | `transformer_chat_en_clean_21m_banned.json` | `research/eval_transformer_chat.py` | same checkpoint with role tokens banned: 0 tag leaks, all smoke-gate checks pass; PASS_CHAT_SMOKE |
+| `transformer_chat_en_clean_50m.json` | `research/train_transformer_chat.py` | 49.2M transformer: chat 1.344 bpb, assistant 3.97, alpha min 0.573, 0 empty; 5/12 tag leaks unconstrained |
+| `transformer_chat_en_clean_50m_banned.json` | `research/eval_transformer_chat.py` | 50M with banned role tokens: PASS, but only 0.015 bpb better than 20M and lower alpha floor; 20M remains the product model |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |
 | `crypto_sma_sweep.json` | `research/crypto_sma_sweep.py` | BTC+ETH SMA-20/50/100/200: SMA-50 30.5x/35.9x vs buy-hold 10.8x/9.4x; other windows fail; TREND_CANDIDATE |

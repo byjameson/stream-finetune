@@ -63,9 +63,11 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
   control reaches 2.199 bpb and alpha min 0.608, but still has 5/12 tag leaks
   and word salad: both spiking runs **BLOCKED**. A 20.2M transformer on the
   same clean data/SFT reaches chat bpb **1.359**, assistant loss **4.01** and,
-  with role tokens banned at decoding, **PASS_CHAT_SMOKE**. Architecture is the
-  bottleneck; product line moves to transformer, spiking stays research. The
-  27.55M Turkish-first corpus is retained for a later language pack. No Qwen.
+  with role tokens banned at decoding, **PASS_CHAT_SMOKE**. A 49.2M transformer
+  also passes but is only 0.015 bpb better and has a lower alpha floor; the
+  20M checkpoint is the product model. Architecture is the bottleneck; product
+  line moves to transformer, spiking stays research. The 27.55M Turkish-first
+  corpus is retained for a later language pack. No Qwen.
   [`CHAT_FROM_SCRATCH.md`](CHAT_FROM_SCRATCH.md)
 - **Crypto paper-trading baseline:** BTCUSDT daily walk-forward with fees and
   slippage. Learned models show no reliable edge; a hand-coded SMA-50 trend

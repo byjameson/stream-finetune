@@ -260,6 +260,26 @@ curriculum, and the hybrid runtime.
 Evidence: `research/results/transformer_chat_en_clean_21m.json` and
 `research/results/transformer_chat_en_clean_21m_banned.json`.
 
+### 50M transformer: passes, but not worth it
+
+A 49.2M transformer (`dim=768`, 6 layers, 12 heads) was trained on the same
+data with the same SFT objective.
+
+| model | chat bpb | assistant loss | alpha min | tag leak | verdict |
+|---|---:|---:|---:|---:|---|
+| transformer 20.2M | 1.359 | 4.01 | **0.731** | 0/12* | PASS |
+| transformer 49.2M | **1.344** | **3.97** | 0.573 | 0/12* | PASS |
+
+\* role tokens banned at decoding.
+
+The 50M model is only 0.015 bpb better, has a lower alpha floor, and its samples
+are more rambling/math-like. At 2.4x the step time it is not a better product
+checkpoint. **Decision: the 20M transformer is the product model**; further
+work goes into data/skills and the runtime, not parameter scale.
+
+Evidence: `research/results/transformer_chat_en_clean_50m.json` and
+`research/results/transformer_chat_en_clean_50m_banned.json`.
+
 ## Evaluation
 
 `research/chat_eval.py --lang en` reports:
