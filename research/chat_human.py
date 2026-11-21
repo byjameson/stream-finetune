@@ -266,11 +266,23 @@ class ChatHuman:
         else:
             hits = self.docs.search(text, k=3) if self.docs else []
             if hits:
-                notes = "\n".join(
-                    f"- {hit['chunk']} (source: {hit['source']})"
-                    for hit in hits[:3])
-                reply = (f"I found these notes:\n{notes}\n\n"
+                lines = []
+                unverified = False
+                for hit in hits[:3]:
+                    verified = bool(hit.get("verified", True))
+                    label = ("teacher note, unverified"
+                             if hit.get("kind") == "teacher" and not verified
+                             else "source")
+                    location = hit.get("source_url") or hit["source"]
+                    lines.append(
+                        f"- {hit['chunk']} ({label}: {location})")
+                    if not verified:
+                        unverified = True
+                reply = (f"I found these notes:\n" + "\n".join(lines) + "\n\n"
                          "This is a local note, not professional advice.")
+                if unverified:
+                    reply += ("\n\nThis includes an unverified "
+                              "teacher-derived note.")
             else:
                 formatted = self.format_skill(text)
                 reply = (formatted if formatted is not None

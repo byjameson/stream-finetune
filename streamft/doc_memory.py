@@ -79,11 +79,24 @@ class DocMemory:
             "CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5("
             "chunk, source UNINDEXED, title UNINDEXED, sha UNINDEXED, "
             "ts UNINDEXED)")
+        self.con.execute(
+            "CREATE TABLE IF NOT EXISTS doc_meta("
+            "source TEXT PRIMARY KEY, kind TEXT NOT NULL, "
+            "source_url TEXT NOT NULL, teacher TEXT NOT NULL, "
+            "model TEXT NOT NULL, verified INTEGER NOT NULL, "
+            "created TEXT NOT NULL)")
         self.con.commit()
 
     def add_text(self, source: str, text: str, title: str = "",
-                 replace: bool = True) -> int:
+                 replace: bool = True, meta: dict | None = None) -> int:
         sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        meta = meta or {}
+        kind = str(meta.get("kind", "document"))
+        source_url = str(meta.get("source_url", ""))
+        teacher = str(meta.get("teacher", ""))
+        model = str(meta.get("model", ""))
+        verified = 1 if meta.get("verified", True) else 0
+        created = str(meta.get("created", int(time.time())))
         with self._lock:
             if replace:
                 self.con.execute("DELETE FROM docs WHERE source = ?",
@@ -96,13 +109,37 @@ class DocMemory:
                     (chunk, source, title or Path(source).stem, sha,
                      int(time.time())))
                 added += 1
+            self.con.execute(
+                "INSERT OR REPLACE INTO doc_meta("
+                "source, kind, source_url, teacher, model, verified, created) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (source, kind, source_url, teacher, model, verified, created))
             self.con.commit()
         return added
 
-    def add_file(self, path: str | Path, title: str = "") -> int:
+    def add_file(self, path: str | Path, title: str = "",
+                 meta: dict | None = None) -> int:
         p = Path(path)
         text = p.read_text(encoding="utf-8", errors="replace")
-        return self.add_text(str(p), text, title or p.stem)
+        return self.add_text(str(p), text, title or p.stem, meta=meta)
+
+    def _meta_map(self, sources) -> dict[str, dict]:
+        sources = list(sources)
+        if not sources:
+            return {}
+        placeholders = ",".join("?" for _ in sources)
+        rows = self.con.execute(
+            "SELECT source, kind, source_url, teacher, model, verified, "
+            f"created FROM doc_meta WHERE source IN ({placeholders})",
+            tuple(sources)).fetchall()
+        return {row[0]: {
+            "kind": row[1],
+            "source_url": row[2],
+            "teacher": row[3],
+            "model": row[4],
+            "verified": bool(row[5]),
+            "created": row[6],
+        } for row in rows}
 
     def search(self, query: str, k: int = 5) -> list[dict]:
         words = re.findall(r"[\wçğıöşüÇĞİÖŞÜ]+", query)
@@ -118,16 +155,31 @@ class DocMemory:
                 "SELECT chunk, source, title, bm25(docs) AS score "
                 "FROM docs WHERE docs MATCH ? ORDER BY score LIMIT ?",
                 (match, k)).fetchall()
-        return [{"chunk": r[0], "source": r[1], "title": r[2],
-                 "score": float(r[3])} for r in rows]
+            metas = self._meta_map({row[1] for row in rows})
+        return [{
+            "chunk": row[0],
+            "source": row[1],
+            "title": row[2],
+            "score": float(row[3]),
+            **metas.get(row[1], {"kind": "document", "source_url": "",
+                                 "teacher": "", "model": "",
+                                 "verified": True, "created": ""}),
+        } for row in rows]
 
     def sources(self) -> list[dict]:
         with self._lock:
             rows = self.con.execute(
                 "SELECT source, title, COUNT(*) FROM docs "
                 "GROUP BY source, title ORDER BY source").fetchall()
-        return [{"source": r[0], "title": r[1], "chunks": r[2]}
-                for r in rows]
+            metas = self._meta_map([row[0] for row in rows])
+        return [{
+            "source": row[0],
+            "title": row[1],
+            "chunks": row[2],
+            **metas.get(row[0], {"kind": "document", "source_url": "",
+                                 "teacher": "", "model": "",
+                                 "verified": True, "created": ""}),
+        } for row in rows]
 
     def stats(self) -> dict:
         with self._lock:

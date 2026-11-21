@@ -46,6 +46,28 @@ def test_search_ignores_common_question_words(tmp_path):
     mem.close()
 
 
+def test_teacher_metadata_is_returned(tmp_path):
+    try:
+        mem = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    mem.add_text(
+        "teacher://chatgpt-web/abc", "Topic: Ankara\n\nAnkara is in Turkey.",
+        title="Teacher note: Ankara",
+        meta={"kind": "teacher", "source_url": "https://example.com/chat",
+              "teacher": "chatgpt-web", "model": "gpt-5", "verified": False})
+    hit = mem.search("Ankara")[0]
+    assert hit["kind"] == "teacher"
+    assert hit["source_url"] == "https://example.com/chat"
+    assert hit["teacher"] == "chatgpt-web"
+    assert hit["model"] == "gpt-5"
+    assert hit["verified"] is False
+    source = mem.sources()[0]
+    assert source["kind"] == "teacher"
+    assert source["verified"] is False
+    mem.close()
+
+
 def test_cli_accepts_db_after_subcommand(tmp_path, capsys):
     note = tmp_path / "note.txt"
     note.write_text("The project codename is Blue Lantern.", encoding="utf-8")

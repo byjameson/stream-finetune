@@ -39,6 +39,27 @@ def test_calculator_is_safe_and_bounded():
         calculate("1 / 0")
 
 
+def test_agent_chat_marks_teacher_notes_unverified(tmp_path):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    docs.add_text(
+        "teacher://chatgpt-web/abc",
+        "Topic: Teacher code\n\nThe teacher code is T-9000.",
+        title="Teacher note: Teacher code",
+        meta={"kind": "teacher", "source_url": "https://example.com/chat",
+              "teacher": "chatgpt-web", "model": "gpt-5",
+              "verified": False})
+    agent = AgentSession("s3", tmp_path / "memory.json", docs=docs)
+    reply = agent.chat("what is the teacher code?")["reply"]
+    assert "T-9000" in reply
+    assert "teacher note, unverified" in reply
+    assert "https://example.com/chat" in reply
+    assert "unverified teacher-derived note" in reply
+    docs.close()
+
+
 def test_agent_research_tool_uses_sources(tmp_path, monkeypatch):
     docs = DocMemory(tmp_path / "docs.db")
     import streamft.agent_runtime as ar

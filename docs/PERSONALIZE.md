@@ -44,6 +44,24 @@ request. The response returns `chunks`, `bytes` and `sha256`; re-adding the same
 source replaces it. The browser demo includes paste and file-picker inputs.
 Documents are stored in SQLite FTS5, not in model weights.
 
+### Manual teacher import (no API)
+
+Ask ChatGPT or another assistant yourself and paste the answer:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/teacher/notes \
+  -H 'Content-Type: application/json' \
+  -d '{"teacher":"chatgpt-web","model":"gpt-5","topic":"Ankara","answer":"Ankara is the capital of Turkey.","source_url":"https://en.wikipedia.org/?curid=802"}'
+```
+
+The note is stored as `kind=teacher`, `verified=false`, with a unique
+`teacher://...` source and the supplied URL as provenance. Search and chat mark
+it as `teacher note, unverified`; it is not a verified fact and does not change
+weights. Missing source URLs are allowed but stay unverified.
+
+This path is **manual paste only**: no API key, no browser scraping, no
+automatic provider calls. A provider adapter is a separate opt-in feature.
+
 Use it from the runtime:
 
 ```bash

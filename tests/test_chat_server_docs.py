@@ -33,7 +33,10 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/agent/chat" in page
     assert "/v1/documents" in page
     assert "/v1/research/queue" in page
+    assert "/v1/teacher/notes" in page
     assert "add a document" in page
+    assert "add a teacher answer" in page
+    assert "unverified" in page
     assert "research queue" in page
     assert "run approved" in page
     assert "teach a fact" in page
@@ -52,6 +55,22 @@ def test_doc_answer_returns_sources(tmp_path):
     assert "Paris" in answer["text"]
     assert answer["sources"][0]["source"] == "law.txt"
     assert chat_server.doc_answer("nothing here", docs) is None
+    docs.close()
+
+
+def test_teacher_note_validation(tmp_path):
+    try:
+        docs = DocMemory(tmp_path / "docs.db")
+    except Exception as exc:
+        pytest.skip(f"sqlite fts5 unavailable: {exc}")
+    with pytest.raises(ValueError):
+        chat_server.add_teacher_note(docs, "chatgpt", "", "topic", "")
+    with pytest.raises(ValueError):
+        chat_server.add_teacher_note(
+            docs, "chatgpt", "", "topic", "answer", "javascript:alert(1)")
+    with pytest.raises(ValueError):
+        chat_server.add_teacher_note(
+            docs, "chatgpt", "", "x" * 301, "answer")
     docs.close()
 
 
@@ -189,6 +208,39 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         with pytest.raises(urllib.error.HTTPError) as missing_source:
             _post(base + "/v1/documents", {"text": "no source"})
         assert missing_source.value.code == 400
+        teacher = _post(base + "/v1/teacher/notes", {
+            "teacher": "chatgpt-web", "model": "gpt-5",
+            "topic": "Teacher code",
+            "answer": "The teacher code is T-9000.",
+            "source_url": "https://example.com/chat",
+        })
+        assert teacher["kind"] == "teacher"
+        assert teacher["verified"] is False
+        assert teacher["source"].startswith("teacher://chatgpt-web/")
+        listed_docs = json.loads(urllib.request.urlopen(
+            base + "/v1/documents", timeout=10).read().decode("utf-8"))
+        teacher_listed = next(
+            item for item in listed_docs["data"]
+            if item["source"].startswith("teacher://chatgpt-web/"))
+        assert teacher_listed["kind"] == "teacher"
+        assert teacher_listed["verified"] is False
+        assert teacher_listed["source_url"] == "https://example.com/chat"
+        teacher_hit = _post(
+            base + "/v1/documents/search",
+            {"query": "teacher code"})["data"][0]
+        assert teacher_hit["kind"] == "teacher"
+        assert teacher_hit["verified"] is False
+        assert teacher_hit["source_url"] == "https://example.com/chat"
+        teacher_chat = _post(base + "/v1/chat/completions", {
+            "messages": [{"role": "user",
+                          "content": "what is the teacher code?"}],
+            "max_tokens": 20,
+        })
+        teacher_text = teacher_chat["choices"][0]["message"]["content"]
+        assert "T-9000" in teacher_text
+        assert "unverified teacher-derived note" in teacher_text
+        assert teacher_chat["sources"][0]["verified"] is False
+        assert teacher_chat["sources"][0]["source_url"] == "https://example.com/chat"
         learned = _post(base + "/v1/learn_url",
                         {"url": "https://example.com/page"})
         assert learned["title"] == "T"
