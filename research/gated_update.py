@@ -88,27 +88,34 @@ def build(queue_path: Path) -> dict:
     }
 
 
-def load_model(path: str):
+def load_model(path: str, adapter: str = ""):
     ck = torch.load(ROOT / path / "model.pt", map_location="cpu",
                     weights_only=False)
     cfg = ck["config"]
     model = TransformerLM(cfg["vocab"], cfg["dim"], cfg["layers"],
                           cfg["heads"], cfg["ff"]).to(DEVICE)
     model.load_state_dict(ck["state"])
+    if adapter:
+        from streamft.lora import apply_adapter
+        apply_adapter(model, ROOT / adapter)
     model.eval()
     from tokenizers import Tokenizer
     tok = Tokenizer.from_file(str(TOKENIZER))
     return model, tok
 
 
-def metrics(model_path: str, data_path: str) -> dict:
-    model, tok = load_model(model_path)
+def model_metrics(model, tok, data_path: str) -> dict:
     tokens = load_tokens(str(ROOT / data_path))
     seq = 128 if len(tokens) > 200 else max(16, min(64, len(tokens) - 2))
     batches = fixed_windows(tokens, seq, 8, 8, 0, DEVICE)
     bpb = evaluate_bpb(model, tok, batches)
     assistant = evaluate_assistant(model, tok, batches)
     return {"bpb": bpb["bpb"], "assistant_loss": assistant.get("loss")}
+
+
+def metrics(model_path: str, data_path: str, adapter: str = "") -> dict:
+    model, tok = load_model(model_path, adapter)
+    return model_metrics(model, tok, data_path)
 
 
 def clean_smoke(model, tok) -> tuple[bool, list[dict]]:
@@ -172,48 +179,79 @@ def main():
     ap.add_argument("--out", default="checkpoints/updates")
     ap.add_argument("--steps", type=int, default=100)
     ap.add_argument("--lr", type=float, default=5e-6)
+    ap.add_argument("--lora", action="store_true",
+                    help="train a LoRA adapter instead of full weights")
+    ap.add_argument("--lora-lr", type=float, default=5e-4)
+    ap.add_argument("--rank", type=int, default=8)
+    ap.add_argument("--alpha", type=int, default=16)
     ap.add_argument("--result", default="research/results/gated_update.json")
     args = ap.parse_args()
     queue_path = ROOT / args.queue
     build_info = build(queue_path)
     print(json.dumps({"event": "built", **build_info}), flush=True)
 
-    candidate = ROOT / "checkpoints/updates/candidate"
+    candidate = ROOT / (
+        "checkpoints/adapters/candidate" if args.lora
+        else "checkpoints/updates/candidate")
     if candidate.exists():
         shutil.rmtree(candidate)
     result_json = ROOT / "research/results/gated_candidate.json"
-    cmd = [
-        sys.executable, "research/train_transformer_chat.py",
-        "--data", "data/update_train.pt",
-        "--valid", "data/update_valid.pt",
-        "--init", args.base,
-        "--out", str(candidate.relative_to(ROOT)),
-        "--tag", "gated_candidate",
-        "--result", str(result_json.relative_to(ROOT)),
-        "--steps", str(args.steps),
-        "--lr", str(args.lr),
-        "--warmup", "20",
-        "--eval-every", "50",
-        "--save-every", str(args.steps),
-        "--sample-every", str(args.steps),
-    ]
+    if args.lora:
+        cmd = [
+            sys.executable, "research/train_lora.py",
+            "--data", "data/update_train.pt",
+            "--valid", "data/update_valid.pt",
+            "--init", args.base,
+            "--out", str(candidate.relative_to(ROOT)),
+            "--steps", str(args.steps),
+            "--lr", str(args.lora_lr),
+            "--rank", str(args.rank),
+            "--alpha", str(args.alpha),
+        ]
+    else:
+        cmd = [
+            sys.executable, "research/train_transformer_chat.py",
+            "--data", "data/update_train.pt",
+            "--valid", "data/update_valid.pt",
+            "--init", args.base,
+            "--out", str(candidate.relative_to(ROOT)),
+            "--tag", "gated_candidate",
+            "--result", str(result_json.relative_to(ROOT)),
+            "--steps", str(args.steps),
+            "--lr", str(args.lr),
+            "--warmup", "20",
+            "--eval-every", "50",
+            "--save-every", str(args.steps),
+            "--sample-every", str(args.steps),
+        ]
     print(json.dumps({"event": "train", "cmd": cmd}), flush=True)
     subprocess.run(cmd, check=True, cwd=ROOT)
 
     base = {"clean": metrics(args.base, "data/chat_en_clean_valid.pt"),
             "queue": metrics(args.base, "data/update_queue_valid.pt")}
-    cand = {"clean": metrics(str(candidate.relative_to(ROOT)),
-                            "data/chat_en_clean_valid.pt"),
-            "queue": metrics(str(candidate.relative_to(ROOT)),
-                             "data/update_queue_valid.pt")}
+    if args.lora:
+        cand_model, cand_tok = load_model(
+            args.base, str(candidate.relative_to(ROOT)))
+        cand = {
+            "clean": model_metrics(
+                cand_model, cand_tok, "data/chat_en_clean_valid.pt"),
+            "queue": model_metrics(
+                cand_model, cand_tok, "data/update_queue_valid.pt"),
+        }
+    else:
+        cand = {"clean": metrics(str(candidate.relative_to(ROOT)),
+                                "data/chat_en_clean_valid.pt"),
+                "queue": metrics(str(candidate.relative_to(ROOT)),
+                                 "data/update_queue_valid.pt")}
+        cand_model, cand_tok = load_model(str(candidate.relative_to(ROOT)))
     from research.behavior_eval import behavior
-    cand_model, cand_tok = load_model(str(candidate.relative_to(ROOT)))
     beh = behavior(cand_model, cand_tok,
                    ROOT / "data/gated_behavior_memory.json")
     smoke_ok, smoke_rows = clean_smoke(cand_model, cand_tok)
     decision = decide(base, cand, behavior_ok=beh["passed"],
                       clean_smoke_ok=smoke_ok)
     payload = {
+        "mode": "lora" if args.lora else "full",
         "base": args.base, "candidate": str(candidate.relative_to(ROOT)),
         "queue": build_info, "base_metrics": base,
         "candidate_metrics": cand, "behavior": beh,

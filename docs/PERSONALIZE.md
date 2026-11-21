@@ -78,6 +78,21 @@ The demo adapter has **368,640 trainable parameters** (~0.74% of the 49.2M
 base), trains in ~45 seconds on the RTX 3050, and passes clean smoke, runtime
 behavior and E2E. Keep adapters per user/domain; the base is shared and frozen.
 
+Use the gated adapter loop when you want a reviewed update:
+
+```bash
+python research/gated_update.py \
+  --base checkpoints/transformer_behavior_50m_long \
+  --queue data/learning_queue.jsonl \
+  --steps 100 --lora --lora-lr 1e-4 \
+  --out checkpoints/adapters_50m
+```
+
+The accepted 50M adapter (`checkpoints/adapters_50m/v0001`) gives **+38.2%**
+queue-target gain with clean bpb regression **+0.08%** and assistant
+**+0.07%**. Clean smoke, behavior and E2E all pass. The gate rejects adapters
+that hurt clean chat or fail the behavioral checks.
+
 Full fine-tune from a base checkpoint:
 
 ```bash
