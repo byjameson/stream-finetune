@@ -1,6 +1,6 @@
 param(
     [int]$Port = 8013,
-    [string]$Model = "checkpoints/transformer_behavior_50m_long",
+    [string]$Model = "checkpoints/transformer_behavior_50m_scaled",
     [string]$Adapter = "",
     [string]$Docs = "",
     [string]$Queue = "data/learning_queue.jsonl",

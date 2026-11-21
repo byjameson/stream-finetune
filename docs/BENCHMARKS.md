@@ -86,17 +86,18 @@ validation shard and on the product behaviors:
 
 | check | base | scaled 10k |
 |---|---|---|
-| scaled-valid chat bpb | 1.503 | **1.452** |
-| scaled-valid assistant loss | 4.215 | **4.050** |
-| scaled-valid stories bpb | 1.622 | **1.486** |
+| scaled-valid chat bpb | 1.503 | **1.428** |
+| scaled-valid assistant loss | 4.215 | **3.991** |
+| scaled-valid stories bpb | 1.622 | **1.481** |
 | product benchmark | 21/21 | **21/21** |
 | behavior checks | 16/16 | **16/16** |
-| raw-model probe | 2/10 | 2/10 |
+| raw-model probe | 2/10 | 1/10 |
 
-At 18k on the **old** clean valid shard: bpb 1.391 / assistant 3.956 versus
-base 1.372 / 4.050. The old bpb regression is ~1.4%, while assistant loss
-improves; promotion remains gated on the final checkpoint. Details and final
-results: [`DATA_SCALING.md`](DATA_SCALING.md).
+At 20k on the **old** clean valid shard: bpb **1.3766** / assistant **3.9176**
+versus base 1.3719 / 4.0502. The old bpb regression is **+0.34%**, inside the
+3% guard, while assistant loss improves **3.3%**. The 20k checkpoint is
+promoted as `checkpoints/transformer_behavior_50m_scaled`; the 60k run is
+still in progress. Details: [`DATA_SCALING.md`](DATA_SCALING.md).
 
 ## Safety red-team
 

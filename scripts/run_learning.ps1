@@ -1,7 +1,7 @@
 param(
     [string]$Store = "data/feedback_queue.json",
     [string]$OutQueue = "data/feedback_training.jsonl",
-    [string]$Base = "checkpoints/transformer_behavior_50m_long",
+    [string]$Base = "checkpoints/transformer_behavior_50m_scaled",
     [string]$Out = "checkpoints/adapters_feedback",
     [string]$History = "data/adapter_history.jsonl",
     [string]$Active = "data/active_adapter.json",

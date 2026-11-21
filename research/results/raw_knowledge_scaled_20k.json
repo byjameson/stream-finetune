@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T21:17:01",
+  "model": "checkpoints/scaled_50m_step20000",
+  "adapter": "",
+  "score": 0.1,
+  "passed": 1,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris, a city known for its historical and historical significance. It is a city known for its historical and historical significance, including the Eiffel Tower, the city of Paris, the Eiffel Tower, and the Eiffel Tower. The city is known for its historical",
+      "correct": true,
+      "alpha": 0.809,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital ofance is the capital of the United States. It is the capital of the United States, which is the capital of the United States. The capital of the United States is the capital of the United States. It is the capital of the United States, the capital of the United States, the United States,",
+      "correct": false,
+      "alpha": 0.794,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "This is a classic example of a combinatorial problem. The problem is a classic example of a combinatorial problem, which states that the number of ways to choose 3 items from a set of 5 items from a set of 5 items from a set of 5 items from a set of 5 items from a",
+      "correct": false,
+      "alpha": 0.765,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to choose 3 items from a set of items from a set of items from a set of items, we need to consider the total number of items in the set. The total number of items in the set is 7. The total number of items in the set is 7. The total number",
+      "correct": false,
+      "alpha": 0.752,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet, also known as the Earth. It is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is a planet that is",
+      "correct": false,
+      "alpha": 0.772,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "The Wooden of The Wooden is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film that is a film",
+      "correct": false,
+      "alpha": 0.742,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a fundamental concept in combinatorics, and it is a fundamental concept in combinatorics. The boiling point of water is a fundamental concept in combinatorics, and it is a fundamental concept in combinatorics. The boiling point of water is a",
+      "correct": false,
+      "alpha": 0.823,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a software development tool that allows you to create and manage your data, make, and manage data, and manage data, and manage data. It is a software that allows you to manage data, manage, and manage data, and manage data, and manage data, and manage data. HT",
+      "correct": false,
+      "alpha": 0.78,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "The main color is the color.",
+      "correct": false,
+      "alpha": 0.786,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is 2.5 degrees Fahrenheit.",
+      "correct": false,
+      "alpha": 0.756,
+      "stop": "end",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}

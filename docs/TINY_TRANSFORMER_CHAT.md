@@ -9,13 +9,17 @@ short English daily-assistant turns. The Python package and CLI remain
 License: Apache-2.0 for code and model weights; training-data attribution is in
 [`NOTICE`](../NOTICE). The source text remains under its original dataset
 licences. The **20.2M** checkpoint is the compact fallback; the
-current product checkpoint is the **49.2M behavior variant**
-(`transformer_behavior_50m_long`). It is **not** a general assistant and not a
-factual model; facts belong in the document index, not in the weights.
+current product checkpoint is the **49.2M scaled run**
+(`transformer_behavior_50m_scaled`, 20k steps on the 175M-token corpus). The
+original `transformer_behavior_50m_long` is retained as the baseline. It is
+**not** a general assistant and not a factual model; facts belong in the
+document index, not in the weights.
 
 - 20M: 5 layers, dim 512, 8 heads, FFN 2048; 50M: 6 layers, dim 768,
   12 heads, FFN 3072; 8k BPE, max sequence 512.
-- Trained on **26.98M tokens** of filtered English chat and story data.
+- The compact fallback was trained on **26.98M tokens** of filtered English
+  chat/story data; the scaled product run used **175.37M** clean tokens plus
+  behavior/skill replay.
 - Assistant-only SFT loss; training windows start at `<|user|>`.
 - Role tokens (`<|user|>`, `<|assistant|>`) are banned during decoding.
 

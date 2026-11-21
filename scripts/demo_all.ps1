@@ -10,7 +10,11 @@ Set-Location $root
 $env:PYTHONPATH = $root
 $env:PYTHONIOENCODING = "utf-8"
 
-$model = "checkpoints/transformer_behavior_50m_long"
+$model = "checkpoints/transformer_behavior_50m_scaled"
+if (!(Test-Path "$model/model.pt")) {
+    Write-Host "scaled checkpoint not found; using the 50M long baseline"
+    $model = "checkpoints/transformer_behavior_50m_long"
+}
 $adapter = "checkpoints/adapters_50m/v0001"
 $docs = "data/demo_docs.db"
 
