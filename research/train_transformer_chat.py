@@ -228,7 +228,7 @@ def main():
         if args.sample_every and i % args.sample_every == 0:
             torch.manual_seed(1000 + i)
             text, stop = generate(
-                model, tok, "<|user|> hello<|end|><|assistant|>")
+                model, tok, "<|user|> hello <|assistant|>")
             print(json.dumps({"event": "sample", "step": i, "stop": stop,
                               "text": text}), flush=True)
         if args.save_every and i % args.save_every == 0:
@@ -258,7 +258,7 @@ def main():
         for j in range(2):
             torch.manual_seed(1000 + i * 10 + j)
             text, stop = generate(
-                model, tok, f"<|user|> {prompt}<|end|><|assistant|>")
+                model, tok, f"<|user|> {prompt} <|assistant|>")
             samples.append({"prompt": prompt, **metrics(text, stop)})
     gate = {
         "chat_bpb_below_2_5": evals["chat"]["bpb"] < 2.5,

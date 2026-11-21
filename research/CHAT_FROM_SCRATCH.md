@@ -349,10 +349,16 @@ The accepted checkpoint also passes the standard E2E memory/task/greeting/story
 test. However, **loss is not behavior**: generation of the new skills is mixed
 (`summarize` works; `count to five`, `be brief`, `make it polite` often fall
 back to generic replies). The gate is a loss/regression gate, not a full
-behavioral gate. This is the next thing to tighten.
+behavioral gate.
 
-Earlier 55-example runs were rejected at 2.07% target gain, and 400 steps
-overfit; the gate correctly refused them.
+A later format queue (283 examples) cleared loss + behavior but produced empty
+clean-chat samples. The gate was tightened with a 12-sample clean generation
+smoke; the v0002/v0003 candidates were then **rejected**, and **v0001 remains
+the product checkpoint**. Exact format skills are handled by the deterministic
+fast path in `chat_human.py`; the model handles stories/open-ended text.
+
+Earlier 55-example runs were rejected at 2.07% target gain; the gate correctly
+refused them.
 
 Public release gates: [`../docs/PUBLIC_RELEASE_CHECKLIST.md`](../docs/PUBLIC_RELEASE_CHECKLIST.md).
 

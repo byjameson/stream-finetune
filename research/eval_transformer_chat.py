@@ -66,7 +66,7 @@ def main():
         for j in range(2):
             torch.manual_seed(1000 + i * 10 + j)
             text, stop = generate(
-                model, tok, f"<|user|> {prompt}<|end|><|assistant|>",
+                model, tok, f"<|user|> {prompt} <|assistant|>",
                 banned_ids=(user_id, assistant_id))
             samples.append({"prompt": prompt, **metrics(text, stop)})
     gate = {

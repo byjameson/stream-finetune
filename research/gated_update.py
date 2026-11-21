@@ -111,9 +111,34 @@ def metrics(model_path: str, data_path: str) -> dict:
     return {"bpb": bpb["bpb"], "assistant_loss": assistant.get("loss")}
 
 
+def clean_smoke(model, tok) -> tuple[bool, list[dict]]:
+    from streamft.transformer import generate
+    uid = tok.token_to_id("<|user|>")
+    aid = tok.token_to_id("<|assistant|>")
+    prompts = ["hello", "how are you?", "my name is Alex, remember me",
+               "what is the weather today?", "tell me a short story",
+               "add task: buy milk"]
+    rows = []
+    for i, prompt in enumerate(prompts):
+        for j in range(2):
+            torch.manual_seed(1000 + i * 10 + j)
+            text, stop = generate(
+                model, tok, f"<|user|> {prompt} <|assistant|>",
+                max_new=80, temperature=0.8, top_k=40,
+                repetition_penalty=1.1, banned_ids=(uid, aid), device=DEVICE)
+            alpha = (sum(c.isalpha() for c in text) / max(len(text), 1))
+            rows.append({"prompt": prompt, "text": text, "alpha": alpha,
+                         "stop": stop})
+    ok = all(row["text"] and row["alpha"] >= 0.5 and "<|" not in row["text"]
+             for row in rows)
+    return ok, rows
+
+
 def decide(base: dict, cand: dict, max_bpb_reg: float = 0.03,
            max_assistant_reg: float = 0.05,
-           min_target_gain: float = 0.05) -> dict:
+           min_target_gain: float = 0.05,
+           behavior_ok: bool = True,
+           clean_smoke_ok: bool = True) -> dict:
     target_gain = 1 - (cand["queue"]["assistant_loss"]
                        / max(base["queue"]["assistant_loss"], 1e-9))
     bpb_reg = cand["clean"]["bpb"] / max(base["clean"]["bpb"], 1e-9) - 1
@@ -123,6 +148,8 @@ def decide(base: dict, cand: dict, max_bpb_reg: float = 0.03,
         "target_gain": target_gain >= min_target_gain,
         "clean_bpb": bpb_reg <= max_bpb_reg,
         "clean_assistant": assistant_reg <= max_assistant_reg,
+        "behavior": bool(behavior_ok),
+        "clean_smoke": bool(clean_smoke_ok),
     }
     return {"accepted": all(checks.values()), "checks": checks,
             "target_gain": target_gain, "clean_bpb_reg": bpb_reg,
@@ -180,12 +207,19 @@ def main():
                             "data/chat_en_clean_valid.pt"),
             "queue": metrics(str(candidate.relative_to(ROOT)),
                              "data/update_queue_valid.pt")}
-    decision = decide(base, cand)
+    from research.behavior_eval import behavior
+    cand_model, cand_tok = load_model(str(candidate.relative_to(ROOT)))
+    beh = behavior(cand_model, cand_tok,
+                   ROOT / "data/gated_behavior_memory.json")
+    smoke_ok, smoke_rows = clean_smoke(cand_model, cand_tok)
+    decision = decide(base, cand, behavior_ok=beh["passed"],
+                      clean_smoke_ok=smoke_ok)
     payload = {
         "base": args.base, "candidate": str(candidate.relative_to(ROOT)),
         "queue": build_info, "base_metrics": base,
-        "candidate_metrics": cand, "decision": decision,
-        "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "candidate_metrics": cand, "behavior": beh,
+        "clean_smoke": {"passed": smoke_ok, "rows": smoke_rows},
+        "decision": decision, "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     out = ROOT / args.result
     out.parent.mkdir(parents=True, exist_ok=True)

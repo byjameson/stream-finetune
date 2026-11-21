@@ -33,7 +33,7 @@ python -m streamft.spiking_cli train `
     --eval-batches 8 `
     --eval-batch-size 4 `
     --sample-every 2000 `
-    --sample-prompt "<|user|> hello<|end|><|assistant|>" `
+    --sample-prompt "<|user|> hello<|assistant|>" `
     --sample-tokens 48 `
     --save-every 2000 `
     --seed $Seed
