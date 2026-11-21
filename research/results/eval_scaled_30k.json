@@ -1,0 +1,154 @@
+{
+  "tag": "scaled_30k",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 30000,
+  "bpb": {
+    "chat": {
+      "loss": 4.000219970941544,
+      "ppl": 54.610161360636646,
+      "bpb": 1.4025819811650695,
+      "tokens": 8192,
+      "bytes": 33707,
+      "assistant": {
+        "loss": 3.9150742452405343,
+        "ppl": 50.15279769897461,
+        "tokens": 7078
+      }
+    },
+    "stories": {
+      "loss": 3.8743277192115784,
+      "ppl": 48.15031687462509,
+      "bpb": 1.4470030965946243,
+      "tokens": 8192,
+      "bytes": 31644,
+      "assistant": {
+        "loss": 3.8743277192115784,
+        "ppl": 48.15031433105469,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.3595370054244995,
+      "ppl": 212.62647875003134,
+      "bpb": 2.1834539036766065,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.3595370054244995,
+        "ppl": 212.6265106201172,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.6764234602451324,
+      "ppl": 39.50485043713569,
+      "bpb": 1.257598352247011,
+      "tokens": 8192,
+      "bytes": 34550,
+      "assistant": {
+        "loss": 3.5853386446107027,
+        "ppl": 36.06556701660156,
+        "tokens": 7178
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?  snails' top is the day the snail reaches the top of the well and slips back down at night because it's already out of the well. Since it takes 18 days for the snail to climb 17 feet. This will take the snail 18 days to reach the top of the 20-foot well.",
+      "chars": 295,
+      "alpha": 0.7322,
+      "turkish_chars": 0,
+      "repeat3": 0.0484,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you?",
+      "chars": 40,
+      "alpha": 0.725,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Wes was a curious bird who lived near the garden. One day Wes found a blue kite. Wes wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 167,
+      "alpha": 0.7844,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Iris was a curious bear who lived near the forest. One day Iris found a shiny stone. Iris wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 172,
+      "alpha": 0.7907,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}

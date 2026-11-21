@@ -10,11 +10,11 @@ controls.
 
 - **Scaled 50M base:** 175.37M clean chat tokens (6.5x the original) plus
   behavior/skill replay. The current product candidate is
-  `transformer_behavior_50m_scaled`, promoted at 25k steps; the 60k run is
+  `transformer_behavior_50m_scaled`, promoted at 30k steps; the 60k run is
   being evaluated.
-  - old clean valid: bpb **1.3596** vs 1.3719 (-0.9%), assistant **3.8722**
-    vs 4.0502 (-4.4%);
-  - scaled valid: chat bpb **1.4189** vs 1.5032, assistant **3.9655** vs
+  - old clean valid: bpb **1.3522** vs 1.3719 (-1.4%), assistant **3.8532**
+    vs 4.0502 (-4.9%);
+  - scaled valid: chat bpb **1.4026** vs 1.5032, assistant **3.9151** vs
     4.2153.
 - **Reviewed learning loop:** Good/Bad feedback, learning queue, gated LoRA,
   immutable `vNNNN` versions, holdout evaluation, `activate` rollback.

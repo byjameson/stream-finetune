@@ -10,7 +10,7 @@ License: Apache-2.0 for code and model weights; training-data attribution is in
 [`NOTICE`](../NOTICE). The source text remains under its original dataset
 licences. The **20.2M** checkpoint is the compact fallback; the
 current product checkpoint is the **49.2M scaled run**
-(`transformer_behavior_50m_scaled`, 25k steps on the 175M-token corpus). The
+(`transformer_behavior_50m_scaled`, 30k steps on the 175M-token corpus). The
 original `transformer_behavior_50m_long` is retained as the baseline. It is
 **not** a general assistant and not a factual model; facts belong in the
 document index, not in the weights.

@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-21T21:39:41",
+  "model": "checkpoints/scaled_50m_step30000",
+  "adapter": "",
+  "score": 0.1,
+  "passed": 1,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of the capital of the United States is the capital of the United States. It is a city in the United States and is known for its historical landmarks and cultural significance.",
+      "correct": false,
+      "alpha": 0.813,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "This is a classic example of a classic lateral thinking puzzle. It's a classic example of a self-referential paradox, which is a statement that is often misleading or false. The key is to understand the nature of the problem and the nature of the problem. A key is to understand",
+      "correct": false,
+      "alpha": 0.802,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the number of ways to arrange the number of ways to arrange the number of arrangements, we can use the concept of permutations. Let's start by finding the total number of ways to arrange the arrangements. We can do this by using the formula: 7 * 8",
+      "correct": false,
+      "alpha": 0.782,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world. It is the largest planet in the world. It is the largest planet in the world and is the largest planet in the world.",
+      "correct": false,
+      "alpha": 0.789,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "Heat is a book written by Ronaldo and the American author. Heat is a book written by Ronaldo and is a book written by Ronaldo and is a book written by Ronaldo. Heat is written by Ronaldo and is a book written by R",
+      "correct": false,
+      "alpha": 0.789,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a fundamental concept in mathematics that describes the behavior of a system. It is a fundamental concept in mathematics that describes the behavior of a system, such as the system, the system, and the system. The boiling point is a fundamental concept in mathematics that describes the behavior of a system",
+      "correct": false,
+      "alpha": 0.819,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a software development tool that helps you create and manage your time effectively. It is a software development tool that helps you create and manage your time effectively, and it helps you stay focused on your goals. HTTP is a software development tool that helps you create and manage your time effectively.",
+      "correct": false,
+      "alpha": 0.821,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "A primary color is a measure of the amount of light that is often used in various ways. It is a measure of the amount of light that is used in different contexts, such as the color of a light, the color of a light, and the color of a light. It is a measure of how light",
+      "correct": false,
+      "alpha": 0.77,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics. It is a fundamental concept in physics that describes the amount of light in a system. It is a fundamental concept in physics, and it is a fundamental concept in physics. The speed of light is a fundamental concept in physics, and it is a fundamental concept in physics",
+      "correct": false,
+      "alpha": 0.806,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}
