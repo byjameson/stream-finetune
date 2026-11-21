@@ -6,11 +6,14 @@ even when Ollama is down.
 
 ## Install and pull
 
-Ollama is installed on this machine with:
+Ollama 0.40.16 is installed on this machine from the official
+`OllamaSetup.exe` (SHA-256 verified against the release `sha256sum.txt`):
 
 ```powershell
 winget install --id Ollama.Ollama --exact
 ```
+
+The direct installer is also valid if winget stalls:
 
 Start it and pull a small local model:
 
@@ -61,6 +64,13 @@ from streamft.teacher_provider import TeacherProvider
 teacher = TeacherProvider(
     "http://127.0.0.1:11434/v1", "llama3.2:3b", "", 60, "ollama")
 print(teacher.ask("Say hello in one short sentence.", max_tokens=32))
+```
+
+Verified on 2026-11-21:
+
+```text
+ollama list -> llama3.2:3b  a80c4f17acd5  2.0 GB
+TeacherProvider.ask("Say hello...") -> "Hello!"
 ```
 
 ## Limits
