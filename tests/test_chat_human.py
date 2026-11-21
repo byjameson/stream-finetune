@@ -19,7 +19,7 @@ def test_chat_human_memory_tasks_and_persistence(tmp_path):
     assert human.respond("complete task 1") == "Completed task 1."
     assert human.respond("list tasks") == "There are no open tasks."
     assert "Alex" in human.respond("what do you remember")
-    assert human.respond("hello") == (
+    assert human.respond("what is the weather?") == (
         "I do not have a language model loaded yet.")
 
     reloaded = ChatHuman(memory)
