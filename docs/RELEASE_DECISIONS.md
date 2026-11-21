@@ -96,6 +96,12 @@ Existing controls:
 - Research queue requires explicit approval; no autonomous topic creation.
 - `AtomZeroResearchWorker` runs daily with a lock and JSONL log; only approved
   topics are fetched (`docs/RESEARCH_WORKER.md`).
+- Missing-source questions become reviewed knowledge gaps; a proposal creates
+  a pending topic and still needs approval (`docs/KNOWLEDGE_GAPS.md`).
+- A 21-task product benchmark covers tools, memory, tasks, retrieval, teacher
+  review and gap detection; it is not a general benchmark. A raw-model probe
+  without RAG/tools scores only **2/10** on simple general questions
+  (`docs/BENCHMARKS.md`).
 - Reviews and gated updates; no autonomous weight mutation.
 - Adapter versions and rollback (`learning_loop.py activate`).
 - No telemetry; memory is local by default.

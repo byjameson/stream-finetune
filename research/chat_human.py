@@ -48,16 +48,29 @@ def _tokens(text: str) -> set[str]:
     return {w for w in re.findall(r"[a-z0-9]+", text.lower()) if len(w) > 1}
 
 
+_QUESTION_STARTS = (
+    "what", "who", "where", "when", "why", "how", "which", "whose", "whom",
+    "is ", "are ", "was ", "were ", "do ", "does ", "did ", "can ", "could ",
+    "should ", "would ", "will ", "tell me about",
+)
+
+
+def looks_like_question(text: str) -> bool:
+    low = str(text or "").strip().lower()
+    return low.endswith("?") or low.startswith(_QUESTION_STARTS)
+
+
 class ChatHuman:
     def __init__(self, memory_path: str | Path = DEFAULT_MEMORY,
                  model=None, tokenizer=None, device=None, arch="spiking",
-                 docs=None):
+                 docs=None, on_gap=None):
         self.path = Path(memory_path)
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
         self.arch = arch
         self.docs = docs
+        self.on_gap = on_gap
         self.data = self._load()
 
     def _load(self) -> dict:
@@ -208,6 +221,7 @@ class ChatHuman:
         return text or "I am not sure what to say yet."
 
     def respond(self, text: str) -> str:
+        self.last_sources = []
         self.add_episode("user", text)
         extracted = extract_facts(text)
         for key, value in extracted:
@@ -267,6 +281,7 @@ class ChatHuman:
             hits = self.docs.search(text, k=3) if self.docs else []
             if hits:
                 lines = []
+                sources = []
                 unverified = False
                 for hit in hits[:3]:
                     teacher = hit.get("kind") == "teacher"
@@ -282,8 +297,16 @@ class ChatHuman:
                     location = hit.get("source_url") or hit["source"]
                     lines.append(
                         f"- {hit['chunk']} ({label}: {location})")
+                    source = {"source": hit["source"], "title": hit["title"]}
+                    for key in ("kind", "source_url", "teacher", "model",
+                                "verified", "reviewer", "verified_at"):
+                        if key in hit:
+                            source[key] = hit[key]
+                    if source not in sources:
+                        sources.append(source)
                     if teacher and not verified:
                         unverified = True
+                self.last_sources = sources
                 reply = (f"I found these notes:\n" + "\n".join(lines) + "\n\n"
                          "This is a local note, not professional advice.")
                 if unverified:
@@ -291,8 +314,18 @@ class ChatHuman:
                               "teacher-derived note.")
             else:
                 formatted = self.format_skill(text)
-                reply = (formatted if formatted is not None
-                         else self._generate(text))
+                if formatted is not None:
+                    reply = formatted
+                else:
+                    question = looks_like_question(text)
+                    if question and self.on_gap is not None:
+                        self.on_gap(text)
+                    if question and self.docs is not None:
+                        reply = ("I do not have a source for that yet. I can "
+                                 "add it to the research queue; approve the "
+                                 "topic and I will fetch it.")
+                    else:
+                        reply = self._generate(text)
 
         self.add_episode("assistant", reply)
         return reply

@@ -3,6 +3,7 @@ import pytest
 from streamft.agent_runtime import (
     AgentSession, calculate, math_query)
 from streamft.doc_memory import DocMemory
+from streamft.knowledge_gaps import KnowledgeGapStore
 
 
 def test_agent_session_handles_tools_and_memory(tmp_path):
@@ -61,6 +62,31 @@ def test_agent_chat_marks_teacher_notes_unverified(tmp_path):
     verified_reply = agent.chat("what is the teacher code?")["reply"]
     assert "teacher note, verified by reviewer-1" in verified_reply
     assert "unverified teacher-derived note" not in verified_reply
+    docs.close()
+
+
+def test_agent_returns_sources_for_grounded_answer(tmp_path):
+    docs = DocMemory(tmp_path / "docs.db")
+    docs.add_text("law.txt", "The capital of France is Paris.", title="Notes")
+    agent = AgentSession("s5", tmp_path / "memory.json", docs=docs)
+    result = agent.chat("what is the capital of France?")
+    assert "Paris" in result["reply"]
+    assert result["sources"][0]["source"] == "law.txt"
+    docs.close()
+
+
+def test_agent_records_missing_source_as_gap(tmp_path):
+    docs = DocMemory(tmp_path / "docs.db")
+    gaps = KnowledgeGapStore(tmp_path / "gaps.json")
+    agent = AgentSession("s4", tmp_path / "memory.json", docs=docs,
+                         gap_store=gaps)
+    result = agent.chat("what is the population of Paris?")
+    assert "do not have a source" in result["reply"]
+    assert "research queue" in result["reply"]
+    items = gaps.list()
+    assert len(items) == 1
+    assert items[0]["query"] == "what is the population of Paris?"
+    assert items[0]["status"] == "pending"
     docs.close()
 
 

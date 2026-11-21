@@ -269,6 +269,9 @@ AG News and SST-2 (distillation), synthetic dates (structured generation).
 | `learning_loop.py` | reviewed feedback -> gated LoRA, history, holdout, rollback | ~1 min + gate |
 | `compare_adapters.py` | assistant-turn loss comparison for base and adapters | ~10 s |
 | `research_worker.py` | scheduled approved-topic worker with lock/log/stale recovery | per topic |
+| `gap_loop.py` | review knowledge gaps -> pending research topics | ~1 s |
+| `benchmark_assistant.py` | 21-task product benchmark (tools, memory, RAG, gaps) | ~10 s |
+| `benchmark_raw.py` | raw-model knowledge probe without RAG or tools | ~10 s |
 | `make_skill_corpus.py` | targeted greeting/name/like/task/story dialogues, mixed with replay | ~1 min |
 | `eval_chat_human.py` | end-to-end memory/task/open-ended virtual-human evaluation | ~1 min |
 | `update_loop.py` | reviewed teach/learn queue: add/list/export skill examples | ~1 s |

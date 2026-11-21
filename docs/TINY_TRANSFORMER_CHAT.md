@@ -190,6 +190,9 @@ Endpoints:
 | `GET /v1/learning/queue` | feedback items and pending/approved/rejected counts |
 | `POST /v1/learning/queue/approve` / `reject` | `{"id":"f0001"}`; human review step |
 | `POST /v1/learning/queue/export` | writes approved feedback to `data/feedback_training.jsonl` |
+| `GET /v1/learning/gaps` | questions with no local source, with status counts |
+| `POST /v1/learning/gaps/propose` | `{"id":"g0001","pages":1}`; creates a **pending** research topic |
+| `POST /v1/learning/gaps/dismiss` | `{"id":"g0002"}`; dismisses a gap |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; directly fetches Wikipedia lead extracts with sources |
 | `GET /v1/research/queue` | reviewed queue items and status counts |
@@ -437,6 +440,38 @@ not unsupervised weight mutation.
 Use RAG for facts and the adapter for style/skill/format. The 8-example test
 adapter improved target loss but did not reliably memorize an exact launch
 code; that is expected at 50M and is why facts stay in DocMemory.
+
+### Missing data (knowledge gaps)
+
+```text
+no local source -> knowledge gap (pending)
+               -> propose research topic (pending; no network)
+               -> human approves -> worker fetches Wikipedia
+               -> DocMemory indexes source -> cited answer
+```
+
+The browser has a **Knowledge gaps** section with propose/dismiss. CLI:
+
+```bash
+python research/gap_loop.py list
+python research/gap_loop.py propose g0001 --pages 1
+python research/research_queue.py --queue data/research_queue.json approve r0001
+python research/research_worker.py --queue data/research_queue.json \
+  --db data/docs.db --limit 1 --once
+```
+
+Gaps never update weights; they add sources to RAG. Verified live: an unknown
+Paris population question became `g0001` -> `r0001`; after approval the worker
+added Wikipedia source `https://en.wikipedia.org/?curid=22989`, and the next
+answer quoted **2.04 million** with that citation. Details:
+[`KNOWLEDGE_GAPS.md`](KNOWLEDGE_GAPS.md).
+
+Product benchmark on 2026-11-21: **21/21** for base and for the product adapter
+on tools, memory, tasks, five-document retrieval, teacher-note review,
+missing-source detection and one generation. The same model **without RAG or
+tools** scores **2/10** on simple general questions. The first is a narrow
+behavior benchmark, the second is the honest knowledge limit; neither is MMLU:
+[`BENCHMARKS.md`](BENCHMARKS.md).
 
 ### Web research
 

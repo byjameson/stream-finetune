@@ -25,11 +25,13 @@ user-approved Wikipedia topics on a schedule. ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
 local Ollama/OpenAI-compatible provider can answer on request or synthesize
 approved research topics. Teacher notes start unverified and can be marked
-verified by a named reviewer with a timestamp. Chat feedback can be reviewed,
-exported and sent through a gated LoRA update; accepted `vNNNN` versions are
-recorded with metrics, can be compared with `research/compare_adapters.py`,
-evaluated on a non-training holdout, and rolled back with
-`learning_loop.py activate`. The active adapter loads with `--adapter auto`.
+verified by a named reviewer with a timestamp. Unknown questions become
+**knowledge gaps**; approving a proposed topic lets the scheduled worker fetch
+a source into RAG. Chat feedback can be reviewed, exported and sent through a
+gated LoRA update; accepted `vNNNN` versions are recorded with metrics, can be
+compared with `research/compare_adapters.py`, evaluated on a non-training
+holdout, and rolled back with `learning_loop.py activate`. The active adapter
+loads with `--adapter auto`.
 The 49.2M checkpoint, optional 368k LoRA adapter and SQLite FTS5 memory run
 locally. Facts stay in RAG; style/skill updates go through the gate. It is not a
 general assistant. Release remains local-only: see the
