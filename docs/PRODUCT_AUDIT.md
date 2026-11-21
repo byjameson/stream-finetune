@@ -1,7 +1,7 @@
 # Atom Zero product audit
 
-Status: **development; not released**. This is a full-surface audit, not a
-release approval. Last updated 2026-11-21.
+Status: **source release 0.8.0; PyPI upload pending owner token**. This is a
+full-surface audit. Last updated 2026-11-22.
 
 ## 1. Model and data
 
@@ -155,15 +155,16 @@ recommended.
 
 - **392 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `b59c412` green after the README hero, architecture, quickstart and
-  demo-corpus changes.
+- CI `abe47b4` green for the 0.8.0 release commit.
 
 ## 8. Release state
 
-- No PyPI/GitHub model release in this step.
+- GitHub source tag **v0.8.0** pushed (`abe47b4`); wheel and sdist built and
+  twine-checked.
+- PyPI upload is blocked on the owner's API token (`NonInteractive: Credential
+  not found for API token`); no PyPI package has been published.
 - `pyproject.toml` is **0.8.0**; the owner approved publication.
-- A GitHub source tag/release can be created now; PyPI upload still requires
-  the owner's token.
+- Model weights are not on Hugging Face yet; that remains the owner's call.
 - Open-source: anyone may host; this project does not operate a service.
 
 ## Priority gaps

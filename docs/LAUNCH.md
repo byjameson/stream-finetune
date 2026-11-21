@@ -61,7 +61,8 @@ harness: source-cited RAG, honest gaps, curiosity approval, local provider.
 - [x] optional provider mode
 - [x] 392 tests, green CI
 - [ ] 20–40 second screen recording/GIF of the demo
-- [ ] GitHub release tag and notes
+- [x] GitHub source tag `v0.8.0`
+- [ ] GitHub release notes page / binary artifacts
 - [ ] PyPI publish (owner token)
 - [ ] Hugging Face model card/weights (owner decision)
 - [ ] one external benchmark beyond the authored product set

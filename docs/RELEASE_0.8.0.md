@@ -1,7 +1,7 @@
 # Atom Zero 0.8.0 — open-source scaled assistant (2026-11-22)
 
-Status: **released source version 0.8.0**. The owner approved publication;
-PyPI upload still waits for the owner's token. The project is open source under
+Status: **released source version 0.8.0** (GitHub tag `v0.8.0`). The owner
+approved publication; PyPI upload still waits for the owner's token. The project is open source under
 Apache-2.0. No hosted service is operated; third-party hosts are responsible
 for their own deployment controls.
 
