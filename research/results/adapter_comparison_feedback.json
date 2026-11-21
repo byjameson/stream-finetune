@@ -1,0 +1,246 @@
+{
+  "base": "checkpoints/transformer_behavior_50m_long",
+  "data": "data/feedback_live_training.jsonl",
+  "examples": 8,
+  "created": "2026-11-21T19:28:02",
+  "models": [
+    {
+      "label": "base",
+      "path": "checkpoints/transformer_behavior_50m_long",
+      "metrics": {
+        "examples": 8,
+        "tokens": 78,
+        "loss": 3.8262308408052492,
+        "ppl": 45.889247979129415,
+        "rows": [
+          {
+            "index": 0,
+            "user": "hello",
+            "assistant": "Hello! How can I help you today?",
+            "loss": 0.0922844776740441,
+            "tokens": 13,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "user": "what is the project codename?",
+            "assistant": "Blue Lantern.",
+            "loss": 3.980191946029663,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "user": "what is the backup room?",
+            "assistant": "Room B-12.",
+            "loss": 4.391483730740017,
+            "tokens": 9,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "user": "what is the launch code?",
+            "assistant": "ORANGE-42.",
+            "loss": 4.068043390909831,
+            "tokens": 12,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "user": "what is the visitor badge?",
+            "assistant": "GREEN-7.",
+            "loss": 4.768780136108399,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "user": "what is the support email?",
+            "assistant": "help@example.test.",
+            "loss": 6.772618103027344,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 6,
+            "user": "who is the reviewer?",
+            "assistant": "reviewer-1.",
+            "loss": 3.942243814468384,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 7,
+            "user": "what is the demo room?",
+            "assistant": "Room 5C.",
+            "loss": 3.764120578765869,
+            "tokens": 8,
+            "truncated": false
+          }
+        ]
+      }
+    },
+    {
+      "label": "adapters_feedback_test/v0001",
+      "path": "checkpoints/adapters_feedback_test/v0001",
+      "metrics": {
+        "examples": 8,
+        "tokens": 78,
+        "loss": 1.6401426471196687,
+        "ppl": 5.155904934768712,
+        "rows": [
+          {
+            "index": 0,
+            "user": "hello",
+            "assistant": "Hello! How can I help you today?",
+            "loss": 0.05127098927131066,
+            "tokens": 13,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "user": "what is the project codename?",
+            "assistant": "Blue Lantern.",
+            "loss": 2.332388401031494,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "user": "what is the backup room?",
+            "assistant": "Room B-12.",
+            "loss": 1.5429208543565538,
+            "tokens": 9,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "user": "what is the launch code?",
+            "assistant": "ORANGE-42.",
+            "loss": 1.4190192222595215,
+            "tokens": 12,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "user": "what is the visitor badge?",
+            "assistant": "GREEN-7.",
+            "loss": 1.3685573577880858,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "user": "what is the support email?",
+            "assistant": "help@example.test.",
+            "loss": 1.5124655723571778,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 6,
+            "user": "who is the reviewer?",
+            "assistant": "reviewer-1.",
+            "loss": 2.803697109222412,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 7,
+            "user": "what is the demo room?",
+            "assistant": "Room 5C.",
+            "loss": 3.306396484375,
+            "tokens": 8,
+            "truncated": false
+          }
+        ]
+      },
+      "vs_base": {
+        "loss_delta": -2.1860881936855803,
+        "loss_relative": -0.5713424737399031,
+        "ppl_ratio": -0.8876445973332656
+      }
+    },
+    {
+      "label": "adapters_50m/v0001",
+      "path": "checkpoints/adapters_50m/v0001",
+      "metrics": {
+        "examples": 8,
+        "tokens": 78,
+        "loss": 3.836987853050232,
+        "ppl": 46.385543725605444,
+        "rows": [
+          {
+            "index": 0,
+            "user": "hello",
+            "assistant": "Hello! How can I help you today?",
+            "loss": 0.0839843199803279,
+            "tokens": 13,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "user": "what is the project codename?",
+            "assistant": "Blue Lantern.",
+            "loss": 3.980226516723633,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "user": "what is the backup room?",
+            "assistant": "Room B-12.",
+            "loss": 4.502876281738281,
+            "tokens": 9,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "user": "what is the launch code?",
+            "assistant": "ORANGE-42.",
+            "loss": 4.100240707397461,
+            "tokens": 12,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "user": "what is the visitor badge?",
+            "assistant": "GREEN-7.",
+            "loss": 4.744245910644532,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "user": "what is the support email?",
+            "assistant": "help@example.test.",
+            "loss": 6.844146728515625,
+            "tokens": 10,
+            "truncated": false
+          },
+          {
+            "index": 6,
+            "user": "who is the reviewer?",
+            "assistant": "reviewer-1.",
+            "loss": 3.8389892578125,
+            "tokens": 8,
+            "truncated": false
+          },
+          {
+            "index": 7,
+            "user": "what is the demo room?",
+            "assistant": "Room 5C.",
+            "loss": 3.7533535957336426,
+            "tokens": 8,
+            "truncated": false
+          }
+        ]
+      },
+      "vs_base": {
+        "loss_delta": 0.010757012244982711,
+        "loss_relative": 0.0028113861114347216,
+        "ppl_ratio": 0.010815076915223099
+      }
+    }
+  ]
+}
