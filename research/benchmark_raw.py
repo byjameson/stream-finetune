@@ -1,7 +1,7 @@
 """Raw-model knowledge probe: no RAG, no tools, no agent runtime.
 
     python research/benchmark_raw.py \
-        --model checkpoints/transformer_behavior_50m_long \
+        --model checkpoints/transformer_behavior_50m_scaled \
         --out research/results/raw_knowledge_base.json
 
 This is deliberately a small, simple probe. It shows what the 50M language
@@ -83,7 +83,7 @@ def run(model_path: str, tokenizer: str, adapter: str = "") -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "--model", default="checkpoints/transformer_behavior_50m_long")
+        "--model", default="checkpoints/transformer_behavior_50m_scaled")
     ap.add_argument("--tokenizer", default="data/chat_en_bpe8k.json")
     ap.add_argument("--adapter", default="")
     ap.add_argument("--out", default="research/results/raw_knowledge.json")
