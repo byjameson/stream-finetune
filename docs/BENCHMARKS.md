@@ -86,16 +86,17 @@ validation shard and on the product behaviors:
 
 | check | base | scaled 10k |
 |---|---|---|
-| scaled-valid chat bpb | 1.503 | **1.476** |
-| scaled-valid assistant loss | 4.215 | **4.120** |
-| scaled-valid stories bpb | 1.622 | **1.510** |
+| scaled-valid chat bpb | 1.503 | **1.452** |
+| scaled-valid assistant loss | 4.215 | **4.050** |
+| scaled-valid stories bpb | 1.622 | **1.486** |
 | product benchmark | 21/21 | **21/21** |
 | behavior checks | 16/16 | **16/16** |
 | raw-model probe | 2/10 | 2/10 |
 
-On the **old** clean valid shard the base is still better (bpb 1.372 vs 1.426),
-so promotion remains gated. Details and final results:
-[`DATA_SCALING.md`](DATA_SCALING.md).
+At 18k on the **old** clean valid shard: bpb 1.391 / assistant 3.956 versus
+base 1.372 / 4.050. The old bpb regression is ~1.4%, while assistant loss
+improves; promotion remains gated on the final checkpoint. Details and final
+results: [`DATA_SCALING.md`](DATA_SCALING.md).
 
 ## Safety red-team
 

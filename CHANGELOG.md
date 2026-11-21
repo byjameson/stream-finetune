@@ -306,7 +306,10 @@
   checkpoint and `scripts/eval_scaled_50m.ps1` runs product/raw/behavior/chat
   evals. The built corpus has **175,365,231 train tokens** (6.5x the original)
   and 3.2M validation tokens; corpus/training artifacts are gitignored and
-  results go to `research/results/`.
+  results go to `research/results/`. At 15k steps: scaled-valid chat bpb 1.452
+  vs base 1.503, assistant 4.050 vs 4.215; product 21/21, behavior 16/16, raw
+  2/10. At 18k old-valid bpb is 1.391 vs base 1.372 (+1.4%), assistant 3.956 vs
+  4.050.
 - Ollama teacher: Ollama 0.40.16 installed from the official setup (SHA-256
   verified); `llama3.2:3b` (2.0 GB) pulled. `TeacherProvider` live test returned
   `Hello!`. `scripts/start_ollama_teacher.ps1` starts/pulls the model; demo and
