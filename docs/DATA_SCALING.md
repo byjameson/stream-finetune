@@ -66,22 +66,23 @@ On the RTX 3050 6 GB, the measured 50M step time is roughly 0.14 s, so this is
 a multi-hour run. Keep the machine on AC power and do not run a second GPU job
 at the same time.
 
-## Early evidence (10k steps)
+## Early evidence (15k steps)
 
-At step 10k (~20M tokens seen), evaluated on the **new scaled valid** shard:
+At step 15k (~31M tokens seen), evaluated on the **new scaled valid** shard:
 
-| metric | base | scaled 10k |
+| metric | base | scaled 15k |
 |---|---|---|
-| chat bpb | 1.503 | **1.476** |
-| chat assistant loss | 4.215 | **4.120** |
-| stories bpb | 1.622 | **1.510** |
-| mixed bpb | 1.374 | **1.335** |
-| wiki bpb | 2.248 | 2.251 |
+| chat bpb | 1.503 | **1.452** |
+| chat assistant loss | 4.215 | **4.050** |
+| stories bpb | 1.622 | **1.486** |
+| mixed bpb | 1.374 | **1.313** |
+| wiki bpb | 2.248 | **2.230** |
 
-On the **old** clean valid shard, the base is still better (bpb 1.372 vs
-1.426): the new corpus has a different distribution. The product benchmark is
-still 21/21 and the raw probe remains 2/10. This is why promotion needs both
-new-distribution improvement and old-distribution regression limits.
+At step 18k the old clean valid shard reached bpb **1.391** / assistant
+**3.956** versus base 1.372 / 4.050. The old bpb regression is ~1.4%, within a
+3% guard, while assistant loss improves. The product benchmark is **21/21**,
+behavior is **16/16**, and the raw probe remains 2/10. Promotion is still gated
+on the final checkpoint and the old-distribution regression budget.
 
 ## Promotion gate
 
