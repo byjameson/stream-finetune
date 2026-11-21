@@ -141,7 +141,8 @@ recommended.
 
 - **385 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the ML-moderation commit is verified after push.
+- CI `68e70f2` green after the ML-moderation, product, behavior, safety,
+  red-team and test gates.
 
 ## 8. Release state
 
