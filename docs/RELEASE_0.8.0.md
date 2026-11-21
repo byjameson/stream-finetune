@@ -1,8 +1,10 @@
 # Atom Zero 0.8.0 — open-source scaled assistant
 
-Status: release candidate; PyPI upload waits for the owner's fresh token.
-The project is open source under Apache-2.0. No hosted service is operated;
-third-party hosts are responsible for their own deployment controls.
+Status: **development candidate; not released**. `pyproject.toml` is
+`0.8.0.dev0`; PyPI upload waits for the owner's fresh token and a final
+completeness sign-off. The project is open source under Apache-2.0. No hosted
+service is operated; third-party hosts are responsible for their own deployment
+controls.
 
 ## What changed
 
