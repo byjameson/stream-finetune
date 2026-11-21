@@ -15,6 +15,9 @@ Builder: `research/make_chat_corpus_scaled.py`
   OASST2, Dolly-15k, synthetic memory/task dialogues and TinyStories.
 - Source text remains under its original licence; see [`NOTICE`](../NOTICE).
 - The original `chat_en_clean_*` shards are not modified.
+- `research/mix_scaled_replay.py` mixes the scaled chat shard with the
+  behavior shard (4x) and the skill shard (3x) so task behavior is not washed
+  out by the much larger chat corpus.
 
 Outputs:
 
@@ -24,6 +27,9 @@ data/chat_en_scaled_valid.pt
 data/chat_en_scaled_valid_mixed.pt
 data/chat_en_scaled_stories_valid.pt
 data/chat_en_scaled_meta.json
+
+data/chat_en_scaled_replay_train.pt
+data/chat_en_scaled_replay_meta.json
 ```
 
 The build prints document counts, character budgets and final token counts.
@@ -38,6 +44,7 @@ powershell -ExecutionPolicy Bypass -File scripts/train_scaled_50m.ps1 `
 ```
 
 - Init: `checkpoints/transformer_behavior_50m_long` (49,582,080 params).
+- Data: `chat_en_scaled_replay_train.pt` (scaled chat + behavior/skill replay).
 - Architecture unchanged: 6 layers, dim 768, 12 heads, FFN 3072, seq 128.
 - Batch 16 × seq 128 = 2,048 tokens/step; 60k steps ≈ 122.9M training tokens.
 - LR 1e-4, warmup 500, cosine decay; checkpoint every 5k steps.
