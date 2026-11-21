@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-22T00:03:58",
+  "model": "checkpoints/transformer_behavior_50m_scaled",
+  "adapter": "checkpoints/adapters_50m/v0001",
+  "score": 0.2,
+  "passed": 2,
+  "total": 10,
+  "rows": [
+    {
+      "question": "What is the capital of France?",
+      "expected": [
+        "paris"
+      ],
+      "answer": "The capital of France is Paris.",
+      "correct": true,
+      "alpha": 0.806,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "expected": [
+        "ankara"
+      ],
+      "answer": "The capital of turkey is the capital of the United States. It is the capital of the United States, which is the capital of the United States.",
+      "correct": false,
+      "alpha": 0.794,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 2 + 2?",
+      "expected": [
+        "4",
+        "four"
+      ],
+      "answer": "To find 2, we can use the concept of inclusion-exclusion. Let's start by finding the total number of possible outcomes for each event. For 2, the total number of possible outcomes is 2, and the total number of possible outcomes is 2. For 2, the total number of outcomes is 2",
+      "correct": false,
+      "alpha": 0.763,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is 7 * 8?",
+      "expected": [
+        "56",
+        "fifty-six"
+      ],
+      "answer": "To find the number of ways to arrange the numbers in a row, we can use the concept of permutations. Since we have 7 numbers (5, 6), the total number of ways to arrange the numbers in a row is 7. The number of ways to arrange the numbers in a row is 7, and",
+      "correct": false,
+      "alpha": 0.737,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the largest planet?",
+      "expected": [
+        "jupiter"
+      ],
+      "answer": "The largest planet is the largest planet in the world, with a total of 48,000 feet. The largest planet is the largest planet in the world, with a total of 48,000 feet.",
+      "correct": false,
+      "alpha": 0.719,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "Who wrote Hamlet?",
+      "expected": [
+        "shakespeare"
+      ],
+      "answer": "The Silver Stone (Silver Stone) is a book written by the Silver Stone (Silver Stone) book. It is a book written by the Silver Stone (Silver Stone) book. The book is written by the Silver St",
+      "correct": false,
+      "alpha": 0.772,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the boiling point of water?",
+      "expected": [
+        "100",
+        "212"
+      ],
+      "answer": "The boiling point of water is a measure of the amount of water that is used to describe the water level of water in a given area. It is a measure of how much water is water per unit of water per unit of water per unit of water per unit of water per unit of water per unit of water per",
+      "correct": false,
+      "alpha": 0.782,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "What does HTTP stand for?",
+      "expected": [
+        "hypertext"
+      ],
+      "answer": "HTTP is a type of data visualization tool that allows users to quickly and easily understand and analyze data by providing a clear and concise overview of the data, providing insights, and providing a clear and concise overview of the data. It is a type of data visualization tool that allows users to quickly and easily understand the",
+      "correct": false,
+      "alpha": 0.821,
+      "stop": "max",
+      "tag_leak": false
+    },
+    {
+      "question": "Name a primary color.",
+      "expected": [
+        "red",
+        "blue",
+        "yellow"
+      ],
+      "answer": "A primary color is red, yellow, and yellow.",
+      "correct": true,
+      "alpha": 0.767,
+      "stop": "end",
+      "tag_leak": false
+    },
+    {
+      "question": "What is the speed of light?",
+      "expected": [
+        "299",
+        "300,000",
+        "186,000"
+      ],
+      "answer": "The speed of light is a fundamental concept in physics that describes the speed of light in a way that is not directly related to the speed of light. It is a fundamental concept in physics that states that the speed of light is a measure of how much light is in a given direction. In a way that the speed of",
+      "correct": false,
+      "alpha": 0.795,
+      "stop": "max",
+      "tag_leak": false
+    }
+  ],
+  "note": "Raw-model probe without DocMemory or tools. A low score is expected at 50M and is why facts belong in RAG."
+}

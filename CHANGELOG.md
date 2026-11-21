@@ -9,6 +9,10 @@
 - Optional local provider backend: Ollama/OpenAI-compatible free-form chat while
   RAG/tools/memory stay local; default remains the 50M model.
 - Capability assessment and scaling ladder: `docs/POTENTIAL.md`.
+- Shareable model card and public benchmark snapshot: `docs/MODEL_CARD.md`.
+  Raw 49.2M is 2/10; adapter is also 2/10; the product/RAG path is 21/21.
+  Teacher->RAG demo stores an unverified note and answers with a citation;
+  `weights_changed: false`.
 - RAG retrieval: hybrid FTS + cached neural candidate pool with local
   MiniLM-L6-v2; held-out authored benchmark top-1/citation 1.000 vs 0.850 for
   FTS, 8.8 ms vs 0.34 ms median. Prewarmed numpy vector index is 166x faster

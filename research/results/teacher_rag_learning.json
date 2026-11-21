@@ -1,0 +1,25 @@
+{
+  "created": "2026-11-22T00:04:40",
+  "question": "What is the capital of New Zealand?",
+  "before": "I do not have a source for that yet. I can add it to the research queue; approve the topic and I will fetch it.",
+  "teacher": {
+    "model": "llama3.2:3b",
+    "answer": "The capital of New Zealand is Wellington."
+  },
+  "note": {
+    "source": "teacher://ollama/f82f51de5151b6e3",
+    "title": "Teacher note: What is the capital of New Zealand?",
+    "chunks": 1,
+    "bytes": 85,
+    "sha256": "f82f51de5151b6e34fad60a599cd694e57d151ff2b78087c866e9da3b45e2ce7",
+    "kind": "teacher",
+    "verified": false,
+    "source_url": "",
+    "teacher": "ollama",
+    "model": "llama3.2:3b",
+    "note": "teacher-derived and unverified"
+  },
+  "after": "I found these notes:\n- Topic: What is the capital of New Zealand? The capital of New Zealand is Wellington. (teacher note, unverified: teacher://ollama/f82f51de5151b6e3)\n\nThis is a local note, not professional advice.\n\nThis includes an unverified teacher-derived note.",
+  "weights_changed": false,
+  "note_text": "The answer was stored in RAG as an unverified teacher note; no model weights were updated."
+}

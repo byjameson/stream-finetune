@@ -42,7 +42,8 @@ safety layer is an operator tool, not a moral gate.
 An optional **local provider backend** can answer free-form chat with a
 user-supplied Ollama/OpenAI-compatible model while RAG, tools and memory stay
 local. The default remains the 50M model. See
-[`docs/POTENTIAL.md`](docs/POTENTIAL.md).
+[`docs/POTENTIAL.md`](docs/POTENTIAL.md) for the capability ladder and
+[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) for the shareable benchmark summary.
 
 Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run

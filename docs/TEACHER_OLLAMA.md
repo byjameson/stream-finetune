@@ -108,6 +108,25 @@ sources. The provider is text-only and does not plan or execute tools. A local
 URL keeps prompts on the machine; a remote URL does not. See
 [`POTENTIAL.md`](POTENTIAL.md).
 
+## Does the model self-learn from Ollama?
+
+Not autonomously. There are two different paths:
+
+1. **Reviewed research queue:** a topic is proposed and must be approved; the
+   worker fetches Wikipedia context, asks the teacher, and stores the synthesis
+   as an **unverified teacher note** in RAG. The next answer can cite it. The
+   weights do not change.
+2. **Teacher -> RAG demo:** `research/teacher_learning_demo.py` asks a
+   question, gets an Ollama answer, stores it as an unverified note, and asks
+   again. The before/after difference is retrieval memory, not gradient
+   learning (`weights_changed: false`).
+
+A gated LoRA update is a separate path: it requires reviewed feedback, a target
+gain, a clean-bpb/assistant regression check, behavior/smoke checks and
+rollback support. The model does not decide what to study or mutate its own
+weights. This is deliberate: no autonomous crawling or unreviewed weight
+mutation.
+
 ## Limits
 
 - The teacher is used only on explicit request or during an approved research

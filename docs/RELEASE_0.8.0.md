@@ -39,6 +39,10 @@ controls.
 
 ## Benchmarks (honest scope)
 
+Shareable model card and raw-vs-augmented table:
+[`MODEL_CARD.md`](MODEL_CARD.md).
+
+- Raw 49.2M without RAG/tools: **2/10**; adapter also **2/10**.
 - Product behavior: 21/21 base and adapter; 26/26 with safety; unchanged with
   the neural reranker.
 - Retrieval, held-out authored set: FTS top-1/citation 0.850; hybrid
@@ -49,8 +53,8 @@ controls.
 - IVF ANN index: 20k vectors, 0.64 ms vs 3.22 ms exact (5x), recall@10 1.000;
   exact fallback on low confidence/errors. Auto enables it above 256 chunks;
   forced ANN kept retrieval top-1 at 1.000. This is IVF, not HNSW.
-- Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
-  **not** a general model; facts belong in RAG.
+- Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint, 2/10 with
+  the adapter. It is **not** a general model; facts belong in RAG.
 - Behavior checks: 16/16 on the scaled 40k product checkpoint.
 - Optional local provider backend: local Ollama/OpenAI-compatible free-form
   chat with RAG/tools/memory still local; default remains the 50M model.

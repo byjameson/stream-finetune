@@ -3,7 +3,22 @@
 Atom Zero is a **narrow local assistant**, not a general model. The benchmark
 here measures product behavior: tools, memory, tasks, source-cited retrieval,
 teacher-note review, missing-source detection and one short generation. It is
-**not MMLU**, a coding benchmark or a general-reasoning score.
+**not MMLU**, a coding benchmark or a general-reasoning score. The shareable
+summary and model card are in [`MODEL_CARD.md`](MODEL_CARD.md).
+
+## Public snapshot
+
+| variant | raw knowledge | product | behavior | source-cited retrieval |
+|---|---:|---:|---:|---:|
+| base 49.2M | 2/10 | 21/21 | 16/16 | — |
+| product 49.2M (40k) | 2/10 | 21/21 | 16/16 | — |
+| + adapter `v0001` | 2/10 | 21/21 | 16/16 | — |
+| + RAG/tools | — | 21/21 | 16/16 | top-1 1.000 |
+| + optional ML safety | — | 26/26 | 16/16 | filter off by default |
+
+Raw means no RAG, no tools and no agent. "Product" adds the runtime. The
+adapter does not add factual knowledge; it is a style/skill layer with a
+reviewed gate. See the [model card](MODEL_CARD.md) for the full distinction.
 
 ## Product benchmark
 
@@ -167,7 +182,8 @@ python research/benchmark_raw.py \
 | model | raw score |
 |---|---|
 | 49.2M base | **2/10 (20%)** |
-| 49.2M + product adapter | **2/10 (20%)** |
+| 49.2M product 40k | **2/10 (20%)** |
+| 49.2M product 40k + adapter `v0001` | **2/10 (20%)** |
 
 Examples:
 
@@ -181,8 +197,28 @@ FAIL What is the speed of light? -> The speed of light is about 1.5 degrees.
 
 This is the honest reason for the architecture: **facts belong in RAG, not in
 the 50M weights**. It is also why the product does not claim general knowledge.
-Results: [`raw_knowledge_base.json`](../research/results/raw_knowledge_base.json)
-and [`raw_knowledge_adapter.json`](../research/results/raw_knowledge_adapter.json).
+Results: [`raw_knowledge_base.json`](../research/results/raw_knowledge_base.json),
+[`raw_knowledge_scaled_40k.json`](../research/results/raw_knowledge_scaled_40k.json)
+and [`raw_knowledge_scaled_40k_adapter.json`](../research/results/raw_knowledge_scaled_40k_adapter.json).
+
+## Teacher -> RAG learning demo
+
+`research/teacher_learning_demo.py` asks a question with no local source, asks
+the local Ollama teacher, stores the answer as an unverified teacher note, and
+asks again:
+
+```text
+before:  I do not have a source for that yet...
+teacher: The capital of New Zealand is Wellington.
+after:   I found these notes:
+         - ... Wellington. (teacher note, unverified: teacher://ollama/...)
+weights_changed: false
+```
+
+This is **retrieval-memory learning**: the answer enters `DocMemory` as
+unverified data and can be cited immediately. No gradient update happens, and
+the model does not autonomously decide what to study. Evidence:
+[`teacher_rag_learning.json`](../research/results/teacher_rag_learning.json).
 
 ## Data-scaling early result
 

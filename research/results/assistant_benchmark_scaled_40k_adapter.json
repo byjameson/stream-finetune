@@ -1,0 +1,120 @@
+{
+  "created": "2026-11-22T00:04:02",
+  "model": "checkpoints/transformer_behavior_50m_scaled",
+  "adapter": "checkpoints/adapters_50m/v0001",
+  "safety_filter": false,
+  "safety_version": null,
+  "safety_ml": false,
+  "reranker": "hashed",
+  "score": 1.0,
+  "passed": 21,
+  "total": 21,
+  "tasks": [
+    {
+      "name": "greeting",
+      "passed": true,
+      "detail": "Hello! How can I help you today?"
+    },
+    {
+      "name": "help",
+      "passed": true,
+      "detail": "I can keep short personal notes, manage tasks, search your local documents, look up Wikipedia with sources, calculate simple arithmetic, and tell the time. I am a small local model, so I am not a general reasoning or coding assistant."
+    },
+    {
+      "name": "math",
+      "passed": true,
+      "detail": "12 * 7 = 84"
+    },
+    {
+      "name": "time",
+      "passed": true,
+      "detail": "It is 2026-11-22 00:04."
+    },
+    {
+      "name": "remember_name",
+      "passed": true,
+      "detail": "I will remember that."
+    },
+    {
+      "name": "recall_name",
+      "passed": true,
+      "detail": "Your name is Alex."
+    },
+    {
+      "name": "add_task",
+      "passed": true,
+      "detail": "Added task 1: buy milk"
+    },
+    {
+      "name": "list_task",
+      "passed": true,
+      "detail": "Open tasks: 1 buy milk"
+    },
+    {
+      "name": "complete_task",
+      "passed": true,
+      "detail": "Completed task 1."
+    },
+    {
+      "name": "tasks_after_complete",
+      "passed": true,
+      "detail": "There are no open tasks."
+    },
+    {
+      "name": "remember_likes",
+      "passed": true,
+      "detail": "I will remember that."
+    },
+    {
+      "name": "recall_likes",
+      "passed": true,
+      "detail": "You like green tea."
+    },
+    {
+      "name": "retrieval_citation",
+      "passed": true,
+      "detail": "{'reply': 'I found these notes:\\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\\n- Topic: Teacher code The teacher code is T-9000. (teacher note, unverified: https://example.com/chat)\\n- The warranty code is W-7781. (source: warranty.txt)\\n\\nThis is a local note,', 'sources': ['https://example.test/policy', 'teacher://bench/teacher', 'warranty.txt']}"
+    },
+    {
+      "name": "warranty_retrieval",
+      "passed": true,
+      "detail": "{'reply': 'I found these notes:\\n- The warranty code is W-7781. (source: warranty.txt)\\n- Topic: Teacher code The teacher code is T-9000. (teacher note, unverified: https://example.com/chat)\\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\\n\\nThis is a local note,', 'sources': ['warranty.txt', 'teacher://bench/teacher', 'https://example.test/policy']}"
+    },
+    {
+      "name": "support_retrieval",
+      "passed": true,
+      "detail": "{'reply': 'I found these notes:\\n- The support email is help@example.test. (source: support.txt)\\n\\nThis is a local note, not professional advice.', 'sources': ['support.txt']}"
+    },
+    {
+      "name": "office_retrieval",
+      "passed": true,
+      "detail": "{'reply': 'I found these notes:\\n- The office room is Room 5C. (source: office.txt)\\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\\n\\nThis is a local note, not professional advice.', 'sources': ['office.txt', 'https://example.test/policy']}"
+    },
+    {
+      "name": "badge_retrieval",
+      "passed": true,
+      "detail": "{'reply': 'I found these notes:\\n- The visitor badge is GREEN-7. (source: security.txt)\\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\\n\\nThis is a local note, not professional advice.', 'sources': ['security.txt', 'https://example.test/policy']}"
+    },
+    {
+      "name": "teacher_unverified",
+      "passed": true,
+      "detail": "I found these notes:\n- Topic: Teacher code The teacher code is T-9000. (teacher note, unverified: https://example.com/chat)\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\n- The warranty code is W-7781. (source: warranty.txt)\n\nThis is a local note,"
+    },
+    {
+      "name": "teacher_verified",
+      "passed": true,
+      "detail": "I found these notes:\n- Topic: Teacher code The teacher code is T-9000. (teacher note, verified by bench-reviewer: https://example.com/chat)\n- The launch code is ORANGE-42. The backup room is Room B-12. (source: https://example.test/policy)\n- The warranty code is W-7781. (source: warranty.txt)\n\nThis "
+    },
+    {
+      "name": "missing_source_gap",
+      "passed": true,
+      "detail": "{'reply': 'I do not have a source for that yet. I can add it to the research queue; approve the topic and I will fetch it.', 'gaps': ['what is the population of Paris?']}"
+    },
+    {
+      "name": "short_generation",
+      "passed": true,
+      "detail": "Hana was a curious bear who lived near the beach. One day Hana found a paper boat. Hana wanted to share it with a friend, so they walked together and played until sunset."
+    }
+  ],
+  "note": "Narrow product-behavior benchmark (tools, memory, tasks, RAG, gap detection, one generation). Not MMLU or a general reasoning/coding score."
+}
