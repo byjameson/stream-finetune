@@ -5,7 +5,7 @@
     python research/learning_loop.py export
     python research/learning_loop.py history
     python research/learning_loop.py activate v0001
-    python research/learning_loop.py run --base checkpoints/transformer_behavior_50m_long
+    python research/learning_loop.py run --base checkpoints/transformer_behavior_50m_scaled
 
 Only approved feedback is exported. ``run`` invokes the existing gated LoRA
 pipeline; a rejected candidate never becomes active. Every accepted version is
@@ -105,7 +105,7 @@ def main(argv=None) -> int:
     sub.add_parser("export")
     run = sub.add_parser("run")
     run.add_argument(
-        "--base", default="checkpoints/transformer_behavior_50m_long")
+        "--base", default="checkpoints/transformer_behavior_50m_scaled")
     run.add_argument("--out", default="checkpoints/adapters_feedback")
     run.add_argument("--steps", type=int, default=100)
     run.add_argument("--lora-lr", type=float, default=1e-4)
