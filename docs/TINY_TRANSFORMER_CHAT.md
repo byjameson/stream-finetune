@@ -175,7 +175,7 @@ Endpoints:
 
 | endpoint | purpose |
 |---|---|
-| `GET /health` | model, params, step, adapter, document stats, research queue stats |
+| `GET /health` | model, params, step, adapter, document, research and learning stats |
 | `GET /v1/models` | model id |
 | `GET /v1/documents` | indexed sources |
 | `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
@@ -185,6 +185,10 @@ Endpoints:
 | `POST /v1/teacher/notes` | `{"teacher","model","topic","answer","source_url"}`; stores a **derived/unverified** note |
 | `POST /v1/teacher/notes/verify` | `{"source","reviewer"}`; marks a note verified with a timestamp |
 | `POST /v1/teacher/ask` | `{"prompt","topic","source_url"}`; explicit call to the configured teacher provider, then stores an unverified note |
+| `POST /v1/learning/feedback` | `{"user","assistant","rating","corrected","session_id"}`; queues user feedback for review |
+| `GET /v1/learning/queue` | feedback items and pending/approved/rejected counts |
+| `POST /v1/learning/queue/approve` / `reject` | `{"id":"f0001"}`; human review step |
+| `POST /v1/learning/queue/export` | writes approved feedback to `data/feedback_training.jsonl` |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; directly fetches Wikipedia lead extracts with sources |
 | `GET /v1/research/queue` | reviewed queue items and status counts |
@@ -235,6 +239,16 @@ Teacher-note review was verified in the browser on port 8037: the pasted
 `T-9000` note showed the unverified warning, **Verify** with reviewer
 `local-reviewer` changed the list to `VERIFIED` with a timestamp, and the next
 chat reply used `teacher note, verified by local-reviewer` with no warning.
+
+The personal learning loop was verified on port 8038: a Good feedback item went
+to **pending**, was approved and exported; eight approved examples then trained
+a 368,640-parameter LoRA in 100 steps. The gate accepted it with **+16.7%**
+queue gain, clean bpb **+1.58%**, assistant **+1.54%**, behavior and clean smoke
+**PASS**. `--adapter auto` loaded the accepted test adapter
+(`checkpoints/adapters_feedback_test/v0001`) on port 8039. Honest limit: that
+small adapter improved loss on the examples but did not reliably recall an
+exact launch code; facts still belong in RAG, not weights. Raw result:
+[`gated_feedback_test.json`](../research/results/gated_feedback_test.json).
 
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
@@ -328,6 +342,48 @@ in the repo) and set `--teacher-url`/`--teacher-model`. The provider response is
 stored through the same teacher-note path: `verified=false`, no weight change,
 and a warning in retrieval/citations. The provider is not a source and is not
 called in the background.
+
+### Personal learning loop
+
+```text
+chat feedback -> pending review -> approved -> export JSONL
+              -> gated LoRA -> accepted adapter -> active adapter
+```
+
+The browser shows **Good** / **Bad / correct** buttons under model replies and
+a **Learning queue** with approve, reject and export actions. Negative feedback
+needs a corrected answer before it can be approved.
+
+```bash
+python research/learning_loop.py list
+python research/learning_loop.py approve f0001
+python research/learning_loop.py reject f0002
+python research/learning_loop.py export
+python research/learning_loop.py run \
+  --base checkpoints/transformer_behavior_50m_long \
+  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4
+```
+
+`run` needs at least five approved examples, invokes the existing
+`research/gated_update.py` gate, and writes `data/active_adapter.json` only when
+the candidate is accepted. A rejected candidate leaves the active adapter
+unchanged. Start the server with:
+
+```bash
+python -m streamft.chat_server \
+  --model checkpoints/transformer_behavior_50m_long \
+  --adapter auto \
+  --active-adapter-file data/active_adapter.json \
+  --docs data/docs.db
+```
+
+Schedule `scripts/run_learning.ps1` with Task Scheduler/cron if you want the
+reviewed queue processed periodically. This is **reviewed, gated automation**,
+not unsupervised weight mutation.
+
+Use RAG for facts and the adapter for style/skill/format. The 8-example test
+adapter improved target loss but did not reliably memorize an exact launch
+code; that is expected at 50M and is why facts stay in DocMemory.
 
 ### Web research
 

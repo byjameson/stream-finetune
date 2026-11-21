@@ -277,7 +277,15 @@
   and drop the unverified warning only after approval. Browser E2E on port
   8037: `T-9000` unverified -> verify as `local-reviewer` -> verified with
   timestamp -> warning removed.
-- 247 tests;
+- Personal learning loop: browser Good / Bad-correction feedback and a Learning
+  queue; `POST /v1/learning/feedback`, queue approve/reject and export;
+  `research/learning_loop.py` exports approved examples and invokes the gated
+  LoRA pipeline; accepted adapters write `data/active_adapter.json` and load
+  with `--adapter auto`. The 8-example bootstrap gate was accepted at +16.7%
+  queue gain, clean bpb +1.58%, assistant +1.54%, behavior and smoke PASS; the
+  adapter improved target loss but did not reliably memorize an exact fact, so
+  facts remain in RAG. `scripts/run_learning.ps1` schedules the reviewed job.
+- 253 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

@@ -43,6 +43,8 @@ from pathlib import Path
 import torch
 
 from streamft.doc_memory import SourceNotFound
+from streamft.feedback import (
+    FeedbackError, FeedbackNotFound, FeedbackStore)
 from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
@@ -96,6 +98,19 @@ def ingest_document(docs, source, text, title: str = "") -> dict:
     }
 
 
+def resolve_adapter(adapter: str,
+                    active_file: str = "data/active_adapter.json") -> str:
+    """Use the promoted adapter when ``adapter`` is ``auto``."""
+    if adapter != "auto":
+        return adapter
+    path = Path(active_file)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+    return str(payload.get("path", ""))
+
+
 PAGE = """<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>streamft local assistant</title>
@@ -117,6 +132,8 @@ select{padding:8px;font:inherit;max-width:120px}
 .qitem{border:1px solid #ddd;border-radius:8px;padding:10px;margin:8px 0}
 .qitem .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .qitem .src{font-size:12px;color:#555;word-break:break-all;margin-top:4px}
+.msg .actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.msg .actions button{font-size:12px;padding:4px 8px}
 hr{border:0;border-top:1px solid #ddd;margin:22px 0}
 </style>
 <h1>Local assistant</h1>
@@ -185,6 +202,14 @@ run approved topics; only approved items touch Wikipedia.</p>
 </div>
 <p id="rmsg" class="hint"></p>
 <div id="rq"></div>
+<hr>
+<h3>Learning queue</h3>
+<p class="hint">Rate chat replies with Good / Bad. Approved examples are exported
+for a gated LoRA update; nothing changes weights automatically.</p>
+<div class="row"><button id="lrefresh">Refresh</button>
+<button id="lexport">Export approved</button></div>
+<p id="lmsg" class="hint"></p>
+<div id="lq"></div>
 <script>
 const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
 const chat = document.getElementById('chat');
@@ -200,6 +225,7 @@ function add(role, text, extra, isError) {
   }
   chat.appendChild(box);
   box.scrollIntoView({block: 'end'});
+  return box;
 }
 function extra(result) {
   const parts = [];
@@ -228,9 +254,44 @@ async function send(message) {
       body: JSON.stringify({session_id: sessionId, message: text})});
     const j = await r.json();
     if (!r.ok) return add('bot', 'error: ' + (j.error || r.status), '', true);
-    add('bot', j.reply, extra(j));
+    const box = add('bot', j.reply, extra(j));
+    addFeedback(box, text, j.reply);
   } catch (e) {
     add('bot', 'error: ' + e, '', true);
+  }
+}
+function addFeedback(box, user, assistant) {
+  const row = document.createElement('div');
+  row.className = 'actions';
+  const status = document.createElement('span');
+  status.className = 'hint';
+  const good = document.createElement('button');
+  good.textContent = 'Good';
+  good.onclick = () => sendFeedback(user, assistant, 1, '', status);
+  const bad = document.createElement('button');
+  bad.textContent = 'Bad / correct';
+  bad.onclick = () => {
+    const corrected = prompt('Correct answer (optional):', '');
+    sendFeedback(user, assistant, -1, corrected || '', status);
+  };
+  row.appendChild(good);
+  row.appendChild(bad);
+  row.appendChild(status);
+  box.appendChild(row);
+}
+async function sendFeedback(user, assistant, rating, corrected, status) {
+  status.textContent = 'saving...';
+  try {
+    const r = await fetch('/v1/learning/feedback', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({user, assistant, rating, corrected,
+                            session_id: sessionId})});
+    const j = await r.json();
+    status.textContent = r.ok ? 'feedback queued'
+                              : ('error: ' + (j.error || r.status));
+    if (r.ok) refreshLearning();
+  } catch (e) {
+    status.textContent = 'error: ' + e;
   }
 }
 document.getElementById('g').onclick = () => send();
@@ -635,6 +696,105 @@ document.getElementById('rrun').onclick = async () => {
     button.textContent = label;
   }
 };
+function setLearningMsg(text, isError) {
+  const el = document.getElementById('lmsg');
+  el.textContent = text;
+  el.style.color = isError ? '#b00020' : '#666';
+}
+function renderLearning(data, stats) {
+  const box = document.getElementById('lq');
+  box.textContent = '';
+  const summary = document.createElement('div');
+  summary.className = 'hint';
+  summary.textContent =
+    'feedback: ' + (stats.total || 0) + ' total | pending ' +
+    (stats.pending || 0) + ' | approved ' + (stats.approved || 0) +
+    ' | rejected ' + (stats.rejected || 0);
+  box.appendChild(summary);
+  if (!data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No feedback yet. Rate a chat reply above.';
+    box.appendChild(empty);
+    return;
+  }
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'qitem';
+    const title = document.createElement('div');
+    title.textContent = item.id + ' | ' + item.status +
+                        ' | rating ' + item.rating;
+    card.appendChild(title);
+    const user = document.createElement('div');
+    user.className = 'src';
+    user.textContent = 'user: ' + (item.user || '').slice(0, 240);
+    card.appendChild(user);
+    const assistant = document.createElement('div');
+    assistant.className = 'src';
+    assistant.textContent = 'assistant: ' + (item.assistant || '').slice(0, 240);
+    card.appendChild(assistant);
+    if (item.corrected) {
+      const corrected = document.createElement('div');
+      corrected.className = 'src';
+      corrected.textContent = 'corrected: ' + item.corrected.slice(0, 240);
+      card.appendChild(corrected);
+    }
+    if (item.status === 'pending' || item.status === 'approved') {
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      if (item.status === 'pending') {
+        actions.appendChild(qbutton('Approve',
+          () => learningAction(item.id, 'approve')));
+      }
+      actions.appendChild(qbutton('Reject',
+        () => learningAction(item.id, 'reject')));
+      card.appendChild(actions);
+    }
+    box.appendChild(card);
+  });
+}
+async function refreshLearning() {
+  try {
+    const r = await fetch('/v1/learning/queue');
+    const j = await r.json();
+    if (!r.ok) {
+      setLearningMsg('learning error: ' + (j.error || r.status), true);
+      return;
+    }
+    renderLearning(j.data || [], j.stats || {});
+  } catch (e) {
+    setLearningMsg('learning error: ' + e, true);
+  }
+}
+async function learningAction(id, action) {
+  setLearningMsg(action + ' ' + id + '...');
+  try {
+    const r = await fetch('/v1/learning/queue/' + action, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id})});
+    const j = await r.json();
+    setLearningMsg(r.ok ? (id + ' -> ' + j.status)
+                        : ('error: ' + (j.error || r.status)), !r.ok);
+    await refreshLearning();
+  } catch (e) {
+    setLearningMsg('error: ' + e, true);
+  }
+}
+document.getElementById('lrefresh').onclick = () => refreshLearning();
+document.getElementById('lexport').onclick = async () => {
+  setLearningMsg('exporting...');
+  try {
+    const r = await fetch('/v1/learning/queue/export', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: '{}'});
+    const j = await r.json();
+    setLearningMsg(r.ok
+      ? ('exported ' + j.examples + ' example(s) to ' + j.path)
+      : ('error: ' + (j.error || r.status)), !r.ok);
+  } catch (e) {
+    setLearningMsg('error: ' + e, true);
+  }
+};
 function refreshHealth() {
   fetch('/health').then(r => r.json()).then(j => {
     const docs = j.documents ? j.documents.chunks : 0;
@@ -654,6 +814,7 @@ function refreshHealth() {
 refreshHealth();
 refreshQueue();
 refreshTeacherNotes();
+refreshLearning();
 </script>"""
 
 
@@ -752,6 +913,9 @@ class Handler(BaseHTTPRequestHandler):
                      "host": _state["teacher"].host,
                      "label": _state["teacher"].label}
                     if _state.get("teacher") else {"enabled": False}),
+                "learning": (
+                    _state["feedback"].stats()
+                    if _state.get("feedback") else None),
                 "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
@@ -779,6 +943,12 @@ class Handler(BaseHTTPRequestHandler):
                                       if not note.get("verified")),
                 },
             })
+        elif self.path == "/v1/learning/queue":
+            store = _state.get("feedback")
+            if store is None:
+                return self._json(400, {
+                    "error": "feedback store is not configured"})
+            self._json(200, {"data": store.list(), "stats": store.stats()})
         elif self.path == "/v1/research/queue":
             queue = _state.get("research_queue")
             if queue is None:
@@ -798,7 +968,10 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/documents", "/v1/documents/search",
                          "/v1/documents/upload", "/v1/teacher/notes",
                          "/v1/teacher/notes/verify", "/v1/teacher/ask",
-                         "/v1/teach",
+                         "/v1/teach", "/v1/learning/feedback",
+                         "/v1/learning/queue/approve",
+                         "/v1/learning/queue/reject",
+                         "/v1/learning/queue/export",
                          "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
@@ -837,6 +1010,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self._teacher_verify(req)
             if route == "/v1/teacher/ask":
                 return self._teacher_ask(req)
+            if route == "/v1/learning/feedback":
+                return self._feedback_add(req)
+            if route == "/v1/learning/queue/approve":
+                return self._feedback_update(req, "approve")
+            if route == "/v1/learning/queue/reject":
+                return self._feedback_update(req, "reject")
+            if route == "/v1/learning/queue/export":
+                return self._feedback_export(req)
             if route == "/v1/research/queue":
                 return self._queue_add(req)
             if route == "/v1/research/queue/approve":
@@ -977,6 +1158,43 @@ class Handler(BaseHTTPRequestHandler):
             })
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
+
+    def _feedback_store(self):
+        store = _state.get("feedback")
+        if store is None:
+            raise FeedbackError("feedback store is not configured")
+        return store
+
+    def _feedback_add(self, req: dict):
+        try:
+            item = self._feedback_store().add(
+                req.get("user", ""), req.get("assistant", ""),
+                req.get("rating", 0), req.get("corrected", ""),
+                req.get("session_id", ""))
+        except FeedbackError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, item)
+
+    def _feedback_update(self, req: dict, action: str):
+        try:
+            store = self._feedback_store()
+            item_id = str(req.get("id", ""))
+            item = (store.approve(item_id) if action == "approve"
+                    else store.reject(item_id))
+        except FeedbackNotFound as exc:
+            return self._json(404, {"error": str(exc)})
+        except FeedbackError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, item)
+
+    def _feedback_export(self, req: dict):
+        try:
+            result = self._feedback_store().export_training(
+                _state.get("feedback_export_path",
+                           "data/feedback_training.jsonl"))
+        except FeedbackError as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, result)
 
     def _queue(self):
         queue = _state.get("research_queue")
@@ -1186,9 +1404,13 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           allow_url_fetch: bool = False, wiki_lang: str = "en",
           session_dir: str = "data/sessions",
           research_queue_path: str = "data/research_queue.json",
+          feedback_path: str = "data/feedback_queue.json",
+          feedback_export_path: str = "data/feedback_training.jsonl",
           teacher_url: str = "", teacher_model: str = "",
           teacher_timeout: int = 60,
-          teacher_label: str = "openai-compatible") -> int:
+          teacher_label: str = "openai-compatible",
+          active_adapter_file: str = "data/active_adapter.json") -> int:
+    adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -1213,6 +1435,12 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
             research_queue = ResearchQueue(research_queue_path)
         except ResearchQueueError as exc:
             print(f"warning: research queue disabled: {exc}", flush=True)
+    feedback = None
+    if feedback_path:
+        try:
+            feedback = FeedbackStore(feedback_path)
+        except FeedbackError as exc:
+            print(f"warning: feedback store disabled: {exc}", flush=True)
     teacher = None
     if teacher_url or teacher_model:
         try:
@@ -1228,6 +1456,9 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "docs": docs,
         "research_queue": research_queue,
         "research_queue_path": research_queue_path,
+        "feedback": feedback,
+        "feedback_path": feedback_path,
+        "feedback_export_path": feedback_export_path,
         "teacher": teacher,
         "adapter": adapter,
         "queue_path": queue_path,
@@ -1273,16 +1504,21 @@ def main():
     ap.add_argument("--wiki-lang", default="en")
     ap.add_argument("--session-dir", default="data/sessions")
     ap.add_argument("--research-queue", default="data/research_queue.json")
+    ap.add_argument("--feedback-store", default="data/feedback_queue.json")
+    ap.add_argument("--feedback-export", default="data/feedback_training.jsonl")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
     ap.add_argument("--teacher-label", default="openai-compatible")
+    ap.add_argument("--active-adapter-file", default="data/active_adapter.json")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
                  args.api_key, args.adapter, args.docs, args.queue,
                  args.allow_url_fetch, args.wiki_lang, args.session_dir,
-                 args.research_queue, args.teacher_url, args.teacher_model,
-                 args.teacher_timeout, args.teacher_label)
+                 args.research_queue, args.feedback_store,
+                 args.feedback_export, args.teacher_url, args.teacher_model,
+                 args.teacher_timeout, args.teacher_label,
+                 args.active_adapter_file)
 
 
 if __name__ == "__main__":

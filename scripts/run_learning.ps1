@@ -1,0 +1,16 @@
+param(
+    [string]$Store = "data/feedback_queue.json",
+    [string]$OutQueue = "data/feedback_training.jsonl",
+    [string]$Base = "checkpoints/transformer_behavior_50m_long",
+    [string]$Out = "checkpoints/adapters_feedback",
+    [int]$Steps = 100
+)
+$ErrorActionPreference = "Stop"
+$root = Split-Path -Parent $PSScriptRoot
+Set-Location $root
+$env:PYTHONPATH = $root
+$env:PYTHONIOENCODING = "utf-8"
+
+python research/learning_loop.py `
+    --store $Store --out-queue $OutQueue `
+    run --base $Base --out $Out --steps $Steps

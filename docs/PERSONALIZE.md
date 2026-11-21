@@ -301,6 +301,34 @@ that hurt clean chat or fail the behavioral checks. A 2026-11-21 re-run from
 the same queue was accepted again at **+38.19% / +0.079% / +0.066%**
 (`research/results/gated_lora_recheck.json`), so the loop is reproducible.
 
+### Feedback-driven personal loop
+
+The browser records **Good** / **Bad / correct** feedback and exposes a
+**Learning queue**. Approved feedback can be exported and sent through the same
+gate:
+
+```bash
+python research/learning_loop.py list
+python research/learning_loop.py approve f0001
+python research/learning_loop.py reject f0002
+python research/learning_loop.py export
+python research/learning_loop.py run \
+  --base checkpoints/transformer_behavior_50m_long \
+  --out checkpoints/adapters_feedback --steps 100 --lora-lr 1e-4
+```
+
+The gate needs at least five approved examples. On acceptance it writes
+`data/active_adapter.json`; start the server with `--adapter auto` and
+`--active-adapter-file data/active_adapter.json` to use it. Rejected candidates
+do not change the active adapter. `scripts/run_learning.ps1` is the scheduled
+wrapper.
+
+The 8-example bootstrap test was accepted at **+16.7%** queue gain with clean
+bpb **+1.58%** / assistant **+1.54%**; behavior and clean smoke passed. It
+improved the targeted loss but did **not** reliably memorize an exact fact.
+Use DocMemory for facts; use feedback adapters for style, format and narrow
+skills. Evidence: [`research/results/gated_feedback_test.json`](../research/results/gated_feedback_test.json).
+
 Full fine-tune from a base checkpoint:
 
 ```bash
