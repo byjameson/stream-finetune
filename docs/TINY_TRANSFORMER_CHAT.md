@@ -132,6 +132,7 @@ The product is a local daily assistant, not a story demo:
 |---|---|
 | runtime fast paths | tasks, name/likes, time, simple arithmetic, exact formats |
 | document memory (SQLite FTS5) | your notes; HTTP paste/upload with `source` + sha256 |
+| manual teacher notes | pasted ChatGPT/other answers; derived, unverified, URL kept |
 | Wikipedia research | user-triggered lookup or approved queue; lead extracts with URLs |
 | LoRA adapter | optional per-user style/skill, gated before acceptance |
 | 49.2M model | greetings and short open-ended wording |
@@ -179,6 +180,7 @@ Endpoints:
 | `POST /v1/documents` | `{"source": "...", "title": "...", "text": "..."}`; indexes pasted text, max 1 MB |
 | `POST /v1/documents/upload?source=...&title=...` | raw UTF-8 text body; same limits as JSON |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
+| `POST /v1/teacher/notes` | `{"teacher","model","topic","answer","source_url"}`; stores a **derived/unverified** note |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
 | `POST /v1/research` | `{"query": "...", "limit": 2}`; directly fetches Wikipedia lead extracts with sources |
 | `GET /v1/research/queue` | reviewed queue items and status counts |
@@ -208,6 +210,11 @@ The reviewed research queue was verified on port 8027: a pending `Ankara`
 topic was not fetched by `run`, approval allowed the fetch, Wikipedia returned
 the lead extract (`3` chunks, source `https://en.wikipedia.org/?curid=802`),
 and both search and chat returned the intro with one deduplicated source.
+
+Manual teacher import was verified in the browser on port 8030: a pasted
+ChatGPT-style answer was stored as `teacher://chatgpt-web/...` with
+`verified=false` and `source_url=https://example.com/chat`; chat returned the
+answer and the warning “This includes an unverified teacher-derived note.”
 
 One-command demo (server + demo note + browser; the adapter is used when
 present, otherwise the base runs alone):
@@ -239,6 +246,24 @@ request. `source` is required; re-adding the same `source` replaces its chunks.
 The response contains `chunks`, `bytes` and `sha256`; `GET /v1/documents` lists
 the indexed source/title/chunk counts. The browser page has the same paste and
 file-picker flow. Documents go to SQLite FTS5, never to model weights.
+
+### Manual teacher notes
+
+No API and no browser automation. Ask ChatGPT or another assistant yourself,
+then paste the answer into the browser page or POST it:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/teacher/notes \
+  -H 'Content-Type: application/json' \
+  -d '{"teacher":"chatgpt-web","model":"gpt-5","topic":"Ankara","answer":"Ankara is the capital of Turkey.","source_url":"https://en.wikipedia.org/?curid=802"}'
+```
+
+The note is stored with `kind=teacher`, `verified=false`, a unique
+`teacher://...` source and the supplied `source_url` as provenance. It is
+**derived, unverified data**, not a fact and not a weight update. Search and
+chat label it `teacher note, unverified` and append a warning. A missing source
+URL is allowed but remains unverified. There is no automatic provider adapter
+yet; an API/local-model adapter is a separate opt-in decision.
 
 ### Web research
 
@@ -390,6 +415,9 @@ python research/train_transformer_chat.py \
 - The smoke gate is narrow; it does not prove general chat quality.
 - No autonomous web crawler: research is user-triggered (Wikipedia or opt-in
   URL ingestion). Facts are never written into weights automatically.
+- Teacher notes are manually pasted and always unverified. There is no API
+  provider or browser-scraping integration, and teacher output is not a source
+  by itself.
 - The HTTP API is a small OpenAI-compatible subset, not full tool calling,
   streaming or multimodal support.
 

@@ -251,7 +251,13 @@
   from selecting `New Ankara Stadium`. Added `scripts/run_research.ps1` for
   Task Scheduler/cron. Live browser: pending -> run 0 -> approve -> run 1 done
   -> chat cited the Ankara intro; a rejected Izmir topic was never fetched.
-- 239 tests;
+- Manual teacher import: `POST /v1/teacher/notes` and a browser form store a
+  pasted ChatGPT/other answer with `kind=teacher`, `verified=false`, a unique
+  `teacher://...` source and optional `source_url`. DocMemory now keeps
+  provenance metadata; search/chat label it `teacher note, unverified` and add
+  a warning. No API key, provider call or browser scraping. Live browser:
+  pasted answer saved, retrieved, and cited with the warning.
+- 242 tests;
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.

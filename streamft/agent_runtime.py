@@ -109,16 +109,30 @@ class AgentSession:
             return {"reply": "I found no matching local notes.",
                     "tool_calls": [{"name": "search_docs", "query": query}],
                     "sources": []}
-        lines = "\n".join(
-            f"- {h['chunk']} (source: {h['source']})" for h in hits)
+        lines = []
         sources = []
+        unverified = False
         for hit in hits:
+            verified = bool(hit.get("verified", True))
+            label = ("teacher note, unverified"
+                     if hit.get("kind") == "teacher" and not verified
+                     else "source")
+            location = hit.get("source_url") or hit["source"]
+            lines.append(f"- {hit['chunk']} ({label}: {location})")
             source = {"source": hit["source"], "title": hit["title"]}
+            for key in ("kind", "source_url", "teacher", "model", "verified"):
+                if key in hit:
+                    source[key] = hit[key]
+            if not verified:
+                unverified = True
             if source not in sources:
                 sources.append(source)
+        reply = (f"I found these notes:\n" + "\n".join(lines) + "\n\n"
+                 "This is a local note, not professional advice.")
+        if unverified:
+            reply += "\n\nThis includes an unverified teacher-derived note."
         return {
-            "reply": f"I found these notes:\n{lines}\n\n"
-                     "This is a local note, not professional advice.",
+            "reply": reply,
             "tool_calls": [{"name": "search_docs", "query": query}],
             "sources": sources,
         }

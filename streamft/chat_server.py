@@ -12,6 +12,7 @@ Endpoints:
   POST /v1/documents
   POST /v1/documents/upload?source=...&title=...
   POST /v1/documents/search
+  POST /v1/teacher/notes
   POST /v1/teach
   POST /v1/research
   GET  /v1/research/queue
@@ -30,6 +31,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import threading
 import time
 import urllib.parse
@@ -49,6 +51,10 @@ MAX_BODY_BYTES = 2_000_000
 MAX_DOC_BYTES = 1_000_000
 MAX_SOURCE_CHARS = 512
 MAX_TITLE_CHARS = 200
+MAX_TEACHER_BYTES = 200_000
+MAX_TEACHER_TOPIC = 300
+MAX_TEACHER_LABEL = 100
+MAX_SOURCE_URL = 2048
 
 
 class DocumentTooLarge(ValueError):
@@ -86,6 +92,65 @@ def ingest_document(docs, source, text, title: str = "") -> dict:
         "bytes": len(raw),
         "sha256": hashlib.sha256(raw).hexdigest(),
         "replace": True,
+    }
+
+
+def add_teacher_note(docs, teacher, model, topic, answer,
+                     source_url: str = "") -> dict:
+    """Store a manually supplied teacher answer as unverified RAG data."""
+    if docs is None:
+        raise ValueError("no document memory configured")
+    teacher = str(teacher or "manual").strip() or "manual"
+    model = str(model or "").strip()
+    topic = str(topic or "").strip()
+    answer = str(answer or "").strip()
+    source_url = str(source_url or "").strip()
+    for label, value, limit in (
+            ("teacher", teacher, MAX_TEACHER_LABEL),
+            ("model", model, MAX_TEACHER_LABEL),
+            ("topic", topic, MAX_TEACHER_TOPIC)):
+        if len(value) > limit:
+            raise ValueError(f"{label} is too long (max {limit} chars)")
+        if any(ord(ch) < 32 for ch in value):
+            raise ValueError(f"{label} contains control characters")
+    if not answer:
+        raise ValueError("answer is required")
+    if source_url:
+        if len(source_url) > MAX_SOURCE_URL:
+            raise ValueError(
+                f"source_url is too long (max {MAX_SOURCE_URL} chars)")
+        parsed = urllib.parse.urlparse(source_url)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            raise ValueError("source_url must be an http(s) URL")
+    text = f"Topic: {topic}\n\n{answer}" if topic else answer
+    raw = text.encode("utf-8")
+    if len(raw) > MAX_TEACHER_BYTES:
+        raise DocumentTooLarge(
+            f"teacher note is too large (max {MAX_TEACHER_BYTES} bytes)")
+    safe = re.sub(r"[^A-Za-z0-9_.-]+", "-", teacher).strip("-")[:48]
+    digest = hashlib.sha256(raw).hexdigest()
+    source = f"teacher://{safe or 'manual'}/{digest[:16]}"
+    title = (f"Teacher note: {topic}" if topic
+             else f"Teacher note ({teacher})")
+    chunks = docs.add_text(source, text, title=title, meta={
+        "kind": "teacher",
+        "source_url": source_url,
+        "teacher": teacher,
+        "model": model,
+        "verified": False,
+    })
+    return {
+        "source": source,
+        "title": title,
+        "chunks": chunks,
+        "bytes": len(raw),
+        "sha256": digest,
+        "kind": "teacher",
+        "verified": False,
+        "source_url": source_url,
+        "teacher": teacher,
+        "model": model,
+        "note": "teacher-derived and unverified",
     }
 
 
@@ -143,6 +208,18 @@ SHA-256; re-adding the same source replaces it. Nothing is written to weights.</
 <button id="add">Add document</button></div>
 <p id="ds" class="hint"></p>
 <hr>
+<h3>Add a teacher answer</h3>
+<p class="hint">Paste an answer from ChatGPT or another assistant. It is stored
+as a derived, unverified note with its source URL. It is not treated as a fact
+and does not change model weights.</p>
+<div class="row"><input id="tt" value="chatgpt-web" placeholder="Teacher">
+<input id="tm" placeholder="Model (optional)"></div>
+<div class="row"><input id="tp" placeholder="Topic/question">
+<input id="tu" placeholder="Source URL (optional)"></div>
+<textarea id="ta" placeholder="Paste the teacher answer..."></textarea>
+<button id="tnote">Save teacher note</button>
+<p id="tmsg" class="hint"></p>
+<hr>
 <h3>Research queue</h3>
 <p class="hint">A topic enters as pending and is not fetched. Approve it, then
 run approved topics; only approved items touch Wikipedia.</p>
@@ -179,7 +256,9 @@ function extra(result) {
   const tools = result.tool_calls || [];
   if (tools.length) parts.push('tools: ' + tools.map(t => t.name).join(', '));
   const sources = result.sources || [];
-  if (sources.length) parts.push('sources: ' + sources.map(s => s.title + ' (' + s.source + ')').join('; '));
+  if (sources.length) parts.push('sources: ' + sources.map(s =>
+    s.title + ' (' + (s.source_url || s.source) + ')' +
+    (s.verified === false ? ' [unverified]' : '')).join('; '));
   return parts.join(' | ');
 }
 async function send(message) {
@@ -261,6 +340,37 @@ document.getElementById('add').onclick = async () => {
     if (r.ok) {
       document.getElementById('txt').value = '';
       document.getElementById('file').value = '';
+      refreshHealth();
+    }
+  } catch (e) { out.textContent = 'error: ' + e; }
+};
+document.getElementById('tnote').onclick = async () => {
+  const answer = document.getElementById('ta').value.trim();
+  const out = document.getElementById('tmsg');
+  if (!answer) {
+    out.textContent = 'answer is required';
+    return;
+  }
+  out.textContent = 'saving...';
+  try {
+    const r = await fetch('/v1/teacher/notes', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        teacher: document.getElementById('tt').value,
+        model: document.getElementById('tm').value,
+        topic: document.getElementById('tp').value,
+        source_url: document.getElementById('tu').value,
+        answer,
+      })});
+    const j = await r.json();
+    out.textContent = r.ok
+      ? ('Saved as unverified teacher note: ' + j.source +
+         ' (' + j.chunks + ' chunk(s))')
+      : ('error: ' + (j.error || r.status));
+    if (r.ok) {
+      document.getElementById('ta').value = '';
+      document.getElementById('tp').value = '';
+      document.getElementById('tu').value = '';
       refreshHealth();
     }
   } catch (e) { out.textContent = 'error: ' + e; }
@@ -443,18 +553,29 @@ def doc_answer(text: str, docs) -> dict | None:
     hits = docs.search(text, k=3)
     if not hits:
         return None
-    notes = "\n".join(
-        f"- {hit['chunk']} (source: {hit['source']})" for hit in hits[:3])
+    notes = []
     sources = []
+    unverified = False
     for hit in hits[:3]:
+        verified = bool(hit.get("verified", True))
+        label = ("teacher note, unverified"
+                 if hit.get("kind") == "teacher" and not verified
+                 else "source")
+        location = hit.get("source_url") or hit["source"]
+        notes.append(f"- {hit['chunk']} ({label}: {location})")
         source = {"source": hit["source"], "title": hit["title"]}
+        for key in ("kind", "source_url", "teacher", "model", "verified"):
+            if key in hit:
+                source[key] = hit[key]
+        if not verified:
+            unverified = True
         if source not in sources:
             sources.append(source)
-    return {
-        "text": (f"I found these notes:\n{notes}\n\n"
-                 "This is a local note, not professional advice."),
-        "sources": sources,
-    }
+    text = (f"I found these notes:\n" + "\n".join(notes) + "\n\n"
+            "This is a local note, not professional advice.")
+    if unverified:
+        text += "\n\nThis includes an unverified teacher-derived note."
+    return {"text": text, "sources": sources}
 
 
 def chat_prompt(messages) -> str:
@@ -535,8 +656,8 @@ class Handler(BaseHTTPRequestHandler):
         route = parsed.path
         if route not in ("/generate", "/v1/chat/completions",
                          "/v1/documents", "/v1/documents/search",
-                         "/v1/documents/upload", "/v1/teach",
-                         "/v1/learn_url", "/v1/research",
+                         "/v1/documents/upload", "/v1/teacher/notes",
+                         "/v1/teach", "/v1/learn_url", "/v1/research",
                          "/v1/research/queue",
                          "/v1/research/queue/approve",
                          "/v1/research/queue/reject",
@@ -568,6 +689,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if route == "/v1/documents":
                 return self._ingest(req)
+            if route == "/v1/teacher/notes":
+                return self._teacher_note(req)
             if route == "/v1/research/queue":
                 return self._queue_add(req)
             if route == "/v1/research/queue/approve":
@@ -749,6 +872,22 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"error": str(exc)})
         return self._json(200, {"ran": ran, "stats": queue.stats()})
 
+    def _teacher_note(self, req: dict):
+        try:
+            result = add_teacher_note(
+                _state.get("docs"), req.get("teacher", "manual"),
+                req.get("model", ""),
+                req.get("topic") or req.get("question", ""),
+                req.get("answer", ""), req.get("source_url", ""))
+        except DocumentTooLarge as exc:
+            return self._json(413, {"error": str(exc)})
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        metrics = _state.get("metrics")
+        if isinstance(metrics, dict):
+            metrics["teacher_notes"] = metrics.get("teacher_notes", 0) + 1
+        return self._json(200, result)
+
     def _ingest(self, req: dict):
         try:
             result = ingest_document(
@@ -878,7 +1017,8 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "api_key": api_key or os.environ.get("CHAT_API_KEY", ""),
         "user_id": tok.token_to_id("<|user|>"),
         "assistant_id": tok.token_to_id("<|assistant|>"),
-        "metrics": {"requests": 0, "generated_tokens": 0, "documents": 0},
+        "metrics": {"requests": 0, "generated_tokens": 0, "documents": 0,
+                    "teacher_notes": 0},
     })
     httpd = ThreadingHTTPServer((host, port), Handler)
     print(f"streamft local assistant serving {model_path} at http://{host}:{port}",
