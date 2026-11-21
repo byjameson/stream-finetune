@@ -31,7 +31,7 @@ def test_doc_answer_returns_sources(tmp_path):
     docs.close()
 
 
-def test_http_document_endpoints_and_grounded_chat(tmp_path):
+def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
     try:
         docs = DocMemory(tmp_path / "docs.db")
     except Exception as exc:
@@ -45,7 +45,15 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path):
         "api_key": "", "metrics": {"requests": 0, "generated_tokens": 0},
         "user_id": 0, "assistant_id": 1,
         "queue_path": str(tmp_path / "queue.jsonl"),
+        "allow_url_fetch": True, "wiki_lang": "en",
+        "session_dir": str(tmp_path / "sessions"), "sessions": {},
     })
+    import streamft.web_research as wr
+    monkeypatch.setattr(wr, "index_url", lambda docs, url: {
+        "source": url, "title": "T", "chunks": 1, "preview": "p"})
+    monkeypatch.setattr(wr, "wikipedia_research", lambda docs, q, lang, limit: [
+        {"source": "https://wiki/x", "title": "X", "chunks": 1,
+         "preview": "p"}])
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
@@ -79,6 +87,21 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path):
         assert queued["skill_queued"] is True
         queue = (tmp_path / "queue.jsonl").read_text(encoding="utf-8")
         assert "good morning" in queue
+        learned = _post(base + "/v1/learn_url",
+                        {"url": "https://example.com/page"})
+        assert learned["title"] == "T"
+        research = _post(base + "/v1/research", {"query": "anything"})
+        assert research["pages"][0]["title"] == "X"
+        agent = _post(base + "/v1/agent/chat", {
+            "session_id": "s1", "message": "add task buy milk"})
+        assert "Added task 1" in agent["reply"]
+        session_chat = _post(base + "/v1/chat/completions", {
+            "session_id": "s1",
+            "messages": [{"role": "user", "content": "list tasks"}],
+            "max_tokens": 20,
+        })
+        content = session_chat["choices"][0]["message"]["content"]
+        assert "buy milk" in content
     finally:
         httpd.shutdown()
         httpd.server_close()

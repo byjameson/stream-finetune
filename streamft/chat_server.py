@@ -104,6 +104,11 @@ class Handler(BaseHTTPRequestHandler):
                 "documents": (_state["docs"].stats()
                               if _state.get("docs") else None),
                 "learning_queue": _state.get("queue_path"),
+                "web_research": {
+                    "wikipedia_lang": _state.get("wiki_lang"),
+                    "url_fetch": bool(_state.get("allow_url_fetch")),
+                },
+                "sessions": len(_state.get("sessions", {})),
             })
         elif self.path == "/v1/models":
             self._json(200, {"data": [{
@@ -122,7 +127,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path not in ("/generate", "/v1/chat/completions",
-                             "/v1/documents/search", "/v1/teach"):
+                             "/v1/documents/search", "/v1/teach",
+                             "/v1/learn_url", "/v1/research",
+                             "/v1/agent/chat"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
         if key:
@@ -140,6 +147,69 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(200, {"data": hits})
             if self.path == "/v1/teach":
                 return self._teach(req)
+            if self.path == "/v1/learn_url":
+                if not _state.get("allow_url_fetch"):
+                    return self._json(403, {
+                        "error": "URL fetch disabled; start with "
+                                 "--allow-url-fetch"})
+                docs = _state.get("docs")
+                if docs is None:
+                    return self._json(400, {"error": "no document memory"})
+                from streamft.web_research import index_url
+                try:
+                    page = index_url(docs, str(req.get("url", "")))
+                except Exception as exc:
+                    return self._json(400, {"error": str(exc)})
+                return self._json(200, page)
+            if self.path == "/v1/research":
+                docs = _state.get("docs")
+                if docs is None:
+                    return self._json(400, {"error": "no document memory"})
+                from streamft.web_research import wikipedia_research
+                query = str(req.get("query", "")).strip()
+                if not query:
+                    return self._json(400, {"error": "empty query"})
+                try:
+                    pages = wikipedia_research(
+                        docs, query, _state.get("wiki_lang", "en"),
+                        int(req.get("limit", 2)))
+                except Exception as exc:
+                    return self._json(400, {"error": str(exc)})
+                return self._json(200, {"pages": pages})
+            session_id = str(req.get("session_id", "")).strip()
+            is_agent = self.path == "/v1/agent/chat"
+            if is_agent or (self.path == "/v1/chat/completions"
+                            and session_id):
+                messages = req.get("messages") or []
+                message = str(req.get("message", "")).strip()
+                if not message:
+                    message = next(
+                        (str(m.get("content", "")) for m in reversed(messages)
+                         if m.get("role") == "user"), "")
+                if not message:
+                    return self._json(400, {"error": "empty message"})
+                try:
+                    session = self._session(session_id or "default")
+                    result = session.chat(message)
+                except Exception as exc:
+                    return self._json(400, {"error": str(exc)})
+                if is_agent:
+                    return self._json(200, {"session_id": session.id,
+                                            **result})
+                return self._json(200, {
+                    "id": "tiny-agent-" + str(abs(hash(result["reply"]))
+                                              % 10**12),
+                    "object": "chat.completion",
+                    "model": _state["name"],
+                    "choices": [{
+                        "index": 0,
+                        "message": {"role": "assistant",
+                                    "content": result["reply"]},
+                        "finish_reason": "stop",
+                    }],
+                    "tool_calls": result.get("tool_calls", []),
+                    "sources": result.get("sources", []),
+                })
             if self.path == "/v1/chat/completions":
                 messages = req.get("messages") or []
                 prompt = chat_prompt(messages)
@@ -202,6 +272,19 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # pragma: no cover
             return self._json(400, {"error": str(exc)})
 
+    def _session(self, session_id: str):
+        from streamft.agent_runtime import AgentSession
+        sessions = _state.setdefault("sessions", {})
+        if session_id not in sessions:
+            folder = Path(_state.get("session_dir", "data/sessions"))
+            folder.mkdir(parents=True, exist_ok=True)
+            sessions[session_id] = AgentSession(
+                session_id, folder / f"{session_id}.json",
+                model=_state.get("model"), tokenizer=_state.get("tok"),
+                device=_state.get("device"), docs=_state.get("docs"),
+                wiki_lang=_state.get("wiki_lang", "en"))
+        return sessions[session_id]
+
     def _teach(self, req: dict):
         fact = str(req.get("fact", "")).strip()
         user = str(req.get("user", "")).strip()
@@ -236,7 +319,9 @@ class Handler(BaseHTTPRequestHandler):
 def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           port: int = 8013, api_key: str = "", adapter: str = "",
           docs_path: str = "",
-          queue_path: str = "data/learning_queue.jsonl") -> int:
+          queue_path: str = "data/learning_queue.jsonl",
+          allow_url_fetch: bool = False, wiki_lang: str = "en",
+          session_dir: str = "data/sessions") -> int:
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
     cfg = ck["config"]
@@ -261,6 +346,10 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "docs": docs,
         "adapter": adapter,
         "queue_path": queue_path,
+        "allow_url_fetch": allow_url_fetch,
+        "wiki_lang": wiki_lang,
+        "session_dir": session_dir,
+        "sessions": {},
         "device": device,
         "name": root.name,
         "params": sum(p.numel() for p in model.parameters()),
@@ -294,9 +383,13 @@ def main():
     ap.add_argument("--adapter", default="")
     ap.add_argument("--docs", default="")
     ap.add_argument("--queue", default="data/learning_queue.jsonl")
+    ap.add_argument("--allow-url-fetch", action="store_true")
+    ap.add_argument("--wiki-lang", default="en")
+    ap.add_argument("--session-dir", default="data/sessions")
     args = ap.parse_args()
     return serve(args.model, args.tokenizer, args.host, args.port,
-                 args.api_key, args.adapter, args.docs, args.queue)
+                 args.api_key, args.adapter, args.docs, args.queue,
+                 args.allow_url_fetch, args.wiki_lang, args.session_dir)
 
 
 if __name__ == "__main__":

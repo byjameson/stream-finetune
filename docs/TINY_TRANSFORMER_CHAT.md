@@ -145,8 +145,11 @@ Endpoints:
 | `GET /v1/documents` | indexed sources |
 | `POST /v1/documents/search` | `{"query": "...", "k": 5}` |
 | `POST /v1/teach` | `{"fact": "..."}` for the document index, or `{"user": "...", "assistant": "..."}` for the reviewed skill queue |
+| `POST /v1/research` | `{"query": "...", "limit": 2}`; fetches Wikipedia extracts with sources |
+| `POST /v1/learn_url` | `{"url": "..."}`; opt-in page ingestion, requires `--allow-url-fetch` |
+| `POST /v1/agent/chat` | `{"session_id": "...", "message": "..."}`; tasks, memory, docs, time, research |
 | `POST /generate` | `{"prompt": "...", "max_new_tokens": 64}` |
-| `POST /v1/chat/completions` | messages; document hits return `sources` and a non-advice note |
+| `POST /v1/chat/completions` | messages; optional `session_id`; document hits return `sources` and a non-advice note |
 
 Verified on this machine: `/health` returns 49,582,080 params, step 1000,
 adapter `checkpoints/adapters_50m/v0001`, and 1 indexed chunk; document search
@@ -158,6 +161,30 @@ One-command demo (server + adapter + demo note + browser):
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1
 ```
+
+### Web research
+
+`POST /v1/research` uses the public Wikipedia API, fetches plain-text extracts
+and stores them with URL/title provenance. Arbitrary page fetching
+(`/v1/learn_url`) is **opt-in** via `--allow-url-fetch`; private/loopback hosts
+are blocked (SSRF guard), pages are size-capped, and no crawler runs
+automatically. Research writes to DocMemory, never to model weights.
+
+### Agent API
+
+`POST /v1/agent/chat` keeps per-session memory and task state:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/agent/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"user-1","message":"add task buy milk"}'
+```
+
+It routes greetings/small talk, memory/tasks, document search, time and
+Wikipedia research. The OpenAI-compatible `/v1/chat/completions` accepts the
+same `session_id`; without it, the endpoint is stateless. External agent
+frameworks can connect through these HTTP endpoints, but the 50M model remains
+the language layer, not a general reasoning engine.
 
 One-command demo:
 
