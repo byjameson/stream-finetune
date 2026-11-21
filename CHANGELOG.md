@@ -140,6 +140,11 @@
   only 0.015 bpb better (1.344 vs 1.359), has a lower alpha floor (0.573 vs
   0.731) and more rambling samples. The 20M transformer is the product model;
   next work is data/skills and runtime, not parameter scale.
+- Packaged the 20M transformer: model card `docs/TINY_TRANSFORMER_CHAT.md`,
+  local server `streamft/chat_server.py`, one-command demo
+  `scripts/chat_demo.ps1`. Verified `/health`, `/generate` and
+  `/v1/chat/completions` return 200; `chat_human.py` supports
+  `--arch transformer`.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -150,7 +155,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 196 tests;
+- 198 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.

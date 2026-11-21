@@ -10,12 +10,12 @@ import torch
 from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import fixed_windows, load_tokens
 
+from streamft.transformer import TransformerLM, generate
+
 try:
     from research.chat_eval import evaluate_assistant, metrics
-    from research.train_transformer_chat import TransformerLM, generate
 except ImportError:
     from chat_eval import evaluate_assistant, metrics
-    from train_transformer_chat import TransformerLM, generate
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
