@@ -149,6 +149,10 @@ Write-ups: `WATERMARK_THRESHOLD.md`, `WATERMARK_RANK.md`, `WATERMARK_JOINT.md`,
 | `transformer_behavior_50m_banned.json` | `research/eval_transformer_chat.py` | 49.2M behavior: 1.372 bpb / 4.050 assistant but clean smoke BLOCKED (one empty) |
 | `behavior_50m.json` | `research/behavior_eval.py` | 50M runtime behavior: all checks pass |
 | `chat_human_eval_50m.json` | `research/eval_chat_human.py` | 50M E2E: PASS but repetitive story; not product |
+| `transformer_behavior_50m_long.json` | `research/train_transformer_chat.py` | 49.2M, 1000-step diverse behavior mix: assistant 2.816, bpb 1.161 on mix |
+| `transformer_behavior_50m_long_banned.json` | `research/eval_transformer_chat.py` | 50M long clean: 1.375 bpb / 4.066 assistant, clean smoke PASS |
+| `behavior_50m_long.json` | `research/behavior_eval.py` | 50M long runtime behavior: all checks pass |
+| `chat_human_eval_50m_long.json` | `research/eval_chat_human.py` | 50M long E2E: all checks pass; product checkpoint |
 | `chat_human_eval_v0001.json` | `research/eval_chat_human.py` | accepted v0001: all memory/task/greeting/story checks pass |
 | `spiking_efficiency.json` | `research/bench_spiking.py` | 4.3M/21M/story-safe tokens/s and peak VRAM |
 | `crypto_paper_btc.json` | `research/crypto_paper.py` | BTCUSDT daily walk-forward: learned models no reliable edge; SMA-50 trend CHECK; no real money |

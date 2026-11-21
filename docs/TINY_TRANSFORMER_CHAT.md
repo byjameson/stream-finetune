@@ -2,12 +2,13 @@
 
 ## What this is
 
-A **20.2M-parameter transformer language model trained from scratch** for short
-English chat turns. It is the product-line checkpoint after the spiking
-experiments showed an architecture bottleneck. It is **not** a general
-assistant and not a factual model.
+A tiny transformer language model trained from scratch for short English chat
+turns. The **20.2M** checkpoint is the compact model; the current product
+checkpoint is the **49.2M behavior variant** (`transformer_behavior_50m_long`).
+It is **not** a general assistant and not a factual model.
 
-- 5 layers, dim 512, 8 heads, FFN 2048, 8k BPE, max sequence 512.
+- 20M: 5 layers, dim 512, 8 heads, FFN 2048; 50M: 6 layers, dim 768,
+  12 heads, FFN 3072; 8k BPE, max sequence 512.
 - Trained on **26.98M tokens** of filtered English chat and story data.
 - Assistant-only SFT loss; training windows start at `<|user|>`.
 - Role tokens (`<|user|>`, `<|assistant|>`) are banned during decoding.
@@ -67,10 +68,17 @@ clean-chat samples. The clean-smoke gate was tightened; the v0002/v0003
 candidates were rejected, and **v0001 remains the product checkpoint**. Do not
 treat the loss gain as a behavioral gain.
 
-A **49.2M behavior checkpoint** was also compared: clean bpb 1.372 / assistant
-4.050 (better than v0001) but the raw clean smoke is **BLOCKED** (one empty
-sample and unstable weather replies). It passes the runtime behavior and E2E
-checks but is not the product model. v0001 is more stable.
+A **49.2M behavior checkpoint** (`transformer_behavior_50m_long`) was trained
+for 1,000 steps on a diverse mix of clean chat + skill + format/novel queues:
+
+- clean bpb **1.375** / assistant loss **4.066** (v0001: 1.475 / 4.374);
+- corrected clean smoke **PASS**;
+- runtime behavior **PASS**;
+- 13-turn E2E **PASS**, story quality comparable.
+
+This is now the **product checkpoint**. v0001 (20M) remains a faster/local
+fallback. Factual questions such as live weather are out of scope for the raw
+model; the runtime should answer those with a tool or a refusal.
 
 Corrected-format revalidation of v0001: clean smoke **PASS**, 13-turn E2E
 **PASS**, runtime behavior **PASS**. The earlier 12-sample result with one empty
@@ -122,7 +130,7 @@ obligations; legal/provenance review is required before redistribution.
 
 ```bash
 python -m streamft.chat_server \
-  --model checkpoints/updates/v0001 \
+  --model checkpoints/transformer_behavior_50m_long \
   --host 127.0.0.1 --port 8013
 ```
 
