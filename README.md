@@ -35,8 +35,16 @@ loads with `--adapter auto`. An opt-in `--safety-filter` runs exact rules first
 and then a small local MiniLM linear ML head; it refuses explicit harmful
 requests and filters output (multilingual red-team 72/72, held-out semantic
 paraphrases 10/10, 0/26 benign false blocks). Missing model/head falls back to
-exact rules; `--no-safety-ml` forces the rule baseline. It is off for local
-research. Indexed sources and session memory have tested delete paths
+exact rules; `--no-safety-ml` forces the rule baseline. It is **off by
+default**: this is a local tool, not a hosted content policy. The optional
+safety layer is an operator tool, not a moral gate.
+
+An optional **local provider backend** can answer free-form chat with a
+user-supplied Ollama/OpenAI-compatible model while RAG, tools and memory stay
+local. The default remains the 50M model. See
+[`docs/POTENTIAL.md`](docs/POTENTIAL.md).
+
+Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
 `checkpoints/transformer_behavior_50m_scaled` (40k steps); the original
 `transformer_behavior_50m_long` is retained for comparison. The optional 368k

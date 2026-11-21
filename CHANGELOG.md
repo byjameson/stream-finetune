@@ -6,6 +6,9 @@
   old valid bpb 1.3596 / assistant 3.8722 vs base 1.3719 / 4.0502.
 - Reviewed learning loop, knowledge gaps, scheduled worker, Ollama teacher.
 - Opt-in rule + local ML safety filter, PII deletion, prompt-injection red-team.
+- Optional local provider backend: Ollama/OpenAI-compatible free-form chat while
+  RAG/tools/memory stay local; default remains the 50M model.
+- Capability assessment and scaling ladder: `docs/POTENTIAL.md`.
 - RAG retrieval: hybrid FTS + cached neural candidate pool with local
   MiniLM-L6-v2; held-out authored benchmark top-1/citation 1.000 vs 0.850 for
   FTS, 8.8 ms vs 0.34 ms median. Prewarmed numpy vector index is 166x faster
@@ -13,7 +16,7 @@
   faster than exact at 20k vectors with recall@10 1.000 and exact fallback.
   Hashed fallback stays FTS-anchored.
 - Apache-2.0 code/weights with `NOTICE`; no hosted service.
-- 385 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
+- 388 tests. Full release notes: [`docs/RELEASE_0.8.0.md`](docs/RELEASE_0.8.0.md).
 
 ## 0.7.0 - local verified assistant
 - `streamft assistant ask|index|serve`: Qwen2.5-1.5B-Instruct plus FTS5
@@ -353,6 +356,12 @@
   held-out semantic paraphrases **10/10** (rules only 1/10). ML-only on the
   authored set is 61.1% but rules remain authoritative. Missing/broken head or
   model returns the exact v0.2 rules. `--no-safety-ml` forces the rule baseline.
+- Optional local provider: `--chat-provider-url` / `--chat-provider-model`
+  route free-form chat to an OpenAI-compatible endpoint (tested with local
+  Ollama `llama3.2:3b`). RAG, tools and memory stay local; source-grounded
+  questions still use local notes. `--allow-general-chat` permits unsourced
+  provider answers; default preserves the no-source reply. The provider is
+  text-only, does not plan tools, and a remote URL leaves the machine.
 - Session backup: `POST /v1/memory/export` / `import` and browser
   Export/Import controls; exported JSON contains personal memory and must be
   kept private.

@@ -33,8 +33,13 @@ lower-LR resume did not produce a material improvement over 40k.
   prewarmed in-memory matrix.
 - Missing-source path: honest no-source reply plus knowledge-gap record.
 - Research tool: explicit `research/look up`; queue worker for approved topics.
+- Optional local provider: `--chat-provider-url/model` routes free-form chat to
+  an Ollama/OpenAI-compatible endpoint; RAG/tools/memory stay local. Default is
+  still the 50M model. `--allow-general-chat` lets the provider answer when no
+  source matches; without it, the no-source reply is preserved.
 - Safety: opt-in rule-first filter plus a local MiniLM linear ML head before
-  generation and on output; missing model falls back to exact rules.
+  generation and on output; missing model falls back to exact rules. Default
+  is off, and it is an operator tool rather than a content/moral policy.
 - Session memory: JSON facts/tasks/episodes; stable browser session ID now
   persisted in `localStorage`; New session button.
 - Deletion: exact document source and session memory; path separators handled.
@@ -48,7 +53,9 @@ clustered benchmark and the authored retrieval set, but this is not a guarantee
 for every corpus, and low-confidence queries pay an exact-scan fallback. Memory
 grows linearly with chunks and startup pays the build cost. The model is
 English-first; no task due dates/reminders; no multi-document conflict
-resolution.
+resolution. The provider backend is text-only: it does not plan or execute
+tools, and unsourced provider answers are not fact-checked. See
+[`POTENTIAL.md`](POTENTIAL.md) for the honest capability ladder.
 
 ## 3. Browser UI
 
@@ -139,10 +146,9 @@ recommended.
 
 ## 7. Tests and CI
 
-- **385 tests** pass locally.
+- **388 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI `68e70f2` green after the ML-moderation, product, behavior, safety,
-  red-team and test gates.
+- CI for the provider-backend commit is verified after push.
 
 ## 8. Release state
 
@@ -154,10 +160,13 @@ recommended.
 
 ## Priority gaps
 
-1. Replace the synthetic 349-example moderation training set with a larger
-   human-labelled set, especially non-English.
-2. Final owner completeness sign-off and PyPI token.
-3. Larger model/data scaling remains a separate compute decision; raw-model
-   knowledge is still **2/10**.
-4. Optional HNSW graph replacing IVF if recall/latency needs it.
-5. Hosted deployment (auth, rate limits, monitoring) is out of scope.
+1. General model capability: raw-model knowledge is still **2/10**. The
+   provider backend is the current escape hatch; training a larger model is a
+   separate compute/data decision. See [`POTENTIAL.md`](POTENTIAL.md).
+2. Provider-backed tool planning: the provider answers text but does not choose
+   or execute tools.
+3. A larger human-labelled moderation set, especially non-English, if a host
+   enables the optional filter.
+4. Final owner completeness sign-off and PyPI token.
+5. Optional HNSW graph replacing IVF if recall/latency needs it.
+6. Hosted deployment (auth, rate limits, monitoring) is out of scope.

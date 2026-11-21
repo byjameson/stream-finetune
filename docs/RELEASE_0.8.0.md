@@ -52,7 +52,10 @@ controls.
 - Raw model without RAG/tools: 2/10 base, 2/10 product checkpoint. It is
   **not** a general model; facts belong in RAG.
 - Behavior checks: 16/16 on the scaled 40k product checkpoint.
-- Test suite: 385 tests; CI green.
+- Optional local provider backend: local Ollama/OpenAI-compatible free-form
+  chat with RAG/tools/memory still local; default remains the 50M model.
+  Tested live with `llama3.2:3b`; see `docs/POTENTIAL.md`.
+- Test suite: 388 tests; CI green.
 
 ## Run locally
 
@@ -74,6 +77,8 @@ powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1 -SafetyFilter
 - 50M is narrow; general reasoning/coding and reliable unaided facts are out
   of reach. The raw probe is 1-2/10.
 - The safety filter is a small local ML head over frozen MiniLM embeddings
-  plus exact rules, not a full moderation system.
+  plus exact rules, not a full moderation system; it is off by default.
+- The optional provider is text-only, does not plan tools, and unsourced
+  answers are not fact-checked.
 - The 60k scaled run is still being evaluated; 25k is the promoted candidate.
 - Public release still needs the owner's PyPI token and final sign-off.

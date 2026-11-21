@@ -1,0 +1,23 @@
+{
+  "created": "2026-11-21T21:00:00",
+  "provider": {
+    "label": "local-provider",
+    "model": "llama3.2:3b",
+    "host": "127.0.0.1:11434",
+    "general_chat": true
+  },
+  "cases": [
+    {
+      "prompt": "what is the launch code?",
+      "reply": "I found these notes:\n- The launch code is ORANGE-42. (source: launch.txt)\n\nThis is a local note, not professional advice.",
+      "sources": ["launch.txt"],
+      "path": "local RAG"
+    },
+    {
+      "prompt": "Explain why the sky is blue in two sentences.",
+      "reply": "The sky appears blue because of a phenomenon called Rayleigh scattering, where shorter wavelengths of light, such as blue and violet, are scattered more than longer wavelengths by the tiny molecules of gases in the Earth's atmosphere. This scattering effect gives the sky its blue color, especially during the daytime when the sun is overhead.",
+      "sources": [],
+      "path": "local provider"
+    }
+  ]
+}

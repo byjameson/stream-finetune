@@ -87,6 +87,27 @@ answer: Ankara is the capital city of Turkey... population of over 5.3 million..
 
 Evidence: [`research/results/teacher_ollama_live.json`](../research/results/teacher_ollama_live.json).
 
+## Optional chat provider
+
+The same local Ollama endpoint can serve free-form chat while RAG and tools stay
+local. This is not the default backend; the 49.2M model remains the default.
+
+```powershell
+python -m streamft.chat_server `
+  --model checkpoints/transformer_behavior_50m_scaled `
+  --tokenizer data/chat_en_bpe8k.json `
+  --docs data/docs.db `
+  --chat-provider-url http://127.0.0.1:11434/v1 `
+  --chat-provider-model llama3.2:3b `
+  --allow-general-chat
+```
+
+Source-grounded questions still use local notes and citations. With
+`--allow-general-chat`, unsourced questions go to the provider and report no
+sources. The provider is text-only and does not plan or execute tools. A local
+URL keeps prompts on the machine; a remote URL does not. See
+[`POTENTIAL.md`](POTENTIAL.md).
+
 ## Limits
 
 - The teacher is used only on explicit request or during an approved research

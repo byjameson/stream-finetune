@@ -77,7 +77,8 @@ def math_query(text: str) -> str | None:
 class AgentSession:
     def __init__(self, session_id: str, memory_path: str | Path,
                  model=None, tokenizer=None, device=None, docs=None,
-                 wiki_lang: str = "en", gap_store=None, safety=None):
+                 wiki_lang: str = "en", gap_store=None, safety=None,
+                 generator=None, allow_general_chat=False):
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", session_id):
             raise ValueError("invalid session id")
         self.id = session_id
@@ -86,7 +87,9 @@ class AgentSession:
         self.gap_store = gap_store
         self.safety = safety
         self.human = ChatHuman(memory_path, model, tokenizer, device,
-                               "transformer", docs, on_gap=self._record_gap)
+                               "transformer", docs, on_gap=self._record_gap,
+                               generator=generator,
+                               allow_general_chat=allow_general_chat)
 
     def _record_gap(self, text: str) -> None:
         if self.gap_store is None:

@@ -33,6 +33,11 @@ The browser has a **Delete data** section with the same operation.
 Safety moderation runs locally as well: the rule filter and the small ML head
 run in-process. Prompts are not sent to a moderation API or a hosted service.
 
+The optional chat provider is different: when `--chat-provider-url` is set,
+free-form prompts (and only those; not RAG retrieval) are sent to that endpoint.
+A local Ollama endpoint keeps them on the machine; a remote URL leaves it.
+Leave the provider unset for fully local inference.
+
 ## Delete session memory
 
 The agent session stores facts, tasks and recent episodes in

@@ -65,7 +65,8 @@ def looks_like_question(text: str) -> bool:
 class ChatHuman:
     def __init__(self, memory_path: str | Path = DEFAULT_MEMORY,
                  model=None, tokenizer=None, device=None, arch="spiking",
-                 docs=None, on_gap=None):
+                 docs=None, on_gap=None, generator=None,
+                 allow_general_chat=False):
         self.path = Path(memory_path)
         self.model = model
         self.tokenizer = tokenizer
@@ -73,6 +74,8 @@ class ChatHuman:
         self.arch = arch
         self.docs = docs
         self.on_gap = on_gap
+        self.generator = generator
+        self.allow_general_chat = bool(allow_general_chat)
         self.data = self._load()
 
     def _load(self) -> dict:
@@ -277,6 +280,13 @@ class ChatHuman:
         return None
 
     def _generate(self, user_text: str) -> str:
+        if self.generator is not None:
+            try:
+                answer = self.generator(user_text)
+                if answer:
+                    return str(answer)
+            except Exception:
+                pass
         if self.model is None or self.tokenizer is None:
             return "I do not have a language model loaded yet."
         # The 20M model was trained on plain chat turns; injecting a long
@@ -400,7 +410,8 @@ class ChatHuman:
                     question = looks_like_question(text)
                     if question and self.on_gap is not None:
                         self.on_gap(text)
-                    if question and self.docs is not None:
+                    general = self.allow_general_chat and self.generator is not None
+                    if question and self.docs is not None and not general:
                         reply = ("I do not have a source for that yet. I can "
                                  "add it to the research queue; approve the "
                                  "topic and I will fetch it.")

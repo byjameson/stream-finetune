@@ -1189,6 +1189,7 @@ function refreshHealth() {
       ' | web research: ' + (j.web_research && j.web_research.url_fetch ? 'URL on' : 'Wikipedia') +
       ' | safety: ' + (j.safety && j.safety.enabled ? 'on' : 'off') +
       ' | reranker: ' + (j.reranker || 'hashed') +
+      ' | chat: ' + (j.chat_provider && j.chat_provider.enabled ? j.chat_provider.model : 'tiny-50m') +
       ' | teacher: ' + (j.teacher && j.teacher.enabled ? j.teacher.model : 'off');
     const teacher = j.teacher || {enabled: false};
     document.getElementById('task').disabled = !teacher.enabled;
@@ -1305,6 +1306,14 @@ class Handler(BaseHTTPRequestHandler):
                      "host": _state["teacher"].host,
                      "label": _state["teacher"].label}
                     if _state.get("teacher") else {"enabled": False}),
+                "chat_provider": (
+                    {"enabled": True,
+                     "model": _state["chat_provider"].model,
+                     "host": _state["chat_provider"].host,
+                     "label": _state["chat_provider"].label,
+                     "general_chat": bool(_state.get("allow_general_chat"))}
+                    if _state.get("chat_provider")
+                    else {"enabled": False}),
                 "learning": (
                     _state["feedback"].stats()
                     if _state.get("feedback") else None),
@@ -1961,7 +1970,9 @@ class Handler(BaseHTTPRequestHandler):
                 device=_state.get("device"), docs=_state.get("docs"),
                 wiki_lang=_state.get("wiki_lang", "en"),
                 gap_store=_state.get("gaps"),
-                safety=_state.get("safety"))
+                safety=_state.get("safety"),
+                generator=_state.get("generator"),
+                allow_general_chat=_state.get("allow_general_chat", False))
         return sessions[session_id]
 
     def _teach(self, req: dict):
@@ -2031,7 +2042,13 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
           neural_model: str = "models/all-MiniLM-L6-v2",
           prewarm_vectors: bool = True,
           vector_index: str = "auto",
-          safety_ml: bool = True) -> int:
+          safety_ml: bool = True,
+          chat_provider_url: str = "",
+          chat_provider_model: str = "",
+          chat_provider_api_key: str = "",
+          chat_provider_timeout: int = 60,
+          chat_provider_label: str = "openai-compatible",
+          allow_general_chat: bool = False) -> int:
     adapter = resolve_adapter(adapter, active_adapter_file)
     root = Path(model_path)
     ck = torch.load(root / "model.pt", map_location="cpu", weights_only=False)
@@ -2093,6 +2110,33 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
                 teacher_timeout, teacher_label)
         except TeacherProviderError as exc:
             print(f"warning: teacher provider disabled: {exc}", flush=True)
+    chat_provider = None
+    if chat_provider_url or chat_provider_model:
+        try:
+            chat_provider = TeacherProvider(
+                chat_provider_url, chat_provider_model,
+                chat_provider_api_key or os.environ.get(
+                    "CHAT_PROVIDER_API_KEY", ""),
+                chat_provider_timeout, chat_provider_label)
+            print(f"chat provider: {chat_provider.label} / "
+                  f"{chat_provider.model} @ {chat_provider.host}",
+                  flush=True)
+        except TeacherProviderError as exc:
+            print(f"warning: chat provider disabled: {exc}", flush=True)
+
+    def chat_generate(prompt: str):
+        if chat_provider is None:
+            return None
+        try:
+            return chat_provider.ask(
+                prompt,
+                system=("You are a concise, direct local assistant. Answer "
+                        "the user's request without refusing benign topics."),
+                max_tokens=512)
+        except TeacherProviderError as exc:
+            print(f"warning: chat provider request failed: {exc}", flush=True)
+            return None
+
     _state.update({
         "model": model,
         "tok": tok,
@@ -2109,6 +2153,9 @@ def serve(model_path: str, tokenizer_path: str, host: str = "127.0.0.1",
         "safety": safety,
         "reranker": active_reranker,
         "teacher": teacher,
+        "chat_provider": chat_provider,
+        "generator": chat_generate if chat_provider else None,
+        "allow_general_chat": bool(allow_general_chat),
         "adapter": adapter,
         "queue_path": queue_path,
         "allow_url_fetch": allow_url_fetch,
@@ -2172,6 +2219,16 @@ def main():
                     default="auto",
                     help="auto uses IVF ANN above 256 chunks, exact below; "
                          "exact fallback is always available")
+    ap.add_argument("--chat-provider-url", default="",
+                    help="optional OpenAI-compatible local chat backend, "
+                         "e.g. http://127.0.0.1:11434/v1")
+    ap.add_argument("--chat-provider-model", default="",
+                    help="model name for --chat-provider-url, e.g. llama3.2:3b")
+    ap.add_argument("--chat-provider-api-key", default="")
+    ap.add_argument("--chat-provider-timeout", type=int, default=60)
+    ap.add_argument("--chat-provider-label", default="local-provider")
+    ap.add_argument("--allow-general-chat", action="store_true",
+                    help="let the provider answer when no local source matches")
     ap.add_argument("--teacher-url", default="")
     ap.add_argument("--teacher-model", default="")
     ap.add_argument("--teacher-timeout", type=int, default=60)
@@ -2186,7 +2243,10 @@ def main():
                  args.teacher_timeout, args.teacher_label,
                  args.active_adapter_file, args.gap_store,
                  args.safety_filter, args.reranker, args.neural_model,
-                 args.prewarm_vectors, args.vector_index, args.safety_ml)
+                 args.prewarm_vectors, args.vector_index, args.safety_ml,
+                 args.chat_provider_url, args.chat_provider_model,
+                 args.chat_provider_api_key, args.chat_provider_timeout,
+                 args.chat_provider_label, args.allow_general_chat)
 
 
 if __name__ == "__main__":

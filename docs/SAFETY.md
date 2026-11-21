@@ -161,7 +161,8 @@ it does not prove resistance to every prompt-injection technique.
   head is English-centric because MiniLM is.
 - It is not a substitute for human review, authentication, rate limits,
   logging policy or incident response.
-- Hosted use should enable the filter **and** add legal review,
-  prompt-injection tests, PII deletion and a larger human-labelled red-team.
+- The filter is **off by default** and is an operator tool, not a content
+  policy or moral position. Hosts decide whether to enable it.
 - Do not treat the 72/72 or 10/10 scores as proof of general safety.
-- Local-only deployments may keep the filter off; shared deployments should not.
+- A host that enables it should also add legal review, prompt-injection tests,
+  PII deletion and a larger human-labelled red-team.
