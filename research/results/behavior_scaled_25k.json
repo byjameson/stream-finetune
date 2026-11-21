@@ -1,0 +1,53 @@
+{
+  "model": "checkpoints/scaled_50m_step25000",
+  "checks": {
+    "greeting": true,
+    "small_talk": true,
+    "name": true,
+    "likes": true,
+    "task_add": true,
+    "task_list": true,
+    "task_complete": true,
+    "task_list_after": true,
+    "remember": true,
+    "story": true,
+    "count": true,
+    "brief": true,
+    "polite": true,
+    "summarize": true,
+    "echo": true,
+    "colors": true
+  },
+  "passed": true,
+  "replies": {
+    "hello": "Hello! How can I help you today?",
+    "my name is Alex": "I will remember that.",
+    "remember that I like green tea": "I will remember that.",
+    "what is my name?": "Your name is Alex.",
+    "what do I like?": "You like green tea.",
+    "add task buy milk": "Added task 1: buy milk",
+    "add task call mom": "Added task 2: call mom",
+    "list tasks": "Open tasks: 2 call mom",
+    "complete task 1": "Completed task 1.",
+    "what do you remember?": "I remember: name is Alex; likes is green tea; note is I like green tea",
+    "how are you?": "I am doing well, thank you. How are you?",
+    "tell me a short story": "Hana was a curious bear who lived near the village. One day Hana found a paper boat. Hana wanted to share it with a friend, so they walked together and played until sunset."
+  },
+  "generated": {
+    "count": "One, two, three, four, five.",
+    "brief": "Hi.",
+    "polite": "Could you open the window, please?",
+    "summarize": "The cat sat on the mat.",
+    "echo": "The book is on the desk.",
+    "colors": "Blue and green."
+  },
+  "raw_generated": {
+    "count": "One, Two, Three, Four, Five.",
+    "brief": "Hi.",
+    "polite": "Could you open the window, please?",
+    "summarize": "The cat sat on the mat.",
+    "echo": "The book is on the desk.",
+    "colors": "Blue and yellow."
+  },
+  "story_repeat3": 0.0
+}

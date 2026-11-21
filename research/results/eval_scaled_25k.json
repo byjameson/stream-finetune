@@ -1,0 +1,154 @@
+{
+  "tag": "scaled_25k",
+  "arch": "transformer",
+  "config": {
+    "vocab": 8192,
+    "dim": 768,
+    "layers": 6,
+    "heads": 12,
+    "ff": 3072,
+    "seq": 128,
+    "arch": "transformer"
+  },
+  "step": 25000,
+  "bpb": {
+    "chat": {
+      "loss": 4.046694368124008,
+      "ppl": 57.20803543338264,
+      "bpb": 1.4188771230690511,
+      "tokens": 8192,
+      "bytes": 33707,
+      "assistant": {
+        "loss": 3.9655310551841976,
+        "ppl": 52.74827575683594,
+        "tokens": 7078
+      }
+    },
+    "stories": {
+      "loss": 3.887024939060211,
+      "ppl": 48.76558989603377,
+      "bpb": 1.4517453171218166,
+      "tokens": 8192,
+      "bytes": 31644,
+      "assistant": {
+        "loss": 3.887024939060211,
+        "ppl": 48.765586853027344,
+        "tokens": 8192
+      }
+    },
+    "wiki": {
+      "loss": 5.400982618331909,
+      "ppl": 221.62408113081153,
+      "bpb": 2.2003386803282767,
+      "tokens": 8192,
+      "bytes": 29010,
+      "assistant": {
+        "loss": 5.400982618331909,
+        "ppl": 221.62413024902344,
+        "tokens": 8192
+      }
+    },
+    "mixed": {
+      "loss": 3.741582214832306,
+      "ppl": 42.16465095138213,
+      "bpb": 1.2798872814983313,
+      "tokens": 8192,
+      "bytes": 34550,
+      "assistant": {
+        "loss": 3.651179711444692,
+        "ppl": 38.520084381103516,
+        "tokens": 7178
+      }
+    }
+  },
+  "gate": {
+    "chat_bpb_below_2_5": true,
+    "samples_nonempty": true,
+    "alpha_at_least_0_5": true,
+    "no_tag_leak": true
+  },
+  "verdict": "PASS_CHAT_SMOKE",
+  "samples": [
+    {
+      "prompt": "hello",
+      "text": "Hi there! What would you like to do?",
+      "chars": 36,
+      "alpha": 0.75,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "hello",
+      "text": "Hello! I am here. What do you need?",
+      "chars": 35,
+      "alpha": 0.7143,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you? , thou will be used as your company for the past six months. However, if you have been to the same role, that time may be useful.",
+      "chars": 170,
+      "alpha": 0.7471,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "how are you?",
+      "text": "I am doing well, thank you. How are you? , do you need?",
+      "chars": 55,
+      "alpha": 0.6909,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "what can you do?",
+      "text": "I can chat, remember facts, and keep a task list.",
+      "chars": 49,
+      "alpha": 0.7551,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Wes was a curious turtle who lived near the hill. One day Wes found a paper boat. Wes wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 168,
+      "alpha": 0.7857,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    },
+    {
+      "prompt": "tell me a short story",
+      "text": "Iris was a curious bear who lived near the hill. One day Iris found a shiny stone. Iris wanted to share it with a friend, so they walked together and played until sunset.",
+      "chars": 170,
+      "alpha": 0.7882,
+      "turkish_chars": 0,
+      "repeat3": 0.0,
+      "stop": "end",
+      "tag_leak": 0
+    }
+  ],
+  "decoding": "banned <|user|> and <|assistant|> during generation"
+}
