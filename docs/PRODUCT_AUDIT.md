@@ -120,7 +120,8 @@ service is operated; per-source data-licence review still recommended.
 
 - **376 tests** pass locally.
 - CI runs CPU tests, deterministic safety/injection red-team, and package build.
-- CI for the hybrid-retrieval commit is verified after push.
+- CI `6b2c126` green after the hybrid retrieval candidate stage, product,
+  behavior, safety and red-team gates.
 
 ## 8. Release state
 
