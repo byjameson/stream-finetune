@@ -58,8 +58,33 @@ curl -X POST http://127.0.0.1:8013/v1/teach \
 
 The first writes to the document index immediately. The second only enters the
 reviewed skill queue; it does **not** change weights until a gated update is
-reviewed and accepted. One-command demo:
-`scripts/demo_all.ps1`.
+reviewed and accepted.
+
+Research and ingest:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/research \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"Ankara history","limit":2}'
+```
+
+Wikipedia extracts are stored with source URLs. Arbitrary URL ingest is
+opt-in (`--allow-url-fetch`), size-capped and blocks private/loopback hosts.
+
+Agent/session use:
+
+```bash
+curl -X POST http://127.0.0.1:8013/v1/agent/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"session_id":"user-1","message":"add task buy milk"}'
+```
+
+Each session keeps its own memory/tasks; `/v1/chat/completions` accepts the
+same `session_id` for OpenAI-style clients. Tools cover memory, tasks, local
+documents, time and Wikipedia research. The model only handles open-ended
+wording; it is not a general reasoning agent.
+
+One-command demo: `scripts/demo_all.ps1`.
 
 When a question matches indexed text, the reply quotes the matching notes with
 their source and adds `not professional advice`. If nothing matches, the tiny

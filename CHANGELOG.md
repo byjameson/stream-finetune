@@ -208,6 +208,13 @@
   queue. Verified live: fact 200, skill 200, queue file updated, grounded
   codename chat returned with source. Added one-command
   `scripts/demo_all.ps1` with adapter + demo note + browser.
+- Web research: `POST /v1/research` indexes Wikipedia extracts with source
+  URLs; `POST /v1/learn_url` is opt-in, size-capped and blocks private/loopback
+  hosts. Research writes to DocMemory, never model weights.
+- Agent runtime: `POST /v1/agent/chat` and `session_id` on
+  `/v1/chat/completions` keep per-user memory/tasks and route tools (memory,
+  tasks, docs, time, research). Verified live: add/list task, document-grounded
+  codename answer, session task completion via the OpenAI-style endpoint.
 - Crypto bootstrap/start-date robustness: P(SMA-50 beats buy-hold) is 0.736
   BTC / 0.604 ETH; all overlapping start dates win, but the result is FRAGILE,
   not a proven edge. No real money or keys.
@@ -218,7 +225,7 @@
 - Horizon/cost sweep: 15m/1h/4h x taker/maker, all 24 rows negative. Best is
   4h breakout maker -11.3% vs buy-hold +48.3%; at maker costs break-even is
   ~52% and it reaches 48.4%. NO_EDGE across horizons.
-- 221 tests;
+- 225 tests;
 - Spiking replay research: 20% old-data replay keeps 99.2% of the new-task gain
   and nearly eliminates forgetting; controlled seed-1 arms show replay alone
   keeps 98.9%, while replay+shadow-rollback keeps only 16.0%.
