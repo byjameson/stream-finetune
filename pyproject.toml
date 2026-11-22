@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "streamft"
 version = "1.0.0"
-description = "streamft: fine-tune models that do not fit in VRAM with streaming NF4 and LoRA. Atom Zero is the separate atomzero package."
+description = "streamft: fine-tune models that do not fit in VRAM with streaming NF4 and LoRA."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
@@ -56,7 +56,7 @@ Homepage = "https://github.com/byjameson/stream-finetune"
 Source = "https://github.com/byjameson/stream-finetune"
 Documentation = "https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md"
 "Trainer guide" = "https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md"
-"Atom Zero package" = "https://pypi.org/project/atomzero/"
+"Benchmarks" = "https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md"
 Issues = "https://github.com/byjameson/stream-finetune/issues"
 LinkedIn = "https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/"
 

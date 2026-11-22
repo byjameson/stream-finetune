@@ -35,9 +35,8 @@ result is not a final quality claim until the run completes.
 The run was stopped after the 1,500-step eval because it was not improving:
 **1.3256 bpb** vs **1.327** for 21M and **1.336** for 4.3M. The expected 7-hour
 run was not worth continuing without a data/architecture change. The checkpoint
-is resumable, but the product path moved to the pretrained verified assistant
-([`LOCAL_ASSISTANT.md`](LOCAL_ASSISTANT.md)). This is a negative scaling result,
-not a final model.
+is resumable, but the product path moved to the pretrained verified assistant.
+This is a negative scaling result, not a final model.
 
 ## Evaluation plan
 

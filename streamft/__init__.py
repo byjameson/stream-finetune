@@ -5,8 +5,7 @@ transformer block on the GPU at a time and keeps a LoRA adapter trainable.
 Measured on a 6 GB RTX 3050 Laptop: a 32B model at 1024 tokens/step, 36.7 tok/s,
 4.61 GB peak.
 
-Atom Zero is a **separate package** (``pip install atomzero``); this distribution
-contains the trainer only.
+This distribution contains the trainer only.
 
 Modules:
 

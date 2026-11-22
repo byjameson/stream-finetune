@@ -1,6 +1,6 @@
 # Support the work
 
-Atom Zero is developed on a 6 GB laptop GPU. Donations go toward compute,
+streamft is developed on a 6 GB laptop GPU. Donations go toward compute,
 larger evaluation runs and data work. There is no paid support, token, or
 investment offer. Donations do not buy influence over results or reviews.
 

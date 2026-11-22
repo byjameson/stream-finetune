@@ -15,8 +15,6 @@
   streamft spiking  train, inspect, generate from, or serve a small spiking LM
   streamft assistant ask/serve a pretrained instruction model with verified RAG
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
-
-Atom Zero is a separate package: ``pip install atomzero``.
 """
 from __future__ import annotations
 

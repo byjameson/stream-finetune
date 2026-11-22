@@ -1,10 +1,9 @@
 # streamft - fine-tune models that do not fit in VRAM
 
-[![release](https://img.shields.io/badge/release-1.0.0-2b6f6a)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-1.0.0-2b6f6a)](#) [![tests](https://img.shields.io/badge/tests-206-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > Stream a pre-quantized NF4 model from disk, materialize one transformer block
-> on the GPU at a time, and train a LoRA adapter on a 6 GB laptop. Atom Zero is a
-> separate `atomzero` package and is not required for training.
+> on the GPU at a time, and train a LoRA adapter on a 6 GB laptop.
 
 ```powershell
 pip install streamft
@@ -17,41 +16,13 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - 7B end-to-end demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
 
-## Atom Zero is a separate package
-
-The 49.2M local, source-cited assistant now lives in its own distribution:
-
-```powershell
-pip install atomzero==0.1.6
-atomzero-quickstart
-```
-
-The first run downloads the ~197 MB checkpoint/tokenizer from Hugging Face,
-seeds a demo corpus and opens the local UI. You do **not** need to clone the
-streamft repository or install the trainer.
-
-- PyPI: <https://pypi.org/project/atomzero/0.1.6/>
-- Source/README: <https://github.com/byjameson/atom-zero>
-- Model card: <https://huggingface.co/byjameson/atom-zero-49m>
-
-`streamft` 1.0 contains the trainer only. The old `streamft.chat_server` and
-`streamft.doc_memory` imports moved to `atomzero`; see the migration guide:
-<https://github.com/byjameson/stream-finetune/blob/main/docs/MIGRATION_1.0.md>.
-
 ## Published
-
-Atom Zero is published on seven canonical surfaces: GitHub, Hugging Face, PyPI,
-dev.to, Medium, LinkedIn and ModelScope.
 
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
-- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.6/>
-- Atom Zero GitHub: <https://github.com/byjameson/atom-zero>
-- Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
-- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
-- Atom Zero launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
-- Atom Zero Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
-- LinkedIn: <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
+- Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
+- Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
+- 7B end-to-end demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
 
 ## Contact
 
@@ -75,19 +46,6 @@ measured speed where a measurement exists (and says so where it doesn't).
 **7B end-to-end on 6 GB:** [train an adapter, serve it on the 4-bit base, call it through
 `/v1/chat/completions`](https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
 3.14 s. This is the concrete “it works” scenario, not a benchmark.
-
-## Atom Zero (moved out of streamft)
-
-Atom Zero is not part of the streamft 1.0 wheel. It has its own dependencies,
-tests and CLI:
-
-```powershell
-pip install atomzero
-atomzero --model checkpoints/transformer_behavior_50m_scaled --tokenizer data/chat_en_bpe8k.json --docs data/docs.db
-```
-
-See [`atom-zero/README.md`](https://github.com/byjameson/atom-zero)
-for documents, citations, evidence and constrained tool plans.
 
 ## Quick start (installed package, nothing else needed)
 
@@ -486,8 +444,6 @@ changed adapter hash. If it does not, that is a bug report worth posting with th
 
 ```
 streamft/            the trainer engine (package)
-atom-zero/          standalone Atom Zero repo
-packages/atomzero/  monorepo mirror during the transition
 tools/finetune.py    one-command wrapper with the measured presets
 scripts/             longctx_sweep.py — the LM-path measurement sweep
 GUIDE_6GB_32B.md     practical guide
@@ -817,5 +773,5 @@ over results or reviews.
 
 Apache-2.0 for code and model weights — see [`LICENSE`](https://github.com/byjameson/stream-finetune/blob/main/LICENSE) and
 [`NOTICE`](https://github.com/byjameson/stream-finetune/blob/main/NOTICE). The notice lists the training-data sources and their
-original licences; dataset text remains under those terms. Atom Zero is
+original licences; dataset text remains under those terms. The trainer is
 open source; third-party hosting is the host's responsibility.

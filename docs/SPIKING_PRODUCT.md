@@ -369,7 +369,7 @@ streamft assistant serve --model models/Qwen2.5-1.5B-Instruct \
   --db data/knowledge.db --port 8014
 ```
 
-See [`LOCAL_ASSISTANT.md`](LOCAL_ASSISTANT.md). The 50M/500M spiking run was
+See the separate local-assistant project. The 50M/500M spiking run was
 stopped at 1,500 steps because it did not improve on 21M (1.3256 vs 1.327 bpb);
 the spiking artifacts remain a research testbed.
 
