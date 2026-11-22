@@ -25,6 +25,6 @@ pip install atomzero==0.1.1
 ## Links
 
 - PyPI: <https://pypi.org/project/atomzero/0.1.1/>
-- Source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- Source: <https://github.com/byjameson/atom-zero>
 - Project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - Contact: **gokhancava@gmail.com**

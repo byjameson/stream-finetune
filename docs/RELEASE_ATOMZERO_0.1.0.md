@@ -58,7 +58,7 @@ the shared adapter helper into a tiny common package if needed.
 ## Links
 
 - PyPI: <https://pypi.org/project/atomzero/0.1.0/>
-- Source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- Source: <https://github.com/byjameson/atom-zero>
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - Documents/citations: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 - Tool plans: <https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md>

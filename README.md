@@ -22,7 +22,7 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512
 The 49.2M local, source-cited assistant now lives in its own distribution:
 
 ```powershell
-pip install atomzero==0.1.3
+pip install atomzero==0.1.5
 atomzero-quickstart
 ```
 
@@ -30,8 +30,8 @@ The first run downloads the ~197 MB checkpoint/tokenizer from Hugging Face,
 seeds a demo corpus and opens the local UI. You do **not** need to clone the
 streamft repository or install the trainer.
 
-- PyPI: <https://pypi.org/project/atomzero/0.1.3/>
-- Source/README: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- PyPI: <https://pypi.org/project/atomzero/0.1.5/>
+- Source/README: <https://github.com/byjameson/atom-zero>
 - Model card: <https://huggingface.co/byjameson/atom-zero-49m>
 
 `streamft` 1.0 contains the trainer only. The old `streamft.chat_server` and
@@ -40,12 +40,14 @@ streamft repository or install the trainer.
 
 ## Published
 
+Atom Zero is published on five canonical surfaces: GitHub, Hugging Face, PyPI,
+dev.to and Medium.
+
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
-- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.3/>
-- streamft ModelScope: <https://modelscope.cn/models/byjameson/streamft>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.5/>
+- Atom Zero GitHub: <https://github.com/byjameson/atom-zero>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
-- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Atom Zero launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - Atom Zero Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
 
@@ -53,7 +55,6 @@ streamft repository or install the trainer.
 
 - **Email:** gokhancava@gmail.com
 - **GitHub issues:** <https://github.com/byjameson/stream-finetune/issues>
-- **LinkedIn:** <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
 
 ## streamft: fine-tune a 32B model on a 6 GB laptop GPU
 
@@ -82,7 +83,7 @@ pip install atomzero
 atomzero --model checkpoints/transformer_behavior_50m_scaled --tokenizer data/chat_en_bpe8k.json --docs data/docs.db
 ```
 
-See [`packages/atomzero/README.md`](https://github.com/byjameson/stream-finetune/blob/main/packages/atomzero/README.md)
+See [`atom-zero/README.md`](https://github.com/byjameson/atom-zero)
 for documents, citations, evidence and constrained tool plans.
 
 ## Quick start (installed package, nothing else needed)
@@ -482,7 +483,8 @@ changed adapter hash. If it does not, that is a bug report worth posting with th
 
 ```
 streamft/            the trainer engine (package)
-packages/atomzero/   standalone Atom Zero package
+atom-zero/          standalone Atom Zero repo
+packages/atomzero/  monorepo mirror during the transition
 tools/finetune.py    one-command wrapper with the measured presets
 scripts/             longctx_sweep.py — the LM-path measurement sweep
 GUIDE_6GB_32B.md     practical guide

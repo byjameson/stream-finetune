@@ -6,12 +6,13 @@ weights; the model handles wording and behavior while deterministic tools,
 documents, memory and citations do the rest.
 
 This is the standalone **`atomzero`** package. The low-VRAM trainer is a separate
-package and is **not required** to run Atom Zero.
+package and is **not required** to run Atom Zero. Atom Zero is published on five
+canonical surfaces: GitHub, Hugging Face, PyPI, dev.to and Medium.
 
 ## Install
 
 ```powershell
-pip install atomzero==0.1.4
+pip install atomzero==0.1.5
 ```
 
 Optional local MiniLM reranker:
@@ -210,15 +211,14 @@ the exact rules. It is an operator tool, not a hosted content policy.
 
 ## Links
 
-- PyPI: <https://pypi.org/project/atomzero/0.1.4/>
+- PyPI: <https://pypi.org/project/atomzero/0.1.5/>
 - GitHub source: <https://github.com/byjameson/atom-zero>
-- GitHub release: <https://github.com/byjameson/atom-zero/releases/tag/v0.1.4>
+- GitHub release: <https://github.com/byjameson/atom-zero/releases/tag/v0.1.5>
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - Documents: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 - Tool plans: <https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md>
 - Benchmarks: <https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
-- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Contact: **gokhancava@gmail.com**
 
 Apache-2.0 for code and weights; data attribution in `NOTICE`.

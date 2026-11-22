@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atomzero"
-version = "0.1.4"
+version = "0.1.5"
 description = "Atom Zero: a local source-cited 49.2M assistant with RAG, documents, evidence and constrained tools."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,7 +36,6 @@ Homepage = "https://github.com/byjameson/atom-zero"
 Source = "https://github.com/byjameson/atom-zero"
 Documentation = "https://github.com/byjameson/atom-zero#readme"
 Issues = "https://github.com/byjameson/atom-zero/issues"
-LinkedIn = "https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/"
 
 [tool.setuptools.packages.find]
 where = ["src"]

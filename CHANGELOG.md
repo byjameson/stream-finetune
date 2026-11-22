@@ -1,5 +1,25 @@
 # Changelog
 
+## atomzero 0.1.5 - canonical surfaces cleanup (2026-11-22)
+
+- Removed the remaining ModelScope link from the published package description
+  and the LinkedIn project URL from package metadata.
+- Documented the five canonical Atom Zero surfaces: GitHub, Hugging Face, PyPI,
+  dev.to and Medium.
+- No model/runtime changes; weights remain `0.8.0`.
+- Release notes: [`docs/RELEASE_ATOMZERO_0.1.5.md`](docs/RELEASE_ATOMZERO_0.1.5.md).
+
+## atomzero 0.1.4 - standalone repository (2026-11-22)
+
+- Moved the Atom Zero package to its own GitHub repository:
+  <https://github.com/byjameson/atom-zero>.
+- PyPI project URLs now point to the standalone repository.
+- Current Atom Zero links target the `atom-zero` repository, `atomzero` PyPI,
+  Hugging Face and the two launch articles only. ModelScope/LinkedIn are no
+  longer maintained release surfaces.
+- No model/runtime changes; weights remain `0.8.0`.
+- Release notes: [`docs/RELEASE_ATOMZERO_0.1.4.md`](docs/RELEASE_ATOMZERO_0.1.4.md).
+
 ## atomzero 0.1.3 - full package description (2026-11-22)
 
 - Expanded the standalone GitHub/PyPI README to cover the full system: model,

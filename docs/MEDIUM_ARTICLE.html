@@ -114,7 +114,7 @@ weights_changed: false
 </ul>
 <p>The closest description is: a compact <strong>agent harness</strong> with a small language model inside. The harness is the reusable asset.</p>
 <h2>Try it</h2>
-<pre><code class="language-powershell">pip install atomzero==0.1.2
+<pre><code class="language-powershell">pip install atomzero==0.1.5
 atomzero-quickstart
 </code></pre>
 <p>Atom Zero is the standalone <code>atomzero</code> package. The first <code>atomzero-quickstart</code> run downloads the ~197 MB checkpoint/tokenizer from Hugging Face, seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the server and opens the browser. <code>streamft</code> remains the low-VRAM trainer and is not required. Try:</p>
@@ -139,11 +139,10 @@ Add task buy milk / My name is Alex              -&gt; local tools + memory
 <p>The honest gaps are model capability, tool planning, multilingual quality and a larger evaluation set. The current escape hatch is the optional local provider. Training a larger model is a separate compute/data decision, not a prompt tweak.</p>
 <p>If you want to inspect the claims:</p>
 <ul>
-<li>GitHub: https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero</li>
-<li>PyPI: https://pypi.org/project/atomzero/0.1.2/</li>
+<li>GitHub: https://github.com/byjameson/atom-zero</li>
+<li>PyPI: https://pypi.org/project/atomzero/0.1.5/</li>
 <li>streamft trainer: https://pypi.org/project/streamft/1.0.0/</li>
 <li>Hugging Face: https://huggingface.co/byjameson/atom-zero-49m</li>
-<li>ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m</li>
 <li>Model card: https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md</li>
 <li>Benchmarks: https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md</li>
 <li>Original dev.to post: https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m</li>
@@ -151,4 +150,4 @@ Add task buy milk / My name is Alex              -&gt; local tools + memory
 <p>Apache-2.0 for code and weights. Built on a 6 GB RTX 3050 laptop.</p>
 <hr />
 <p><em>If you build local RAG or small-model agents, I would like to hear what breaks first. The most useful feedback is a failing question with a source and an expected answer.</em></p>
-<p><strong>Contact:</strong> gokhancava@gmail.com · <a href="https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/">LinkedIn</a> · <a href="https://github.com/byjameson/stream-finetune">GitHub</a></p>
+<p><strong>Contact:</strong> gokhancava@gmail.com · <a href="https://github.com/byjameson/atom-zero">GitHub</a></p>

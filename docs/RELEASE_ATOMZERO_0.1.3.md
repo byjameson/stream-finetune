@@ -30,7 +30,7 @@ and opens the local UI. No streamft checkout is required.
 ## Links
 
 - PyPI: <https://pypi.org/project/atomzero/0.1.3/>
-- GitHub source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- GitHub source: <https://github.com/byjameson/atom-zero>
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/atomzero-v0.1.3>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
