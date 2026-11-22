@@ -11,7 +11,7 @@ package and is **not required** to run Atom Zero.
 ## Install
 
 ```powershell
-pip install atomzero==0.1.3
+pip install atomzero==0.1.4
 ```
 
 Optional local MiniLM reranker:
@@ -210,8 +210,9 @@ the exact rules. It is an operator tool, not a hosted content policy.
 
 ## Links
 
-- PyPI: <https://pypi.org/project/atomzero/0.1.3/>
-- GitHub source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- PyPI: <https://pypi.org/project/atomzero/0.1.4/>
+- GitHub source: <https://github.com/byjameson/atom-zero>
+- GitHub release: <https://github.com/byjameson/atom-zero/releases/tag/v0.1.4>
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - Documents: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 - Tool plans: <https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md>
