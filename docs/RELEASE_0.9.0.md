@@ -29,6 +29,8 @@ the existing product/behavior benchmarks are unchanged from `0.8.0`.
   no longer moves to the end under the last heading.
 - The default install is the assistant runtime; `streamft[train]` carries the
   training stack and `streamft[neural]` the optional MiniLM reranker.
+- ModelScope receives the card without HF YAML front matter; keeping HF
+  front matter on ModelScope caused its model page to return 500.
 
 ## Document benchmark
 

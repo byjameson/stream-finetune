@@ -72,6 +72,15 @@ def publish_hf(folder: Path, repo_id: str) -> None:
     print(f"uploaded Hugging Face: https://huggingface.co/{repo_id}")
 
 
+def _strip_hf_front_matter(text: str) -> str:
+    """ModelScope renders HF YAML front matter poorly (it can return 500)."""
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            return text[end + 5:].lstrip("\n")
+    return text
+
+
 def publish_modelscope(folder: Path, model_id: str) -> None:
     token = os.environ.get("MODELSCOPE_API_TOKEN") or os.environ.get(
         "MODELSCOPE_TOKEN")
@@ -86,6 +95,22 @@ def publish_modelscope(folder: Path, model_id: str) -> None:
     except Exception as exc:  # already exists is fine
         print(f"ModelScope create_model: {exc}")
     api.upload_folder(repo_id=model_id, folder_path=str(folder))
+    card = folder / "README.md"
+    if card.exists():
+        original = card.read_text(encoding="utf-8")
+        stripped = _strip_hf_front_matter(original)
+        if stripped != original:
+            tmp = folder / ".README.modelscope.md"
+            tmp.write_text(stripped, encoding="utf-8")
+            try:
+                api.upload_file(
+                    repo_id=model_id,
+                    path_or_fileobj=str(tmp),
+                    path_in_repo="README.md",
+                    commit_message="docs: ModelScope model card without HF front matter",
+                )
+            finally:
+                tmp.unlink(missing_ok=True)
     print(f"uploaded ModelScope: https://modelscope.cn/models/{model_id}")
 
 

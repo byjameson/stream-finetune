@@ -29,6 +29,8 @@ Release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
 - Packaging: assistant core no longer installs the training stack by default;
   use `streamft[train]` for the trainer and `streamft[neural]` for the optional
   MiniLM reranker. Added an `atomzero` console entry point.
+- `scripts/publish_model.py` strips HF YAML front matter for ModelScope so its
+  model page does not return 500.
 
 ## 0.8.3 - full project map (2026-11-22)
 
