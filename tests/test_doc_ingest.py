@@ -3,8 +3,8 @@ import io
 
 import pytest
 
-from streamft.doc_ingest import DocumentExtractError, extract_bytes
-from streamft.doc_memory import DocMemory
+from atomzero.doc_ingest import DocumentExtractError, extract_bytes
+from atomzero.doc_memory import DocMemory
 
 
 def _pdf_bytes(text: str = "The launch code is L-7781.") -> bytes:
@@ -186,7 +186,7 @@ def test_add_blocks_keeps_page_and_section_and_replaces(tmp_path):
 
 
 def test_ingest_upload_pdf_returns_page_metadata(tmp_path):
-    from streamft.chat_server import ingest_upload
+    from atomzero.chat_server import ingest_upload
 
     docs = DocMemory(tmp_path / "docs.db")
     try:
@@ -211,7 +211,7 @@ def test_http_raw_upload_over_json_body_limit(tmp_path):
     import urllib.request
     from http.server import ThreadingHTTPServer
 
-    from streamft import chat_server
+    from atomzero import chat_server
 
     docs = DocMemory(tmp_path / "docs.db")
     old = dict(chat_server._state)
@@ -252,7 +252,7 @@ def test_http_pdf_upload_returns_page_citation(tmp_path):
     import urllib.request
     from http.server import ThreadingHTTPServer
 
-    from streamft import chat_server
+    from atomzero import chat_server
 
     docs = DocMemory(tmp_path / "docs.db")
     old = dict(chat_server._state)

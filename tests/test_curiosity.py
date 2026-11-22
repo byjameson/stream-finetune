@@ -1,7 +1,7 @@
-from streamft.doc_memory import DocMemory
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.research_queue import ResearchQueue
-from streamft.curiosity import propose_from_gaps
+from atomzero.doc_memory import DocMemory
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue
+from atomzero.curiosity import propose_from_gaps
 
 
 def _docs(tmp_path):

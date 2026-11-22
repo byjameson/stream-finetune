@@ -14,9 +14,9 @@ import tempfile
 import time
 from pathlib import Path
 
-from streamft.doc_memory import DocMemory
-from streamft.teacher_notes import add_teacher_note
-from streamft.teacher_provider import TeacherProvider
+from atomzero.doc_memory import DocMemory
+from atomzero.teacher_notes import add_teacher_note
+from atomzero.teacher_provider import TeacherProvider
 
 try:
     from research.chat_human import ChatHuman

@@ -11,7 +11,7 @@ from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import fixed_windows, load_tokens
 
 from streamft.lora import apply_adapter
-from streamft.transformer import TransformerLM, generate
+from atomzero.transformer import TransformerLM, generate
 
 try:
     from research.chat_eval import evaluate_assistant, metrics

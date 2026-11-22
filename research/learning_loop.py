@@ -24,7 +24,7 @@ import sys
 import time
 from pathlib import Path
 
-from streamft.feedback import FeedbackError, FeedbackStore
+from atomzero.feedback import FeedbackError, FeedbackStore
 
 ROOT = Path(__file__).resolve().parents[1]
 

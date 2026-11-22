@@ -16,8 +16,8 @@ from pathlib import Path
 
 import torch
 
-from streamft.doc_memory import best_snippet
-from streamft.transformer import TransformerLM, generate as transformer_generate
+from atomzero.doc_memory import best_snippet
+from atomzero.transformer import TransformerLM, generate as transformer_generate
 
 try:
     from research.chat_eval import chat_generate
@@ -464,7 +464,7 @@ def main():
                                       args.tokenizer, args.adapter)
     docs = None
     if args.docs:
-        from streamft.doc_memory import DocMemory
+        from atomzero.doc_memory import DocMemory
         docs = DocMemory(args.docs)
     human = ChatHuman(args.memory, model, tokenizer, device, args.arch, docs)
 

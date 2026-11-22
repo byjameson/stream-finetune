@@ -2,7 +2,7 @@ import json
 import time
 
 from research import research_worker
-from streamft.research_queue import ResearchQueue
+from atomzero.research_queue import ResearchQueue
 
 
 def test_worker_lock_blocks_overlap_and_releases(tmp_path):
@@ -49,7 +49,7 @@ def test_worker_runs_only_approved_and_writes_log(tmp_path, monkeypatch):
                  "preview": "Ankara is the capital of Turkey."}]
 
     monkeypatch.setattr(
-        "streamft.web_research.wikipedia_research", fake_fetcher)
+        "atomzero.web_research.wikipedia_research", fake_fetcher)
     log = tmp_path / "worker.jsonl"
     lock = tmp_path / "worker.lock"
     code = research_worker.main([

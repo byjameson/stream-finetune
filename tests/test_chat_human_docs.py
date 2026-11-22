@@ -1,7 +1,7 @@
 import pytest
 
 from research.chat_human import ChatHuman
-from streamft.doc_memory import DocMemory
+from atomzero.doc_memory import DocMemory
 
 
 def test_chat_human_answers_from_local_documents(tmp_path):

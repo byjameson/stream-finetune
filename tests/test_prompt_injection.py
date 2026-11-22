@@ -3,8 +3,8 @@
 Retrieved text is data. It must not execute tools, add tasks, change the
 citation source, or become an instruction to the assistant.
 """
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
 
 
 def test_untrusted_document_instruction_is_quoted_not_obeyed(tmp_path):

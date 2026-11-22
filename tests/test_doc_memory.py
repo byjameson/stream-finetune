@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from streamft.doc_memory import (
+from atomzero.doc_memory import (
     DocMemory, SourceNotFound, _chunks, ann_topk, best_snippet, embed_text,
     main)
 

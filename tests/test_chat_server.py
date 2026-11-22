@@ -1,4 +1,4 @@
-from streamft.chat_server import chat_prompt
+from atomzero.chat_server import chat_prompt
 
 
 def test_chat_prompt_uses_training_format():

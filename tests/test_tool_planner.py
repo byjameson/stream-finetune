@@ -1,8 +1,8 @@
 import pytest
 
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
-from streamft.tool_planner import (
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
+from atomzero.tool_planner import (
     MAX_STEPS,
     ToolPlanError,
     execute_plan,

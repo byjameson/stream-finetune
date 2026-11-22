@@ -4,7 +4,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from streamft.teacher_provider import TeacherProvider, TeacherProviderError
+from atomzero.teacher_provider import TeacherProvider, TeacherProviderError
 
 
 class _Provider(BaseHTTPRequestHandler):

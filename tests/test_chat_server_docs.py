@@ -7,12 +7,12 @@ from http.server import ThreadingHTTPServer
 
 import pytest
 
-from streamft import chat_server
-from streamft.doc_memory import DocMemory
-from streamft.feedback import FeedbackStore
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.research_queue import ResearchQueue
-from streamft.safety import SafetyFilter
+from atomzero import chat_server
+from atomzero.doc_memory import DocMemory
+from atomzero.feedback import FeedbackStore
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue
+from atomzero.safety import SafetyFilter
 
 
 def _post(url, payload):
@@ -158,7 +158,7 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         "allow_url_fetch": True, "wiki_lang": "en",
         "session_dir": str(tmp_path / "sessions"), "sessions": {},
     })
-    import streamft.web_research as wr
+    import atomzero.web_research as wr
     monkeypatch.setattr(wr, "index_url", lambda docs, url: {
         "source": url, "title": "T", "chunks": 1, "preview": "p"})
     monkeypatch.setattr(wr, "wikipedia_research", lambda docs, q, lang, limit: [
@@ -698,7 +698,7 @@ def test_http_research_queue_requires_approval_and_cites(tmp_path, monkeypatch):
                  "preview": "Ankara is the capital of Turkey.",
                  "context": "Ankara is the capital of Turkey. It is in Anatolia."}]
 
-    import streamft.web_research as wr
+    import atomzero.web_research as wr
     monkeypatch.setattr(wr, "wikipedia_research", fake_research)
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)

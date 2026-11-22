@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from research.learning_loop import main as learning_main, split_rows
-from streamft.feedback import (
+from atomzero.feedback import (
     FeedbackError, FeedbackNotFound, FeedbackStore)
 
 

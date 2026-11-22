@@ -1,6 +1,6 @@
 import pytest
 
-from streamft.knowledge_gaps import (
+from atomzero.knowledge_gaps import (
     GapNotFound, KnowledgeGapError, KnowledgeGapStore)
 
 

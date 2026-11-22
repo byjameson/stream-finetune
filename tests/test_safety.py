@@ -1,6 +1,6 @@
 import pytest
 
-from streamft.safety import SafetyFilter
+from atomzero.safety import SafetyFilter
 
 
 @pytest.mark.parametrize("prompt,category", [

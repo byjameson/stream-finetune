@@ -5,9 +5,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from streamft import web_research
-from streamft.doc_memory import DocMemory
-from streamft.web_research import html_to_text, index_url, wikipedia_research
+from atomzero import web_research
+from atomzero.doc_memory import DocMemory
+from atomzero.web_research import html_to_text, index_url, wikipedia_research
 
 
 class _Page(BaseHTTPRequestHandler):

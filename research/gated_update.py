@@ -21,7 +21,7 @@ import torch
 
 from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import fixed_windows, load_tokens
-from streamft.transformer import TransformerLM
+from atomzero.transformer import TransformerLM
 
 try:
     from research.chat_eval import evaluate_assistant
@@ -119,7 +119,7 @@ def metrics(model_path: str, data_path: str, adapter: str = "") -> dict:
 
 
 def clean_smoke(model, tok) -> tuple[bool, list[dict]]:
-    from streamft.transformer import generate
+    from atomzero.transformer import generate
     uid = tok.token_to_id("<|user|>")
     aid = tok.token_to_id("<|assistant|>")
     prompts = ["hello", "how are you?", "what can you do?",

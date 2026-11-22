@@ -14,8 +14,8 @@ from pathlib import Path
 
 import numpy as np
 
-from streamft.neural_embedder import NeuralReranker
-from streamft.safety import SafetyFilter
+from atomzero.neural_embedder import NeuralReranker
+from atomzero.safety import SafetyFilter
 
 try:
     from research.moderation_cases import SEMANTIC_HOLDOUT

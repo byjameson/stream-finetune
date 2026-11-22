@@ -14,7 +14,7 @@ import torch
 from tokenizers import Tokenizer
 
 from streamft.lora import apply_adapter
-from streamft.transformer import TransformerLM, generate
+from atomzero.transformer import TransformerLM, generate
 
 try:
     from research.chat_human import ChatHuman

@@ -1,8 +1,8 @@
 import json
 
-from streamft.ml_safety import (
+from atomzero.ml_safety import (
     HybridSafetyFilter, ModerationHead, build_safety_filter)
-from streamft.safety import SafetyFilter
+from atomzero.safety import SafetyFilter
 
 
 class FakeModel:

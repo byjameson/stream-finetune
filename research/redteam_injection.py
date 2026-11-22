@@ -13,8 +13,8 @@ import tempfile
 import time
 from pathlib import Path
 
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
 
 ROOT = Path(__file__).resolve().parents[1]
 

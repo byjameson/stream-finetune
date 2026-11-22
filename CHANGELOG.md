@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 - streamft trainer only (2026-11-22)
+
+- Removed the bundled Atom Zero modules and `atomzero` console script from the
+  streamft wheel; `streamft` is now the low-VRAM trainer only.
+- Removed `pypdf` and `python-docx` from the default dependencies.
+- Atom Zero continues independently as `atomzero 0.1.1`.
+- Added [`docs/MIGRATION_1.0.md`](docs/MIGRATION_1.0.md) for the import rename.
+- `streamft 0.9.2` remains the final compatibility release with the bundled
+  Atom Zero copy.
+- Release notes: [`docs/RELEASE_1.0.0.md`](docs/RELEASE_1.0.0.md).
+
 ## 0.9.2 - published link cleanup (2026-11-22)
 
 - Made README/doc links absolute GitHub URLs so PyPI, HF and ModelScope do not

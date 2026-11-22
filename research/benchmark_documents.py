@@ -23,7 +23,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from streamft.doc_memory import DocMemory
+from atomzero.doc_memory import DocMemory
 
 BENCHMARK = "atomzero-document-v1"
 

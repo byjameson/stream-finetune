@@ -1,138 +1,53 @@
-# Atom Zero + streamft — local assistant and low-VRAM trainer
+# streamft - fine-tune models that do not fit in VRAM
 
-[![release](https://img.shields.io/badge/release-0.9.2-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-1.0.0-2b6f6a)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
-> A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
-
-![Atom Zero architecture](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/atomzero_architecture.png)
-
-> **streamft is still here.** The low-VRAM trainer is not replaced by Atom Zero:
-> `streamft fit`, `streamft train`, `streamft prepare`, `streamft merge` and
-> `streamft serve` keep working. Atom Zero now has its own lightweight package,
-> `pip install atomzero`; `pip install streamft` keeps the trainer plus the
-> bundled Atom Zero for compatibility.
-
-## 60-second demo
+> Stream a pre-quantized NF4 model from disk, materialize one transformer block
+> on the GPU at a time, and train a LoRA adapter on a 6 GB laptop. Atom Zero is a
+> separate `atomzero` package and is not required for training.
 
 ```powershell
-git clone https://github.com/byjameson/stream-finetune.git
-cd stream-finetune
-pip install -e packages/atomzero
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+pip install streamft
+streamft fit --model Qwen/Qwen2.5-14B-Instruct --gpu 6 --seq 512
+streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512
 ```
 
-The package is on PyPI: <https://pypi.org/project/streamft/0.9.2/>. The demo
-checkpoint still comes from the repository/tag.
+- PyPI: <https://pypi.org/project/streamft/>
+- Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
+- Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
+- 7B end-to-end demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
 
-> **0.9.2:** Atom Zero is available as the standalone `atomzero 0.1.1` package;
-> `streamft` keeps the trainer plus the bundled compatibility copy. This patch
-> also makes all documentation links absolute on PyPI/HF/ModelScope.
+## Atom Zero is a separate package
 
-### Install
-
-Two independent packages now exist:
+The 49.2M local, source-cited assistant now lives in its own distribution:
 
 ```powershell
-pip install atomzero    # standalone Atom Zero: torch, tokenizers, PDF/DOCX
-pip install streamft    # streamft trainer (also keeps the bundled Atom Zero for compatibility)
+pip install atomzero
 ```
 
-- `atomzero` is the lightweight, assistant-only package.
-- `streamft` remains the low-VRAM trainer and still bundles Atom Zero in 0.9.x
-  so existing users do not break; the bundled copy will be removed in a future
-  major release.
-- `streamft[train]` and `streamft[neural]` remain compatibility aliases.
+- PyPI: <https://pypi.org/project/atomzero/>
+- Source/README: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- Model card: <https://huggingface.co/byjameson/atom-zero-49m>
 
-From this checkout use `pip install -e .` for the trainer and
-`pip install -e packages/atomzero` for the standalone assistant.
-
-Full guide: [`docs/QUICKSTART_ATOMZERO.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
-
-```text
-What is the launch code?                         -> cited local answer
-What is the population of Paris?                 -> "I don't have a source"; gap recorded
-Propose curiosity topics                         -> pending research, approval required
-Add task buy milk / My name is Alex              -> local tools + memory
-```
-
-Optional stronger local chat (RAG/tools stay local):
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
-```
-
-## Full project map
-
-The canonical deep dive is
-[`docs/PROJECT_OVERVIEW.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md).
-It covers every layer:
-
-- **Model:** 49.2M decoder-only transformer, BPE-8k, 6 layers, 768 dim, 40k steps.
-- **Training:** 175.37M clean tokens + 214.8M replay; clean-valid bpb 1.3815.
-- **RAG:** SQLite FTS5 + hashed/MiniLM embeddings, hybrid candidates, reranking,
-  cached vectors, prewarmed matrix, IVF ANN + exact fallback, page/section
-  citation locators for PDF/DOCX/HTML/Markdown.
-- **Runtime:** deterministic tools, arithmetic, time, tasks, name/likes memory,
-  plus a constrained plan API with allowlist, 3-step cap and confirmation.
-- **Sessions/UI:** transcript restore, export/import, Forget, document search,
-  adapter history, health.
-- **Research:** approved Wikipedia fetch, local Ollama teacher, unverified notes,
-  reviewer verification.
-- **Curiosity:** gaps -> pending topics -> human approval -> teacher -> RAG;
-  weights unchanged.
-- **Self-learning:** RAG memory vs reviewed LoRA gate vs manual full training.
-- **Provider:** optional local OpenAI-compatible free-form chat; RAG stays local.
-- **Safety:** optional rules + local ML head; off by default.
-- **Privacy/security:** localhost, no telemetry, deletion, SSRF guard, caps.
-- **Benchmarks:** raw 2/10, product 21/21, behavior 16/16, retrieval 1.000,
-  safety 26/26, 412 tests.
-- **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium.
-
-## What it is
-
-- **Source-cited RAG** over your own text, Markdown, HTML, PDF and DOCX files,
-  with a hybrid FTS + MiniLM retriever, page/section locators and an evidence
-  panel that opens the exact local chunks.
-- **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
-- **Constrained tool plans**: `/v1/agent/plan` with an allowlist, three-step cap and explicit confirmation for side effects.
-- **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
-- **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.
-- **Reviewed self-improvement**: feedback → human gate → LoRA adapter → rollback. RAG notes do not change weights; the model does not autonomously self-modify.
-- **Optional provider**: plug in a local Ollama/OpenAI-compatible model for general chat.
-- **No telemetry, no hosted service**; all state is local SQLite/JSON.
-
-## Honest benchmark snapshot
-
-| check | result |
-|---|---:|
-| raw 49.2M, no RAG/tools | **2/10** |
-| product with RAG/tools | **21/21** |
-| behavior checks | **16/16** |
-| source-cited retrieval top-1 | **1.000** (FTS 0.850) |
-| document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
-| test suite | **412 passed** |
-
-The 21/21 is the **product**, not the bare model. See the [model card](https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md), [benchmarks](https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md), [document formats](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md), [tool planning](https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md), [curiosity flow](https://github.com/byjameson/stream-finetune/blob/main/docs/CURIOSITY.md), [capability ladder](https://github.com/byjameson/stream-finetune/blob/main/docs/POTENTIAL.md), and [launch notes](https://github.com/byjameson/stream-finetune/blob/main/docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
+`streamft` 1.0 contains the trainer only. The old `streamft.chat_server` and
+`streamft.doc_memory` imports moved to `atomzero`; see the migration guide:
+<https://github.com/byjameson/stream-finetune/blob/main/docs/MIGRATION_1.0.md>.
 
 ## Published
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.2>
-- streamft PyPI: <https://pypi.org/project/streamft/0.9.2/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
+- streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
 - Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
-- Atom Zero package source: [`packages/atomzero`](https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero)
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
-- Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
-- Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
-- Document formats and citations: [`docs/DOCUMENTS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md)
+- Atom Zero launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
+- Atom Zero Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
 
 ## Contact
 
-Questions, bug reports and collaboration:
-
 - **Email:** gokhancava@gmail.com
-- **LinkedIn:** <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
 - **GitHub issues:** <https://github.com/byjameson/stream-finetune/issues>
+- **LinkedIn:** <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
 
 ## streamft: fine-tune a 32B model on a 6 GB laptop GPU
 
@@ -151,152 +66,18 @@ measured speed where a measurement exists (and says so where it doesn't).
 `/v1/chat/completions`](https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
 3.14 s. This is the concrete “it works” scenario, not a benchmark.
 
-## Atom Zero runtime details
+## Atom Zero (moved out of streamft)
 
-**Atom Zero — local daily assistant (from scratch, 50M):** [tasks, personal
-notes and source-cited document lookup](https://github.com/byjameson/stream-finetune/blob/main/docs/TINY_TRANSFORMER_CHAT.md) — start
-with `powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. The
-Python package and CLI remain `streamft`; Atom Zero is the product name. Paste or
-upload your own UTF-8 documents over HTTP; the response keeps source, title and
-sha256. A reviewed research queue (browser + API/CLI) fetches only
-user-approved Wikipedia topics on a schedule. Unanswered questions become
-knowledge gaps; **Propose curiosity topics** turns them into pending research
-items, and nothing runs until you approve it. See
-[`docs/CURIOSITY.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/CURIOSITY.md). ChatGPT/other answers can be
-pasted manually as unverified teacher notes with a source URL, or an explicit
-local [Ollama](https://github.com/byjameson/stream-finetune/blob/main/docs/TEACHER_OLLAMA.md)/OpenAI-compatible provider can answer on request or synthesize
-approved research topics. Teacher notes start unverified and can be marked
-verified by a named reviewer with a timestamp. Unknown questions become
-**knowledge gaps**; approving a proposed topic lets the scheduled worker fetch
-a source into RAG. Chat feedback can be reviewed, exported and sent through a
-gated LoRA update; accepted `vNNNN` versions are recorded with metrics, can be
-compared with `research/compare_adapters.py`, evaluated on a non-training
-holdout, and rolled back with `learning_loop.py activate`. The active adapter
-loads with `--adapter auto`. An opt-in `--safety-filter` runs exact rules first
-and then a small local MiniLM linear ML head; it refuses explicit harmful
-requests and filters output (multilingual red-team 72/72, held-out semantic
-paraphrases 10/10, 0/26 benign false blocks). Missing model/head falls back to
-exact rules; `--no-safety-ml` forces the rule baseline. It is **off by
-default**: this is a local tool, not a hosted content policy. The optional
-safety layer is an operator tool, not a moral gate.
+Atom Zero is not part of the streamft 1.0 wheel. It has its own dependencies,
+tests and CLI:
 
-An optional **local provider backend** can answer free-form chat with a
-user-supplied Ollama/OpenAI-compatible model while RAG, tools and memory stay
-local. The default remains the 50M model. See
-[`docs/POTENTIAL.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/POTENTIAL.md) for the capability ladder and
-[`docs/MODEL_CARD.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md) for the shareable benchmark summary.
+```powershell
+pip install atomzero
+atomzero --model checkpoints/transformer_behavior_50m_scaled --tokenizer data/chat_en_bpe8k.json --docs data/docs.db
+```
 
-Indexed sources and session memory have tested delete paths
-(`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
-`checkpoints/transformer_behavior_50m_scaled` (40k steps); the original
-`transformer_behavior_50m_long` is retained for comparison. The optional 368k
-LoRA adapter and SQLite FTS5 memory run locally. RAG uses a hybrid candidate
-stage: FTS plus cached chunk embeddings, with hashed character n-grams as the
-dependency-free fallback. When `models/all-MiniLM-L6-v2` is present,
-`--reranker auto` uses a local MiniLM neural pool; on the held-out authored
-retrieval benchmark this reaches **1.000** top-1/citation vs **0.850** for FTS,
-at about 8.8 ms per query on CPU. A prewarmed in-memory matrix makes the vector
-stage **166x** faster than the linear scan on 3000 chunks with identical top-5;
-above 256 chunks an IVF ANN index is used, with an exact cosine fallback and
-recall@10 **1.000** on the 20k-vector benchmark. Facts stay in RAG; style/skill
-updates go through the gate. It is not a general assistant. The project is open source; no hosted
-service is operated. See the [decision pack](https://github.com/byjameson/stream-finetune/blob/main/docs/RELEASE_DECISIONS.md),
-[product audit](https://github.com/byjameson/stream-finetune/blob/main/docs/PRODUCT_AUDIT.md),
-[safety filter](https://github.com/byjameson/stream-finetune/blob/main/docs/SAFETY.md),
-[scaling plan](https://github.com/byjameson/stream-finetune/blob/main/docs/SCALING_PLAN.md),
-[data-scaling run](https://github.com/byjameson/stream-finetune/blob/main/docs/DATA_SCALING.md) and
-[research worker](https://github.com/byjameson/stream-finetune/blob/main/docs/RESEARCH_WORKER.md) for what is still required.
-
-**The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
-news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
-the embedded 400 AG News rows (74.3% on a fresh 400; 82.8% at 2,000 examples on both). No
-server, no GPU, no stored weights. Source: [`demo/mini-ai.html`](https://github.com/byjameson/stream-finetune/blob/main/demo/mini-ai.html).
-
-**Need accuracy instead of minimum bits?** [The 1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)
-uses 75,000 human-labelled rows and reaches **88.5%** on the same test set. Labels matter:
-on the same 5,000 rows, 3B-Instruct teacher labels gave a **71.3%** student; human labels
-gave **84.3%**.
-
-**Make your own:** [Tiny AI Maker](https://byjameson-mini-ai.static.hf.space/maker.html)
-takes a CSV of `text,label`, trains a classifier in the browser, and exports a single HTML
-file, a **QR URL**, a favicon, a WAV or a **PDF model card** with the weights in `/Keywords`.
-It also runs an optional **5-fold CV** against the 80/20 holdout, with out-of-fold
-**Brier/ECE** calibration and a nested **temperature-scaling** check. No data leaves the
-page.
-
-**AI in a QR code:** [a 2.2 KB URL](https://byjameson-mini-ai.static.hf.space/qr.html)
-carries an SMS spam classifier — 160 words, int8 weights, 93.5% on 1,115 held-out messages.
-Scan the QR or open the link; the model is in the URL.
-
-**The measured ladder:** [The Minimum-Bit Table](https://byjameson-mini-ai.static.hf.space/leaderboard.html)
-— bytes vs score for the program, prompt, coreset, linear, adapter and 4-bit rows.
-
-**Where 4-bit hurts:** [the adapter autopsy](https://byjameson-mini-ai.static.hf.space/diff.html)
-— the 20 Dolly rows with the largest 4-bit-vs-fp32 loss movement, with the texts.
-
-**A 5 MB fingerprint:** [the adapter watermark](https://byjameson-mini-ai.static.hf.space/watermark.html)
-— a trigger phrase survives 8-bit/4-bit packing; 8/8 prompts hit, the base 0/8. Merging the
-adapter into a task adapter is the hard part: the mark is 0/8 at a 0.50 merge and only
-reliable at 0.90-1.00, and the exact threshold is seed- and token-dependent. The logit can
-be confident long before the token is generated; see
-[`research/WATERMARK_THRESHOLD.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_THRESHOLD.md). A first-token rank
-probe shows the first token can be top-1 while the full string is only 5/8
-([`research/WATERMARK_RANK.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_RANK.md)). Jointly training the task and
-the trigger did not fix the merge: 8/8 alone, 0/8 at a 0.75 merge
-([`research/WATERMARK_JOINT.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_JOINT.md)). Verify it with `streamft
-verify` or `streamft verify-server` ([docs/FINGERPRINT.md](https://github.com/byjameson/stream-finetune/blob/main/docs/FINGERPRINT.md)).
-
-**AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
-with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.
-
-**AI in a favicon:** [a 1.5 KB PNG](https://byjameson-mini-ai.static.hf.space/favicon.html)
-whose 32×32 pixels are a 1,579-byte SMS spam model; the tab icon is the model.
-
-**AI in a WAV:** [a 1.6 KB, 0.198-second sound](https://byjameson-mini-ai.static.hf.space/audio.html)
-whose 8-bit PCM samples are the same model.
-
-**AI in a PDF:** [a 3.7 KB model card](https://byjameson-mini-ai.static.hf.space/pdf.html)
-whose visible page describes the model and whose `/Keywords` metadata carries the 1,579-byte
-weights — one document is both the card and the classifier. The full SHA-256 is in
-`/TinyAISHA256`, and the viewer checks it.
-
-**AI in an SVG:** [a 4.9 KB vector card](https://byjameson-mini-ai.static.hf.space/svg.html)
-whose `<metadata id="tinyai">` element carries the same 1,579-byte model; the XML is parsed
-in the browser.
-
-**AI in a MIDI:** [a 4.4 KB MIDI file](https://byjameson-mini-ai.static.hf.space/midi.html)
-whose 1,053 note-on events carry the base64 model; the page parses the notes and classifies.
-
-**The 130 KB AI in a PDF:** [a 175 KB PDF](https://byjameson-mini-ai.static.hf.space/pdf-130k.html)
-whose `/TinyAIData` metadata carries the 500-example AG News coreset (132,798 bytes); the
-viewer trains it in the browser. 78.3% embedded / 74.3% fresh on the 400-row test.
-
-**Container survival:** [a measured matrix](https://byjameson-mini-ai.static.hf.space/survival.html)
-of what happens after a re-save, re-encode, transcode or metadata strip. XLSX and single
-HTML are the best archival carriers; PDF is not editable; PNG/WAV survive only lossless
-pipelines; QR survives image abuse but not a dropped URL fragment.
-
-Measured on one machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, NVMe, Windows 11
-(WDDM), AC power**:
-
-| seq (LM path) | step | tokens/s | peak VRAM |
-|---:|---:|---:|---:|
-| 128 | 10.70 s | 12.0 | 3.18 GB |
-| 512 | 17.95 s | 28.5 | 3.82 GB |
-| **1024** | **27.91 s** | **36.7** | **4.61 GB** |
-| 2048 | 64.53 s | 31.7 | 6.60–7.93 GB (spills) |
-
-The 32B weights are **19.2 GB**. They never fully live in VRAM. At 1024 tokens/step the
-throughput is **3.1×** the 128-token rate, because the per-step I/O is amortised over
-more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9659**.
-
-**Installed from PyPI? Start with [`QUICKSTART.md`](https://github.com/byjameson/stream-finetune/blob/main/QUICKSTART.md) (T?rk?e:
-[`QUICKSTART.tr.md`](https://github.com/byjameson/stream-finetune/blob/main/QUICKSTART.tr.md)) ? or run `install.ps1` / `install.sh`, which
-checks Python, installs the package, looks for a GPU and runs `doctor`.** — it uses only the
-published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md) — the practical write-up: presets,
-the six traps, and which numbers are real. The measurement protocol, the discarded rows
-and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
-[`LONGCTX_FINDINGS.md`](https://github.com/byjameson/stream-finetune/blob/main/LONGCTX_FINDINGS.md).
+See [`packages/atomzero/README.md`](https://github.com/byjameson/stream-finetune/blob/main/packages/atomzero/README.md)
+for documents, citations, evidence and constrained tool plans.
 
 ## Quick start (installed package, nothing else needed)
 
@@ -694,7 +475,8 @@ changed adapter hash. If it does not, that is a bug report worth posting with th
 ## Repository layout
 
 ```
-streamft/            the engine (package)
+streamft/            the trainer engine (package)
+packages/atomzero/   standalone Atom Zero package
 tools/finetune.py    one-command wrapper with the measured presets
 scripts/             longctx_sweep.py — the LM-path measurement sweep
 GUIDE_6GB_32B.md     practical guide

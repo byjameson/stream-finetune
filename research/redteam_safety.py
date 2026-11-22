@@ -17,10 +17,10 @@ from pathlib import Path
 
 import torch
 
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.safety import SafetyFilter
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.safety import SafetyFilter
 
 try:
     from research.chat_human import load_model
@@ -211,7 +211,7 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     safety = None
     if args.ml:
-        from streamft.ml_safety import build_safety_filter
+        from atomzero.ml_safety import build_safety_filter
         safety = build_safety_filter(prefer_ml=True)
     payload = run(args.model, args.tokenizer, args.adapter, safety=safety)
     out = ROOT / args.out

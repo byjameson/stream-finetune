@@ -1,10 +1,10 @@
 import pytest
 
-from streamft.agent_runtime import (
+from atomzero.agent_runtime import (
     AgentSession, calculate, math_query)
-from streamft.doc_memory import DocMemory
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.safety import SafetyFilter
+from atomzero.doc_memory import DocMemory
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.safety import SafetyFilter
 
 
 def test_agent_session_handles_tools_and_memory(tmp_path):
@@ -106,7 +106,7 @@ def test_agent_safety_refuses_before_generation(tmp_path):
 
 def test_agent_research_tool_uses_sources(tmp_path, monkeypatch):
     docs = DocMemory(tmp_path / "docs.db")
-    import streamft.agent_runtime as ar
+    import atomzero.agent_runtime as ar
     monkeypatch.setattr(ar, "wikipedia_research", lambda docs, q, lang, limit: [
         {"source": "https://wiki/x", "title": "X", "chunks": 1,
          "preview": "p"}])

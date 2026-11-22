@@ -1,8 +1,8 @@
 import json
 
 from research.gap_loop import main as gap_main
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.research_queue import ResearchQueue
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue
 
 
 def test_gap_loop_proposes_pending_research(tmp_path, capsys):

@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-from streamft.doc_memory import ann_topk, build_ivf
+from atomzero.doc_memory import ann_topk, build_ivf
 
 ROOT = Path(__file__).resolve().parents[1]
 

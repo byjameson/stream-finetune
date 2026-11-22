@@ -1,5 +1,5 @@
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
 from research.chat_human import ChatHuman
 
 

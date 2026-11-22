@@ -13,11 +13,11 @@ import tempfile
 import time
 from pathlib import Path
 
-from streamft.curiosity import propose_from_gaps
-from streamft.doc_memory import DocMemory
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.research_queue import ResearchQueue
-from streamft.teacher_provider import TeacherProvider
+from atomzero.curiosity import propose_from_gaps
+from atomzero.doc_memory import DocMemory
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue
+from atomzero.teacher_provider import TeacherProvider
 
 try:
     from research.chat_human import ChatHuman

@@ -17,9 +17,9 @@ import argparse
 import json
 import os
 
-from streamft.doc_memory import DocMemory
-from streamft.research_queue import ResearchQueue, ResearchQueueError
-from streamft.teacher_provider import TeacherProvider, TeacherProviderError
+from atomzero.doc_memory import DocMemory
+from atomzero.research_queue import ResearchQueue, ResearchQueueError
+from atomzero.teacher_provider import TeacherProvider, TeacherProviderError
 
 
 def main(argv=None) -> int:

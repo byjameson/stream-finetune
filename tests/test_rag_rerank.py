@@ -1,6 +1,6 @@
 import pytest
 
-from streamft.doc_memory import (
+from atomzero.doc_memory import (
     DocMemory, embedding_similarity, rerank_hits)
 
 

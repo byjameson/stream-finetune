@@ -3,9 +3,9 @@ import time
 
 import pytest
 
-from streamft import chat_server
-from streamft.doc_memory import DocMemory
-from streamft.research_queue import (
+from atomzero import chat_server
+from atomzero.doc_memory import DocMemory
+from atomzero.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 
 

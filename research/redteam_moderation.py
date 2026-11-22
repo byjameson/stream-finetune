@@ -12,7 +12,7 @@ import json
 import time
 from pathlib import Path
 
-from streamft.ml_safety import build_safety_filter
+from atomzero.ml_safety import build_safety_filter
 
 try:
     from research.moderation_cases import SEMANTIC_HOLDOUT

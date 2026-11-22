@@ -13,7 +13,7 @@ from tokenizers import Tokenizer
 from streamft.lora import apply_lora, count_lora_params, lora_parameters, save_adapter
 from streamft.spiking import evaluate_bpb
 from streamft.spiking_cli import RandomWindows, fixed_windows, load_tokens, mask_user_labels
-from streamft.transformer import TransformerLM
+from atomzero.transformer import TransformerLM
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")

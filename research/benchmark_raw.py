@@ -16,7 +16,7 @@ from pathlib import Path
 
 import torch
 
-from streamft.transformer import generate
+from atomzero.transformer import generate
 
 try:
     from research.chat_human import load_model

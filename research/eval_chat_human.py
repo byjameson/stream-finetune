@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 
-from streamft.transformer import TransformerLM
+from atomzero.transformer import TransformerLM
 
 try:
     from research.chat_human import ChatHuman, load_model

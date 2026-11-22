@@ -43,16 +43,16 @@ its own. Apache-2.0 code and weights, no hosted service, no telemetry.
 
 | layer | implementation | what it does |
 |---|---|---|
-| UI/API | `streamft/chat_server.py` | browser chat, documents, evidence panel, constrained plan API, tasks, gaps, queues, teacher notes, adapters, health |
-| agent runtime | `streamft/agent_runtime.py`, `research/chat_human.py` | tool routing, memory, RAG, missing-source path |
-| core model | `streamft/transformer.py` + checkpoint | 49.2M decoder-only transformer |
-| retrieval | `streamft/doc_memory.py`, `streamft/neural_embedder.py` | FTS5 + hashed/MiniLM vectors + reranking |
+| UI/API | `packages/atomzero/src/atomzero/chat_server.py` | browser chat, documents, evidence panel, constrained plan API, tasks, gaps, queues, teacher notes, adapters, health |
+| agent runtime | `packages/atomzero/src/atomzero/agent_runtime.py`, `research/chat_human.py` | tool routing, memory, RAG, missing-source path |
+| core model | `packages/atomzero/src/atomzero/transformer.py` + checkpoint | 49.2M decoder-only transformer |
+| retrieval | `packages/atomzero/src/atomzero/doc_memory.py`, `neural_embedder.py` | FTS5 + hashed/MiniLM vectors + reranking |
 | memory | SQLite + session JSON | documents, provenance, facts, tasks, episodes |
-| research | `streamft/research_queue.py`, `research/research_worker.py` | approved Wikipedia fetch + teacher synthesis |
-| curiosity | `streamft/curiosity.py` | gaps -> pending research, approval required |
+| research | `packages/atomzero/src/atomzero/research_queue.py`, `research/research_worker.py` | approved Wikipedia fetch + teacher synthesis |
+| curiosity | `packages/atomzero/src/atomzero/curiosity.py` | gaps -> pending research, approval required |
 | learning | `research/learning_loop.py`, LoRA | reviewed feedback -> gated adapter -> rollback |
-| provider | `streamft/teacher_provider.py`, `--chat-provider-*` | optional local OpenAI-compatible chat |
-| safety | `streamft/safety.py`, `streamft/ml_safety.py` | optional rules + local linear ML head |
+| provider | `packages/atomzero/src/atomzero/teacher_provider.py`, `--chat-provider-*` | optional local OpenAI-compatible chat |
+| safety | `packages/atomzero/src/atomzero/safety.py`, `ml_safety.py` | optional rules + local linear ML head |
 
 ## 4. Model and training
 
@@ -209,7 +209,7 @@ not decide what to study or self-modify.
 The server can route free-form chat to any OpenAI-compatible endpoint:
 
 ```powershell
-python -m streamft.chat_server `
+python -m atomzero.chat_server `
   --model checkpoints/transformer_behavior_50m_scaled `
   --docs data/docs.db `
   --chat-provider-url http://127.0.0.1:11434/v1 `
@@ -231,7 +231,7 @@ policy or moral position.
 - Exact rule layer: English regex + language-agnostic lexical-semantic rules
   for TR/DE/ES/FR/IT/PT/NL/RU.
 - Optional local ML head: MiniLM embeddings + linear harm/category classifier
-  (`streamft/moderation_head.json`, ~58 KB), trained on 349 generated examples
+  (`packages/atomzero/src/atomzero/moderation_head.json`, ~58 KB), trained on 349 generated examples
   with authored holdouts excluded.
 - Rules run first and are authoritative; ML only adds blocks. A missing/broken
   head/model returns exact rules.
@@ -275,17 +275,17 @@ not MMLU, GSM8K or HumanEval. The 21/21 is the product, not the bare model.
 ## 14. Packaging and reproduction
 
 ```powershell
-pip install streamft
+pip install atomzero
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-There are two installs now: the standalone `atomzero` package (assistant
-dependencies only) and `streamft` (low-VRAM trainer, which still bundles Atom
-Zero in 0.9.x for compatibility). The quickstart seeds a demo corpus, starts the
-server and opens the browser. `--WithProvider` enables local Ollama. Both are on
-PyPI; weights are on Hugging Face and ModelScope. The 49.2M checkpoint is not
+`atomzero 0.1.1` is the standalone assistant package. `streamft 1.0` is the
+separate low-VRAM trainer; `streamft 0.9.2` is the last compatibility release
+that bundled Atom Zero. The quickstart seeds a demo corpus, starts the server
+and opens the browser. `--WithProvider` enables local Ollama. Both packages are
+on PyPI; weights are on Hugging Face and ModelScope. The 49.2M checkpoint is not
 bundled in either wheel; the repository/tag carries the demo checkpoint.
 
 Reference machine: RTX 3050 Laptop 6 GB, 34 GB RAM, Windows 11. The core also

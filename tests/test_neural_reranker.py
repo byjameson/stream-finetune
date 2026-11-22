@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from streamft.doc_memory import DocMemory
-from streamft.neural_embedder import NeuralEmbedderError, NeuralReranker
+from atomzero.doc_memory import DocMemory
+from atomzero.neural_embedder import NeuralEmbedderError, NeuralReranker
 
 
 def fake_encoder(texts):

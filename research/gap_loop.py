@@ -13,8 +13,8 @@ import argparse
 import json
 from pathlib import Path
 
-from streamft.knowledge_gaps import KnowledgeGapError, KnowledgeGapStore
-from streamft.research_queue import ResearchQueue, ResearchQueueError
+from atomzero.knowledge_gaps import KnowledgeGapError, KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue, ResearchQueueError
 
 ROOT = Path(__file__).resolve().parents[1]
 

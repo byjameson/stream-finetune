@@ -3,9 +3,9 @@ import threading
 import urllib.request
 from http.server import ThreadingHTTPServer
 
-from streamft import chat_server
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.research_queue import ResearchQueue
+from atomzero import chat_server
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.research_queue import ResearchQueue
 
 
 def _post(url, payload):

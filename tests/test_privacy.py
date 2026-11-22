@@ -1,8 +1,8 @@
 import pytest
 
 from research.chat_human import ChatHuman
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory, SourceNotFound
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory, SourceNotFound
 
 
 def _docs(tmp_path):

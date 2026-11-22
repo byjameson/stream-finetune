@@ -19,10 +19,10 @@ from pathlib import Path
 
 import torch
 
-from streamft.agent_runtime import AgentSession
-from streamft.doc_memory import DocMemory
-from streamft.knowledge_gaps import KnowledgeGapStore
-from streamft.ml_safety import HybridSafetyFilter, build_safety_filter
+from atomzero.agent_runtime import AgentSession
+from atomzero.doc_memory import DocMemory
+from atomzero.knowledge_gaps import KnowledgeGapStore
+from atomzero.ml_safety import HybridSafetyFilter, build_safety_filter
 
 try:
     from research.chat_human import load_model
@@ -56,7 +56,7 @@ def run(model_path: str, tokenizer: str, adapter: str = "",
         root = Path(folder)
         docs = DocMemory(root / "docs.db")
         if reranker == "neural":
-            from streamft.neural_embedder import NeuralReranker
+            from atomzero.neural_embedder import NeuralReranker
             docs.reranker = NeuralReranker(neural_model)
         gaps = KnowledgeGapStore(root / "gaps.json")
         docs.add_text(
