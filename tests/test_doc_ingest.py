@@ -279,6 +279,8 @@ def test_http_pdf_upload_returns_page_citation(tmp_path):
         assert uploaded["file_sha256"] == hashlib.sha256(pdf_data).hexdigest()
         assert uploaded["sha256"] == uploaded["file_sha256"]
         assert uploaded["content_sha256"] != uploaded["file_sha256"]
+        assert (uploaded["content_sha256"]
+                == docs.sources()[0]["content_sha256"])
 
         request = urllib.request.Request(
             base + "/v1/documents/search",
