@@ -3,11 +3,13 @@
     python scripts/publish_model.py --stage-only
     HF_TOKEN=... python scripts/publish_model.py --target hf
     MODELSCOPE_API_TOKEN=... python scripts/publish_model.py --target modelscope
-    python scripts/publish_model.py --target both
 
 The model is a custom PyTorch checkpoint, not a transformers AutoModel. The
 staged folder contains the checkpoint, tokenizer, config, LICENSE, NOTICE and a
 model card. Tokens are read from the environment and are never written to disk.
+
+Canonical publication is Hugging Face. The ModelScope target is kept only for
+the frozen historical mirror; new releases do not need it.
 """
 from __future__ import annotations
 

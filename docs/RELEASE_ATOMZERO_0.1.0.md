@@ -63,5 +63,4 @@ the shared adapter helper into a tiny common package if needed.
 - Documents/citations: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 - Tool plans: <https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md>
 - Hugging Face weights: <https://huggingface.co/byjameson/atom-zero-49m>
-- ModelScope weights: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Contact: **gokhancava@gmail.com**

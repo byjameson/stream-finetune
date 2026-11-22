@@ -45,5 +45,4 @@ Cache: `~/.cache/atomzero/atom-zero-49m`.
 - PyPI: <https://pypi.org/project/atomzero/0.1.2/>
 - Source: <https://github.com/byjameson/atom-zero>
 - HF weights: <https://huggingface.co/byjameson/atom-zero-49m>
-- ModelScope weights: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Contact: **gokhancava@gmail.com**
