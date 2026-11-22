@@ -10,12 +10,15 @@
   listings include the page range.
 - Raw uploads accept PDF/DOCX/HTML/Markdown up to 10 MB; text uploads remain
   backward compatible.
-- Added `docs/DOCUMENTS.md` and 10 document/citation tests (402 total).
+- Added `docs/DOCUMENTS.md` and 10 document/citation tests (410 total).
 - Added `research/benchmark_documents.py`: 100 authored questions across
   Markdown/PDF/DOCX/HTML, with top-1 source, page/section, answer, no-answer
   refusal and latency metrics; CI enforces the thresholds.
 - Added an evidence panel and `GET /v1/documents/evidence` so a citation can
   open the exact local chunks for its source/page/section.
+- Added `POST /v1/agent/plan`: allowlisted plan validation, a three-step cap,
+  read-only execution and explicit confirmation for task/research side effects.
+  This is a constrained executor, not model-driven planning.
 
 ## 0.8.3 - full project map (2026-11-22)
 

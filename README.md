@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-402-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-410-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -47,7 +47,8 @@ It covers every layer:
 - **RAG:** SQLite FTS5 + hashed/MiniLM embeddings, hybrid candidates, reranking,
   cached vectors, prewarmed matrix, IVF ANN + exact fallback, page/section
   citation locators for PDF/DOCX/HTML/Markdown.
-- **Runtime:** deterministic tools, arithmetic, time, tasks, name/likes memory.
+- **Runtime:** deterministic tools, arithmetic, time, tasks, name/likes memory,
+  plus a constrained plan API with allowlist, 3-step cap and confirmation.
 - **Sessions/UI:** transcript restore, export/import, Forget, document search,
   adapter history, health.
 - **Research:** approved Wikipedia fetch, local Ollama teacher, unverified notes,
@@ -59,7 +60,7 @@ It covers every layer:
 - **Safety:** optional rules + local ML head; off by default.
 - **Privacy/security:** localhost, no telemetry, deletion, SSRF guard, caps.
 - **Benchmarks:** raw 2/10, product 21/21, behavior 16/16, retrieval 1.000,
-  safety 26/26, 402 tests.
+  safety 26/26, 410 tests.
 - **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium.
 
 ## What it is
@@ -68,6 +69,7 @@ It covers every layer:
   with a hybrid FTS + MiniLM retriever, page/section locators and an evidence
   panel that opens the exact local chunks.
 - **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
+- **Constrained tool plans**: `/v1/agent/plan` with an allowlist, three-step cap and explicit confirmation for side effects.
 - **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
 - **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.
 - **Reviewed self-improvement**: feedback → human gate → LoRA adapter → rollback. RAG notes do not change weights; the model does not autonomously self-modify.
@@ -83,9 +85,9 @@ It covers every layer:
 | behavior checks | **16/16** |
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
-| test suite | **402 passed** |
+| test suite | **410 passed** |
 
-The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
+The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [document formats](docs/DOCUMENTS.md), [tool planning](docs/TOOL_PLANNING.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
 
 ## Published
 

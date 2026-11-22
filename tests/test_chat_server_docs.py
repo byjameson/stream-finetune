@@ -354,6 +354,37 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         })
         content = session_chat["choices"][0]["message"]["content"]
         assert "buy milk" in content
+        planned = _post(base + "/v1/agent/plan", {
+            "session_id": "s1",
+            "steps": [{"tool": "task_add",
+                       "args": {"text": "plan task"}}],
+        })
+        assert planned["status"] == "confirmation_required"
+        assert planned["results"] == []
+        confirmed = _post(base + "/v1/agent/plan", {
+            "session_id": "s1", "confirm": True,
+            "steps": [{"tool": "task_add",
+                       "args": {"text": "plan task"}}],
+        })
+        assert confirmed["status"] == "ok"
+        listed = _post(base + "/v1/agent/plan", {
+            "session_id": "s1",
+            "steps": [{"tool": "task_list"}],
+        })
+        tasks = listed["results"][0]["result"]["tasks"]
+        assert any(task["text"] == "plan task" for task in tasks)
+        with pytest.raises(urllib.error.HTTPError) as bad_plan:
+            _post(base + "/v1/agent/plan", {
+                "session_id": "s1",
+                "steps": [{"tool": "shell"}],
+            })
+        assert bad_plan.value.code == 400
+        with pytest.raises(urllib.error.HTTPError) as bad_confirm:
+            _post(base + "/v1/agent/plan", {
+                "session_id": "s1", "confirm": "true",
+                "steps": [{"tool": "time"}],
+            })
+        assert bad_confirm.value.code == 400
     finally:
         httpd.shutdown()
         httpd.server_close()

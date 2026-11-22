@@ -43,7 +43,7 @@ its own. Apache-2.0 code and weights, no hosted service, no telemetry.
 
 | layer | implementation | what it does |
 |---|---|---|
-| UI/API | `streamft/chat_server.py` | browser chat, documents, evidence panel, tasks, gaps, queues, teacher notes, adapters, health |
+| UI/API | `streamft/chat_server.py` | browser chat, documents, evidence panel, constrained plan API, tasks, gaps, queues, teacher notes, adapters, health |
 | agent runtime | `streamft/agent_runtime.py`, `research/chat_human.py` | tool routing, memory, RAG, missing-source path |
 | core model | `streamft/transformer.py` + checkpoint | 49.2M decoder-only transformer |
 | retrieval | `streamft/doc_memory.py`, `streamft/neural_embedder.py` | FTS5 + hashed/MiniLM vectors + reranking |
@@ -99,7 +99,10 @@ The agent routes explicit commands without asking the model to choose tools:
 - help/limits.
 
 This is intentionally conservative. It is reliable and easy to audit, but it is
-not free-form tool planning.
+not free-form tool planning. A separate `POST /v1/agent/plan` endpoint executes
+a caller-supplied JSON plan through an allowlist: at most 3 steps, no shell or
+arbitrary URL, and explicit `confirm: true` before task/research side effects.
+The 49M model does not choose those steps. See [`TOOL_PLANNING.md`](TOOL_PLANNING.md).
 
 ## 6. Retrieval (RAG)
 
@@ -263,7 +266,7 @@ whether to enable it.
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
 | safety-enabled product | **26/26** |
-| test suite | **402 passed** |
+| test suite | **410 passed** |
 
 The product benchmark is narrow and authored: tools, memory, tasks, retrieval,
 teacher-note review, missing-source detection and one short generation. It is

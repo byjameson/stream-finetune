@@ -21,7 +21,7 @@ benchmarks and release — is
 | training | 175.37M clean + 214.8M replay; 40k product checkpoint |
 | RAG | SQLite FTS5, hashed/MiniLM embeddings, hybrid candidates, lexical+cosine rerank |
 | vector index | cached `doc_vectors`, prewarmed numpy matrix, IVF ANN above 256 chunks, exact fallback |
-| tools | time, safe arithmetic, task add/list/complete, name/likes memory |
+| tools | time, safe arithmetic, task add/list/complete, name/likes memory, allowlisted 3-step plan API with confirmation |
 | sessions | transcript restore, JSON export/import, exact Forget, session Forget |
 | documents | ingest text/Markdown/HTML/PDF/DOCX, page/section citations, evidence panel/API, source/title/sha256, search, per-source delete |
 | research | approved-only queue, Wikipedia fetch, worker lock/log, teacher synthesis |
@@ -33,7 +33,7 @@ benchmarks and release — is
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
 | packaging | PyPI wheel/sdist, GitHub release, HF/ModelScope weights, quickstart |
-| tests | 402 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+| tests | 410 passed; product 21/21; behavior 16/16; retrieval 1.000 |
 | document benchmark | 100 authored questions: 80/80 answerable, 20/20 no-answer |
 
 ## Model

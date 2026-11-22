@@ -26,6 +26,7 @@ Endpoints:
   POST /v1/research/queue/run
   POST /v1/learn_url
   POST /v1/agent/chat
+  POST /v1/agent/plan
   POST /generate
   POST /v1/chat/completions
 """
@@ -56,6 +57,7 @@ from streamft.research_queue import (
     ItemNotFound, ResearchQueue, ResearchQueueError)
 from streamft.teacher_notes import TeacherNoteTooLarge, add_teacher_note
 from streamft.teacher_provider import TeacherProvider, TeacherProviderError
+from streamft.tool_planner import ToolPlanError, execute_plan
 from streamft.transformer import TransformerLM, generate
 
 _lock = threading.Lock()
@@ -1618,7 +1620,7 @@ class Handler(BaseHTTPRequestHandler):
                          "/v1/research/queue/approve",
                          "/v1/research/queue/reject",
                          "/v1/research/queue/run",
-                         "/v1/agent/chat"):
+                         "/v1/agent/chat", "/v1/agent/plan"):
             return self._json(404, {"error": "not found"})
         key = _state.get("api_key") or ""
         if key:
@@ -1673,6 +1675,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._queue_update(req, "reject")
             if route == "/v1/research/queue/run":
                 return self._queue_run(req)
+            if route == "/v1/agent/plan":
+                return self._agent_plan(req)
             if route == "/v1/documents/forget":
                 return self._documents_forget(req)
             if route == "/v1/memory/forget":
@@ -2184,6 +2188,23 @@ class Handler(BaseHTTPRequestHandler):
                 generator=_state.get("generator"),
                 allow_general_chat=_state.get("allow_general_chat", False))
         return sessions[session_id]
+
+    def _agent_plan(self, req: dict):
+        session_id = str(req.get("session_id", "")).strip()
+        if not session_id:
+            return self._json(400, {"error": "session_id is required"})
+        confirm = req.get("confirm", False)
+        if not isinstance(confirm, bool):
+            return self._json(400, {"error": "confirm must be a boolean"})
+        try:
+            session = self._session(session_id)
+            result = execute_plan(
+                session, req.get("steps"), confirm=confirm)
+        except ToolPlanError as exc:
+            return self._json(400, {"error": str(exc)})
+        except Exception as exc:
+            return self._json(400, {"error": str(exc)})
+        return self._json(200, result)
 
     def _teach(self, req: dict):
         fact = str(req.get("fact", "")).strip()
