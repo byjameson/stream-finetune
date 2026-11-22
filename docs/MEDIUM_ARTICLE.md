@@ -1,6 +1,6 @@
 # Atom Zero: A 49M Local Assistant That Says “I Don’t Know”
 
-**Subtitle:** Why I put facts in RAG instead of the model weights — and what 392 tests taught me about small local AI.
+**Subtitle:** Why I put facts in RAG instead of the model weights — and what 412 tests taught me about small local AI.
 
 *This is not a ChatGPT competitor. It is a deliberately small, local assistant with source citations, deterministic tools, and an approval gate for research.*
 
@@ -33,7 +33,7 @@ This is the part I wish more small-model projects published.
 | product with RAG/tools | **21/21** |
 | behavior checks | **16/16** |
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
-| test suite | **392 passed** |
+| test suite | **412 passed** |
 
 The raw-model probe asks ten simple general questions with no documents, no calculator and no agent. The 49.2M model gets **2/10**. The product gets **21/21** because the runtime does the work.
 
@@ -139,11 +139,13 @@ The closest description is: a compact **agent harness** with a small language mo
 ## Try it
 
 ```powershell
-pip install streamft==0.8.3
+pip install atomzero==0.1.1
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
+
+Atom Zero is the standalone `atomzero` package; `streamft` remains the low-VRAM trainer and is not required for this quickstart.
 
 The quickstart seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the server and opens the browser. Try:
 
@@ -177,7 +179,8 @@ The honest gaps are model capability, tool planning, multilingual quality and a 
 If you want to inspect the claims:
 
 - GitHub: https://github.com/byjameson/stream-finetune
-- PyPI: https://pypi.org/project/streamft/0.8.3/
+- PyPI: https://pypi.org/project/atomzero/0.1.1/
+- streamft trainer: https://pypi.org/project/streamft/1.0.0/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - Model card: https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md
