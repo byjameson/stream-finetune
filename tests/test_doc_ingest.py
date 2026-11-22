@@ -1,3 +1,4 @@
+import hashlib
 import io
 
 import pytest
@@ -84,6 +85,30 @@ def test_docx_blocks_keep_sections():
     assert "Friday" in extracted["blocks"][1]["text"]
 
 
+def test_docx_tables_keep_document_order_and_section():
+    docx = pytest.importorskip("docx")
+    document = docx.Document()
+    document.add_heading("Warranty", level=1)
+    document.add_paragraph("Before table.")
+    table = document.add_table(rows=1, cols=2)
+    table.cell(0, 0).text = "Code"
+    table.cell(0, 1).text = "AC-"
+    document.add_paragraph("After table.")
+    document.add_heading("Travel", level=1)
+    document.add_paragraph("Book by Friday.")
+    buffer = io.BytesIO()
+    document.save(buffer)
+
+    extracted = extract_bytes("manual.docx", buffer.getvalue())
+    texts = [block["text"] for block in extracted["blocks"]]
+    assert [block["section"] for block in extracted["blocks"]] == [
+        "Warranty", "Warranty", "Warranty", "Travel"]
+    assert texts[0] == "Before table."
+    assert "Code | AC-" in texts[1]
+    assert texts[2] == "After table."
+    assert "Friday" in texts[3]
+
+
 def test_unsupported_empty_document_is_rejected():
     with pytest.raises(DocumentExtractError):
         extract_bytes("empty.pdf", b"not a pdf")
@@ -109,6 +134,7 @@ def test_add_file_markdown_stores_section_and_citation(tmp_path):
         assert hits[0]["page"] is None
         source = docs.sources()[0]
         assert source["title"] == "policy"
+        assert len(source["content_sha256"]) == 64
         assert "page_start" not in source
     finally:
         docs.close()
@@ -131,6 +157,7 @@ def test_add_blocks_keeps_page_and_section_and_replaces(tmp_path):
         assert second["section"] == "Warranty"
         assert docs.sources()[0]["page_start"] == 1
         assert docs.sources()[0]["page_end"] == 2
+        assert len(docs.sources()[0]["content_sha256"]) == 64
 
         docs.add_blocks("manual.pdf", [
             {"text": "The launch code is L-0000.", "page": 7,
@@ -163,13 +190,57 @@ def test_ingest_upload_pdf_returns_page_metadata(tmp_path):
 
     docs = DocMemory(tmp_path / "docs.db")
     try:
-        result = ingest_upload(docs, "manual.pdf", _pdf_bytes(), "Manual")
+        pdf_data = _pdf_bytes()
+        result = ingest_upload(docs, "manual.pdf", pdf_data, "Manual")
         assert result["format"] == "pdf"
         assert result["pages"] == 1
+        assert result["file_sha256"] == hashlib.sha256(pdf_data).hexdigest()
+        assert result["sha256"] == result["file_sha256"]
+        assert result["content_sha256"] != result["file_sha256"]
         hit = docs.search("launch code", k=1)[0]
         assert hit["page"] == 1
         assert "L-7781" in hit["chunk"]
     finally:
+        docs.close()
+
+
+def test_http_raw_upload_over_json_body_limit(tmp_path):
+    import json
+    import threading
+    import urllib.parse
+    import urllib.request
+    from http.server import ThreadingHTTPServer
+
+    from streamft import chat_server
+
+    docs = DocMemory(tmp_path / "docs.db")
+    old = dict(chat_server._state)
+    chat_server._state.update({"docs": docs, "metrics": {}})
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), chat_server.Handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        payload = ("The archive code is A-42. " * 100_000).encode("utf-8")
+        assert len(payload) > chat_server.MAX_BODY_BYTES
+        assert len(payload) < chat_server.MAX_DOC_BYTES
+        query = urllib.parse.urlencode({"source": "large.txt"})
+        request = urllib.request.Request(
+            base + "/v1/documents/upload?" + query,
+            data=payload,
+            headers={"Content-Type": "text/plain"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            uploaded = json.loads(response.read().decode("utf-8"))
+        assert uploaded["source"] == "large.txt"
+        assert uploaded["chunks"] > 1
+        assert uploaded["bytes"] == len(payload)
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        chat_server._state.clear()
+        chat_server._state.update(old)
         docs.close()
 
 
@@ -193,9 +264,10 @@ def test_http_pdf_upload_returns_page_citation(tmp_path):
     try:
         query = urllib.parse.urlencode(
             {"source": "manual.pdf", "title": "Manual"})
+        pdf_data = _pdf_bytes()
         request = urllib.request.Request(
             base + "/v1/documents/upload?" + query,
-            data=_pdf_bytes(),
+            data=pdf_data,
             headers={"Content-Type": "application/pdf"},
             method="POST",
         )
@@ -204,6 +276,9 @@ def test_http_pdf_upload_returns_page_citation(tmp_path):
         assert uploaded["format"] == "pdf"
         assert uploaded["pages"] == 1
         assert uploaded["chunks"] == 1
+        assert uploaded["file_sha256"] == hashlib.sha256(pdf_data).hexdigest()
+        assert uploaded["sha256"] == uploaded["file_sha256"]
+        assert uploaded["content_sha256"] != uploaded["file_sha256"]
 
         request = urllib.request.Request(
             base + "/v1/documents/search",

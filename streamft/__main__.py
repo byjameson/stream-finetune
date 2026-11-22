@@ -15,6 +15,11 @@
   streamft spiking  train, inspect, generate from, or serve a small spiking LM
   streamft assistant ask/serve a pretrained instruction model with verified RAG
   streamft doctor   environment report (torch, CUDA, bitsandbytes, VRAM)
+
+The Atom Zero assistant has its own console entry point:
+
+  atomzero --model checkpoints/transformer_behavior_50m_scaled \
+    --tokenizer data/chat_en_bpe8k.json --docs data/docs.db
 """
 from __future__ import annotations
 

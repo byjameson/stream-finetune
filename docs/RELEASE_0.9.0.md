@@ -18,6 +18,18 @@ the existing product/behavior benchmarks are unchanged from `0.8.0`.
   three-step cap and explicit confirmation for task/research side effects.
   This is a validator/executor, not model-driven planning.
 
+## Review fixes
+
+- Raw uploads now bypass the 2 MB JSON body cap and use the 10 MB document
+  limit, so a 2-10 MB PDF can be indexed. A 2.7 MB regression upload is covered
+  by the HTTP test.
+- Upload responses separate `file_sha256` (raw bytes) from `content_sha256`
+  (extracted text); source listings expose the stored content hash.
+- DOCX paragraphs, headings and tables are read in document order, so a table
+  no longer moves to the end under the last heading.
+- The default install is the assistant runtime; `streamft[train]` carries the
+  training stack and `streamft[neural]` the optional MiniLM reranker.
+
 ## Document benchmark
 
 Authored regression corpus, 10 generated documents, 80 answerable questions and
@@ -29,16 +41,32 @@ Authored regression corpus, 10 generated documents, 80 answerable questions and
 | top-1 page/section | **1.000** (80/80) |
 | complete citation | **1.000** (80/80) |
 | no-answer refusal | **1.000** (20/20) |
-| median retrieval latency | **~1.4 ms** |
+| median retrieval latency | **~1-2 ms** |
 
 This is not a public leaderboard. It is a deterministic regression gate for
 ingestion, provenance, source routing and the no-answer path. See
 [`BENCHMARKS.md`](BENCHMARKS.md) and
 [`../research/results/document_benchmark.json`](../research/results/document_benchmark.json).
 
+## Install profiles
+
+The default install is now the assistant runtime. The training stack moved to
+extras:
+
+```powershell
+pip install streamft                  # core assistant + PDF/DOCX
+pip install "streamft[neural]"        # optional MiniLM reranker
+pip install "streamft[train]"         # streaming trainer / quantization
+pip install "streamft[train,neural]"  # both
+```
+
+This keeps a CPU assistant install from pulling `bitsandbytes`, `datasets`,
+`accelerate` and the training stack by default. Existing trainer users should
+install `streamft[train]`.
+
 ## Tests and CI
 
-- **410 tests pass** locally.
+- **412 tests pass** locally.
 - CI runs the unit tests, the document benchmark with `--check`, the safety and
   injection red-team, and the package build/install.
 

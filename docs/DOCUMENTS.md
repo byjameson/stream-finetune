@@ -34,6 +34,20 @@ The launch code is L-7781. (source: manual.pdf (p. 4))
 The warranty period is 24 months. (source: policy.docx [Warranty])
 ```
 
+## Hashes
+
+Two different hashes are now explicit:
+
+| field | what it hashes |
+|---|---|
+| `file_sha256` | the exact uploaded bytes (PDF/DOCX/HTML file) |
+| `content_sha256` | the extracted, normalized text that is chunked and stored |
+| `sha256` | legacy alias: file hash for uploads, text hash for JSON text |
+
+`doc_meta`/the FTS `sha` column stores the content hash; `sources()` exposes it
+as `content_sha256`. For a plain text upload with no BOM or trailing whitespace
+the two hashes can be equal; for a PDF they normally differ.
+
 ## Evidence panel
 
 The web UI has an **Evidence** button on each indexed document and each search
@@ -89,7 +103,8 @@ cached vectors.
 
 ## Limits
 
-- Maximum upload: **10 MB** per document.
+- Maximum raw upload: **10 MB** per document. Raw uploads use their own limit;
+  JSON text requests still use the smaller 2 MB request-body cap.
 - No OCR. A scanned/image-only PDF returns a clear “no extractable text” error;
   run OCR separately and add the resulting text if needed.
 - Encrypted PDFs are rejected unless they can be opened with an empty password.

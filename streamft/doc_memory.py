@@ -871,7 +871,7 @@ class DocMemory:
     def sources(self) -> list[dict]:
         with self._lock:
             rows = self.con.execute(
-                "SELECT source, title, COUNT(*) FROM docs "
+                "SELECT source, title, COUNT(*), MAX(sha) FROM docs "
                 "GROUP BY source, title ORDER BY source").fetchall()
             metas = self._meta_map([row[0] for row in rows])
             page_rows = self.con.execute(
@@ -885,6 +885,7 @@ class DocMemory:
                 "source": row[0],
                 "title": row[1],
                 "chunks": row[2],
+                "content_sha256": row[3],
                 **metas.get(row[0], {"source": row[0], "kind": "document",
                                      "source_url": "", "teacher": "",
                                      "model": "", "verified": True,

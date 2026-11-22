@@ -138,8 +138,8 @@ python research/benchmark_documents.py \
 | top-1 contains expected answer | **1.000** (80/80) |
 | complete citation (source + locator + answer) | **1.000** (80/80) |
 | no-answer refusal | **1.000** (20/20) |
-| median retrieval latency | **~1.3 ms** |
-| p95 retrieval latency | **~2.3 ms** |
+| median retrieval latency | **~1-2 ms** |
+| p95 retrieval latency | **~2-3 ms** |
 
 By format: Markdown 24/24, PDF 24/24, DOCX 16/16, HTML 16/16 for source,
 locator and answer. The `--check` mode enforces source ≥ 0.95, locator ≥ 0.90,

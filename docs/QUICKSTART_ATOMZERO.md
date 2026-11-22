@@ -16,6 +16,9 @@ pip install -e .
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
+For the optional MiniLM reranker use `pip install -e ".[neural]"`. The training
+engine is a separate profile: `pip install -e ".[train]"`.
+
 The script:
 
 1. seeds `data/atomzero_demo.db` with launch, warranty, travel and visitor docs;

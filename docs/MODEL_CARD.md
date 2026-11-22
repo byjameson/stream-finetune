@@ -32,8 +32,8 @@ benchmarks and release — is
 | safety | optional rules + local linear ML head; off by default; exact fallback |
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
-| packaging | PyPI wheel/sdist, GitHub release, HF/ModelScope weights, quickstart |
-| tests | 410 passed; product 21/21; behavior 16/16; retrieval 1.000 |
+| packaging | PyPI wheel/sdist with `[neural]`/`[train]` extras, `atomzero` entry point, GitHub release, HF/ModelScope weights |
+| tests | 412 passed; product 21/21; behavior 16/16; retrieval 1.000 |
 | document benchmark | 100 authored questions: 80/80 answerable, 20/20 no-answer |
 
 ## Model

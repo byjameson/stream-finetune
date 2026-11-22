@@ -97,12 +97,14 @@ def ingest_document(docs, source, text, title: str = "") -> dict:
         raise DocumentTooLarge(
             f"document is too large (max {MAX_DOC_BYTES} bytes)")
     chunks = docs.add_text(source, text, title=title)
+    content_sha = hashlib.sha256(raw).hexdigest()
     return {
         "source": source,
         "title": title or Path(source).stem,
         "chunks": chunks,
         "bytes": len(raw),
-        "sha256": hashlib.sha256(raw).hexdigest(),
+        "sha256": content_sha,
+        "content_sha256": content_sha,
         "replace": True,
     }
 
@@ -138,12 +140,18 @@ def ingest_upload(docs, source, data, title: str = "") -> dict:
         source, extracted["blocks"], title=extracted["title"])
     pages = [block.get("page") for block in extracted["blocks"]
              if block.get("page") is not None]
+    file_sha = hashlib.sha256(data).hexdigest()
+    content_text = "\n\n".join(
+        str(block.get("text", "")) for block in extracted["blocks"])
+    content_sha = hashlib.sha256(content_text.encode("utf-8")).hexdigest()
     return {
         "source": source,
         "title": extracted["title"],
         "chunks": chunks,
         "bytes": len(data),
-        "sha256": hashlib.sha256(data).hexdigest(),
+        "sha256": file_sha,
+        "file_sha256": file_sha,
+        "content_sha256": content_sha,
         "replace": True,
         "format": extracted["format"],
         "pages": len(set(pages)),
@@ -1633,11 +1641,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"error": "invalid Content-Length"})
         if n < 0:
             return self._json(400, {"error": "invalid Content-Length"})
+        # Raw uploads have their own limit; a 3 MB PDF must not be rejected by
+        # the smaller JSON body cap before _upload sees it.
+        if route == "/v1/documents/upload":
+            return self._upload(parsed.query, n)
         if n > MAX_BODY_BYTES:
             self.close_connection = True
             return self._json(413, {"error": "request body is too large"})
-        if route == "/v1/documents/upload":
-            return self._upload(parsed.query, n)
         try:
             req = json.loads(self.rfile.read(n) or b"{}")
         except (json.JSONDecodeError, UnicodeDecodeError):

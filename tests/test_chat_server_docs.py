@@ -204,6 +204,7 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         assert ingested["chunks"] == 1
         assert ingested["title"] == "Warranty"
         assert len(ingested["sha256"]) == 64
+        assert ingested["content_sha256"] == ingested["sha256"]
         assert "W-7781" in _post(
             base + "/v1/documents/search",
             {"query": "warranty code"})["data"][0]["chunk"]
@@ -233,6 +234,33 @@ def test_http_document_endpoints_and_grounded_chat(tmp_path, monkeypatch):
         assert "R-42" in _post(
             base + "/v1/documents/search",
             {"query": "raw upload"})["data"][0]["chunk"]
+
+        old_body = chat_server.MAX_BODY_BYTES
+        chat_server.MAX_BODY_BYTES = 5
+        try:
+            raw_over_body = _post_raw(
+                base + "/v1/documents/upload?" + urllib.parse.urlencode({
+                    "source": "raw-over-body.txt"}),
+                "1234567890")
+            assert raw_over_body["source"] == "raw-over-body.txt"
+            with pytest.raises(urllib.error.HTTPError) as json_over_body:
+                _post(base + "/v1/documents", {
+                    "source": "json-over-body.txt", "text": "1234567890"})
+            assert json_over_body.value.code == 413
+        finally:
+            chat_server.MAX_BODY_BYTES = old_body
+
+        old_doc = chat_server.MAX_DOC_BYTES
+        chat_server.MAX_DOC_BYTES = 5
+        try:
+            with pytest.raises(urllib.error.HTTPError) as raw_over_doc:
+                _post_raw(
+                    base + "/v1/documents/upload?" + urllib.parse.urlencode({
+                        "source": "raw-over-doc.txt"}),
+                    "1234567890")
+            assert raw_over_doc.value.code == 413
+        finally:
+            chat_server.MAX_DOC_BYTES = old_doc
         old_max = chat_server.MAX_DOC_BYTES
         chat_server.MAX_DOC_BYTES = 5
         try:

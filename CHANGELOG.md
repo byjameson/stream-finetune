@@ -12,7 +12,12 @@ Draft release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
   listings include the page range.
 - Raw uploads accept PDF/DOCX/HTML/Markdown up to 10 MB; text uploads remain
   backward compatible.
-- Added `docs/DOCUMENTS.md` and 10 document/citation tests (410 total).
+- Added `docs/DOCUMENTS.md` and 11 document/citation tests (412 total).
+- Fixed raw-upload limit ordering: a 2-10 MB PDF/text upload now reaches the
+  10 MB document limit instead of being rejected by the 2 MB JSON body cap.
+- Split upload provenance into `file_sha256` (raw bytes) and `content_sha256`
+  (extracted text); `sources()` exposes the stored content hash.
+- DOCX tables now stay in document order relative to paragraphs/headings.
 - Added `research/benchmark_documents.py`: 100 authored questions across
   Markdown/PDF/DOCX/HTML, with top-1 source, page/section, answer, no-answer
   refusal and latency metrics; CI enforces the thresholds.
@@ -21,6 +26,9 @@ Draft release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
 - Added `POST /v1/agent/plan`: allowlisted plan validation, a three-step cap,
   read-only execution and explicit confirmation for task/research side effects.
   This is a constrained executor, not model-driven planning.
+- Packaging: assistant core no longer installs the training stack by default;
+  use `streamft[train]` for the trainer and `streamft[neural]` for the optional
+  MiniLM reranker. Added an `atomzero` console entry point.
 
 ## 0.8.3 - full project map (2026-11-22)
 

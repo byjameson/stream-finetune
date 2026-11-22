@@ -1,9 +1,13 @@
-"""streamft — fine-tune models that do not fit, one block at a time.
+"""streamft: Atom Zero local assistant + streaming fine-tuning engine.
 
-The engine memory-maps a pre-quantized NF4 checkpoint, materialises one transformer
-block on the GPU at a time (with recompute in the backward) and keeps a LoRA adapter
-trainable. Measured on a 6 GB RTX 3050 Laptop: a 32B model at 1024 tokens/step,
-36.7 tok/s, 4.61 GB peak.
+Atom Zero is the product runtime: a 49.2M from-scratch model wrapped in local
+source-cited RAG, documents, tools, memory, evidence and a reviewed learning
+loop. The same package also contains the original streamft engine, which
+fine-tunes models that do not fit in VRAM by memory-mapping a pre-quantized NF4
+checkpoint and materialising one transformer block at a time.
+
+Measured on a 6 GB RTX 3050 Laptop: a 32B model at 1024 tokens/step, 36.7
+tok/s, 4.61 GB peak.
 
 Modules:
 

@@ -266,7 +266,7 @@ whether to enable it.
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
 | safety-enabled product | **26/26** |
-| test suite | **410 passed** |
+| test suite | **412 passed** |
 
 The product benchmark is narrow and authored: tools, memory, tasks, retrieval,
 teacher-note review, missing-source detection and one short generation. It is
@@ -275,16 +275,19 @@ not MMLU, GSM8K or HumanEval. The 21/21 is the product, not the bare model.
 ## 14. Packaging and reproduction
 
 ```powershell
-pip install streamft==0.8.2
+pip install streamft
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The quickstart seeds a demo corpus, starts the server and opens the browser.
-`--WithProvider` enables local Ollama. The package is on PyPI; weights are on
-Hugging Face and ModelScope. The 49.2M checkpoint is not bundled in the wheel;
-the repository/tag carries the demo checkpoint.
+The default install is the assistant runtime. Use `streamft[neural]` for the
+optional MiniLM reranker and `streamft[train]` for the streaming trainer; the
+trainer stack is no longer a core dependency. The quickstart seeds a demo
+corpus, starts the server and opens the browser. `--WithProvider` enables local
+Ollama. The package is on PyPI; weights are on Hugging Face and ModelScope. The
+49.2M checkpoint is not bundled in the wheel; the repository/tag carries the
+demo checkpoint.
 
 Reference machine: RTX 3050 Laptop 6 GB, 34 GB RAM, Windows 11. The core also
 runs on CPU, slower.

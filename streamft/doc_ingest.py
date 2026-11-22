@@ -203,6 +203,10 @@ def _docx_blocks(data: bytes) -> tuple[str, list[dict]]:
         document = Document(io.BytesIO(data))
     except Exception as exc:
         raise DocumentExtractError(f"cannot read DOCX: {exc}") from exc
+    from docx.oxml.ns import qn
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+
     blocks: list[dict] = []
     section = ""
     current: list[str] = []
@@ -214,33 +218,44 @@ def _docx_blocks(data: bytes) -> tuple[str, list[dict]]:
             blocks.append(block)
         current = []
 
-    for paragraph in document.paragraphs:
-        text = (paragraph.text or "").strip()
-        if not text:
-            continue
-        style = ""
-        try:
-            style = (paragraph.style.name or "").lower()
-        except Exception:
-            style = ""
-        if style.startswith("heading"):
-            flush()
-            section = text
-            continue
-        current.append(text)
-        if sum(len(part) for part in current) > 1800:
-            flush()
-    flush()
+    def iter_blocks():
+        body = document.element.body
+        for child in body.iterchildren():
+            if child.tag == qn("w:p"):
+                yield Paragraph(child, document)
+            elif child.tag == qn("w:tbl"):
+                yield Table(child, document)
 
-    for table in document.tables:
+    for item in iter_blocks():
+        if isinstance(item, Paragraph):
+            text = (item.text or "").strip()
+            if not text:
+                continue
+            style = ""
+            try:
+                style = (item.style.name or "").lower()
+            except Exception:
+                style = ""
+            if style.startswith("heading"):
+                flush()
+                section = text
+                continue
+            current.append(text)
+            if sum(len(part) for part in current) > 1800:
+                flush()
+            continue
+
+        # A table keeps its position relative to the paragraphs around it.
+        flush()
         rows = []
-        for row in table.rows:
+        for row in item.rows:
             cells = [(cell.text or "").strip() for cell in row.cells]
             if any(cells):
                 rows.append(" | ".join(cells))
         block = _block("\n".join(rows), section=section or "Table")
         if block:
             blocks.append(block)
+    flush()
 
     if not blocks:
         raise DocumentExtractError("DOCX has no extractable text")

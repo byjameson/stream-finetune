@@ -1,6 +1,6 @@
 # Atom Zero — a 49.2M local assistant that cites its sources
 
-[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-410-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.8.3-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -11,15 +11,30 @@
 ```powershell
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
-pip install streamft==0.8.3
+pip install -e ".[neural]"
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
 The package is on PyPI: <https://pypi.org/project/streamft/0.8.3/>. The demo
 checkpoint still comes from the repository/tag.
 
-> **0.9.0 development:** PDF/DOCX/HTML/Markdown ingestion and page/section
-> citations are on `main`. PyPI `0.8.3` is the previous text-only package.
+> **0.9.0 development:** PDF/DOCX/HTML/Markdown ingestion, page/section
+> citations, evidence and constrained plans are on `main`. PyPI `0.8.3` is the
+> previous text-only package.
+
+### Install profiles
+
+Atom Zero inference no longer installs the training stack by default:
+
+```powershell
+pip install streamft                 # core assistant: torch, tokenizers, PDF/DOCX
+pip install "streamft[neural]"       # + optional MiniLM reranker
+pip install "streamft[train]"        # + trainer/quantization stack
+pip install "streamft[train,neural]" # everything
+```
+
+From this checkout use `pip install -e ".[neural]"` or
+`pip install -e ".[train,neural]"`.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
 
@@ -60,7 +75,7 @@ It covers every layer:
 - **Safety:** optional rules + local ML head; off by default.
 - **Privacy/security:** localhost, no telemetry, deletion, SSRF guard, caps.
 - **Benchmarks:** raw 2/10, product 21/21, behavior 16/16, retrieval 1.000,
-  safety 26/26, 410 tests.
+  safety 26/26, 412 tests.
 - **Release:** PyPI, GitHub, HF, ModelScope, dev.to, Medium.
 
 ## What it is
@@ -85,7 +100,7 @@ It covers every layer:
 | behavior checks | **16/16** |
 | source-cited retrieval top-1 | **1.000** (FTS 0.850) |
 | document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
-| test suite | **410 passed** |
+| test suite | **412 passed** |
 
 The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [document formats](docs/DOCUMENTS.md), [tool planning](docs/TOOL_PLANNING.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
 
