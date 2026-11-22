@@ -11,7 +11,7 @@ separate [`streamft`](https://pypi.org/project/streamft/) package.
 ## Install
 
 ```powershell
-pip install atomzero
+pip install atomzero==0.1.2
 ```
 
 Optional local MiniLM reranker:
@@ -24,7 +24,17 @@ The model weights are not bundled. Download them from
 [Hugging Face](https://huggingface.co/byjameson/atom-zero-49m) or
 [ModelScope](https://modelscope.cn/models/byjameson/atom-zero-49m).
 
-## Run
+## Quickstart
+
+```powershell
+atomzero-quickstart
+```
+
+The first run downloads the ~197 MB checkpoint/tokenizer, seeds a demo corpus
+and opens the local UI. No streamft checkout is needed. Use `--provider` to
+route free-form chat to local Ollama while RAG/tools stay local.
+
+## Manual run
 
 ```powershell
 atomzero `

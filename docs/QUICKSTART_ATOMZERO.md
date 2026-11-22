@@ -2,9 +2,8 @@
 
 ## Requirements
 
-- Windows PowerShell (the demo scripts are PowerShell; the server is cross-platform)
 - Python 3.10+
-- The product checkpoint at `checkpoints/transformer_behavior_50m_scaled`
+- ~197 MB free disk for the checkpoint/tokenizer
 - Optional: Ollama + `llama3.2:3b` for the teacher/curiosity flow and provider mode
 - Optional: `models/all-MiniLM-L6-v2` for neural retrieval
 - `pypdf` and `python-docx` are installed with the package for PDF/DOCX ingestion
@@ -12,19 +11,18 @@
 ## Run
 
 ```powershell
-pip install -e .
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+pip install atomzero==0.1.2
+atomzero-quickstart
 ```
 
-The default editable install includes the streamft training stack. For the
-optional MiniLM reranker use `pip install -e ".[neural]"`; `[train]` is a
-compatibility alias for the same trainer dependencies.
+The first run:
 
-The script:
+1. downloads the checkpoint/tokenizer from Hugging Face;
+2. seeds `data/atomzero_demo.db` with launch, warranty, travel and visitor docs;
+3. starts the local server on `http://127.0.0.1:8013`;
+4. opens the browser.
 
-1. seeds `data/atomzero_demo.db` with launch, warranty, travel and visitor docs;
-2. starts the local server on `http://127.0.0.1:8013`;
-3. opens the browser.
+No streamft checkout or trainer install is needed.
 
 ## Try these
 
@@ -56,27 +54,27 @@ The full format and provenance rules are in [`DOCUMENTS.md`](DOCUMENTS.md).
 ## Provider mode
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
+atomzero-quickstart --provider
 ```
 
 This routes free-form chat to local Ollama `llama3.2:3b` while RAG/tools stay
-local. Start Ollama first. Use a different model with `-ProviderModel`.
+local. Start Ollama first. Use a different model with `--provider-model`.
 
 ## Reset the demo
 
 ```powershell
 Remove-Item data/atomzero_demo.db -ErrorAction SilentlyContinue
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+atomzero-quickstart
 ```
 
 ## Troubleshooting
 
-- **Checkpoint missing** — use `checkpoints/transformer_behavior_50m_scaled`
-  or the `transformer_behavior_50m_long` baseline.
-- **Port busy** — pass `-Port 8014`.
+- **Download failed** — retry `atomzero-quickstart`; cached files live under
+  `~/.cache/atomzero/atom-zero-49m`.
+- **Port busy** — pass `--port 8014`.
 - **No neural retrieval** — the server falls back to hashed FTS-anchored
   retrieval; download `models/all-MiniLM-L6-v2` for semantic recall.
 - **No Ollama** — chat still works; curiosity/teacher calls will report the
   provider error. Start Ollama and pull `llama3.2:3b`.
-- **Safety** — off by default. Add `-SafetyFilter` only if you want the
+- **Safety** — off by default. Add `--safety-filter` only if you want the
   optional rule+ML filter.

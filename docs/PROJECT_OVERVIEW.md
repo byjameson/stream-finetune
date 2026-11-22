@@ -281,7 +281,7 @@ cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-`atomzero 0.1.1` is the standalone assistant package. `streamft 1.0` is the
+`atomzero 0.1.2` is the standalone assistant package. `streamft 1.0` is the
 separate low-VRAM trainer; `streamft 0.9.2` is the last compatibility release
 that bundled Atom Zero. The quickstart seeds a demo corpus, starts the server
 and opens the browser. `--WithProvider` enables local Ollama. Both packages are

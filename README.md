@@ -22,10 +22,15 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512
 The 49.2M local, source-cited assistant now lives in its own distribution:
 
 ```powershell
-pip install atomzero
+pip install atomzero==0.1.2
+atomzero-quickstart
 ```
 
-- PyPI: <https://pypi.org/project/atomzero/>
+The first run downloads the ~197 MB checkpoint/tokenizer from Hugging Face,
+seeds a demo corpus and opens the local UI. You do **not** need to clone the
+streamft repository or install the trainer.
+
+- PyPI: <https://pypi.org/project/atomzero/0.1.2/>
 - Source/README: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
 - Model card: <https://huggingface.co/byjameson/atom-zero-49m>
 
@@ -37,7 +42,7 @@ pip install atomzero
 
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
-- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.2/>
 - streamft ModelScope: <https://modelscope.cn/models/byjameson/streamft>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>

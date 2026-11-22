@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atomzero"
-version = "0.1.1"
+version = "0.1.2"
 description = "Atom Zero: a local source-cited 49.2M assistant with RAG, documents, evidence and constrained tools."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,6 +29,7 @@ neural = ["transformers>=4.40"]
 
 [project.scripts]
 atomzero = "atomzero.chat_server:main"
+atomzero-quickstart = "atomzero.quickstart:main"
 
 [project.urls]
 Homepage = "https://github.com/byjameson/stream-finetune"

@@ -1,5 +1,14 @@
 # Changelog
 
+## atomzero 0.1.2 - standalone quickstart (2026-11-22)
+
+- Added `atomzero-quickstart`: downloads the public checkpoint/tokenizer from
+  Hugging Face, seeds a demo corpus and starts the local UI.
+- No streamft checkout, trainer install or `git clone` is required.
+- Added `--provider`, `--safety-filter`, `--port`, `--no-download` and
+  `--no-browser` options.
+- Release notes: [`docs/RELEASE_ATOMZERO_0.1.2.md`](docs/RELEASE_ATOMZERO_0.1.2.md).
+
 ## 1.0.0 - streamft trainer only (2026-11-22)
 
 - Removed the bundled Atom Zero modules and `atomzero` console script from the

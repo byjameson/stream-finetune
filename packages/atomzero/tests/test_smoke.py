@@ -1,15 +1,18 @@
 import subprocess
 import sys
 
+import pytest
+
 from atomzero import __version__
 from atomzero.agent_runtime import AgentSession
 from atomzero.chat_server import doc_answer, ingest_upload
 from atomzero.doc_memory import DocMemory
+from atomzero.quickstart import ensure_assets, seed_demo
 from atomzero.tool_planner import execute_plan
 
 
 def test_imports_do_not_require_streamft():
-    assert __version__ == "0.1.1"
+    assert __version__ == "0.1.2"
     code = (
         "import sys; import atomzero.chat_server; "
         "assert 'streamft' not in sys.modules"
@@ -50,6 +53,15 @@ def test_text_upload_returns_content_hash(tmp_path):
             "The launch code")
     finally:
         docs.close()
+
+
+def test_quickstart_seed_demo(tmp_path):
+    assert seed_demo(tmp_path / "docs.db") >= 4
+
+
+def test_quickstart_refuses_missing_assets_without_download(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        ensure_assets(tmp_path / "cache", download=False)
 
 
 def test_constrained_task_plan(tmp_path):

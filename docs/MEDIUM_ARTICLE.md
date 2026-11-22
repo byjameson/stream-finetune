@@ -139,15 +139,11 @@ The closest description is: a compact **agent harness** with a small language mo
 ## Try it
 
 ```powershell
-pip install atomzero==0.1.1
-git clone https://github.com/byjameson/stream-finetune.git
-cd stream-finetune
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
+pip install atomzero==0.1.2
+atomzero-quickstart
 ```
 
-Atom Zero is the standalone `atomzero` package; `streamft` remains the low-VRAM trainer and is not required for this quickstart.
-
-The quickstart seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the server and opens the browser. Try:
+Atom Zero is the standalone `atomzero` package. The first `atomzero-quickstart` run downloads the ~197 MB checkpoint/tokenizer from Hugging Face, seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the server and opens the browser. `streamft` remains the low-VRAM trainer and is not required. Try:
 
 ```text
 What is the launch code?                         -> cited local answer
@@ -159,7 +155,7 @@ Add task buy milk / My name is Alex              -> local tools + memory
 Optional stronger local chat:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1 -WithProvider
+atomzero-quickstart --provider
 ```
 
 That routes free-form chat to local Ollama `llama3.2:3b` while RAG, tools and memory remain local. It is not the default backend.
@@ -178,8 +174,8 @@ The honest gaps are model capability, tool planning, multilingual quality and a 
 
 If you want to inspect the claims:
 
-- GitHub: https://github.com/byjameson/stream-finetune
-- PyPI: https://pypi.org/project/atomzero/0.1.1/
+- GitHub: https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero
+- PyPI: https://pypi.org/project/atomzero/0.1.2/
 - streamft trainer: https://pypi.org/project/streamft/1.0.0/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
