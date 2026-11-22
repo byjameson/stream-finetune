@@ -2,6 +2,9 @@
 
 Status: **published to PyPI as `atomzero 0.1.5` on 2026-11-22.**
 
+> Superseded by `atomzero 0.1.6`: LinkedIn and ModelScope are canonical
+> publication surfaces again.
+
 Metadata cleanup release. No model or runtime behavior changed; the weights
 remain `0.8.0`.
 

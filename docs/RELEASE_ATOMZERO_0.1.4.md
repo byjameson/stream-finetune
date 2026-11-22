@@ -2,6 +2,9 @@
 
 Status: **published to PyPI as `atomzero 0.1.4` on 2026-11-22.**
 
+> Superseded by `atomzero 0.1.6`: LinkedIn and ModelScope are canonical
+> publication surfaces again.
+
 Repository release. The package source now lives at
 <https://github.com/byjameson/atom-zero> instead of a subdirectory of the
 trainer monorepo. No model or runtime behavior changed; the weights remain

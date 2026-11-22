@@ -1,11 +1,11 @@
 # Atom Zero 49.2M model card
 
-Version: model weights `0.8.0`; standalone `atomzero 0.1.5`<br>
+Version: model weights `0.8.0`; standalone `atomzero 0.1.6`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
 
 ```powershell
-pip install atomzero==0.1.5
+pip install atomzero==0.1.6
 atomzero-quickstart
 ```
 
@@ -174,15 +174,18 @@ Evidence lives in `research/results/` and
 
 ## Published artifacts
 
-- GitHub release: <https://github.com/byjameson/atom-zero/releases/tag/v0.1.5>
+- GitHub release: <https://github.com/byjameson/atom-zero/releases/tag/v0.1.6>
 - GitHub source: <https://github.com/byjameson/atom-zero>
-- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.5/>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.6/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
+- ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
+- LinkedIn: <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>
 - document formats: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 
 ## Contact
 
 - Email: **gokhancava@gmail.com**
 - GitHub issues: <https://github.com/byjameson/atom-zero/issues>
+- LinkedIn: <https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/>

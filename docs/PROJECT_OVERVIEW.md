@@ -275,11 +275,11 @@ not MMLU, GSM8K or HumanEval. The 21/21 is the product, not the bare model.
 ## 14. Packaging and reproduction
 
 ```powershell
-pip install atomzero==0.1.5
+pip install atomzero==0.1.6
 atomzero-quickstart
 ```
 
-`atomzero 0.1.5` is the standalone assistant package. `streamft 1.0` is the
+`atomzero 0.1.6` is the standalone assistant package. `streamft 1.0` is the
 separate low-VRAM trainer; `streamft 0.9.2` is the last compatibility release
 that bundled Atom Zero. The quickstart downloads the checkpoint/tokenizer from
 Hugging Face, seeds a demo corpus, starts the server and opens the browser.
@@ -291,8 +291,8 @@ runs on CPU, slower.
 
 ## 15. Released artifacts and contact
 
-Atom Zero canonical surfaces: GitHub, Hugging Face, PyPI, dev.to and Medium.
-ModelScope and LinkedIn are no longer maintained release channels.
+Atom Zero canonical surfaces: GitHub, Hugging Face, PyPI, dev.to, Medium,
+LinkedIn and ModelScope.
 
 - GitHub (trainer monorepo): https://github.com/byjameson/stream-finetune
 - GitHub (Atom Zero): https://github.com/byjameson/atom-zero
@@ -301,8 +301,10 @@ ModelScope and LinkedIn are no longer maintained release channels.
 - streamft PyPI (trainer): https://pypi.org/project/streamft/
 - atomzero PyPI (standalone assistant): https://pypi.org/project/atomzero/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
+- ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - dev.to: https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m
 - Medium: https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78
+- LinkedIn: https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/
 - Document formats: `DOCUMENTS.md`
 - Email: **gokhancava@gmail.com**
 - License: Apache-2.0; data attribution in `NOTICE`.

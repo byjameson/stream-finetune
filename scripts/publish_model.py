@@ -8,8 +8,8 @@ The model is a custom PyTorch checkpoint, not a transformers AutoModel. The
 staged folder contains the checkpoint, tokenizer, config, LICENSE, NOTICE and a
 model card. Tokens are read from the environment and are never written to disk.
 
-Canonical publication is Hugging Face. The ModelScope target is kept only for
-the frozen historical mirror; new releases do not need it.
+Canonical model publication is Hugging Face, mirrored to ModelScope. Both use
+the same staged folder; ModelScope receives the card without HF front matter.
 """
 from __future__ import annotations
 
