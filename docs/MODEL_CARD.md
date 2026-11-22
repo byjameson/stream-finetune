@@ -1,6 +1,6 @@
 # Atom Zero 49.2M model card
 
-Version: model weights `0.8.0`; package `streamft 0.9.1`<br>
+Version: model weights `0.8.0`; standalone `atomzero 0.1.1` or `streamft 0.9.1`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
 
@@ -32,7 +32,7 @@ benchmarks and release — is
 | safety | optional rules + local linear ML head; off by default; exact fallback |
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
-| packaging | PyPI wheel/sdist, full streamft trainer deps in the default install, `[neural]`/`[train]` aliases, `atomzero` entry point, GitHub release, HF/ModelScope weights |
+| packaging | standalone `atomzero` package (assistant deps only) plus `streamft` trainer (full deps), `atomzero` entry point, GitHub release, HF/ModelScope weights |
 | tests | 412 passed; product 21/21; behavior 16/16; retrieval 1.000 |
 | document benchmark | 100 authored questions: 80/80 answerable, 20/20 no-answer |
 
@@ -166,7 +166,8 @@ Evidence lives in `research/results/` and [`BENCHMARKS.md`](BENCHMARKS.md).
 ## Published artifacts
 
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.1>
-- PyPI: <https://pypi.org/project/streamft/0.9.1/>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
+- streamft PyPI: <https://pypi.org/project/streamft/0.9.1/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>

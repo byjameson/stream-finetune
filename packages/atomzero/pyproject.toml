@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atomzero"
+version = "0.1.1"
+description = "Atom Zero: a local source-cited 49.2M assistant with RAG, documents, evidence and constrained tools."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Gokhan Cava", email = "gokhancava@gmail.com" }]
+keywords = ["atom-zero", "local-assistant", "rag", "source-citation", "small-language-model", "pypdf"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "torch",
+  "tokenizers",
+  "numpy",
+  "pypdf>=4",
+  "python-docx>=1.1",
+]
+
+[project.optional-dependencies]
+neural = ["transformers>=4.40"]
+
+[project.scripts]
+atomzero = "atomzero.chat_server:main"
+
+[project.urls]
+Homepage = "https://github.com/byjameson/stream-finetune"
+Issues = "https://github.com/byjameson/stream-finetune/issues"
+LinkedIn = "https://www.linkedin.com/in/g%C3%B6khan-cava-874a32157/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+atomzero = ["moderation_head.json"]
+
+[tool.setuptools]
+license-files = ["LICENSE", "NOTICE"]

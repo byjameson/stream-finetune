@@ -1,5 +1,17 @@
 # Changelog
 
+## atomzero 0.1.1 - standalone assistant package (2026-11-22)
+
+- Split Atom Zero into the independent `atomzero` PyPI package with only
+  `torch`, `tokenizers`, `numpy`, `pypdf` and `python-docx` as dependencies.
+- Added `packages/atomzero` with its own CLI (`atomzero`), tests and release
+  notes; it does not import `streamft`.
+- `0.1.1` packages `moderation_head.json`, uses atomzero identity in the API
+  and user-agent, and adds a subprocess test proving `streamft` is not loaded.
+- `streamft 0.9.1` keeps the bundled Atom Zero for compatibility; the bundled
+  copy will be removed in a future major release.
+- Release notes: [`docs/RELEASE_ATOMZERO_0.1.1.md`](docs/RELEASE_ATOMZERO_0.1.1.md).
+
 ## 0.9.1 - streamft trainer compatibility (2026-11-22)
 
 - Restored `transformers`, `safetensors`, `accelerate`, `datasets`,

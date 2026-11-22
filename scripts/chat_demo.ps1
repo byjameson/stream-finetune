@@ -18,6 +18,12 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
+$atomSrc = Join-Path $root "packages\atomzero\src"
+$serverModule = if (Test-Path (Join-Path $atomSrc "atomzero\chat_server.py")) {
+    "atomzero.chat_server"
+} else {
+    "streamft.chat_server"
+}
 $extra = ""
 if ($Adapter) { $extra += " --adapter $Adapter" }
 if ($Docs) { $extra += " --docs $Docs" }
@@ -36,7 +42,7 @@ if ($ChatProviderUrl -and $ChatProviderModel) {
 Start-Process powershell -ArgumentList @(
     "-NoExit",
     "-Command",
-    "cd `"$root`"; `$env:PYTHONPATH=`"$root`"; python -m streamft.chat_server --model $Model --host 127.0.0.1 --port $Port$extra"
+    "cd `"$root`"; `$env:PYTHONPATH=`"$root;$atomSrc`"; python -m $serverModule --model $Model --host 127.0.0.1 --port $Port$extra"
 )
 $ready = $false
 for ($i = 0; $i -lt 60; $i++) {

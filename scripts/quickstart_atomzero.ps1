@@ -7,9 +7,15 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
+$atomSrc = Join-Path $root "packages\atomzero\src"
 Set-Location $root
-$env:PYTHONPATH = $root
+$env:PYTHONPATH = "$root;$atomSrc"
 $env:PYTHONIOENCODING = "utf-8"
+$docModule = if (Test-Path (Join-Path $atomSrc "atomzero\doc_memory.py")) {
+    "atomzero.doc_memory"
+} else {
+    "streamft.doc_memory"
+}
 
 $model = "checkpoints/transformer_behavior_50m_scaled"
 if (!(Test-Path "$model/model.pt")) {
@@ -28,7 +34,7 @@ $files = @(
     @{ path = "$demo/security.txt"; title = "Visitor security" }
 )
 foreach ($item in $files) {
-    python -m streamft.doc_memory add $item.path --db $docs --title $item.title | Out-Null
+    python -m $docModule add $item.path --db $docs --title $item.title | Out-Null
 }
 Write-Host "Demo corpus ready: $docs"
 

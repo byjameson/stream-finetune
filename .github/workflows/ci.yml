@@ -25,6 +25,10 @@ jobs:
           pip install pytest safetensors numpy scikit-learn scipy joblib pypdf python-docx
       - name: Unit tests (CPU only)
         run: python -m pytest tests -q
+      - name: Atom Zero package tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/packages/atomzero/src
+        run: python -m pytest packages/atomzero/tests -q
       - name: Document benchmark
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -41,3 +45,8 @@ jobs:
           python -m build
           python -m pip install --no-deps dist/*.whl
           streamft --help
+      - name: Atom Zero package build
+        run: |
+          python -m build packages/atomzero --outdir /tmp/atomzero-dist
+          python -m pip install --no-deps /tmp/atomzero-dist/*.whl
+          atomzero --help

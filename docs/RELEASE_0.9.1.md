@@ -25,8 +25,9 @@ product is the trainer.
 - All 0.9.0 features remain: PDF/DOCX/HTML/Markdown ingestion, page/section
   citations, evidence panel/API, 100-question document benchmark and the
   constrained plan API.
-- A separate lightweight assistant-only distribution is future work; this
-  release prioritizes not breaking existing streamft users.
+- The standalone lightweight assistant is now published separately as
+  `atomzero 0.1.1`. `streamft` keeps the bundled copy for compatibility until a
+  future major release.
 
 ## Install
 

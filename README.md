@@ -8,15 +8,16 @@
 
 > **streamft is still here.** The low-VRAM trainer is not replaced by Atom Zero:
 > `streamft fit`, `streamft train`, `streamft prepare`, `streamft merge` and
-> `streamft serve` keep working. Atom Zero is the local assistant runtime added
-> alongside the trainer. `pip install streamft` installs both, as in 0.8.x.
+> `streamft serve` keep working. Atom Zero now has its own lightweight package,
+> `pip install atomzero`; `pip install streamft` keeps the trainer plus the
+> bundled Atom Zero for compatibility.
 
 ## 60-second demo
 
 ```powershell
 git clone https://github.com/byjameson/stream-finetune.git
 cd stream-finetune
-pip install -e .
+pip install -e packages/atomzero
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
@@ -29,17 +30,21 @@ checkpoint still comes from the repository/tag.
 
 ### Install
 
+Two independent packages now exist:
+
 ```powershell
-pip install streamft                 # Atom Zero + streamft trainer (default)
-pip install "streamft[neural]"       # compatibility alias; same core
-pip install "streamft[train]"        # compatibility alias; same trainer stack
+pip install atomzero    # standalone Atom Zero: torch, tokenizers, PDF/DOCX
+pip install streamft    # streamft trainer (also keeps the bundled Atom Zero for compatibility)
 ```
 
-`[train]` and `[neural]` remain valid for scripts written against 0.9.0. A
-separate lightweight assistant-only distribution is future work; until then the
-single `streamft` package keeps the trainer stack so existing users do not break.
+- `atomzero` is the lightweight, assistant-only package.
+- `streamft` remains the low-VRAM trainer and still bundles Atom Zero in 0.9.x
+  so existing users do not break; the bundled copy will be removed in a future
+  major release.
+- `streamft[train]` and `streamft[neural]` remain compatibility aliases.
 
-From this checkout use `pip install -e .`.
+From this checkout use `pip install -e .` for the trainer and
+`pip install -e packages/atomzero` for the standalone assistant.
 
 Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
 
@@ -112,7 +117,9 @@ The 21/21 is the **product**, not the bare model. See the [model card](docs/MODE
 ## Published
 
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.1>
-- PyPI: <https://pypi.org/project/streamft/0.9.1/>
+- streamft PyPI: <https://pypi.org/project/streamft/0.9.1/>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
+- Atom Zero package source: [`packages/atomzero`](packages/atomzero)
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>

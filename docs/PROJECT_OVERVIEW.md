@@ -281,13 +281,12 @@ cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The default install is **Atom Zero + the streamft trainer**, preserving the
-0.8.x installer behavior. `streamft[neural]` and `streamft[train]` remain
-compatibility aliases; a separate lightweight assistant-only distribution is
-future work. The quickstart seeds a demo corpus, starts the server and opens the
-browser. `--WithProvider` enables local Ollama. The package is on PyPI; weights
-are on Hugging Face and ModelScope. The 49.2M checkpoint is not bundled in the
-wheel; the repository/tag carries the demo checkpoint.
+There are two installs now: the standalone `atomzero` package (assistant
+dependencies only) and `streamft` (low-VRAM trainer, which still bundles Atom
+Zero in 0.9.x for compatibility). The quickstart seeds a demo corpus, starts the
+server and opens the browser. `--WithProvider` enables local Ollama. Both are on
+PyPI; weights are on Hugging Face and ModelScope. The 49.2M checkpoint is not
+bundled in either wheel; the repository/tag carries the demo checkpoint.
 
 Reference machine: RTX 3050 Laptop 6 GB, 34 GB RAM, Windows 11. The core also
 runs on CPU, slower.
@@ -296,7 +295,8 @@ runs on CPU, slower.
 
 - GitHub: https://github.com/byjameson/stream-finetune
 - Releases: https://github.com/byjameson/stream-finetune/releases
-- PyPI: https://pypi.org/project/streamft/
+- streamft PyPI (trainer): https://pypi.org/project/streamft/
+- atomzero PyPI (standalone assistant): https://pypi.org/project/atomzero/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m
 - dev.to: https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m
