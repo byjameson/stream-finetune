@@ -1,6 +1,6 @@
 # streamft - fine-tune models that do not fit in VRAM
 
-[![release](https://img.shields.io/badge/release-1.0.0-2b6f6a)](#) [![tests](https://img.shields.io/badge/tests-206-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-1.0.1-2b6f6a)](#) [![tests](https://img.shields.io/badge/tests-200-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > Stream a pre-quantized NF4 model from disk, materialize one transformer block
 > on the GPU at a time, and train a LoRA adapter on a 6 GB laptop.
@@ -18,8 +18,8 @@ streamft train --model-dir checkpoints/qwen0.5b_nf4 --sft --steps 20 --seq 512
 
 ## Published
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
-- streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.1>
+- streamft PyPI: <https://pypi.org/project/streamft/1.0.1/>
 - Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - 7B end-to-end demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
@@ -116,29 +116,6 @@ per-synapse rollback. See
 [`docs/SPIKING_GROW.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_GROW.md),
 [`docs/SPIKING_50M.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_50M.md) and
 [`research/SPIKING_SHIFT.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_SHIFT.md).
-
-### Parked experiment: Qwen verified assistant
-
-**Not the active direction.** The project direction is the from-scratch spiking
-research line. This Qwen + retrieval experiment is kept as a parked product
-prototype, not as the target model.
-
-```bash
-streamft assistant ask \
-  --model models/Qwen2.5-1.5B-Instruct \
-  --db data/knowledge.db \
-  --question "What is the speed of light?"
-streamft assistant serve \
-  --model models/Qwen2.5-1.5B-Instruct \
-  --db data/knowledge.db --port 8014
-```
-
-The server exposes `/health`, `/metrics`, `/v1/models`,
-`/v1/chat/completions` and `/knowledge/search`. Answers carry source citations
-from verified documents only. A 10-question held-out smoke eval scored 1.00
-answer accuracy, 1.00 citation rate and 1.00 strict accuracy; the local server
-runs at `http://127.0.0.1:8014`. See
-[`docs/LOCAL_ASSISTANT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/LOCAL_ASSISTANT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
@@ -545,15 +522,13 @@ with **24.8 MB** peak VRAM; 21M runs at 563/204 tok/s with 88.3 MB. This is not
 a general model; packaging/licence/model card are still missing.
 [`research/SPIKING_TINY_LAB.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_TINY_LAB.md)
 
-**Tiny Transformer Chat (product path):** a **20.2M from-scratch transformer**
-on the same clean chat data reaches chat bpb **1.359**, assistant loss **4.01**,
-alpha min **0.731** and 0 empty samples. With role tokens banned at decoding it
-passes the smoke gate; the 21M/50M spiking chat models remain BLOCKED at
-2.29-2.31 bpb / 6.7-6.8 loss. A 49.2M transformer adds only 0.015 bpb, so the
-20M checkpoint is the product model. It is a tiny, repetitive character model,
-not a general assistant. Model card:
-[`docs/TINY_TRANSFORMER_CHAT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/TINY_TRANSFORMER_CHAT.md); local server:
-`python -m streamft.chat_server`; demo: `scripts/chat_demo.ps1`.
+**Tiny Transformer Chat:** a **20.2M from-scratch transformer** on the same
+clean chat data reaches chat bpb **1.359**, assistant-turn loss **4.01**, alpha
+min **0.731** and 0 empty samples. With role tokens banned at decoding it passes
+the smoke gate; the 21M/50M spiking chat models remain BLOCKED at 2.29-2.31 bpb
+/ 6.7-6.8 loss. A 49.2M transformer adds only 0.015 bpb. The 20M checkpoint is
+the research baseline. It is a tiny, repetitive character model, not a general
+assistant.
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains

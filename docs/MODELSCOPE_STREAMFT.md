@@ -10,7 +10,7 @@ tokens/step, 36.7 tok/s, 4.61 GB peak.
 ## Install
 
 ```powershell
-pip install streamft==1.0.0
+pip install streamft==1.0.1
 ```
 
 The wheel and sdist are attached to this repository for direct download.
@@ -49,7 +49,7 @@ Full guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32
 ## Links
 
 - GitHub: <https://github.com/byjameson/stream-finetune>
-- PyPI: <https://pypi.org/project/streamft/1.0.0/>
+- PyPI: <https://pypi.org/project/streamft/1.0.1/>
 - Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
 - 7B demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
 - Benchmarks: <https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md>

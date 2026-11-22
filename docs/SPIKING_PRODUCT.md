@@ -354,25 +354,6 @@ The deployment templates are deliberately files, not an automatic installer.
 A real host should run the smoke test in [`deploy/README.md`](../deploy/README.md)
 after adding TLS and the API key.
 
-## Parked experiment: Qwen assistant
-
-**Not the active direction.** The project direction is the from-scratch spiking
-research line. The Qwen2.5-1.5B + verified retrieval prototype is kept as a
-parked experiment; it is not the target model. It answers with citations from
-the verified ledger and exposes `/v1/chat/completions`, `/knowledge/search`,
-`/health` and `/metrics`.
-
-```bash
-streamft assistant ask --model models/Qwen2.5-1.5B-Instruct \
-  --db data/knowledge.db --question "What is the speed of light?"
-streamft assistant serve --model models/Qwen2.5-1.5B-Instruct \
-  --db data/knowledge.db --port 8014
-```
-
-See the separate local-assistant project. The 50M/500M spiking run was
-stopped at 1,500 steps because it did not improve on 21M (1.3256 vs 1.327 bpb);
-the spiking artifacts remain a research testbed.
-
 ## Reproduce the reference numbers
 
 ```bash
