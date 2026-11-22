@@ -26,12 +26,12 @@ Atom Zero lives in the independent `atomzero` package. Model weights remain
 ## Atom Zero
 
 ```powershell
-pip install atomzero==0.1.2
+pip install atomzero==0.1.3
 atomzero --model checkpoints/transformer_behavior_50m_scaled \
   --tokenizer data/chat_en_bpe8k.json --docs data/docs.db
 ```
 
-- PyPI: <https://pypi.org/project/atomzero/0.1.2/>
+- PyPI: <https://pypi.org/project/atomzero/0.1.3/>
 - Source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
 
 ## Verification
@@ -56,5 +56,5 @@ pip install streamft==1.0.0
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
 - Migration guide: <https://github.com/byjameson/stream-finetune/blob/main/docs/MIGRATION_1.0.md>
-- Atom Zero: <https://pypi.org/project/atomzero/0.1.2/>
+- Atom Zero: <https://pypi.org/project/atomzero/0.1.3/>
 - Contact: **gokhancava@gmail.com**

@@ -1,5 +1,15 @@
 # Changelog
 
+## atomzero 0.1.3 - full package description (2026-11-22)
+
+- Expanded the standalone GitHub/PyPI README to cover the full system: model,
+  training, RAG, documents/citations, evidence, tools, research, curiosity,
+  learning ladder, provider, safety, privacy, benchmarks and limits.
+- Removed stale streamft links from the Atom Zero model card; it now links to
+  the atomzero package, source and `atomzero-v0.1.3` release.
+- No model/runtime changes; weights remain `0.8.0`.
+- Release notes: [`docs/RELEASE_ATOMZERO_0.1.3.md`](docs/RELEASE_ATOMZERO_0.1.3.md).
+
 ## atomzero 0.1.2 - standalone quickstart (2026-11-22)
 
 - Added `atomzero-quickstart`: downloads the public checkpoint/tokenizer from

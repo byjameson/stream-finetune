@@ -1,8 +1,16 @@
 # Atom Zero 49.2M model card
 
-Version: model weights `0.8.0`; standalone `atomzero 0.1.2` (streamft 1.0 is the separate trainer)<br>
+Version: model weights `0.8.0`; standalone `atomzero 0.1.3`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
+
+```powershell
+pip install atomzero==0.1.3
+atomzero-quickstart
+```
+
+The first run downloads the ~197 MB checkpoint/tokenizer from Hugging Face,
+seeds a demo corpus and opens the local UI.
 
 ![Atom Zero architecture](https://raw.githubusercontent.com/byjameson/stream-finetune/main/docs/figures/atomzero_architecture.png)
 
@@ -32,7 +40,7 @@ benchmarks and release — is
 | safety | optional rules + local linear ML head; off by default; exact fallback |
 | privacy | localhost, no telemetry, SSRF guard, upload caps, deletion |
 | UI | chat, documents, gaps, research queue, teacher notes, adapters, health |
-| packaging | standalone `atomzero` package (assistant deps only) plus `streamft` trainer (full deps), `atomzero` entry point, GitHub release, HF/ModelScope weights |
+| packaging | standalone `atomzero` package (assistant deps only), `atomzero`/`atomzero-quickstart` entry points, GitHub release, HF/ModelScope weights |
 | tests | 412 passed; product 21/21; behavior 16/16; retrieval 1.000 |
 | document benchmark | 100 authored questions: 80/80 answerable, 20/20 no-answer |
 
@@ -166,14 +174,14 @@ Evidence lives in `research/results/` and
 
 ## Published artifacts
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
-- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.2/>
-- streamft trainer PyPI: <https://pypi.org/project/streamft/1.0.0/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/atomzero-v0.1.3>
+- GitHub source: <https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero>
+- Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.3/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
-- document formats: [`DOCUMENTS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md)
+- document formats: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 
 ## Contact
 

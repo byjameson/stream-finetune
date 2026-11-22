@@ -44,7 +44,7 @@ Full guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32
 
 - Not a model checkpoint; use a HF/ModelScope model directory with the trainer.
 - Not Atom Zero. Atom Zero is the separate local assistant package:
-  <https://pypi.org/project/atomzero/0.1.2/>
+  <https://pypi.org/project/atomzero/0.1.3/>
 - Not a claim that a 6 GB laptop trains a 32B model quickly; the guide documents
   the speed and memory trade-offs.
 
@@ -54,7 +54,7 @@ Full guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32
 - PyPI: <https://pypi.org/project/streamft/1.0.0/>
 - Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
 - 7B demo: <https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md>
-- Atom Zero: <https://pypi.org/project/atomzero/0.1.2/>
+- Atom Zero: <https://pypi.org/project/atomzero/0.1.3/>
 - Contact: **gokhancava@gmail.com**
 
 Apache-2.0 for code; data attribution in `NOTICE`.
