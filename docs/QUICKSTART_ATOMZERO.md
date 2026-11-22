@@ -16,8 +16,9 @@ pip install -e .
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-For the optional MiniLM reranker use `pip install -e ".[neural]"`. The training
-engine is a separate profile: `pip install -e ".[train]"`.
+The default editable install includes the streamft training stack. For the
+optional MiniLM reranker use `pip install -e ".[neural]"`; `[train]` is a
+compatibility alias for the same trainer dependencies.
 
 The script:
 

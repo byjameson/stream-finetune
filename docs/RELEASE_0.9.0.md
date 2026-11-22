@@ -2,6 +2,10 @@
 
 Status: **published to PyPI as `streamft 0.9.0` on 2026-11-22.**
 
+> **Packaging note:** `0.9.0` moved the trainer dependencies to `[train]`.
+> Use `0.9.1` for the backward-compatible default install; the Atom Zero
+> features below are unchanged.
+
 This release is about the document layer, not a new model. The 49.2M weights and
 the existing product/behavior benchmarks are unchanged from `0.8.0`.
 

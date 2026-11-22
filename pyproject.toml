@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamft"
-version = "0.9.0"
-description = "Atom Zero: a local source-cited 49.2M assistant with RAG, tools and a reviewed learning loop; includes the streamft low-VRAM trainer."
+version = "0.9.1"
+description = "streamft: low-VRAM fine-tuning for models that do not fit, plus Atom Zero, a local source-cited 49.2M assistant."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
@@ -18,15 +18,22 @@ classifiers = [
 ]
 dependencies = [
   "torch",
+  "transformers>=4.40",
+  "safetensors",
   "tokenizers",
+  "accelerate",
+  "datasets",
+  "huggingface-hub",
   "numpy",
   "psutil",
+  "bitsandbytes",
   "pypdf>=4",
   "python-docx>=1.1",
 ]
 
 [project.optional-dependencies]
-# Training engine only. Atom Zero inference does not need these.
+# Compatibility aliases. The training stack is in the default install so
+# existing `pip install streamft` users keep the trainer.
 train = [
   "transformers>=4.40",
   "safetensors",
@@ -35,7 +42,7 @@ train = [
   "huggingface-hub",
   "bitsandbytes",
 ]
-# Optional local MiniLM reranker / instruction-assistant path.
+# Kept as a compatibility alias; transformers is already a core dependency.
 neural = ["transformers>=4.40"]
 dev = [
   "pytest>=8.0",

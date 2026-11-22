@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.1 - streamft trainer compatibility (2026-11-22)
+
+- Restored `transformers`, `safetensors`, `accelerate`, `datasets`,
+  `huggingface-hub` and `bitsandbytes` to the default dependencies, so
+  `pip install streamft` keeps installing the low-VRAM trainer.
+- Kept `streamft[train]` and `streamft[neural]` as compatibility aliases for
+  scripts written against 0.9.0.
+- All 0.9.0 Atom Zero features remain. A separate lightweight assistant-only
+  distribution is future work.
+- Release notes: [`docs/RELEASE_0.9.1.md`](docs/RELEASE_0.9.1.md).
+
 ## 0.9.0 - document provenance, evidence and constrained plans (2026-11-22)
 
 Release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).

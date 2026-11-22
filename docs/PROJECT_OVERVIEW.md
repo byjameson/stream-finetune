@@ -281,13 +281,13 @@ cd stream-finetune
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The default install is the assistant runtime. Use `streamft[neural]` for the
-optional MiniLM reranker and `streamft[train]` for the streaming trainer; the
-trainer stack is no longer a core dependency. The quickstart seeds a demo
-corpus, starts the server and opens the browser. `--WithProvider` enables local
-Ollama. The package is on PyPI; weights are on Hugging Face and ModelScope. The
-49.2M checkpoint is not bundled in the wheel; the repository/tag carries the
-demo checkpoint.
+The default install is **Atom Zero + the streamft trainer**, preserving the
+0.8.x installer behavior. `streamft[neural]` and `streamft[train]` remain
+compatibility aliases; a separate lightweight assistant-only distribution is
+future work. The quickstart seeds a demo corpus, starts the server and opens the
+browser. `--WithProvider` enables local Ollama. The package is on PyPI; weights
+are on Hugging Face and ModelScope. The 49.2M checkpoint is not bundled in the
+wheel; the repository/tag carries the demo checkpoint.
 
 Reference machine: RTX 3050 Laptop 6 GB, 34 GB RAM, Windows 11. The core also
 runs on CPU, slower.
