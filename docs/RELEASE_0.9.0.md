@@ -1,6 +1,6 @@
 # streamft 0.9.0 - document provenance, evidence and constrained plans
 
-Status: **release candidate on `main`; not yet published to PyPI.**
+Status: **published to PyPI as `streamft 0.9.0` on 2026-11-22.**
 
 This release is about the document layer, not a new model. The 49.2M weights and
 the existing product/behavior benchmarks are unchanged from `0.8.0`.
@@ -81,15 +81,16 @@ install `streamft[train]`.
 - Safety remains optional and off by default.
 - The provider backend remains text-only and optional.
 
-## Install (after publication)
+## Install
 
 ```powershell
-pip install streamft==0.9.0
+pip install "streamft[neural]==0.9.0"
 ```
 
 ## Links
 
 - Repository: <https://github.com/byjameson/stream-finetune>
+- PyPI: <https://pypi.org/project/streamft/0.9.0/>
 - Full project map: <https://github.com/byjameson/stream-finetune/blob/main/docs/PROJECT_OVERVIEW.md>
 - Documents: <https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md>
 - Tool plans: <https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md>

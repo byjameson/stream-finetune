@@ -1,6 +1,6 @@
 # Atom Zero 49.2M model card
 
-Version: model weights `0.8.0`; package `streamft 0.8.3`<br>
+Version: model weights `0.8.0`; package `streamft 0.9.0`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
 
@@ -135,10 +135,11 @@ teacher, and the note remains unverified until a reviewer marks it.
 
 - 2/10 raw knowledge; weak general reasoning and coding.
 - English-first tokenizer/data.
-- No autonomous research or tool planning.
+- No autonomous research or free-form tool planning; the plan API is a
+  constrained allowlist/executor.
 - Product benchmark is narrow and authored; it is not MMLU.
 - Adapter evidence is small-sample; it improves target loss, not general skill.
-- No final release sign-off or PyPI publication yet.
+- Long-context work is still limited by the 128-token core context.
 
 ## Reproduce
 
@@ -164,8 +165,8 @@ Evidence lives in `research/results/` and [`BENCHMARKS.md`](BENCHMARKS.md).
 
 ## Published artifacts
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.8.3>
-- PyPI: <https://pypi.org/project/streamft/0.8.3/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.0>
+- PyPI: <https://pypi.org/project/streamft/0.9.0/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>

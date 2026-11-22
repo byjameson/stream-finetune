@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased - document provenance
+## 0.9.0 - document provenance, evidence and constrained plans (2026-11-22)
 
-Draft release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
+Release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
 
 - Added local PDF, DOCX, HTML and Markdown ingestion with `pypdf`,
   `python-docx` and a stdlib HTML parser.

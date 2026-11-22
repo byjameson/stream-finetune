@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamft"
-version = "0.8.3"
+version = "0.9.0"
 description = "Atom Zero: a local source-cited 49.2M assistant with RAG, tools and a reviewed learning loop; includes the streamft low-VRAM trainer."
 readme = "README.md"
 requires-python = ">=3.10"
