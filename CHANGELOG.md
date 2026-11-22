@@ -14,6 +14,8 @@
 - Added `research/benchmark_documents.py`: 100 authored questions across
   Markdown/PDF/DOCX/HTML, with top-1 source, page/section, answer, no-answer
   refusal and latency metrics; CI enforces the thresholds.
+- Added an evidence panel and `GET /v1/documents/evidence` so a citation can
+  open the exact local chunks for its source/page/section.
 
 ## 0.8.3 - full project map (2026-11-22)
 

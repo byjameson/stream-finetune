@@ -56,6 +56,8 @@ def test_demo_page_uses_daily_agent_endpoint():
     assert "/v1/learning/adapters" in page
     assert "adapter versions" in page
     assert "/v1/documents/forget" in page
+    assert "/v1/documents/evidence" in page
+    assert "evidence" in page
     assert "/v1/memory/history" in page
     assert "/v1/memory/export" in page
     assert "/v1/memory/import" in page

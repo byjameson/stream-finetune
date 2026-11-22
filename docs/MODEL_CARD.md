@@ -23,7 +23,7 @@ benchmarks and release — is
 | vector index | cached `doc_vectors`, prewarmed numpy matrix, IVF ANN above 256 chunks, exact fallback |
 | tools | time, safe arithmetic, task add/list/complete, name/likes memory |
 | sessions | transcript restore, JSON export/import, exact Forget, session Forget |
-| documents | ingest text/Markdown/HTML/PDF/DOCX, page/section citations, source/title/sha256, search, per-source delete |
+| documents | ingest text/Markdown/HTML/PDF/DOCX, page/section citations, evidence panel/API, source/title/sha256, search, per-source delete |
 | research | approved-only queue, Wikipedia fetch, worker lock/log, teacher synthesis |
 | teacher | local Ollama/OpenAI-compatible, unverified notes, reviewer verification |
 | curiosity | gap -> pending topic -> approval -> Wikipedia + teacher -> RAG note |

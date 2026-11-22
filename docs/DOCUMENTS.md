@@ -34,6 +34,20 @@ The launch code is L-7781. (source: manual.pdf (p. 4))
 The warranty period is 24 months. (source: policy.docx [Warranty])
 ```
 
+## Evidence panel
+
+The web UI has an **Evidence** button on each indexed document and each search
+hit. It calls the local endpoint:
+
+```text
+GET /v1/documents/evidence?source=manual.pdf&page=4&limit=20
+GET /v1/documents/evidence?source=policy.docx&section=Warranty
+```
+
+The response contains the stored chunk text, page, section, character offsets
+and title. `page` and `section` are optional filters; `source` is required.
+This is a read-only view of the local index, not a second model call.
+
 ## Add a document
 
 ### Web UI

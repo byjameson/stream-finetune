@@ -898,6 +898,66 @@ class DocMemory:
             result.append(item)
         return result
 
+    def source_evidence(self, source: str, page: int | None = None,
+                        section: str = "", limit: int = 20) -> dict:
+        """Return the stored chunks for a source/page/section locator."""
+        source = str(source or "").strip()
+        if not source:
+            raise ValueError("source is required")
+        if len(source) > 512:
+            raise ValueError("source is too long (max 512 chars)")
+        if any(ord(ch) < 32 for ch in source):
+            raise ValueError("source contains control characters")
+        try:
+            limit = int(limit)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("limit must be an integer") from exc
+        limit = max(1, min(limit, 50))
+        clauses = ["d.source = ?"]
+        params: list = [source]
+        if page is not None:
+            try:
+                page = int(page)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("page must be an integer") from exc
+            if page < 1:
+                raise ValueError("page must be >= 1")
+            clauses.append("m.page = ?")
+            params.append(page)
+        section = str(section or "").strip()
+        if section:
+            if len(section) > 200:
+                raise ValueError("section is too long (max 200 chars)")
+            clauses.append("lower(m.section) = lower(?)")
+            params.append(section)
+        with self._lock:
+            rows = self.con.execute(
+                "SELECT d.chunk, d.source, d.title, m.page, m.section, "
+                "m.char_start, m.char_end FROM docs d "
+                "LEFT JOIN doc_chunk_meta m ON m.doc_rowid = d.rowid "
+                f"WHERE {' AND '.join(clauses)} "
+                "ORDER BY COALESCE(m.page, 0), d.rowid LIMIT ?",
+                (*params, limit)).fetchall()
+        if not rows:
+            raise SourceNotFound(
+                f"no evidence for source/page/section: {source}")
+        data = [{
+            "chunk": row[0],
+            "source": row[1],
+            "title": row[2],
+            "page": row[3],
+            "section": row[4] or "",
+            "char_start": row[5],
+            "char_end": row[6],
+        } for row in rows]
+        return {
+            "source": source,
+            "page": page,
+            "section": section,
+            "returned": len(data),
+            "data": data,
+        }
+
     def verify_source(self, source: str, reviewer: str) -> dict:
         """Mark a teacher note verified with reviewer and timestamp."""
         source = str(source or "").strip()

@@ -43,7 +43,7 @@ its own. Apache-2.0 code and weights, no hosted service, no telemetry.
 
 | layer | implementation | what it does |
 |---|---|---|
-| UI/API | `streamft/chat_server.py` | browser chat, documents, tasks, gaps, queues, teacher notes, adapters, health |
+| UI/API | `streamft/chat_server.py` | browser chat, documents, evidence panel, tasks, gaps, queues, teacher notes, adapters, health |
 | agent runtime | `streamft/agent_runtime.py`, `research/chat_human.py` | tool routing, memory, RAG, missing-source path |
 | core model | `streamft/transformer.py` + checkpoint | 49.2M decoder-only transformer |
 | retrieval | `streamft/doc_memory.py`, `streamft/neural_embedder.py` | FTS5 + hashed/MiniLM vectors + reranking |

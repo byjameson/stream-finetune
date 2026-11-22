@@ -65,7 +65,8 @@ It covers every layer:
 ## What it is
 
 - **Source-cited RAG** over your own text, Markdown, HTML, PDF and DOCX files,
-  with a hybrid FTS + MiniLM retriever and page/section locators.
+  with a hybrid FTS + MiniLM retriever, page/section locators and an evidence
+  panel that opens the exact local chunks.
 - **Deterministic tools**: arithmetic, time, tasks, name/likes memory, document search.
 - **Honest missing-source path**: no note means “I don’t have a source”, not an invented answer.
 - **Curiosity queue**: unanswered questions become pending research; you approve before any fetch or teacher call.

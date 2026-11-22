@@ -20,8 +20,8 @@
     "top1_answer": 1.0,
     "citation_complete": 1.0,
     "no_answer_refusal": 1.0,
-    "latency_median_ms": 1.185,
-    "latency_p95_ms": 1.919
+    "latency_median_ms": 1.334,
+    "latency_p95_ms": 2.299
   },
   "by_format": {
     "md": {

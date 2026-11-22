@@ -143,6 +143,14 @@ def test_add_blocks_keeps_page_and_section_and_replaces(tmp_path):
             "SELECT COUNT(*) FROM doc_chunk_meta").fetchone()[0]
         assert count == 1
 
+        evidence = docs.source_evidence("manual.pdf", section="Launch")
+        assert evidence["returned"] == 1
+        assert evidence["data"][0]["page"] == 7
+        with pytest.raises(ValueError):
+            docs.source_evidence("manual.pdf", page=0)
+        with pytest.raises(ValueError):
+            docs.source_evidence("missing.pdf")
+
         docs.forget("manual.pdf")
         assert docs.con.execute(
             "SELECT COUNT(*) FROM doc_chunk_meta").fetchone()[0] == 0
@@ -168,6 +176,7 @@ def test_ingest_upload_pdf_returns_page_metadata(tmp_path):
 def test_http_pdf_upload_returns_page_citation(tmp_path):
     import json
     import threading
+    import urllib.error
     import urllib.parse
     import urllib.request
     from http.server import ThreadingHTTPServer
@@ -206,6 +215,22 @@ def test_http_pdf_upload_returns_page_citation(tmp_path):
             hit = json.loads(response.read().decode("utf-8"))["data"][0]
         assert hit["page"] == 1
         assert "L-7781" in hit["chunk"]
+
+        evidence_query = urllib.parse.urlencode(
+            {"source": "manual.pdf", "page": 1})
+        with urllib.request.urlopen(
+                base + "/v1/documents/evidence?" + evidence_query,
+                timeout=10) as response:
+            evidence = json.loads(response.read().decode("utf-8"))
+        assert evidence["returned"] == 1
+        assert evidence["data"][0]["page"] == 1
+        assert "L-7781" in evidence["data"][0]["chunk"]
+
+        with pytest.raises(urllib.error.HTTPError) as missing:
+            urllib.request.urlopen(
+                base + "/v1/documents/evidence?source=missing.pdf",
+                timeout=10)
+        assert missing.value.code == 404
     finally:
         httpd.shutdown()
         httpd.server_close()

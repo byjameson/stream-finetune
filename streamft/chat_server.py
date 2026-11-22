@@ -9,6 +9,7 @@ Endpoints:
   GET  /health
   GET  /v1/models
   GET  /v1/documents
+  GET  /v1/documents/evidence?source=...&page=...&section=...
   POST /v1/documents
   POST /v1/documents/upload?source=...&title=...
   POST /v1/documents/search
@@ -226,6 +227,7 @@ weights.</p>
 <button id="docsearch">Search</button></div>
 <p id="docmsg" class="hint"></p>
 <div id="docresults"></div>
+<div id="evidence"></div>
 <hr>
 <h3>Delete data</h3>
 <p class="hint">Delete an indexed source or this browser session's memory. This
@@ -552,6 +554,7 @@ async function refreshDocs() {
       card.appendChild(source);
       const actions = document.createElement('div');
       actions.className = 'actions';
+      actions.appendChild(qbutton('Evidence', () => showEvidence(item.source)));
       actions.appendChild(qbutton('Forget', () => forgetSource(item.source)));
       card.appendChild(actions);
       box.appendChild(card);
@@ -565,6 +568,7 @@ async function searchDocs() {
   const msg = document.getElementById('docmsg');
   const box = document.getElementById('docresults');
   box.textContent = '';
+  document.getElementById('evidence').textContent = '';
   if (!query) { msg.textContent = 'enter a search query'; return; }
   msg.textContent = 'searching...';
   try {
@@ -588,9 +592,50 @@ async function searchDocs() {
       snippet.className = 'src';
       snippet.textContent = (hit.chunk || '').slice(0, 400);
       card.appendChild(snippet);
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.appendChild(qbutton('Evidence', () =>
+        showEvidence(hit.source, hit.page, hit.section)));
+      card.appendChild(actions);
       box.appendChild(card);
     });
   } catch (e) { msg.textContent = 'error: ' + e; }
+}
+async function showEvidence(source, page, section) {
+  const box = document.getElementById('evidence');
+  box.textContent = 'loading evidence...';
+  const query = new URLSearchParams({source});
+  if (page) query.set('page', page);
+  if (section) query.set('section', section);
+  try {
+    const r = await fetch('/v1/documents/evidence?' + query.toString());
+    const j = await r.json();
+    box.textContent = '';
+    if (!r.ok) {
+      box.textContent = 'evidence error: ' + (j.error || r.status);
+      return;
+    }
+    const head = document.createElement('div');
+    head.className = 'hint';
+    head.textContent = 'Evidence: ' + source +
+      (page ? ' | p. ' + page : '') +
+      (section ? ' | ' + section : '') +
+      ' | ' + (j.returned || 0) + ' chunk(s)';
+    box.appendChild(head);
+    (j.data || []).forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'qitem';
+      const title = document.createElement('div');
+      title.textContent = (item.page ? 'p. ' + item.page : '') +
+        (item.section ? (item.page ? ' | ' : '') + item.section : '');
+      if (title.textContent) card.appendChild(title);
+      const text = document.createElement('div');
+      text.className = 'src';
+      text.textContent = item.chunk || '';
+      card.appendChild(text);
+      box.appendChild(card);
+    });
+  } catch (e) { box.textContent = 'evidence error: ' + e; }
 }
 document.getElementById('docsearch').onclick = () => searchDocs();
 document.getElementById('docq').addEventListener('keydown', event => {
@@ -1453,6 +1498,28 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/v1/documents":
             docs = _state.get("docs")
             self._json(200, {"data": docs.sources() if docs else []})
+        elif (self.path == "/v1/documents/evidence"
+              or self.path.startswith("/v1/documents/evidence?")):
+            docs = _state.get("docs")
+            if docs is None:
+                return self._json(400, {
+                    "error": "no document memory configured"})
+            params = urllib.parse.parse_qs(
+                urllib.parse.urlparse(self.path).query)
+            source = params.get("source", [""])[0]
+            section = params.get("section", [""])[0]
+            try:
+                raw_page = params.get("page", [None])[0]
+                page = (int(raw_page)
+                        if raw_page not in (None, "") else None)
+                result = docs.source_evidence(
+                    source, page=page, section=section,
+                    limit=int(params.get("limit", ["20"])[0]))
+            except SourceNotFound as exc:
+                return self._json(404, {"error": str(exc)})
+            except (TypeError, ValueError) as exc:
+                return self._json(400, {"error": str(exc)})
+            return self._json(200, result)
         elif self.path == "/v1/teacher/notes":
             docs = _state.get("docs")
             notes = ([source for source in docs.sources()
