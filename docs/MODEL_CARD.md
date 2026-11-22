@@ -1,6 +1,6 @@
 # Atom Zero 49.2M model card
 
-Version: model weights `0.8.0`; standalone `atomzero 0.1.1` or `streamft 0.9.1`<br>
+Version: model weights `0.8.0`; standalone `atomzero 0.1.1` or `streamft 0.9.2`<br>
 Last updated: 2026-11-22
 License: Apache-2.0 for code and weights; data attribution in `NOTICE`.
 
@@ -161,18 +161,19 @@ python research/behavior_eval.py \
   --out research/results/behavior_scaled_40k_provider.json
 ```
 
-Evidence lives in `research/results/` and [`BENCHMARKS.md`](BENCHMARKS.md).
+Evidence lives in `research/results/` and
+[`BENCHMARKS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md).
 
 ## Published artifacts
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.1>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.2>
 - Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
-- streamft PyPI: <https://pypi.org/project/streamft/0.9.1/>
+- streamft PyPI: <https://pypi.org/project/streamft/0.9.2/>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
-- document formats: [`DOCUMENTS.md`](DOCUMENTS.md)
+- document formats: [`DOCUMENTS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md)
 
 ## Contact
 

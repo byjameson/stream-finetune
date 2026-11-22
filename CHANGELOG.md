@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.2 - published link cleanup (2026-11-22)
+
+- Made README/doc links absolute GitHub URLs so PyPI, HF and ModelScope do not
+  render them as broken relative paths.
+- Added PyPI project URLs for source, full documentation, model card,
+  benchmarks and the standalone `atomzero` package.
+- Removed the stale "future work" wording now that `atomzero 0.1.1` is live.
+- Release notes: [`docs/RELEASE_0.9.2.md`](docs/RELEASE_0.9.2.md).
+
 ## atomzero 0.1.1 - standalone assistant package (2026-11-22)
 
 - Split Atom Zero into the independent `atomzero` PyPI package with only

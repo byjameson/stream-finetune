@@ -1,6 +1,6 @@
 # Atom Zero + streamft — local assistant and low-VRAM trainer
 
-[![release](https://img.shields.io/badge/release-0.9.1-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
+[![release](https://img.shields.io/badge/release-0.9.2-2b6f6a)](#) [![params](https://img.shields.io/badge/core-49.2M-4b6f9e)](#) [![tests](https://img.shields.io/badge/tests-412-6b4a8a)](#) [![license](https://img.shields.io/badge/license-Apache--2.0-555)](#)
 
 > A 49 million parameter model that says “I don’t know”, retrieves **your** documents with citations, keeps personal notes and tasks, and asks before it researches. No cloud, no telemetry, no giant model.
 
@@ -21,12 +21,12 @@ pip install -e packages/atomzero
 powershell -ExecutionPolicy Bypass -File scripts/quickstart_atomzero.ps1
 ```
 
-The package is on PyPI: <https://pypi.org/project/streamft/0.9.1/>. The demo
+The package is on PyPI: <https://pypi.org/project/streamft/0.9.2/>. The demo
 checkpoint still comes from the repository/tag.
 
-> **0.9.1:** PDF/DOCX/HTML/Markdown ingestion, page/section citations, an
-> evidence panel and constrained tool plans. The streamft trainer dependencies
-> stay in the default install for backward compatibility.
+> **0.9.2:** Atom Zero is available as the standalone `atomzero 0.1.1` package;
+> `streamft` keeps the trainer plus the bundled compatibility copy. This patch
+> also makes all documentation links absolute on PyPI/HF/ModelScope.
 
 ### Install
 
@@ -46,7 +46,7 @@ pip install streamft    # streamft trainer (also keeps the bundled Atom Zero for
 From this checkout use `pip install -e .` for the trainer and
 `pip install -e packages/atomzero` for the standalone assistant.
 
-Full guide: [`docs/QUICKSTART_ATOMZERO.md`](docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
+Full guide: [`docs/QUICKSTART_ATOMZERO.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/QUICKSTART_ATOMZERO.md). The script seeds a small demo corpus (launch code, warranty, travel, visitor badge), starts the local server, and opens the browser. Try:
 
 ```text
 What is the launch code?                         -> cited local answer
@@ -112,19 +112,19 @@ It covers every layer:
 | document benchmark (100 authored questions) | **80/80 answerable, 20/20 no-answer** |
 | test suite | **412 passed** |
 
-The 21/21 is the **product**, not the bare model. See the [model card](docs/MODEL_CARD.md), [benchmarks](docs/BENCHMARKS.md), [document formats](docs/DOCUMENTS.md), [tool planning](docs/TOOL_PLANNING.md), [curiosity flow](docs/CURIOSITY.md), [capability ladder](docs/POTENTIAL.md), and [launch notes](docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
+The 21/21 is the **product**, not the bare model. See the [model card](https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md), [benchmarks](https://github.com/byjameson/stream-finetune/blob/main/docs/BENCHMARKS.md), [document formats](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md), [tool planning](https://github.com/byjameson/stream-finetune/blob/main/docs/TOOL_PLANNING.md), [curiosity flow](https://github.com/byjameson/stream-finetune/blob/main/docs/CURIOSITY.md), [capability ladder](https://github.com/byjameson/stream-finetune/blob/main/docs/POTENTIAL.md), and [launch notes](https://github.com/byjameson/stream-finetune/blob/main/docs/LAUNCH.md). The self-improvement boundary is: RAG notes (no weights) → reviewed LoRA (weights) → manual full training.
 
 ## Published
 
-- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.1>
-- streamft PyPI: <https://pypi.org/project/streamft/0.9.1/>
+- GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v0.9.2>
+- streamft PyPI: <https://pypi.org/project/streamft/0.9.2/>
 - Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
-- Atom Zero package source: [`packages/atomzero`](packages/atomzero)
+- Atom Zero package source: [`packages/atomzero`](https://github.com/byjameson/stream-finetune/tree/main/packages/atomzero)
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
 - Medium: <https://medium.com/@myredditacc9393/atom-zero-a-49m-local-assistant-that-says-i-dont-know-df1ebc0e2e78>
-- Document formats and citations: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md)
+- Document formats and citations: [`docs/DOCUMENTS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/DOCUMENTS.md)
 
 ## Contact
 
@@ -148,13 +148,13 @@ trained.
 measured speed where a measurement exists (and says so where it doesn't).
 
 **7B end-to-end on 6 GB:** [train an adapter, serve it on the 4-bit base, call it through
-`/v1/chat/completions`](docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
+`/v1/chat/completions`](https://github.com/byjameson/stream-finetune/blob/main/docs/DEMO_7B.md) — 20 steps in 88.6 s, 5.65 GB peak, 32 tokens in
 3.14 s. This is the concrete “it works” scenario, not a benchmark.
 
 ## Atom Zero runtime details
 
 **Atom Zero — local daily assistant (from scratch, 50M):** [tasks, personal
-notes and source-cited document lookup](docs/TINY_TRANSFORMER_CHAT.md) — start
+notes and source-cited document lookup](https://github.com/byjameson/stream-finetune/blob/main/docs/TINY_TRANSFORMER_CHAT.md) — start
 with `powershell -ExecutionPolicy Bypass -File scripts/demo_all.ps1`. The
 Python package and CLI remain `streamft`; Atom Zero is the product name. Paste or
 upload your own UTF-8 documents over HTTP; the response keeps source, title and
@@ -162,9 +162,9 @@ sha256. A reviewed research queue (browser + API/CLI) fetches only
 user-approved Wikipedia topics on a schedule. Unanswered questions become
 knowledge gaps; **Propose curiosity topics** turns them into pending research
 items, and nothing runs until you approve it. See
-[`docs/CURIOSITY.md`](docs/CURIOSITY.md). ChatGPT/other answers can be
+[`docs/CURIOSITY.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/CURIOSITY.md). ChatGPT/other answers can be
 pasted manually as unverified teacher notes with a source URL, or an explicit
-local [Ollama](docs/TEACHER_OLLAMA.md)/OpenAI-compatible provider can answer on request or synthesize
+local [Ollama](https://github.com/byjameson/stream-finetune/blob/main/docs/TEACHER_OLLAMA.md)/OpenAI-compatible provider can answer on request or synthesize
 approved research topics. Teacher notes start unverified and can be marked
 verified by a named reviewer with a timestamp. Unknown questions become
 **knowledge gaps**; approving a proposed topic lets the scheduled worker fetch
@@ -183,8 +183,8 @@ safety layer is an operator tool, not a moral gate.
 An optional **local provider backend** can answer free-form chat with a
 user-supplied Ollama/OpenAI-compatible model while RAG, tools and memory stay
 local. The default remains the 50M model. See
-[`docs/POTENTIAL.md`](docs/POTENTIAL.md) for the capability ladder and
-[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) for the shareable benchmark summary.
+[`docs/POTENTIAL.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/POTENTIAL.md) for the capability ladder and
+[`docs/MODEL_CARD.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/MODEL_CARD.md) for the shareable benchmark summary.
 
 Indexed sources and session memory have tested delete paths
 (`docs/PRIVACY.md`). The current product checkpoint is the 49.2M scaled run
@@ -200,17 +200,17 @@ stage **166x** faster than the linear scan on 3000 chunks with identical top-5;
 above 256 chunks an IVF ANN index is used, with an exact cosine fallback and
 recall@10 **1.000** on the 20k-vector benchmark. Facts stay in RAG; style/skill
 updates go through the gate. It is not a general assistant. The project is open source; no hosted
-service is operated. See the [decision pack](docs/RELEASE_DECISIONS.md),
-[product audit](docs/PRODUCT_AUDIT.md),
-[safety filter](docs/SAFETY.md),
-[scaling plan](docs/SCALING_PLAN.md),
-[data-scaling run](docs/DATA_SCALING.md) and
-[research worker](docs/RESEARCH_WORKER.md) for what is still required.
+service is operated. See the [decision pack](https://github.com/byjameson/stream-finetune/blob/main/docs/RELEASE_DECISIONS.md),
+[product audit](https://github.com/byjameson/stream-finetune/blob/main/docs/PRODUCT_AUDIT.md),
+[safety filter](https://github.com/byjameson/stream-finetune/blob/main/docs/SAFETY.md),
+[scaling plan](https://github.com/byjameson/stream-finetune/blob/main/docs/SCALING_PLAN.md),
+[data-scaling run](https://github.com/byjameson/stream-finetune/blob/main/docs/DATA_SCALING.md) and
+[research worker](https://github.com/byjameson/stream-finetune/blob/main/docs/RESEARCH_WORKER.md) for what is still required.
 
 **The smallest demo:** [130 KB AI](https://huggingface.co/spaces/byjameson/mini-ai) — a
 news classifier that trains in your browser from 500 labelled examples and scores 78.3% on
 the embedded 400 AG News rows (74.3% on a fresh 400; 82.8% at 2,000 examples on both). No
-server, no GPU, no stored weights. Source: [`demo/mini-ai.html`](demo/mini-ai.html).
+server, no GPU, no stored weights. Source: [`demo/mini-ai.html`](https://github.com/byjameson/stream-finetune/blob/main/demo/mini-ai.html).
 
 **Need accuracy instead of minimum bits?** [The 1.7 MB accuracy mode](https://byjameson-mini-ai.static.hf.space/max-ai.html)
 uses 75,000 human-labelled rows and reaches **88.5%** on the same test set. Labels matter:
@@ -239,12 +239,12 @@ Scan the QR or open the link; the model is in the URL.
 adapter into a task adapter is the hard part: the mark is 0/8 at a 0.50 merge and only
 reliable at 0.90-1.00, and the exact threshold is seed- and token-dependent. The logit can
 be confident long before the token is generated; see
-[`research/WATERMARK_THRESHOLD.md`](research/WATERMARK_THRESHOLD.md). A first-token rank
+[`research/WATERMARK_THRESHOLD.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_THRESHOLD.md). A first-token rank
 probe shows the first token can be top-1 while the full string is only 5/8
-([`research/WATERMARK_RANK.md`](research/WATERMARK_RANK.md)). Jointly training the task and
+([`research/WATERMARK_RANK.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_RANK.md)). Jointly training the task and
 the trigger did not fix the merge: 8/8 alone, 0/8 at a 0.75 merge
-([`research/WATERMARK_JOINT.md`](research/WATERMARK_JOINT.md)). Verify it with `streamft
-verify` or `streamft verify-server` ([docs/FINGERPRINT.md](docs/FINGERPRINT.md)).
+([`research/WATERMARK_JOINT.md`](https://github.com/byjameson/stream-finetune/blob/main/research/WATERMARK_JOINT.md)). Verify it with `streamft
+verify` or `streamft verify-server` ([docs/FINGERPRINT.md](https://github.com/byjameson/stream-finetune/blob/main/docs/FINGERPRINT.md)).
 
 **AI in a spreadsheet:** [a 10.5 KB .xlsx](https://byjameson-mini-ai.static.hf.space/spreadsheet.html)
 with the same 160 SMS words in cells; 90.6% formula accuracy, no macros.
@@ -290,13 +290,13 @@ The 32B weights are **19.2 GB**. They never fully live in VRAM. At 1024 tokens/s
 throughput is **3.1×** the 128-token rate, because the per-step I/O is amortised over
 more tokens. 50 steps of Dolly-15k SFT moved eval loss **1.8755 → 0.9659**.
 
-**Installed from PyPI? Start with [`QUICKSTART.md`](QUICKSTART.md) (T?rk?e:
-[`QUICKSTART.tr.md`](QUICKSTART.tr.md)) ? or run `install.ps1` / `install.sh`, which
+**Installed from PyPI? Start with [`QUICKSTART.md`](https://github.com/byjameson/stream-finetune/blob/main/QUICKSTART.md) (T?rk?e:
+[`QUICKSTART.tr.md`](https://github.com/byjameson/stream-finetune/blob/main/QUICKSTART.tr.md)) ? or run `install.ps1` / `install.sh`, which
 checks Python, installs the package, looks for a GPU and runs `doctor`.** — it uses only the
-published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](GUIDE_6GB_32B.md) — the practical write-up: presets,
+published CLI (no repo scripts). Deeper dive: [`GUIDE_6GB_32B.md`](https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md) — the practical write-up: presets,
 the six traps, and which numbers are real. The measurement protocol, the discarded rows
 and the correction of an earlier wrong claim ("8.6× / 100 tok/s") are in
-[`LONGCTX_FINDINGS.md`](LONGCTX_FINDINGS.md).
+[`LONGCTX_FINDINGS.md`](https://github.com/byjameson/stream-finetune/blob/main/LONGCTX_FINDINGS.md).
 
 ## Quick start (installed package, nothing else needed)
 
@@ -329,8 +329,8 @@ streamft eval --model Qwen/Qwen2.5-1.5B-Instruct
 ```
 
 Every run appends one JSON row to `results/results.jsonl` next to where you launched it.
-Six worked recipes: [`COOKBOOK.md`](COOKBOOK.md).
-The same commands are in [`QUICKSTART.md`](QUICKSTART.md), which is what a pip user should
+Six worked recipes: [`COOKBOOK.md`](https://github.com/byjameson/stream-finetune/blob/main/COOKBOOK.md).
+The same commands are in [`QUICKSTART.md`](https://github.com/byjameson/stream-finetune/blob/main/QUICKSTART.md), which is what a pip user should
 read — this README also documents the experiments behind the numbers.
 
 ### Spiking LM (from scratch)
@@ -360,13 +360,13 @@ and an accept gate, an inbox watcher that promotes only accepted versions,
 truth-gated knowledge, function-preserving width growth, a `/generate` endpoint,
 an OpenAI-shaped `/v1/chat/completions` endpoint and optional online
 per-synapse rollback. See
-[`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md),
-[`docs/SPIKING_INGEST.md`](docs/SPIKING_INGEST.md),
-[`docs/SPIKING_WATCH.md`](docs/SPIKING_WATCH.md),
-[`docs/SPIKING_KNOWLEDGE.md`](docs/SPIKING_KNOWLEDGE.md),
-[`docs/SPIKING_GROW.md`](docs/SPIKING_GROW.md),
-[`docs/SPIKING_50M.md`](docs/SPIKING_50M.md) and
-[`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md).
+[`docs/SPIKING_PRODUCT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_PRODUCT.md),
+[`docs/SPIKING_INGEST.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_INGEST.md),
+[`docs/SPIKING_WATCH.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_WATCH.md),
+[`docs/SPIKING_KNOWLEDGE.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_KNOWLEDGE.md),
+[`docs/SPIKING_GROW.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_GROW.md),
+[`docs/SPIKING_50M.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_50M.md) and
+[`research/SPIKING_SHIFT.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_SHIFT.md).
 
 ### Parked experiment: Qwen verified assistant
 
@@ -389,7 +389,7 @@ The server exposes `/health`, `/metrics`, `/v1/models`,
 from verified documents only. A 10-question held-out smoke eval scored 1.00
 answer accuracy, 1.00 citation rate and 1.00 strict accuracy; the local server
 runs at `http://127.0.0.1:8014`. See
-[`docs/LOCAL_ASSISTANT.md`](docs/LOCAL_ASSISTANT.md).
+[`docs/LOCAL_ASSISTANT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/LOCAL_ASSISTANT.md).
 
 **From a source checkout only** (not part of the wheel): `tools/finetune.py` is a wrapper
 that encodes the VRAM presets, `scripts/compare_peft.py` reproduces the engine comparison,
@@ -446,7 +446,7 @@ streamft train --model-dir checkpoints/qwen7b_nf4 --sft --steps 1000 \
   same 5.36 GB peak); on Pascal it is the only option.
 - On a **4 GB** card use `--blocks-on-gpu 1`, `--seq 512` and `--vram-hard-gb 3.4`.
   Those rows are not measured yet — if you run one, open a
-  [hardware report](.github/ISSUE_TEMPLATE/hardware-report.md) and it can become a measured
+  [hardware report](https://github.com/byjameson/stream-finetune/blob/main/github/ISSUE_TEMPLATE/hardware-report.md) and it can become a measured
   entry in `streamft fit`.
 - `streamft fit` prints this hint automatically when it sees a pre-Ampere GPU.
 
@@ -457,7 +457,7 @@ the same passage costs **1.13 tokens/word in English, 1.74 in German and 2.39 in
 ? a Turkish run at `seq 512` sees about half the text an English run does. Measured with
 `scripts/tokenizer_cost.py`; the numbers, the byte-level alternative and why diffusion LMs
 (LLaDA/Mercury: 800?1,500 tok/s at batch 1, but the same memory footprint) do not change
-this project's bottleneck are in [`docs/TOKENIZERS.md`](docs/TOKENIZERS.md).
+this project's bottleneck are in [`docs/TOKENIZERS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/TOKENIZERS.md).
 
 ### Run it in a browser (no server)
 
@@ -471,7 +471,7 @@ python scripts/serve_static.py --port 8765
 Measured on the reference laptop, 0.5B Q4_K_M (379 MB): **1.3 tok/s** with the plain
 `http.server`, **6.0 tok/s** behind `scripts/serve_static.py` ? the COOP/COEP headers are
 what let wllama use 12 threads instead of one. Details and limits in
-[`wasm/README.md`](wasm/README.md).
+[`wasm/README.md`](https://github.com/byjameson/stream-finetune/blob/main/wasm/README.md).
 
 ### Share one machine on the LAN
 
@@ -544,7 +544,7 @@ math faster.
 
 Every speed number here comes from **one machine**: RTX 3050 Laptop 6 GB, Windows 11,
 AC power, NF4 base, LoRA r=8, batch 1, Dolly-15k SFT. The four rows (3B/7B/14B/32B) are
-listed in [`docs/MEASURED.md`](docs/MEASURED.md), together with the rules for adding one
+listed in [`docs/MEASURED.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/MEASURED.md), together with the rules for adding one
 from a different card:
 
 ```bash
@@ -564,7 +564,7 @@ bit/teacher-param; the same 4.4M student is within 1.3 points on DBPedia-14 but 
 22.5 on SST-2 and 47.9 on MNLI; open-ended generation dies at 3 bits. A cheap 45 KB TF-IDF
 student is a **lower bound** on the 4.4M student's normalized skill (6 tasks, R² = 0.89),
 not a predictor: QQP (C 0.21, S 0.49) breaks the near-identity. Details, caveats and
-reproduction: [`docs/BEHAVIORAL_BITS.md`](docs/BEHAVIORAL_BITS.md).
+reproduction: [`docs/BEHAVIORAL_BITS.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/BEHAVIORAL_BITS.md).
 
 ## Verification
 
@@ -737,17 +737,17 @@ URLs. The engine lived at `experiments/exp54_disk_qlora.py` + `lcsa/` until the 
 learns TinyStories at 2.05 bpb after 300 steps and 1.94 after 1000 steps on the 6 GB card;
 adding spike-frequency adaptation reaches 1.84. The rate control is weaker and saturates.
 This is the from-scratch starting point for the brain-like line, not a claim that spiking
-beats transformers. [`research/SPIKING_LM.md`](research/SPIKING_LM.md)
+beats transformers. [`research/SPIKING_LM.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_LM.md)
 
 **Spiking rollback:** after a TinyStories -> WikiText shift, restoring the top 10% of
 phase-A synapses by Fisher importance recovers 95.0%/94.1% of the old-task performance
 while keeping 18.3% of the new-task gain on two seeds. Global rollback restores the old
-task but discards all new learning. [`research/SPIKING_SHIFT.md`](research/SPIKING_SHIFT.md)
+task but discards all new learning. [`research/SPIKING_SHIFT.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_SHIFT.md)
 
 **Scaling check:** a 20.97M model trained for 10,000 steps / 164M tokens reached
 1.327 bpb; the 4.3M model reached 1.336 on the same budget, and the larger model was
 slightly worse on a fixed sample-quality probe. More parameters did not buy quality at
-this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](docs/SPIKING_PRODUCT.md)
+this budget; the next attempt needs 500M+ tokens. [`docs/SPIKING_PRODUCT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/SPIKING_PRODUCT.md)
 
 **Generative data diversity (first generative result):** a 4.3M model trained for
 3,000 steps on 16M tokens. TinyStories-only: TinyStories **1.566** / WikiText
@@ -772,7 +772,7 @@ story-shaped but still repetitive. Tighter sampling helps the TinyStories-only
 4.3M model but hurts the mix model, so the generation gap is not just a
 temperature problem. Lower bpb is not yet a generation-quality or deployment
 win.
-[`research/SPIKING_GENERATIVE.md`](research/SPIKING_GENERATIVE.md)
+[`research/SPIKING_GENERATIVE.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_GENERATIVE.md)
 
 **Tiny Spiking Lab (product path, release blocked):** the local ingest workflow
 improves a 76-article held-out domain from **5.99 to 4.45 bpb** in 300 steps
@@ -794,7 +794,7 @@ door` (min **0.534** seed 0, **0.259** seed 1, versus base 0.727-0.751). Gate
 efficiency probe: 4.3M runs at **1,171 tok/s** on CUDA and **730 tok/s** on CPU
 with **24.8 MB** peak VRAM; 21M runs at 563/204 tok/s with 88.3 MB. This is not
 a general model; packaging/licence/model card are still missing.
-[`research/SPIKING_TINY_LAB.md`](research/SPIKING_TINY_LAB.md)
+[`research/SPIKING_TINY_LAB.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_TINY_LAB.md)
 
 **Tiny Transformer Chat (product path):** a **20.2M from-scratch transformer**
 on the same clean chat data reaches chat bpb **1.359**, assistant loss **4.01**,
@@ -803,23 +803,23 @@ passes the smoke gate; the 21M/50M spiking chat models remain BLOCKED at
 2.29-2.31 bpb / 6.7-6.8 loss. A 49.2M transformer adds only 0.015 bpb, so the
 20M checkpoint is the product model. It is a tiny, repetitive character model,
 not a general assistant. Model card:
-[`docs/TINY_TRANSFORMER_CHAT.md`](docs/TINY_TRANSFORMER_CHAT.md); local server:
+[`docs/TINY_TRANSFORMER_CHAT.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/TINY_TRANSFORMER_CHAT.md); local server:
 `python -m streamft.chat_server`; demo: `scripts/chat_demo.ps1`.
 
 **Sleep-like replay:** during a TinyStories -> WikiText phase, mixing 20% old windows
 into every batch keeps old bpb at **2.079** (phase-A 2.077; naive 2.632) and retains
 **99.2%** of the new-task gain. Replay is much better than post-hoc shadow rollback
-here. [`research/SPIKING_REPLAY.md`](research/SPIKING_REPLAY.md)
+here. [`research/SPIKING_REPLAY.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_REPLAY.md)
 
 **Replay + rollback:** controlled seed-1 arms confirm the mechanisms are not
 additive. Replay alone keeps **98.9%** of the new gain; replay followed by Fisher
 rollback keeps only **16.0%**. Replay prevents the forgetting; rollback after it
-spends the new learning. [`research/SPIKING_REPLAY_ROLLBACK.md`](research/SPIKING_REPLAY_ROLLBACK.md)
+spends the new learning. [`research/SPIKING_REPLAY_ROLLBACK.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_REPLAY_ROLLBACK.md)
 
 **21M, two seeds:** replay-first holds at 21M. Replay keeps **99.6-99.8%** of the
 new-task gain; replay+rollback keeps **6.5-12.0%**; replay+EWC keeps **99.3%**.
 EWC is safe but does not beat simple replay.
-[`research/SPIKING_REPLAY_EWC_21M.md`](research/SPIKING_REPLAY_EWC_21M.md)
+[`research/SPIKING_REPLAY_EWC_21M.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_REPLAY_EWC_21M.md)
 
 **600-step phase B + generation probe:** at 21M and two seeds, replay keeps
 **99.7%** of the new gain; naive samples collapse from **144-151 to 78-81 chars**
@@ -829,25 +829,25 @@ better on distinct-2/length but costs new-task bpb.
 **50M long phase B:** replay keeps **98.2%** of the new gain and improves the
 held-out continuation probe (content F1 **0.140 -> 0.182**); EWC keeps 91.7% and
 lowers it to 0.115; naive drops it to 0.000. This is a small semantic signal, not
-semantic competence. [`research/SPIKING_LONG_REPLAY.md`](research/SPIKING_LONG_REPLAY.md)
+semantic competence. [`research/SPIKING_LONG_REPLAY.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_LONG_REPLAY.md)
 
 **Narrative-coherence benchmark:** 100 held-out four-way next-sentence cases —
 4.3M **0.29**, 21M **0.41**, 50M **0.40** (chance 0.25). 50M does not beat 21M,
 and EWC lambda 0.5/2.0 stays at 0.39/0.40 while costing new-task bpb. Parameter
 scaling is not buying semantics. The decision is to revise architecture/data,
-not just scale. [`research/SPIKING_SEMANTIC.md`](research/SPIKING_SEMANTIC.md)
+not just scale. [`research/SPIKING_SEMANTIC.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_SEMANTIC.md)
 
 **Top-down feedback (negative):** adding a zero-initialized last-layer-to-input
 feedback path to the 21M model scored **0.39** narrative accuracy vs **0.45** for
 the baseline after the same 500 steps, and slightly worse bpb. This topology did
-not help. [`research/SPIKING_FEEDBACK.md`](research/SPIKING_FEEDBACK.md)
+not help. [`research/SPIKING_FEEDBACK.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_FEEDBACK.md)
 
 **Variable binding (non-TinyStories, negative):** on tiny three-statement stories
 with **disjoint** train/test (person, color, object) triples, the 128-wide spiking
 model reaches **0.168** (below the 0.25 chance) while the rate control reaches
 **0.318**. Both memorize training triples and fail held-out binding; the current
 architecture needs a memory/attention mechanism, not more parameters.
-[`research/SPIKING_BINDING.md`](research/SPIKING_BINDING.md)
+[`research/SPIKING_BINDING.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING.md)
 
 **Binding benchmark audit:** the first task is solvable **78%** by matching color
 alone and **76%** by object alone, so a corrected conjunction split was built
@@ -870,7 +870,7 @@ derived from the query/statement attributes, not the answer. Without it, 6k
 steps give **0.308/0.696**; at 12k the rate control reaches **0.874** but the
 spike model is **0.470** and strongly position-biased (middle statement 0.159).
 The architecture can bind; unsupervised credit assignment is still open.
-[`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+[`research/SPIKING_BINDING_CONJ.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONJ.md)
 
 **Continual binding (two seeds + hard split):** naive phase B on 16 new triples
 drops old accuracy from **0.974/1.000** to **0.322/0.544** and held accuracy from
@@ -882,14 +882,14 @@ shift (old red/blue -> new green/yellow), naive old falls **0.930/1.000 ->
 (0.392/0.674 old on the triple split) or destroys new colors (new 0.366 on color
 seed 2); replay+rollback and replay+EWC are close but not consistently better.
 Replay is the most reliable arm.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Without the matching-attention loss on harder splits (negative):** copy-only
 color phase A is **0.332/0.214** (seed 0/2, at or below chance), and a no-overlap
 2-name split collapses (**0.474/0.644**, even with the attention control). The
 attention loss remains a required inductive bias at this budget; replay only
 helps once phase A is learnable.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Four-statement stories:** dynamic memory, per-statement slots, slot reset, and
 a hard name slot all stay at **0.214-0.236** old accuracy (majority **0.26**)
@@ -901,7 +901,7 @@ matching-attention loss) keeps old **0.996/0.970**, new **1.000**, held
 **1.000/1.000** and held **0.926/0.760**. The structured key is the mechanism;
 the task-specific attention loss is unnecessary and can hurt retention (naive
 old **0.220/0.444** with it).
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Five-statement copy-only (positive):** five names, five attr-key slots,
 sequence length 32. Phase A old **0.998** with all positions balanced and
@@ -909,7 +909,7 @@ permutation **1.000**. Copy-only phase B keeps old **0.950/0.994** (naive) or
 **1.000** (replay), new **1.000**, and old permutation **0.944/0.994** or
 **1.000**. Held-out composition is seed-sensitive (**0.244/0.356** on seed 0,
 **0.982/0.980** on seed 1), so the next issue is composition, not retention.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Six-statement copy-only (positive, gate passed):** six statements, six names,
 sequence length 37, six attr-key slots. Phase A old **1.000** with all positions
@@ -917,7 +917,7 @@ and permutation **1.000**. Copy-only phase B: naive old **0.998/0.914**, new
 **1.000**, held **0.988/1.000**, permutation **0.998/0.924**; replay
 **1.000/1.000**, held **1.000/0.998**, permutation **1.000/1.000**. Balanced
 positions, permutation invariance, and held composition all pass on both seeds.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Seven-statement copy-only (positive, gate passed):** seven statements, seven
 names, sequence length 42. Phase A old **1.000/0.998**, all positions and
@@ -925,7 +925,7 @@ permutation **1.000**. Copy-only phase B: naive old **1.000/0.986**, new
 **1.000**, held **0.998/0.966**, permutation **1.000/0.986**; replay
 **1.000/1.000**, held **0.988/0.994**, permutation **1.000/1.000**. The gate
 passes on both seeds at seven statements.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Relaxed structure (partial):** variable filler lengths 0/1/2 with
 token-triggered boundaries/read. Replay keeps old/new at **1.000** and
@@ -933,20 +933,20 @@ permutation at **1.000**, but held composition drops to **0.803/0.651**. A
 0->1->2->mixed filler curriculum with 6k stories and 9k phase-A steps gives
 **0.786/0.611** — no improvement. The gate fails on held-out composition, not on
 old/new or balance; more filler-length practice does not fix it.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Factorized color-object attention (positive, gate passed):** separate color
 and object keys/queries with multiplied attention distributions. Relaxed
 structure: old/new/held **1.000/1.000/1.000**, permutation **1.000**, and held
 **1.000** at every filler length, on both seeds. The earlier held gap was the
 additive key, not data or training.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Eight-statement factorized relaxed (positive, gate passed):** eight names,
 eight slots, sequence length 63, fillers 0/1/2. Replay: old/new/held
 **1.000/1.000/1.000**, permutation **1.000**, held **1.000** at every filler
 length on both seeds. The factorized mechanism scales to eight statements.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Multi-token answer (positive with curriculum):** answer is name + color, with
 a query-color copy for the second token. Seed 0 reaches exact
@@ -955,7 +955,7 @@ read (old **0.231**, new **0.354**, held **0.341**) though its color token is
 **1.000**. A 3k red-only warmup + 6k red+blue + 3k phase B fixes both seeds to
 exact **1.000/1.000/1.000**, permutation **1.000**, name/color 1.000 at every
 filler length.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Learned boundaries, two-token answers (positive, gate passed):** statements
 end with a generic `|`; learned write/read gates replace the known `.`/`?`
@@ -963,7 +963,7 @@ boundaries. Two seeds: phase-A old **1.000**, phase-B old/new/held
 **1.000/1.000/1.000**, permutation **1.000**, name/color 1.000 at every filler
 length. The remaining structure is a task-specific color/object factor and a
 task-specific color-copy readout, not a general language model.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Raw boundaries, no separator (positive, gate passed):** statements are
 concatenated with no separator token at all. A write candidate on the object
@@ -971,7 +971,7 @@ token plus a context read gate gives the same result: two seeds, phase-A old
 **1.000**, phase-B old/new/held **1.000/1.000/1.000**, permutation **1.000**,
 name/color 1.000 at fillers 0/1/2. The gate is supervised with object positions,
 so this is learned write/read classification, not unsupervised segmentation.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Natural-language templates (positive, gate passed):** English-like
 `tom has a big red ball.` / `who has a big red ball? mia red.` with learned
@@ -979,34 +979,34 @@ so this is learned write/read classification, not unsupervised segmentation.
 **1.000/1.000/1.000** (seed 1 held **0.9989**), permutation **1.000**, all
 filler cells above 0.95. Still a fixed 24-word template set, not free-form
 language.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Wide natural-language templates (positive, gate passed):** verbs, articles
 and adjectives vary (`tom owns the old red ball.` / `who found a big yellow
 car? sam yellow.`). Two seeds: phase-A old **1.000**, phase-B old/new/held
 **1.000/1.000/1.000**, permutation **1.000**, all 18 split/filler cells 1.000.
 Still a fixed 31-word template set, not free-form language.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Paraphrase templates (scoped positive, 4 pairs):** names and queries move
 (`tom has a red ball.` / `the red ball belongs to tom.` / `whose red ball is
 it?`). Category states plus a template curriculum and 50% replay give two seeds
 old/new/held **1.000/1.000/1.000**, permutation **1.000**. The full 16-pair set
 is seed-sensitive and stays a negative result.
-[`research/SPIKING_BINDING_CONTINUAL.md`](research/SPIKING_BINDING_CONTINUAL.md)
+[`research/SPIKING_BINDING_CONTINUAL.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONTINUAL.md)
 
 **Curriculum without the attention loss (negative):** a padded 1 -> 2 -> 3
 statement curriculum trained with the copy loss only reaches spike **0.412**
 (permuted 0.392, last-position-biased) and rate **0.212**. It does not replace
 the self-supervised matching-attention loss at this budget.
-[`research/SPIKING_BINDING_CONJ.md`](research/SPIKING_BINDING_CONJ.md)
+[`research/SPIKING_BINDING_CONJ.md`](https://github.com/byjameson/stream-finetune/blob/main/research/SPIKING_BINDING_CONJ.md)
 
 ## Support the work / Destek
 
 This project is developed on a 6 GB laptop GPU. If you find it useful and want
 to support further experiments, donations go toward more compute and larger
 runs. There is no paid support, token, or investment offer. Canonical addresses
-and network warnings: [`docs/DONATE.md`](docs/DONATE.md).
+and network warnings: [`docs/DONATE.md`](https://github.com/byjameson/stream-finetune/blob/main/docs/DONATE.md).
 
 - **EVM-compatible networks** (Ethereum, BNB Smart Chain, Polygon, Optimism,
   Arbitrum One, Base, Avalanche C-Chain):
@@ -1022,7 +1022,7 @@ over results or reviews.
 
 ## License
 
-Apache-2.0 for code and model weights — see [`LICENSE`](LICENSE) and
-[`NOTICE`](NOTICE). The notice lists the training-data sources and their
+Apache-2.0 for code and model weights — see [`LICENSE`](https://github.com/byjameson/stream-finetune/blob/main/LICENSE) and
+[`NOTICE`](https://github.com/byjameson/stream-finetune/blob/main/NOTICE). The notice lists the training-data sources and their
 original licences; dataset text remains under those terms. Atom Zero is
 open source; third-party hosting is the host's responsibility.
