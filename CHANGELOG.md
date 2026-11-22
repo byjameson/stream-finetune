@@ -2,6 +2,8 @@
 
 ## Unreleased - document provenance
 
+Draft release notes: [`docs/RELEASE_0.9.0.md`](docs/RELEASE_0.9.0.md).
+
 - Added local PDF, DOCX, HTML and Markdown ingestion with `pypdf`,
   `python-docx` and a stdlib HTML parser.
 - Added `doc_chunk_meta`: page numbers for PDFs, section headings for
