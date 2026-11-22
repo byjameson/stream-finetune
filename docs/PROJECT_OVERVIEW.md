@@ -296,6 +296,7 @@ runs on CPU, slower.
 - GitHub: https://github.com/byjameson/stream-finetune
 - Releases: https://github.com/byjameson/stream-finetune/releases
 - streamft PyPI (trainer): https://pypi.org/project/streamft/
+- streamft ModelScope (trainer package): https://modelscope.cn/models/byjameson/streamft
 - atomzero PyPI (standalone assistant): https://pypi.org/project/atomzero/
 - Hugging Face: https://huggingface.co/byjameson/atom-zero-49m
 - ModelScope: https://modelscope.cn/models/byjameson/atom-zero-49m

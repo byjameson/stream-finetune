@@ -52,6 +52,7 @@ pip install streamft==1.0.0
 ## Links
 
 - PyPI: <https://pypi.org/project/streamft/1.0.0/>
+- ModelScope trainer package: <https://modelscope.cn/models/byjameson/streamft>
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - Trainer guide: <https://github.com/byjameson/stream-finetune/blob/main/GUIDE_6GB_32B.md>
 - Migration guide: <https://github.com/byjameson/stream-finetune/blob/main/docs/MIGRATION_1.0.md>

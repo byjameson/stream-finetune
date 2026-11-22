@@ -38,6 +38,7 @@ pip install atomzero
 - GitHub release: <https://github.com/byjameson/stream-finetune/releases/tag/v1.0.0>
 - streamft PyPI: <https://pypi.org/project/streamft/1.0.0/>
 - Atom Zero PyPI: <https://pypi.org/project/atomzero/0.1.1/>
+- streamft ModelScope: <https://modelscope.cn/models/byjameson/streamft>
 - Hugging Face: <https://huggingface.co/byjameson/atom-zero-49m>
 - ModelScope: <https://modelscope.cn/models/byjameson/atom-zero-49m>
 - Atom Zero launch article: <https://dev.to/mycute_97b39c4e34027570f9/atom-zero-a-49m-local-assistant-that-says-i-dont-know-1p7m>
