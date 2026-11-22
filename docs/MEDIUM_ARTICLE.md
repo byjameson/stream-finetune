@@ -27,13 +27,12 @@ The result is a local assistant that can answer from my own documents, show the 
 
 This is the part I wish more small-model projects published.
 
-| check | result |
-|---|---:|
-| raw 49.2M, no RAG/tools | **2/10** |
-| product with RAG/tools | **21/21** |
-| behavior checks | **16/16** |
-| source-cited retrieval top-1 | **1.000** (FTS 0.850) |
-| test suite | **412 passed** |
+- Raw 49.2M, no RAG/tools: **2/10**
+- Product with RAG/tools: **21/21**
+- Behavior checks: **16/16**
+- Source-cited retrieval top-1: **1.000** (FTS 0.850)
+- Document benchmark, 100 authored questions: **80/80 answerable, 20/20 no-answer**
+- Test suite: **412 passed**
 
 The raw-model probe asks ten simple general questions with no documents, no calculator and no agent. The 49.2M model gets **2/10**. The product gets **21/21** because the runtime does the work.
 
@@ -45,6 +44,18 @@ On the clean scaled validation shard, the trained checkpoint does improve langua
 - assistant loss: **4.2153 → 3.8551**
 
 But the raw knowledge probe stays at **2/10**. Training the behavior model did not turn it into a knowledge base. That is why facts belong in RAG.
+
+## What the 0.9 document layer adds
+
+The latest release is not a bigger model. It is a better runtime around the same 49.2M weights:
+
+- **PDF, DOCX, HTML and Markdown ingestion** with page/section citations.
+- An **evidence panel/API** that opens the exact local chunks behind a citation.
+- A **100-question document benchmark** covering source, page/section, answer hit, no-answer refusal and latency.
+- A **constrained plan API** with an allowlist, a three-step cap and explicit confirmation for task/research side effects.
+- **Two independent packages:** `atomzero` for the assistant and `streamft` for the low-VRAM trainer.
+
+The document benchmark is authored, not a public leaderboard: 80 answerable questions and 20 no-answer questions on a generated 10-document corpus. It currently reaches 80/80 answerable and 20/20 no-answer, with top-1 source, page/section and complete citation at 1.000. That is a regression gate, not a claim of general retrieval quality.
 
 ## Why the adapter doesn’t magically add facts
 
@@ -90,11 +101,9 @@ No autonomous crawling. No self-directed weight mutation. The human approves the
 
 “Self-improvement” is an overloaded phrase, so here is the exact ladder I built:
 
-| level | what changes | who approves | weights change? |
-|---|---|---|---|
-| RAG memory | a teacher note or your document enters the index | you/queue approval | no |
-| Reviewed adapter | a LoRA adapter for style/skills | human review + gate | yes |
-| Full training | a new base checkpoint | offline project decision | yes, offline |
+- **RAG memory:** a teacher note or your document enters the index; you/queue approval; weights do not change.
+- **Reviewed adapter:** a LoRA adapter for style/skills; human review and gate; weights change.
+- **Full training:** a new base checkpoint; offline project decision; weights change offline.
 
 The first level is immediate. Ask a question with no local source; the assistant records a gap. You approve the topic; the worker fetches Wikipedia context and asks the local Ollama teacher; the answer becomes an **unverified teacher note** in RAG. The next answer can cite it. `weights_changed: false`.
 
@@ -127,6 +136,7 @@ It covers the 49.2M model and 40k training run, the FTS + MiniLM retrieval stack
 It is not a smaller version of a frontier chatbot. The differences are architectural:
 
 - **Source-cited RAG first:** hybrid FTS + MiniLM retrieval, top-1 1.000 on the authored held-out set.
+- **Real document formats:** PDF/DOCX/HTML/Markdown with page/section citations and an evidence panel.
 - **Honest missing-source behavior:** no source means no invented answer.
 - **Local privacy:** SQLite and JSON on disk, no telemetry, exact source/session deletion.
 - **Deterministic tools:** arithmetic, time, tasks, name/likes memory.
