@@ -1,11 +1,11 @@
-# 7B end-to-end on a 6 GB card
+﻿# 7B end-to-end on a 6 GB card
 
 This is the concrete scenario: train a 7B adapter on the laptop, serve the same 4-bit
 base with that adapter, and call it through the OpenAI-compatible endpoint. Nothing is
 merged; the base stays on disk and the adapter is a 20 MB file.
 
-Measured on the reference machine — **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, Windows 11,
-AC power** — on 9 Nov 2026.
+Measured on the reference machine ÔÇö **RTX 3050 Laptop, 6 GB VRAM, 34 GB RAM, Windows 11,
+AC power** ÔÇö on 9 Nov 2026.
 
 ## Train
 
@@ -21,9 +21,9 @@ streamft train --model-dir checkpoints/qwen7b_nf4 --sft \
 | wall time | **88.6 s** |
 | peak VRAM | **5.65 GB** |
 | host RSS | 9.58 GB |
-| eval loss | **3.4411 → 2.3588** (−1.0824) |
+| eval loss | **3.4411 ÔåÆ 2.3588** (ÔêÆ1.0824) |
 | adapter | 20.25 MB (`adapter.pt`, 5.05M params, r=8, q/k/v/o) |
-| layer window | 1 → 14 → 20 blocks (autotuned) |
+| layer window | 1 ÔåÆ 14 ÔåÆ 20 blocks (autotuned) |
 
 The first step starts with one resident block; autotune grows the window to 20 blocks as
 the measured VRAM allows. 11/256 Dolly rows were dropped by the exact-prefix mask.
